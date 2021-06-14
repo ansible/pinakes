@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'catalog',
+    'approval',
 ]
 
 MIDDLEWARE = [
@@ -69,12 +70,18 @@ WSGI_APPLICATION = 'ansible-catalog.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+DATABASE_ROUTERS = ['ansible-catalog.router.DbRouter']
+DATABASE_APPS_MAPPING = {'approval': 'approval', 'catalog': 'default'}
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'catalog.db',
-    }
+    },
+    'approval': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'approval.db',        
+    },
 }
 
 # REST Framework configuration
