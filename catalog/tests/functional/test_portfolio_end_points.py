@@ -10,7 +10,7 @@ from catalog.tests.factories import TenantFactory
 class TestPortfolioEndPoints:
     def test_portfolio_list(self, api_client):
         PortfolioFactory()
-        url = reverse("portfolio-list")
+        url = reverse("catalog:portfolio-list")
         response = api_client.get(url)
 
         assert response.status_code == 200
@@ -20,7 +20,7 @@ class TestPortfolioEndPoints:
 
     def test_portfolio_retrieve(self, api_client):
         portfolio = PortfolioFactory()
-        url = reverse("portfolio-detail", args=(portfolio.id,))
+        url = reverse("catalog:portfolio-detail", args=(portfolio.id,))
         response = api_client.get(url)
 
         assert response.status_code == 200
@@ -29,28 +29,28 @@ class TestPortfolioEndPoints:
 
     def test_portfolio_delete(self, api_client):
         portfolio = PortfolioFactory()
-        url = reverse("portfolio-detail", args=(portfolio.id,))
+        url = reverse("catalog:portfolio-detail", args=(portfolio.id,))
         response = api_client.delete(url)
 
         assert response.status_code == 204
 
     def test_portfolio_patch(self, api_client):
         portfolio = PortfolioFactory()
-        url = reverse("portfolio-detail", args=(portfolio.id,))
+        url = reverse("catalog:portfolio-detail", args=(portfolio.id,))
         response = api_client.patch(url, {"name": "update"}, format="json")
 
         assert response.status_code == 200
 
     def test_portfolio_put_not_supported(self, api_client):
         portfolio = PortfolioFactory()
-        url = reverse("portfolio-detail", args=(portfolio.id,))
+        url = reverse("catalog:portfolio-detail", args=(portfolio.id,))
         response = api_client.put(url, {"name": "update"}, format="json")
 
         assert response.status_code == 405
 
     def test_portfolio_post(self, api_client):
         TenantFactory()
-        url = reverse("portfolio-list")
+        url = reverse("catalog:portfolio-list")
         response = api_client.post(
             url, {"name": "abcdef", "description": "abc"}, format="json"
         )
@@ -60,7 +60,7 @@ class TestPortfolioEndPoints:
     def test_portfolio_portfolio_items_get(self, api_client):
         portfolio = PortfolioFactory()
         portfolio_item = PortfolioItemFactory(portfolio=portfolio)
-        url = reverse("portfolio-portfolio_items", args=(portfolio.id,))
+        url = reverse("catalog:portfolio-portfolio_items", args=(portfolio.id,))
         response = api_client.get(url)
 
         assert response.status_code == 200
