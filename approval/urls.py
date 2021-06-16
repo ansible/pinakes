@@ -11,5 +11,5 @@ router.register("templates", TemplateViewSet)
 router.register("workflows", WorkflowViewSet)
 
 urlpatterns = [
-  path('', include((router.urls, 'approval'))),
+    path("", include((router.urls, "approval"))),
 ]

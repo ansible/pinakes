@@ -39,6 +39,4 @@ class TestWorkflows:
         with pytest.raises(IntegrityError) as excinfo:
             WorkflowFactory(tenant=tenant, template=template, name=name)
 
-        assert "UNIQUE constraint failed: approval_workflow.name" in str(
-            excinfo.value
-        )
+        assert "UNIQUE constraint failed: approval_workflow.name" in str(excinfo.value)

@@ -11,5 +11,5 @@ router.register("portfolios", PortfolioViewSet)
 router.register("portfolio_items", PortfolioItemViewSet)
 
 urlpatterns = [
-  path('', include((router.urls, 'catalog'))),
+    path("", include((router.urls, "catalog"))),
 ]

@@ -36,9 +36,9 @@ class TemplateViewSet(viewsets.ModelViewSet):
     def workflows(self, request, pk=None):
         template = self.get_object()
         if request.method == "GET":
-            workflows = Workflow.objects.filter(
-                template=template
-            ).order_by("created_at")
+            workflows = Workflow.objects.filter(template=template).order_by(
+                "created_at"
+            )
             page = self.paginate_queryset(workflows)
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
