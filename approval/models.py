@@ -1,3 +1,4 @@
+"""Models for Approval"""
 from django.db import models
 from django.db.models.functions import Length
 
@@ -7,6 +8,8 @@ models.CharField.register_lookup(Length)
 
 
 class Template(BaseModel):
+    """Template model"""
+
     title = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, default="")
     process_setting = models.JSONField(blank=True, null=True)
@@ -30,6 +33,8 @@ class Template(BaseModel):
 
 
 class Workflow(BaseModel):
+    """Workflow model"""
+
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, default="")
     group_refs = models.JSONField(default=list)

@@ -1,6 +1,5 @@
 """ Default views for Approval."""
 from rest_framework import viewsets
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .basemodel import Tenant
@@ -9,8 +8,6 @@ from .models import Workflow
 from .serializers import TenantSerializer
 from .serializers import TemplateSerializer
 from .serializers import WorkflowSerializer
-
-# Create your views here.
 
 
 class TenantViewSet(viewsets.ReadOnlyModelViewSet):
@@ -29,11 +26,12 @@ class TemplateViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "workflows":
             return WorkflowSerializer
-        else:
-            return TemplateSerializer
+        return TemplateSerializer
 
     @action(detail=True, url_name="workflows")
-    def workflows(self, request, pk=None):
+    def workflows(self, request):
+        """sub url template/<id>/workflows"""
+
         template = self.get_object()
         if request.method == "GET":
             workflows = Workflow.objects.filter(template=template).order_by(
@@ -46,6 +44,7 @@ class TemplateViewSet(viewsets.ModelViewSet):
 
             serializer = self.get_serializer(workflows, many=True)
             return Response(serializer.data)
+        return None
 
 
 class WorkflowViewSet(viewsets.ModelViewSet):

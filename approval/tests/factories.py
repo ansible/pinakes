@@ -1,3 +1,4 @@
+"""Collection of factory classes for approval models"""
 import factory
 
 from approval.basemodel import Tenant
@@ -6,6 +7,8 @@ from approval.models import Workflow
 
 
 class TenantFactory(factory.django.DjangoModelFactory):
+    """Tenant factory class"""
+
     class Meta:
         model = Tenant
 
@@ -13,6 +16,8 @@ class TenantFactory(factory.django.DjangoModelFactory):
 
 
 class TemplateFactory(factory.django.DjangoModelFactory):
+    """Template factory class"""
+
     class Meta:
         model = Template
 
@@ -22,6 +27,8 @@ class TemplateFactory(factory.django.DjangoModelFactory):
 
 
 class WorkflowFactory(factory.django.DjangoModelFactory):
+    """Workflow factory class"""
+
     class Meta:
         model = Workflow
 
