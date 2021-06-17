@@ -6,10 +6,12 @@ from rest_framework.decorators import action
 
 from .serializers import TagSerializer
 
+
 class TagMixin:
     """
     Tag mixin shared with Approval, Catalog and Inventory
     """
+
     @action(methods=["get"], detail=True)
     def tags(self, request, pk):
         """
