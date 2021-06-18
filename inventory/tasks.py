@@ -8,7 +8,7 @@ from inventory.task_utils.launch_job import LaunchJob
 
 
 @app.task
-def import_tower_objects(tenant_id, source_id):
+def refresh_tower_objects(tenant_id, source_id):
     print("Task Started")
     RefreshInventory(tenant_id, source_id).process()
 
