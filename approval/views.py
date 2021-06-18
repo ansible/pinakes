@@ -29,7 +29,7 @@ class TemplateViewSet(viewsets.ModelViewSet):
         return TemplateSerializer
 
     @action(detail=True, url_name="workflows")
-    def workflows(self, request):
+    def workflows(self, request, pk=None):
         """sub url template/<id>/workflows"""
 
         template = self.get_object()
