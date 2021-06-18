@@ -1,1 +1,1 @@
-# ansible-catalog
+# ansible_catalog
