@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.db.models.functions import Length
+from taggit.managers import TaggableManager
 
 from .basemodel import BaseModel
 
@@ -15,6 +16,8 @@ class Portfolio(BaseModel):
     description = models.TextField(blank=True, default="")
     enabled = models.BooleanField(default=False)
     owner = models.CharField(max_length=255)
+
+    tags = TaggableManager()
 
     class Meta:
         constraints = [
@@ -50,6 +53,8 @@ class PortfolioItem(BaseModel):
     distributor = models.CharField(max_length=64)
     documentation_url = models.URLField(blank=True)
     support_url = models.URLField(blank=True)
+
+    tags = TaggableManager()
 
     class Meta:
         constraints = [

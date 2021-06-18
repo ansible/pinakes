@@ -9,6 +9,7 @@ from .models import PortfolioItem
 from .serializers import TenantSerializer
 from .serializers import PortfolioSerializer
 from .serializers import PortfolioItemSerializer
+from common.tag_mixin import TagMixin
 
 # Create your views here.
 
@@ -20,7 +21,7 @@ class TenantViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TenantSerializer
 
 
-class PortfolioViewSet(viewsets.ModelViewSet):
+class PortfolioViewSet(TagMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating portfolios."""
 
     queryset = Portfolio.objects.all().order_by("created_at")
@@ -48,7 +49,7 @@ class PortfolioViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
 
-class PortfolioItemViewSet(viewsets.ModelViewSet):
+class PortfolioItemViewSet(TagMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating portfolio items."""
 
     queryset = PortfolioItem.objects.all()
