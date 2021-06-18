@@ -15,7 +15,7 @@ def get_version():
 
 
 setup(
-    name="ansible-catalog",
+    name="ansible_catalog",
     version=get_version(),
     author="Ansible, Inc.",
     author_email="info@ansible.com",
@@ -23,5 +23,5 @@ setup(
     license="Apache License 2.0",
     keywords="ansible, catalog",
     url="http://github.com/ansible/ansiblc-catalog",
-    packages=["ansible-catalog"],
+    packages=["ansible_catalog"],
 )
