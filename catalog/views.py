@@ -10,22 +10,26 @@ from .serializers import TenantSerializer
 from .serializers import PortfolioSerializer
 from .serializers import PortfolioItemSerializer
 from common.tag_mixin import TagMixin
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
 
-class TenantViewSet(viewsets.ReadOnlyModelViewSet):
+class TenantViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     """API endpoint for listing and creating tenants."""
 
     queryset = Tenant.objects.all().order_by("id")
     serializer_class = TenantSerializer
+    permission_classes = (IsAuthenticated,)
 
 
-class PortfolioViewSet(TagMixin, viewsets.ModelViewSet):
+class PortfolioViewSet(LoginRequiredMixin, TagMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating portfolios."""
 
     queryset = Portfolio.objects.all().order_by("created_at")
     http_method_names = ["get", "post", "head", "patch", "delete"]
+    permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
         if self.action == "portfolio_items":
@@ -49,9 +53,10 @@ class PortfolioViewSet(TagMixin, viewsets.ModelViewSet):
             return Response(serializer.data)
 
 
-class PortfolioItemViewSet(TagMixin, viewsets.ModelViewSet):
+class PortfolioItemViewSet(LoginRequiredMixin, TagMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating portfolio items."""
 
     queryset = PortfolioItem.objects.all()
     serializer_class = PortfolioItemSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
+    permission_classes = (IsAuthenticated,)
