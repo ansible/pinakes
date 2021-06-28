@@ -31,10 +31,6 @@ class TowerAPI:
 
         self.headers = {"Authorization": f"Bearer {token}"}
 
-        # user_pass = "admin:PeaQE!23"
-        # encoded_u = base64.b64encode(user_pass.encode()).decode()
-        # self.headers = {"Authorization": f"Basic {encoded_u}"}
-
         self.attr_delimiter = "."
 
     def get(self, obj_url, attrs):
