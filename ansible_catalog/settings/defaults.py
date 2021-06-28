@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "taggit",
     "catalog",
     "approval",
+    "inventory",
 ]
 
 MIDDLEWARE = [
@@ -163,3 +164,8 @@ SOCIAL_AUTH_KEYCLOAK_ACCESS_TOKEN_URL = "<Realm>.<OpenIDConfiguration>.<token_en
 
 # If the caller doesn't provide a token we would redirect to this URL
 LOGIN_URL = "/login/keycloak"
+
+# Tower Info
+TOWER_URL="https://Your_Tower_URL"
+TOWER_TOKEN="Your Token"
+TOWER_VERIFY_SSL="False"
