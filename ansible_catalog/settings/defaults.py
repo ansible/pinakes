@@ -159,13 +159,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SOCIAL_AUTH_KEYCLOAK_KEY = "<ClientID>"
 SOCIAL_AUTH_KEYCLOAK_SECRET = "<Clients>.<Credentials>.<Secret>"
 SOCIAL_AUTH_KEYCLOAK_PUBLIC_KEY = "<Realm>.<Keys><Active><RS256><PublicKey>"
-SOCIAL_AUTH_KEYCLOAK_AUTHORIZATION_URL = "<Realm>.<OpenIDConfiguration>.<authorization_endpoint>"
+SOCIAL_AUTH_KEYCLOAK_AUTHORIZATION_URL = (
+    "<Realm>.<OpenIDConfiguration>.<authorization_endpoint>"
+)
 SOCIAL_AUTH_KEYCLOAK_ACCESS_TOKEN_URL = "<Realm>.<OpenIDConfiguration>.<token_endpoint>"
 
 # If the caller doesn't provide a token we would redirect to this URL
 LOGIN_URL = "/login/keycloak"
 
 # Tower Info
-TOWER_URL="https://Your_Tower_URL"
-TOWER_TOKEN="Your Token"
-TOWER_VERIFY_SSL="False"
+TOWER_URL = "https://Your_Tower_URL"
+TOWER_TOKEN = "Your Token"
+TOWER_VERIFY_SSL = "False"
