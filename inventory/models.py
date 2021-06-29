@@ -9,6 +9,7 @@
 """
 
 from django.db import models
+from taggit.managers import TaggableManager
 
 from .basemodel import BaseModel
 
@@ -30,6 +31,8 @@ class ServiceInventory(TowerModel):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     extra = models.JSONField()
+
+    tags = TaggableManager()
 
     def __str__(self):
         return self.name
