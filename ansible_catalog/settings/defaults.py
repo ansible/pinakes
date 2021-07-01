@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -168,6 +169,105 @@ SOCIAL_AUTH_KEYCLOAK_ACCESS_TOKEN_URL = "<Realm>.<OpenIDConfiguration>.<token_en
 LOGIN_URL = "/login/keycloak"
 
 # Tower Info
-TOWER_URL = "https://Your_Tower_URL"
-TOWER_TOKEN = "Your Token"
-TOWER_VERIFY_SSL = "False"
+TOWER_URL="https://Your_Tower_URL"
+TOWER_TOKEN="Your Token"
+TOWER_VERIFY_SSL="False"
+
+# Logging configuration
+LOG_ROOT = "/var/log/ansible_catalog/"
+LOG_FILE = "ansible_catalog.log"
+MAX_BYTES = 10 * 1024 * 1024
+BACKUP_COUNT = 5
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "%(asctime)s — %(name)s — %(levelname)s — %(message)s",
+        },
+    },
+    "filters": {
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+        },
+        "file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOG_ROOT, LOG_FILE),
+            "formatter": "simple"
+        },
+        "approval": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOG_ROOT, LOG_FILE),
+            "maxBytes": MAX_BYTES,
+            "backupCount": BACKUP_COUNT,
+            "formatter": "simple"
+        },
+        "inventory": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOG_ROOT, LOG_FILE),
+            "maxBytes": MAX_BYTES,
+            "backupCount": BACKUP_COUNT,
+            "formatter": "simple"
+        },
+        "catalog": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOG_ROOT, LOG_FILE),
+            "maxBytes": MAX_BYTES,
+            "backupCount": BACKUP_COUNT,
+            "formatter": "simple"
+        }
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "propagate": True,
+        },
+        "django.request": {
+            "handlers": ["console", "file"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "ansible_catalog": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "approval": {
+            "handlers": ["console", "approval"],
+            'level': 'INFO',
+            'propagate': False
+        },
+        "catalog": {
+            "handlers": ["console", "catalog"],
+            'level': 'INFO',
+            'propagate': False
+        },
+        "inventory": {
+            "handlers": ["console", "inventory"],
+            'level': 'INFO',
+            'propagate': False
+        },
+    }
+}
