@@ -20,9 +20,7 @@ except ImportError:
     traceback.print_exc()
     sys.exit(1)
 
-# Use SQLite for unit tests instead of PostgreSQL.  If the lines below are
-# commented out, Django will create the test_awx-dev database in PostgreSQL to
-# run unit tests.
+# Use SQLite for unit tests instead of PostgreSQL
 if "pytest" in sys.modules:
     DATABASES = {
         "default": {
