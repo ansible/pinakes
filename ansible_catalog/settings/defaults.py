@@ -249,11 +249,6 @@ LOGGING = {
             "level": "WARNING",
             "propagate": False,
         },
-        "ansible_catalog": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
-            "propagate": False,
-        },
         "approval": {
             "handlers": ["console", "approval"],
             'level': 'INFO',
