@@ -1,64 +1,82 @@
-import pytest
+""" Module to test PortfolioItem end points """
 import json
+import pytest
 from django.urls import reverse
 from catalog.tests.factories import PortfolioFactory
 from catalog.tests.factories import PortfolioItemFactory
 
 
 @pytest.mark.django_db
-class TestPortfolioItemEndPoints:
-    def test_portfolio_item_list(self, api_client):
-        PortfolioItemFactory()
-        url = reverse("catalog:portfolioitem-list")
-        response = api_client.get(url)
+def test_portfolio_item_list(api_request):
+    """Get list of Portfolio Items"""
+    PortfolioItemFactory()
+    response = api_request("get", reverse("catalog:portfolioitem-list"))
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
+    assert response.status_code == 200
+    content = json.loads(response.content)
 
-        assert content["count"] == 1
+    assert content["count"] == 1
 
-    def test_portfolio_item_retrieve(self, api_client):
-        portfolio_item = PortfolioItemFactory()
-        url = reverse("catalog:portfolioitem-detail", args=(portfolio_item.id,))
-        response = api_client.get(url)
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
-        assert content["id"] == portfolio_item.id
+@pytest.mark.django_db
+def test_portfolio_item_retrieve(api_request):
+    """Retrieve a single portfolio item by id"""
+    portfolio_item = PortfolioItemFactory()
+    response = api_request(
+        "get", reverse("catalog:portfolioitem-detail", args=(portfolio_item.id,))
+    )
 
-    def test_portfolio_item_delete(self, api_client):
-        portfolio_item = PortfolioItemFactory()
-        url = reverse("catalog:portfolioitem-detail", args=(portfolio_item.id,))
-        response = api_client.delete(url)
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["id"] == portfolio_item.id
 
-        assert response.status_code == 204
 
-    def test_portfolio_item_patch(self, api_client):
-        portfolio_item = PortfolioItemFactory()
-        url = reverse("catalog:portfolioitem-detail", args=(portfolio_item.id,))
-        response = api_client.patch(url, {"name": "update"}, format="json")
+@pytest.mark.django_db
+def test_portfolio_item_delete(api_request):
+    """Delete a PortfolioItem by id"""
+    portfolio_item = PortfolioItemFactory()
+    response = api_request(
+        "delete", reverse("catalog:portfolioitem-detail", args=(portfolio_item.id,))
+    )
 
-        assert response.status_code == 200
+    assert response.status_code == 204
 
-    def test_portfolio_item_put_not_supported(self, api_client):
-        portfolio_item = PortfolioItemFactory()
-        url = reverse("catalog:portfolioitem-detail", args=(portfolio_item.id,))
-        response = api_client.put(url, {"name": "update"}, format="json")
 
-        assert response.status_code == 405
+@pytest.mark.django_db
+def test_portfolio_item_patch(api_request):
+    """PATCH a portfolio item by ID"""
+    portfolio_item = PortfolioItemFactory()
+    data = {"name": "update"}
+    response = api_request(
+        "patch",
+        reverse("catalog:portfolioitem-detail", args=(portfolio_item.id,)),
+        data,
+    )
 
-    def test_portfolio_item_post(self, api_client):
-        portfolio = PortfolioFactory()
-        url = reverse("catalog:portfolioitem-list")
-        response = api_client.post(
-            url,
-            {
-                "portfolio": portfolio.id,
-                "service_offering_ref": "1234",
-                "name": "abcdef",
-                "description": "abc",
-            },
-            format="json",
-        )
+    assert response.status_code == 200
 
-        assert response.status_code == 201
+
+@pytest.mark.django_db
+def test_portfolio_item_put(api_request):
+    """PUT on portfolio item is not supported"""
+    portfolio_item = PortfolioItemFactory()
+    data = {"name": "update"}
+    response = api_request(
+        "put", reverse("catalog:portfolioitem-detail", args=(portfolio_item.id,)), data
+    )
+
+    assert response.status_code == 405
+
+
+@pytest.mark.django_db
+def test_portfolio_item_post(api_request):
+    """Create a new portfolio item for a portfolio"""
+    portfolio = PortfolioFactory()
+    data = {
+        "portfolio": portfolio.id,
+        "service_offering_ref": "1234",
+        "name": "abcdef",
+        "description": "abc",
+    }
+    response = api_request("post", reverse("catalog:portfolioitem-list"), data)
+    assert response.status_code == 201

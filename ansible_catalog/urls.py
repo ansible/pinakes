@@ -20,5 +20,4 @@ from django.conf.urls import url
 urlpatterns = [
     path(r"api/v1/", include("catalog.urls")),
     path(r"approval/api/v1/", include("approval.urls")),
-    url("", include("social_django.urls", namespace="social")),
 ]

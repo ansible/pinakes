@@ -1,63 +1,79 @@
-import pytest
+""" Module to test approval workflows """
 import json
+import pytest
 from django.urls import reverse
 from approval.tests.factories import TemplateFactory
 from approval.tests.factories import WorkflowFactory
 
 
 @pytest.mark.django_db
-class TestWorkflowEndPoints:
-    def test_workflow_list(self, api_client):
-        WorkflowFactory()
-        url = reverse("approval:workflow-list")
-        response = api_client.get(url)
+def test_workflow_list(api_request):
+    """GET a list of workflows"""
+    WorkflowFactory()
+    url = reverse("approval:workflow-list")
+    response = api_request("get", url)
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
+    assert response.status_code == 200
+    content = json.loads(response.content)
 
-        assert content["count"] == 1
+    assert content["count"] == 1
 
-    def test_workflow_retrieve(self, api_client):
-        workflow = WorkflowFactory()
-        url = reverse("approval:workflow-detail", args=(workflow.id,))
-        response = api_client.get(url)
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
-        assert content["id"] == workflow.id
+@pytest.mark.django_db
+def test_workflow_retrieve(api_request):
+    """Retrieve a workflow by its ID"""
+    workflow = WorkflowFactory()
+    url = reverse("approval:workflow-detail", args=(workflow.id,))
+    response = api_request("get", url)
 
-    def test_workflow_delete(self, api_client):
-        workflow = WorkflowFactory()
-        url = reverse("approval:workflow-detail", args=(workflow.id,))
-        response = api_client.delete(url)
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["id"] == workflow.id
 
-        assert response.status_code == 204
 
-    def test_workflow_patch(self, api_client):
-        workflow = WorkflowFactory()
-        url = reverse("approval:workflow-detail", args=(workflow.id,))
-        response = api_client.patch(url, {"name": "update"}, format="json")
+@pytest.mark.django_db
+def test_workflow_delete(api_request):
+    """Delete a Workflow by its ID"""
+    workflow = WorkflowFactory()
+    url = reverse("approval:workflow-detail", args=(workflow.id,))
+    response = api_request("delete", url)
 
-        assert response.status_code == 200
+    assert response.status_code == 204
 
-    def test_workflow_put_not_supported(self, api_client):
-        workflow = WorkflowFactory()
-        url = reverse("approval:workflow-detail", args=(workflow.id,))
-        response = api_client.put(url, {"name": "update"}, format="json")
 
-        assert response.status_code == 405
+@pytest.mark.django_db
+def test_workflow_patch(api_request):
+    """PATCH a Workflow by its ID"""
+    workflow = WorkflowFactory()
+    url = reverse("approval:workflow-detail", args=(workflow.id,))
+    response = api_request("patch", url, {"name": "update"})
 
-    def test_workflow_post(self, api_client):
-        template = TemplateFactory()
-        url = reverse("approval:workflow-list")
-        response = api_client.post(
-            url,
-            {
-                "template": template.id,
-                "name": "abcdef",
-                "description": "abc",
-            },
-            format="json",
-        )
+    assert response.status_code == 200
 
-        assert response.status_code == 201
+
+@pytest.mark.django_db
+def test_workflow_put_not_supported(api_request):
+    """PUT not supported on Workflow"""
+    workflow = WorkflowFactory()
+    url = reverse("approval:workflow-detail", args=(workflow.id,))
+    response = api_request("put", url, {"name": "update"})
+
+    assert response.status_code == 405
+
+
+@pytest.mark.django_db
+def test_workflow_post(api_request):
+    """Create a new Workflow"""
+    template = TemplateFactory()
+    url = reverse("approval:workflow-list")
+    response = api_request(
+        "post",
+        url,
+        {
+            "template": template.id,
+            "name": "abcdef",
+            "description": "abc",
+        },
+    )
+
+    assert response.status_code == 201
