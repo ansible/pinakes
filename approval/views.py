@@ -1,58 +1,81 @@
 """ Default views for Approval."""
 import logging
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status, filters
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_extensions.mixins import NestedViewSetMixin
+from django.core.exceptions import ValidationError
+
 from .basemodel import Tenant
-from .models import Template
-from .models import Workflow
-from .serializers import TenantSerializer
-from .serializers import TemplateSerializer
-from .serializers import WorkflowSerializer
+from .models import (
+    Template,
+    Workflow,
+    Request,
+    Action,
+)
+from .serializers import (
+    TemplateSerializer,
+    WorkflowSerializer,
+    RequestSerializer,
+    RequestInSerializer,
+    ActionSerializer,
+)
 
 logger = logging.getLogger("approval")
 
-class TenantViewSet(viewsets.ReadOnlyModelViewSet):
-    """API endpoint for listing and creating tenants."""
+class TemplateViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    """API endpoint for listing and templates."""
 
-    queryset = Tenant.objects.all().order_by("id")
-    serializer_class = TenantSerializer
-
-
-class TemplateViewSet(viewsets.ModelViewSet):
-    """API endpoint for listing and creating templates."""
-
-    queryset = Template.objects.all().order_by("created_at")
-    http_method_names = ["get", "post", "head", "patch", "delete"]
-
-    def get_serializer_class(self):
-        if self.action == "workflows":
-            return WorkflowSerializer
-        return TemplateSerializer
-
-    @action(detail=True, url_name="workflows")
-    def workflows(self, request, pk=None):
-        """sub url template/<id>/workflows"""
-
-        template = self.get_object()
-        if request.method == "GET":
-            workflows = Workflow.objects.filter(template=template).order_by(
-                "created_at"
-            )
-            page = self.paginate_queryset(workflows)
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                return self.get_paginated_response(serializer.data)
-
-            serializer = self.get_serializer(workflows, many=True)
-            return Response(serializer.data)
-        return None
+    queryset = Template.objects.filter(tenant=Tenant.current())
+    http_method_names = ["get", "head"]
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TemplateSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = "__all__" # This line is optional, default
+    ordering = ("-id",)
 
 
-class WorkflowViewSet(viewsets.ModelViewSet):
-    """API endpoint for listing and creating workflows."""
+class WorkflowViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    """API endpoint for listing, creating, and updating workflows."""
 
-    queryset = Workflow.objects.all()
+    queryset = Workflow.objects.filter(tenant=Tenant.current()).order_by("-internal_sequence")
     serializer_class = WorkflowSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
+    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.OrderingFilter,)
+
+
+class RequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    """API endpoint for listing and creating requests"""
+
+    queryset = Request.objects.filter(tenant=Tenant.current())
+    serializer_class = RequestSerializer
+    http_method_names = ["get", "post"]
+    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.OrderingFilter,)
+    ordering = ("-id",)
+
+    def create(self, request, *args, **kwargs):
+        serializer = RequestInSerializer(data=request.data)
+        output_serializer = serializer # default
+        if not serializer.is_valid():
+            return Response(
+                {"errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST)
+        try:
+            output_serializer = RequestSerializer(serializer.save())
+        except Exception as error:
+            raise ValidationError({"detail": error}) from error
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ActionViewSet(viewsets.ModelViewSet):
+    """API endpoint for listing and creating actions"""
+
+    queryset = Action.objects.filter(tenant=Tenant.current())
+    serializer_class = ActionSerializer
+    http_method_names = ["get", "post"]
+    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.OrderingFilter,)
+    ordering = ("-id",)

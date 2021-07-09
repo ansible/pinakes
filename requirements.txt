@@ -17,6 +17,7 @@ Django==3.2.5
 django-split-settings==1.0.1
 django-taggit==1.5.1
 djangorestframework==3.12.4
+drf-extensions==0.7.0
 factory-boy==3.2.0
 Faker==8.6.0
 greenlet==1.1.0
@@ -25,6 +26,7 @@ inflection==0.5.1
 iniconfig==1.1.1
 isort==5.8.0
 lazy-object-proxy==1.6.0
+logging==0.4.9.6
 mccabe==0.6.1
 mypy-extensions==0.4.3
 oauthlib==3.1.1
