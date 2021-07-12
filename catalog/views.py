@@ -1,4 +1,6 @@
 """ Default views for Catalog."""
+import logging
+
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
@@ -15,6 +17,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
+logger = logging.getLogger("catalog")
 
 class TenantViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     """API endpoint for listing and creating tenants."""
