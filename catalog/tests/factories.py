@@ -1,8 +1,12 @@
 import factory
 
 from catalog.basemodel import Tenant
-from catalog.models import Portfolio
-from catalog.models import PortfolioItem
+from catalog.models import (
+    Portfolio,
+    PortfolioItem,
+    Order,
+    OrderItem
+)
 
 
 class TenantFactory(factory.django.DjangoModelFactory):
@@ -30,3 +34,20 @@ class PortfolioItemFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: f"portfolio_item{n}")
     description = factory.Sequence(lambda n: f"portfolio_item{n}_description")
     service_offering_ref = factory.Sequence(lambda n: f"service_offering_{n}")
+
+
+class OrderFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Order
+
+    tenant = factory.SubFactory(TenantFactory)
+
+
+class OrderItemFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = OrderItem
+
+    tenant = factory.SubFactory(TenantFactory)
+    order = factory.SubFactory(OrderFactory, tenant=tenant)
+    portfolio_item = factory.SubFactory(PortfolioItemFactory, tenant=tenant)
+    name = factory.Sequence(lambda n: f"order_item{n}")

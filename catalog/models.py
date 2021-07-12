@@ -75,3 +75,85 @@ class PortfolioItem(BaseModel):
 
     def __str__(self):
         return self.name
+
+
+class Order(BaseModel):
+    """Order object to wrap order items."""
+
+    class State(models.TextChoices):
+        PENDING = 'Pending' # Approval
+        APPROVED = 'Approved'
+        CANCELED = 'Canceled'
+        COMPLETED = 'Completed'
+        CREATED = 'Created'
+        DENIED = 'Denied'
+        FAILED = 'Failed'
+        ORDERED = 'Ordered'
+
+    state = models.CharField(
+        max_length=10,
+        choices=State.choices,
+        default=State.CREATED,
+        editable=False)
+    order_request_sent_at = models.DateTimeField(editable=False, null=True)
+    completed_at = models.DateTimeField(editable=False, null=True)
+    owner = models.CharField(max_length=255, default="")
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.id
+
+
+class OrderItem(BaseModel):
+    """Order Item Model"""
+
+    class State(models.TextChoices):
+        PENDING = 'Pending' # Approval
+        APPROVED = 'Approved'
+        CANCELED = 'Canceled'
+        COMPLETED = 'Completed'
+        CREATED = 'Created'
+        DENIED = 'Denied'
+        FAILED = 'Failed'
+        ORDERED = 'Ordered'
+
+    name = models.CharField(max_length=64)
+    state = models.CharField(
+        max_length=10,
+        choices=State.choices,
+        default=State.CREATED,
+        editable=False)
+    order_request_sent_at = models.DateTimeField(editable=False, null=True)
+    completed_at = models.DateTimeField(editable=False, null=True)
+    owner = models.CharField(max_length=255, default="")
+    count = models.SmallIntegerField(editable=False, default=0)
+    inventory_task_ref = models.CharField(max_length=64, default="")
+    service_plan_ref = models.CharField(max_length=64, default="")
+    service_instance_ref = models.CharField(max_length=64, default="")
+    service_parameters = models.JSONField(blank=True, null=True)
+    service_parameters_raw = models.JSONField(blank=True, null=True)
+    provider_control_parameters = models.JSONField(blank=True, null=True)
+    context = models.JSONField(blank=True, null=True)
+    artifacts = models.JSONField(blank=True, null=True)
+    external_url = models.URLField(blank=True)
+
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    portfolio_item = models.ForeignKey(PortfolioItem, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                name="%(app_label)s_%(class)s_name_empty",
+                check=models.Q(name__length__gt=0),
+            ),
+            models.UniqueConstraint(
+                name="%(app_label)s_%(class)s_name_unique",
+                fields=["name", "tenant", "order"],
+            ),
+        ]
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name

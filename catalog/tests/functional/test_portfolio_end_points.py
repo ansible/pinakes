@@ -83,7 +83,7 @@ def test_portfolio_portfolio_items_get(api_request):
     portfolio = PortfolioFactory()
     portfolio_item = PortfolioItemFactory(portfolio=portfolio)
     response = api_request(
-        "get", reverse("catalog:portfolio-portfolio_items", args=(portfolio.id,))
+        "get", reverse("catalog:portfolio-portfolioitem-list", args=(portfolio.id,))
     )
 
     assert response.status_code == 200
