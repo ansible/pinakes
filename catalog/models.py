@@ -102,6 +102,10 @@ class Order(BaseModel):
     owner = models.CharField(max_length=255, default="")
     user = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
 
+    @property
+    def username(self):
+        return self.user.username
+
     class Meta:
         ordering = ["-created_at"]
 
@@ -146,6 +150,10 @@ class OrderItem(BaseModel):
     user = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     portfolio_item = models.ForeignKey(PortfolioItem, on_delete=models.CASCADE)
+
+    @property
+    def username(self):
+        return self.user.username
 
     class Meta:
         constraints = [
