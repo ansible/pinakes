@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -146,10 +147,15 @@ TOWER_TOKEN="Your Token"
 TOWER_VERIFY_SSL="False"
 
 # Logging configuration
-LOG_ROOT = "/var/log/ansible_catalog/"
+LOG_ROOT = os.getenv("CATALOG_LOG_ROOT", "/var/log/ansible_catalog/")
 LOG_FILE = "ansible_catalog.log"
 MAX_BYTES = 10 * 1024 * 1024
 BACKUP_COUNT = 5
+
+
+if "pytest" in sys.modules:
+    LOG_ROOT = os.getenv("CATALOG_LOG_ROOT", "/tmp/ansible_catalog/")
+    Path(LOG_ROOT).mkdir(parents=True, exist_ok=True)
 
 LOGGING = {
     "version": 1,
