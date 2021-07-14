@@ -1,4 +1,6 @@
+""" Factory for catalog objects """
 import factory
+from django.contrib.auth.models import User
 
 from catalog.basemodel import Tenant
 from catalog.models import (
@@ -8,8 +10,15 @@ from catalog.models import (
     OrderItem
 )
 
+class UserFactory(factory.django.DjangoModelFactory):
+    """ Factory for User """
+    class Meta:
+        model = User
+
+    username = factory.Sequence(lambda n: f"user{n}")
 
 class TenantFactory(factory.django.DjangoModelFactory):
+    """ Tenant Factory """
     class Meta:
         model = Tenant
 
@@ -17,6 +26,7 @@ class TenantFactory(factory.django.DjangoModelFactory):
 
 
 class PortfolioFactory(factory.django.DjangoModelFactory):
+    """ Portfolio Factory """
     class Meta:
         model = Portfolio
 
@@ -26,6 +36,7 @@ class PortfolioFactory(factory.django.DjangoModelFactory):
 
 
 class PortfolioItemFactory(factory.django.DjangoModelFactory):
+    """ Portfolio Item Factory """
     class Meta:
         model = PortfolioItem
 
@@ -37,17 +48,21 @@ class PortfolioItemFactory(factory.django.DjangoModelFactory):
 
 
 class OrderFactory(factory.django.DjangoModelFactory):
+    """ Order Factory """
     class Meta:
         model = Order
 
     tenant = factory.SubFactory(TenantFactory)
+    user = factory.SubFactory(UserFactory)
 
 
 class OrderItemFactory(factory.django.DjangoModelFactory):
+    """ OrderItem Factory """
     class Meta:
         model = OrderItem
 
     tenant = factory.SubFactory(TenantFactory)
     order = factory.SubFactory(OrderFactory, tenant=tenant)
     portfolio_item = factory.SubFactory(PortfolioItemFactory, tenant=tenant)
+    user = factory.SubFactory(UserFactory)
     name = factory.Sequence(lambda n: f"order_item{n}")

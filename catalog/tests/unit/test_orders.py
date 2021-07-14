@@ -1,12 +1,17 @@
+""" Test on Order """
 import pytest
 
 from catalog.tests.factories import OrderFactory
 from catalog.tests.factories import TenantFactory
+from catalog.tests.factories import UserFactory
 
 
-class TestOrders:
-    @pytest.mark.django_db
-    def test_order(self):
-        tenant = TenantFactory()
-        order = OrderFactory(tenant=tenant)
-        assert tenant.id == order.tenant.id
+@pytest.mark.django_db
+def test_order():
+    """ Test on Order Creation """
+    tenant = TenantFactory()
+    user = UserFactory()
+
+    order = OrderFactory(tenant=tenant, user=user)
+    assert tenant.id == order.tenant.id
+    assert order.state == order.state.CREATED

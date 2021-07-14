@@ -68,6 +68,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "id",
             "state",
             "owner",
+            "user",
             "order_request_sent_at",
             "created_at",
             "updated_at",
@@ -78,7 +79,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         tenant = Tenant.objects.all()[:1].get()
-        return Order.objects.create(tenant=tenant, **validated_data)
+        user = self.context['request'].user
+        return Order.objects.create(tenant=tenant, user=user, **validated_data)
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -98,6 +100,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "owner",
             "external_url",
             "artifacts",
+            "user",
             "order_request_sent_at",
             "created_at",
             "updated_at",
@@ -108,4 +111,5 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         tenant = Tenant.objects.all()[:1].get()
-        return OrderItem.objects.create(tenant=tenant, **validated_data)
+        user = self.context['request'].user
+        return OrderItem.objects.create(tenant=tenant, user=user, **validated_data)

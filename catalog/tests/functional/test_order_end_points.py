@@ -5,6 +5,7 @@ from django.urls import reverse
 from catalog.tests.factories import OrderFactory
 from catalog.tests.factories import OrderItemFactory
 from catalog.tests.factories import TenantFactory
+from catalog.tests.factories import UserFactory
 
 
 @pytest.mark.django_db

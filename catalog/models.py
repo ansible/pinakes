@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.db.models.functions import Length
+from django.contrib.auth.models import User
 from taggit.managers import TaggableManager
 
 from .basemodel import BaseModel
@@ -81,6 +82,7 @@ class Order(BaseModel):
     """Order object to wrap order items."""
 
     class State(models.TextChoices):
+        """Available states for Order"""
         PENDING = 'Pending' # Approval
         APPROVED = 'Approved'
         CANCELED = 'Canceled'
@@ -98,6 +100,7 @@ class Order(BaseModel):
     order_request_sent_at = models.DateTimeField(editable=False, null=True)
     completed_at = models.DateTimeField(editable=False, null=True)
     owner = models.CharField(max_length=255, default="")
+    user = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["-created_at"]
@@ -110,6 +113,7 @@ class OrderItem(BaseModel):
     """Order Item Model"""
 
     class State(models.TextChoices):
+        """Available states for Order Item"""
         PENDING = 'Pending' # Approval
         APPROVED = 'Approved'
         CANCELED = 'Canceled'
@@ -139,6 +143,7 @@ class OrderItem(BaseModel):
     artifacts = models.JSONField(blank=True, null=True)
     external_url = models.URLField(blank=True)
 
+    user = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     portfolio_item = models.ForeignKey(PortfolioItem, on_delete=models.CASCADE)
 
@@ -150,7 +155,7 @@ class OrderItem(BaseModel):
             ),
             models.UniqueConstraint(
                 name="%(app_label)s_%(class)s_name_unique",
-                fields=["name", "tenant", "order"],
+                fields=["name", "tenant", "order", "portfolio_item"],
             ),
         ]
         ordering = ["-created_at"]

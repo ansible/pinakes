@@ -2,8 +2,6 @@
 import logging
 
 from rest_framework import viewsets
-from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 
@@ -64,11 +62,13 @@ class OrderViewSet(viewsets.ModelViewSet):
     # TODO:
     @action(methods=["post"], detail=True)
     def submit_order(self, request, pk):
+        """Orders the specified pk order."""
         pass
 
     # TODO:
     @action(methods=["patch"], detail=True)
     def cancel(self, request, pk):
+        """Cancels the specified pk order."""
         pass
 
 
