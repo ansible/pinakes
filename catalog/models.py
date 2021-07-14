@@ -99,7 +99,6 @@ class Order(BaseModel):
         editable=False)
     order_request_sent_at = models.DateTimeField(editable=False, null=True)
     completed_at = models.DateTimeField(editable=False, null=True)
-    owner = models.CharField(max_length=255, default="")
     user = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
 
     @property
@@ -135,7 +134,6 @@ class OrderItem(BaseModel):
         editable=False)
     order_request_sent_at = models.DateTimeField(editable=False, null=True)
     completed_at = models.DateTimeField(editable=False, null=True)
-    owner = models.CharField(max_length=255, default="")
     count = models.SmallIntegerField(editable=False, default=0)
     inventory_task_ref = models.CharField(max_length=64, default="")
     service_plan_ref = models.CharField(max_length=64, default="")

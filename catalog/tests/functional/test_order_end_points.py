@@ -31,6 +31,7 @@ def test_order_retrieve(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == order.id
+    assert content["username"] == order.username
 
 
 @pytest.mark.django_db
@@ -45,7 +46,7 @@ def test_order_delete(api_request):
 
 
 @pytest.mark.django_db
-def test_order_patch(api_request):
+def test_order_patch_not_supported(api_request):
     """Patch a single order by id"""
     order = OrderFactory()
     data = {"name": "update"}
@@ -53,7 +54,7 @@ def test_order_patch(api_request):
         "patch", reverse("catalog:order-detail", args=(order.id,)), data
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 405
 
 
 @pytest.mark.django_db

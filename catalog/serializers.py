@@ -66,7 +66,6 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "state",
-            "owner",
             "username",
             "order_request_sent_at",
             "created_at",
@@ -96,7 +95,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "state",
             "portfolio_item",
             "order",
-            "owner",
             "external_url",
             "artifacts",
             "username",

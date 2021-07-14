@@ -56,7 +56,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     queryset = Order.objects.all().order_by("created_at")
     serializer_class = OrderSerializer
-    http_method_names = ["get", "post", "head", "patch", "delete"]
+    http_method_names = ["get", "post", "head", "delete"]
     permission_classes = (IsAuthenticated,)
 
     # TODO:
