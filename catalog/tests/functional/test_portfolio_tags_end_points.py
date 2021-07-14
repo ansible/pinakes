@@ -7,45 +7,49 @@ from catalog.tests.factories import PortfolioFactory
 
 
 @pytest.mark.django_db
-class TestPortfolioTagsEndPoints:
-    """ Test for tagging on portfolio """
+def test_portfolio_tag_add(api_request):
+    """Test adding a tag on portfolio"""
+    portfolio = PortfolioFactory()
+    url = reverse("catalog:portfolio-tag", args=(portfolio.id,))
+    response = api_request("post", url, {"name": "test_tag"})
 
-    def test_portfolio_tag_add(self, api_client):
-        portfolio = PortfolioFactory()
-        url = reverse("catalog:portfolio-tag", args=(portfolio.id,))
-        response = api_client.post(url, {"name": "test_tag"}, format="json")
+    assert response.status_code == 201
+    content = json.loads(response.content)
 
-        assert response.status_code == 201
-        content = json.loads(response.content)
+    assert content["name"] == "test_tag"
 
-        assert content["name"] == "test_tag"
 
-    def test_portfolio_tags_list(self, api_client):
-        portfolio = PortfolioFactory()
+@pytest.mark.django_db
+def test_portfolio_tags_list(api_request):
+    """Test tag list for a portfolio"""
+    portfolio = PortfolioFactory()
 
-        # Add tag first
-        url = reverse("catalog:portfolio-tag", args=(portfolio.id,))
-        api_client.post(url, {"name": "test_tag"}, format="json")
+    # Add tag first
+    url = reverse("catalog:portfolio-tag", args=(portfolio.id,))
+    api_request("post", url, {"name": "test_tag"})
 
-        # List tags
-        url = reverse("catalog:portfolio-tags", args=(portfolio.id,))
-        response = api_client.get(url)
+    # List tags
+    url = reverse("catalog:portfolio-tags", args=(portfolio.id,))
+    response = api_request("get", url)
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
+    assert response.status_code == 200
+    content = json.loads(response.content)
 
-        assert len(content) == 1
-        assert content[0]["name"] == "test_tag"
+    assert len(content) == 1
+    assert content[0]["name"] == "test_tag"
 
-    def test_portfolio_tags_remove(self, api_client):
-        portfolio = PortfolioFactory()
 
-        # Add tag first
-        url = reverse("catalog:portfolio-tag", args=(portfolio.id,))
-        api_client.post(url, {"name": "test_tag"}, format="json")
+@pytest.mark.django_db
+def test_portfolio_tags_remove(api_request):
+    """Test Removal of Tag"""
+    portfolio = PortfolioFactory()
 
-        # Remove tag
-        url = reverse("catalog:portfolio-untag", args=(portfolio.id,))
-        response = api_client.post(url, {"name": "test_tag"}, format="json")
+    # Add tag first
+    url = reverse("catalog:portfolio-tag", args=(portfolio.id,))
+    api_request("post", url, {"name": "test_tag"})
 
-        assert response.status_code == 204
+    # Remove tag
+    url = reverse("catalog:portfolio-untag", args=(portfolio.id,))
+    response = api_request("post", url, {"name": "test_tag"})
+
+    assert response.status_code == 204

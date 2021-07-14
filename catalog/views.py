@@ -13,13 +13,12 @@ from .serializers import PortfolioSerializer
 from .serializers import PortfolioItemSerializer
 from common.tag_mixin import TagMixin
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
 logger = logging.getLogger("catalog")
 
-class TenantViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+class TenantViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for listing and creating tenants."""
 
     queryset = Tenant.objects.all().order_by("id")
@@ -27,7 +26,7 @@ class TenantViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
 
 
-class PortfolioViewSet(LoginRequiredMixin, TagMixin, viewsets.ModelViewSet):
+class PortfolioViewSet(TagMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating portfolios."""
 
     queryset = Portfolio.objects.all().order_by("created_at")
@@ -56,7 +55,7 @@ class PortfolioViewSet(LoginRequiredMixin, TagMixin, viewsets.ModelViewSet):
             return Response(serializer.data)
 
 
-class PortfolioItemViewSet(LoginRequiredMixin, TagMixin, viewsets.ModelViewSet):
+class PortfolioItemViewSet(TagMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating portfolio items."""
 
     queryset = PortfolioItem.objects.all()
