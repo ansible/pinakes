@@ -31,8 +31,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
-        tenant = Tenant.objects.all()[:1].get()
-        return Portfolio.objects.create(tenant=tenant, **validated_data)
+        return Portfolio.objects.create(tenant=Tenant.current(), **validated_data)
 
 
 class PortfolioItemSerializer(serializers.ModelSerializer):
@@ -55,8 +54,7 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
-        tenant = Tenant.objects.all()[:1].get()
-        return PortfolioItem.objects.create(tenant=tenant, **validated_data)
+        return PortfolioItem.objects.create(tenant=Tenant.current(), **validated_data)
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -78,9 +76,8 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
-        tenant = Tenant.objects.all()[:1].get()
         user = self.context['request'].user
-        return Order.objects.create(tenant=tenant, user=user, **validated_data)
+        return Order.objects.create(tenant=Tenant.current(), user=user, **validated_data)
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -110,6 +107,5 @@ class OrderItemSerializer(serializers.ModelSerializer):
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
-        tenant = Tenant.objects.all()[:1].get()
         user = self.context['request'].user
-        return OrderItem.objects.create(tenant=tenant, user=user, **validated_data)
+        return OrderItem.objects.create(tenant=Tenant.current(), user=user, **validated_data)
