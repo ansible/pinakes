@@ -99,14 +99,17 @@ class Order(BaseModel):
         editable=False)
     order_request_sent_at = models.DateTimeField(editable=False, null=True)
     completed_at = models.DateTimeField(editable=False, null=True)
-    user = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     @property
-    def username(self):
+    def owner(self):
         return self.user.username
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=['tenant', 'user'])
+        ]
 
     def __str__(self):
         return self.id
@@ -145,15 +148,18 @@ class OrderItem(BaseModel):
     artifacts = models.JSONField(blank=True, null=True)
     external_url = models.URLField(blank=True)
 
-    user = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     portfolio_item = models.ForeignKey(PortfolioItem, on_delete=models.CASCADE)
 
     @property
-    def username(self):
+    def owner(self):
         return self.user.username
 
     class Meta:
+        indexes = [
+            models.Index(fields=['tenant', 'user'])
+        ]
         constraints = [
             models.CheckConstraint(
                 name="%(app_label)s_%(class)s_name_empty",

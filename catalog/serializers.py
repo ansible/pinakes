@@ -59,14 +59,14 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     """Serializer for Order"""
-    username = serializers.ReadOnlyField()
+    owner = serializers.ReadOnlyField()
 
     class Meta:
         model = Order
         fields = (
             "id",
             "state",
-            "username",
+            "owner",
             "order_request_sent_at",
             "created_at",
             "updated_at",
@@ -82,7 +82,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class OrderItemSerializer(serializers.ModelSerializer):
     """Serializer for OrderItem"""
-    username = serializers.ReadOnlyField()
+    owner = serializers.ReadOnlyField()
 
     class Meta:
         model = OrderItem
@@ -97,7 +97,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "order",
             "external_url",
             "artifacts",
-            "username",
+            "owner",
             "order_request_sent_at",
             "created_at",
             "updated_at",

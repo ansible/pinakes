@@ -31,7 +31,7 @@ def test_order_retrieve(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == order.id
-    assert content["username"] == order.username
+    assert content["owner"] == order.owner
 
 
 @pytest.mark.django_db
