@@ -13,7 +13,7 @@ from catalog.tests.factories import (
 
 @pytest.mark.django_db
 def test_orderitem():
-    " Test order item creation "
+    """ Test order item creation """
     tenant = TenantFactory()
     user = UserFactory()
     order = OrderFactory(tenant=tenant, user=user)
@@ -24,7 +24,7 @@ def test_orderitem():
 
 @pytest.mark.django_db
 def test_empty_orderitem_name():
-    " Test empty name constraint on order item "
+    """ Test empty name constraint on order item """
 
     tenant = TenantFactory()
     user = UserFactory()
@@ -38,7 +38,7 @@ def test_empty_orderitem_name():
 
 @pytest.mark.django_db
 def test_duplicate_orderitem_name():
-    " Test duplicate names constraint on order item "
+    """ Test duplicate names constraint on order item """
 
     tenant = TenantFactory()
     order = OrderFactory(tenant=tenant)

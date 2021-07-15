@@ -75,9 +75,10 @@ def test_order_post(api_request):
     TenantFactory()
     data = {"name": "abcdef", "description": "abc"}
     response = api_request("post", reverse("catalog:order-list"), data)
+    content = json.loads(response.content)
 
     assert response.status_code == 201
-
+    assert content["owner"] == "admin"
 
 @pytest.mark.django_db
 def test_order_order_items_get(api_request):

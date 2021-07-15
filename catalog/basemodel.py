@@ -1,5 +1,6 @@
 """ This module stores the base models needed for Catalog. """
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Tenant(models.Model):
@@ -28,3 +29,15 @@ class BaseModel(models.Model):
 
     class Meta:
         abstract = True
+
+class UserOwnedModel(BaseModel):
+    """User Owned Model"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
+    @property
+    def owner(self):
+        " Use for serializer_class "
+        return self.user.username

@@ -2,10 +2,9 @@
 
 from django.db import models
 from django.db.models.functions import Length
-from django.contrib.auth.models import User
 from taggit.managers import TaggableManager
 
-from .basemodel import BaseModel
+from .basemodel import BaseModel, UserOwnedModel
 
 models.CharField.register_lookup(Length)
 
@@ -78,7 +77,7 @@ class PortfolioItem(BaseModel):
         return self.name
 
 
-class Order(BaseModel):
+class Order(UserOwnedModel):
     """Order object to wrap order items."""
 
     class State(models.TextChoices):
@@ -99,11 +98,6 @@ class Order(BaseModel):
         editable=False)
     order_request_sent_at = models.DateTimeField(editable=False, null=True)
     completed_at = models.DateTimeField(editable=False, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    @property
-    def owner(self):
-        return self.user.username
 
     class Meta:
         ordering = ["-created_at"]
@@ -115,7 +109,7 @@ class Order(BaseModel):
         return self.id
 
 
-class OrderItem(BaseModel):
+class OrderItem(UserOwnedModel):
     """Order Item Model"""
 
     class State(models.TextChoices):
@@ -148,13 +142,8 @@ class OrderItem(BaseModel):
     artifacts = models.JSONField(blank=True, null=True)
     external_url = models.URLField(blank=True)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     portfolio_item = models.ForeignKey(PortfolioItem, on_delete=models.CASCADE)
-
-    @property
-    def owner(self):
-        return self.user.username
 
     class Meta:
         indexes = [
