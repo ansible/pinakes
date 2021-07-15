@@ -36,6 +36,7 @@ class SourceViewSet(NestedViewSetMixin, ModelViewSet):
     serializer_class = SourceSerializer
     permission_classes = (IsAuthenticated,)
 
+    # Enable PATCH for refresh API
     http_method_names = ["get", "patch", "head"]
 
     @action(methods=["patch"], detail=True)
@@ -89,4 +90,5 @@ class ServiceInventoryViewSet(TagMixin, NestedViewSetMixin, ModelViewSet):
     serializer_class = ServiceInventorySerializer
     permission_classes = (IsAuthenticated,)
 
+    # For tagging purpose, enable POST action here
     http_method_names = ["get", "post", "head"]

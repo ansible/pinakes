@@ -2,12 +2,7 @@
 from rest_framework import serializers
 
 from .basemodel import Tenant, Source
-from .models import (
-    ServiceInventory,
-    ServiceOffering,
-    ServiceOfferingNode,
-    ServicePlan
-)
+from .models import ServiceInventory, ServiceOffering, ServiceOfferingNode, ServicePlan
 
 
 class TenantSerializer(serializers.ModelSerializer):
@@ -26,84 +21,74 @@ class SourceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Source
-        fields = (
-            "id",
-            "name"
-        )
+        fields = ("id", "name")
 
-    def create(self, validated_data):
-        return Source.objects.create(tenant=Tenant.current(), **validated_data)
 
 class ServiceInventorySerializer(serializers.ModelSerializer):
     """Serializer for ServiceInventory."""
 
     class Meta:
         model = ServiceInventory
-        fields = ("id",
-                  "description",
-                  "extra",
-                  "source_ref",
-                  "source_created_at",
-                  "source_updated_at",
-                  "created_at",
-                  "updated_at"
-                 )
+        fields = (
+            "id",
+            "description",
+            "extra",
+            "source_ref",
+            "source_created_at",
+            "source_updated_at",
+            "created_at",
+            "updated_at",
+        )
         ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
-    def create(self, validated_data):
-        return ServiceInventory.objects.create(tenant=Tenant.current(), **validated_data)
 
 class ServiceOfferingSerializer(serializers.ModelSerializer):
     """Serializer for ServiceOffering."""
 
     class Meta:
         model = ServiceOffering
-        fields = ("id",
-                  "name",
-                  "description",
-                  "survey_enabled",
-                  "kind",
-                  "extra",
-                  "service_inventory"
-                 )
+        fields = (
+            "id",
+            "name",
+            "description",
+            "survey_enabled",
+            "kind",
+            "extra",
+            "service_inventory",
+        )
         ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
-    def create(self, validated_data):
-        return ServiceOffering.objects.create(tenant=Tenant.current(), **validated_data)
 
 class ServiceOfferingNodeSerializer(serializers.ModelSerializer):
     """Serializer for ServiceOfferingNode."""
 
     class Meta:
         model = ServiceOfferingNode
-        fields = ("id",
-                  "service_inventory",
-                  "service_offering",
-                  "root_service_offering",
-                  "extra"
-                 )
+        fields = (
+            "id",
+            "service_inventory",
+            "service_offering",
+            "root_service_offering",
+            "extra",
+        )
         ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
-    def create(self, validated_data):
-        return ServiceOfferingNode.objects.create(tenant=Tenant.current(), **validated_data)
 
 class ServicePlanSerializer(serializers.ModelSerializer):
     """Serializer for ServicePlan."""
 
     class Meta:
         model = ServicePlan
-        fields = ("id",
-                  "name",
-                  "extra",
-                  "create_json_schema",
-                  "update_json_schema",
-                  "service_offering"
-                 )
+        fields = (
+            "id",
+            "name",
+            "extra",
+            "create_json_schema",
+            "update_json_schema",
+            "service_offering",
+        )
         ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
-
-    def create(self, validated_data):
-        return ServicePlan.objects.create(tenant=Tenant.current(), **validated_data)

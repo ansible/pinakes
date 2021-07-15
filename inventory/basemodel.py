@@ -9,12 +9,6 @@ class Tenant(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    @classmethod
-    def current(cls):
-        """ Return the first available tenant """
-        return cls.objects.first()
-
-
     def __str__(self):
         return self.external_tenant
 
