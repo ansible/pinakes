@@ -1,73 +1,111 @@
-import pytest
+""" Module to test ServiceOffering end points """
 import json
+import pytest
 from django.urls import reverse
 from inventory.tests.factories import (
     ServicePlanFactory,
     ServiceOfferingFactory,
-    ServiceOfferingNodeFactory
+    ServiceOfferingNodeFactory,
 )
 
 
 @pytest.mark.django_db
-class TestServiceOfferingEndPoints:
-    def test_service_offering_list(self, api_client):
-        ServiceOfferingFactory()
-        url = reverse("inventory:serviceoffering-list")
-        response = api_client.get(url)
+def test_service_offering_list(api_request):
+    """Test to list ServiceOffering endpoint"""
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
+    ServiceOfferingFactory()
+    response = api_request("get", reverse("inventory:serviceoffering-list"))
 
-        assert content["count"] == 1
+    assert response.status_code == 200
+    content = json.loads(response.content)
 
-    def test_service_offering_retrieve(self, api_client):
-        service_offering = ServiceOfferingFactory()
-        url = reverse("inventory:serviceoffering-detail", args=(service_offering.id,))
-        response = api_client.get(url)
+    assert content["count"] == 1
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
-        assert content["id"] == service_offering.id
 
-    def test_service_offering_patch_not_supported(self, api_client):
-        service_offering = ServiceOfferingFactory()
-        url = reverse("inventory:serviceoffering-detail", args=(service_offering.id,))
-        response = api_client.patch(url, {"name": "update"}, format="json")
+@pytest.mark.django_db
+def test_service_offering_retrieve(api_request):
+    """Test to retrieve ServiceOffering endpoint"""
 
-        assert response.status_code == 405
+    service_offering = ServiceOfferingFactory()
+    response = api_request(
+        "get",
+        reverse("inventory:serviceoffering-detail", args=(service_offering.id,)),
+    )
 
-    def test_service_offering_delete_not_supported(self, api_client):
-        service_offering = ServiceOfferingFactory()
-        url = reverse("inventory:serviceoffering-detail", args=(service_offering.id,))
-        response = api_client.delete(url)
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["id"] == service_offering.id
 
-        assert response.status_code == 405
 
-    def test_service_offering_put_not_supported(self, api_client):
-        service_offering = ServiceOfferingFactory()
-        url = reverse("inventory:serviceoffering-detail", args=(service_offering.id,))
-        response = api_client.put(url, {"name": "update"}, format="json")
+@pytest.mark.django_db
+def test_service_offering_patch_not_supported(api_request):
+    """Test to patch ServiceOffering endpoint"""
 
-        assert response.status_code == 405
+    service_offering = ServiceOfferingFactory()
+    response = api_request(
+        "patch",
+        reverse("inventory:serviceoffering-detail", args=(service_offering.id,)),
+        {"name": "update"},
+    )
 
-    def test_service_offering_service_offering_node_list(self, api_client):
-        service_offering = ServiceOfferingFactory()
-        service_offering_node = ServiceOfferingNodeFactory(service_offering=service_offering)
-        url = reverse("inventory:offering-nodes-list", args=(service_offering.id,))
-        response = api_client.get(url)
+    assert response.status_code == 405
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
 
-        assert content["count"] == 1
+@pytest.mark.django_db
+def test_service_offering_delete_not_supported(api_request):
+    """Test to delete ServiceOffering endpoint"""
 
-    def test_service_offering_service_plan_list(self, api_client):
-        service_offering = ServiceOfferingFactory()
-        service_plan = ServicePlanFactory(service_offering=service_offering)
-        url = reverse("inventory:offering-service_plans-list", args=(service_offering.id,))
-        response = api_client.get(url)
+    service_offering = ServiceOfferingFactory()
+    response = api_request(
+        "delete",
+        reverse("inventory:serviceoffering-detail", args=(service_offering.id,)),
+    )
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
+    assert response.status_code == 405
 
-        assert content["count"] == 1
+
+@pytest.mark.django_db
+def test_service_offering_put_not_supported(api_request):
+    """Test to put ServiceOffering endpoint"""
+
+    service_offering = ServiceOfferingFactory()
+    response = api_request(
+        "put",
+        reverse("inventory:serviceoffering-detail", args=(service_offering.id,)),
+        {"name": "update"},
+    )
+
+    assert response.status_code == 405
+
+
+@pytest.mark.django_db
+def test_service_offering_service_offering_node_list(api_request):
+    """Test to list ServiceOfferingNodes by a certain ServiceOffering endpoint"""
+
+    service_offering = ServiceOfferingFactory()
+    ServiceOfferingNodeFactory(service_offering=service_offering)
+    response = api_request(
+        "get", reverse("inventory:offering-nodes-list", args=(service_offering.id,))
+    )
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+
+    assert content["count"] == 1
+
+
+@pytest.mark.django_db
+def test_service_offering_service_plan_list(api_request):
+    """Test to list ServicePlans by a certain ServiceOffering endpoint"""
+
+    service_offering = ServiceOfferingFactory()
+    ServicePlanFactory(service_offering=service_offering)
+    response = api_request(
+        "get",
+        reverse("inventory:offering-service_plans-list", args=(service_offering.id,)),
+    )
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+
+    assert content["count"] == 1

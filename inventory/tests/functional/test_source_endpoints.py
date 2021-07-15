@@ -1,3 +1,4 @@
+""" Module to test Source end points """
 import pytest
 import json
 from django.urls import reverse
@@ -11,95 +12,141 @@ from inventory.tests.factories import (
 
 
 @pytest.mark.django_db
-class TestSourceEndPoints:
-    def test_source_list(self, api_client):
-        SourceFactory()
-        url = reverse("inventory:source-list")
-        response = api_client.get(url)
+def test_source_list(api_request):
+    """Test to list Source endpoint"""
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
+    SourceFactory()
+    response = api_request("get", reverse("inventory:source-list"))
 
-        assert content["count"] == 1
+    assert response.status_code == 200
+    content = json.loads(response.content)
 
-    def test_source_retrieve(self, api_client):
-        source = SourceFactory()
-        url = reverse("inventory:source-detail", args=(source.id,))
-        response = api_client.get(url)
+    assert content["count"] == 1
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
-        assert content["id"] == source.id
+@pytest.mark.django_db
+def test_source_retrieve(api_request):
+    """Test to retrieve Source endpoint"""
 
-    def test_source_refresh(self, api_client):
-        source = SourceFactory()
-        url = reverse("inventory:source-refresh", args=(source.id,))
-        response = api_client.patch(url)
+    source = SourceFactory()
+    response = api_request(
+        "get",
+        reverse("inventory:source-detail", args=(source.id,)),
+    )
 
-        assert response.status_code == 204
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["id"] == source.id
 
-    def test_source_patch(self, api_client):
-        source = SourceFactory()
-        url = reverse("inventory:source-detail", args=(source.id,))
-        response = api_client.patch(url, {"name": "update"}, format="json")
+@pytest.mark.django_db
+def test_source_refresh(api_request):
+    """Test to refresh Source endpoint"""
 
-        assert response.status_code == 200
+    source = SourceFactory()
+    response = api_request(
+        "patch",
+        reverse("inventory:source-refresh", args=(source.id,)),
+    )
 
-    def test_source_delete_not_supported(self, api_client):
-        source = SourceFactory()
-        url = reverse("inventory:source-detail", args=(source.id,))
-        response = api_client.delete(url)
+    assert response.status_code == 204
 
-        assert response.status_code == 405
+@pytest.mark.django_db
+def test_source_patch(api_request):
+    """Test to patch Source endpoint"""
 
-    def test_source_put_not_supported(self, api_client):
-        source = SourceFactory()
-        url = reverse("inventory:source-detail", args=(source.id,))
-        response = api_client.put(url, {"name": "update"}, format="json")
+    source = SourceFactory()
+    response = api_request(
+        "patch",
+        reverse("inventory:source-detail", args=(source.id,)),
+        {"name": "update"},
+    )
 
-        assert response.status_code == 405
+    assert response.status_code == 200
 
-    def test_source_service_inventory_list(self, api_client):
-        source = SourceFactory()
-        service_inventory = ServiceInventoryFactory(source=source)
-        url = reverse("inventory:source-service_inventory-list", args=(source.id,))
-        response = api_client.get(url)
+@pytest.mark.django_db
+def test_source_delete_not_supported(api_request):
+    """Test to delete Source endpoint"""
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
+    source = SourceFactory()
+    response = api_request(
+        "delete",
+        reverse("inventory:source-detail", args=(source.id,)),
+    )
 
-        assert content["count"] == 1
+    assert response.status_code == 405
 
-    def test_source_service_plan_list(self, api_client):
-        source = SourceFactory()
-        service_plan = ServicePlanFactory(source=source)
-        url = reverse("inventory:source-service_plan-list", args=(source.id,))
-        response = api_client.get(url)
+@pytest.mark.django_db
+def test_source_put_not_supported(api_request):
+    """Test to put Source endpoint"""
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
+    source = SourceFactory()
+    response = api_request(
+        "put",
+        reverse("inventory:source-detail", args=(source.id,)),
+        {"name": "update"},
+    )
 
-        assert content["count"] == 1
+    assert response.status_code == 405
 
-    def test_source_service_offering_list(self, api_client):
-        source = SourceFactory()
-        service_offering = ServiceOfferingFactory(source=source)
-        url = reverse("inventory:source-service_offering-list", args=(source.id,))
-        response = api_client.get(url)
+@pytest.mark.django_db
+def test_source_service_inventory_list(api_request):
+    """Test to list ServiceInventories by a certain Source endpoint"""
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
+    source = SourceFactory()
+    ServiceInventoryFactory(source=source)
+    response = api_request(
+        "get",
+        reverse("inventory:source-service_inventory-list", args=(source.id,)),
+    )
 
-        assert content["count"] == 1
+    assert response.status_code == 200
+    content = json.loads(response.content)
 
-    def test_source_service_offering_node_list(self, api_client):
-        source = SourceFactory()
-        service_offering_node = ServiceOfferingNodeFactory(source=source)
-        url = reverse("inventory:source-service_offering_node-list", args=(source.id,))
-        response = api_client.get(url)
+    assert content["count"] == 1
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
+@pytest.mark.django_db
+def test_source_service_plan_list(api_request):
+    """Test to list ServicePlans by a certain Source endpoint"""
 
-        assert content["count"] == 1
+    source = SourceFactory()
+    ServicePlanFactory(source=source)
+    response = api_request(
+        "get",
+        reverse("inventory:source-service_plan-list", args=(source.id,)),
+    )
 
+    assert response.status_code == 200
+    content = json.loads(response.content)
+
+    assert content["count"] == 1
+
+@pytest.mark.django_db
+def test_source_service_offering_list(api_request):
+    """Test to list ServiceOfferings by a certain Source endpoint"""
+
+    source = SourceFactory()
+    ServiceOfferingFactory(source=source)
+    response = api_request(
+        "get",
+        reverse("inventory:source-service_offering-list", args=(source.id,)),
+    )
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+
+    assert content["count"] == 1
+
+@pytest.mark.django_db
+def test_source_service_offering_node_list(api_request):
+    """Test to list ServiceOfferingNodes by a certain Source endpoint"""
+
+    source = SourceFactory()
+    ServiceOfferingNodeFactory(source=source)
+    response = api_request(
+        "get",
+        reverse("inventory:source-service_offering_node-list", args=(source.id,)),
+    )
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+
+    assert content["count"] == 1

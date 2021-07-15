@@ -1,13 +1,11 @@
 import logging
 
-from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
@@ -31,7 +29,9 @@ from inventory.task_utils.refresh_inventory import RefreshInventory
 # Create your views here.
 logger = logging.getLogger("inventory")
 
-class SourceViewSet(LoginRequiredMixin, NestedViewSetMixin, ModelViewSet):
+class SourceViewSet(NestedViewSetMixin, ModelViewSet):
+    """API endpoint for listing and updating sources."""
+
     queryset = Source.objects.all().order_by("created_at")
     serializer_class = SourceSerializer
     permission_classes = (IsAuthenticated,)
@@ -45,14 +45,18 @@ class SourceViewSet(LoginRequiredMixin, NestedViewSetMixin, ModelViewSet):
 
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
-class ServicePlanViewSet(LoginRequiredMixin, NestedViewSetMixin, ModelViewSet):
+class ServicePlanViewSet(NestedViewSetMixin, ModelViewSet):
+    """API endpoint for listing and retrieving service plans."""
+
     queryset = ServicePlan.objects.all().order_by("created_at")
     serializer_class = ServicePlanSerializer
     permission_classes = (IsAuthenticated,)
 
     http_method_names = ["get", "head"]
 
-class ServiceOfferingViewSet(LoginRequiredMixin, NestedViewSetMixin, ModelViewSet):
+class ServiceOfferingViewSet(NestedViewSetMixin, ModelViewSet):
+    """API endpoint for listing and retrieving service offerings."""
+
     queryset = ServiceOffering.objects.all().order_by("created_at")
     serializer_class = ServiceOfferingSerializer
     permission_classes = (IsAuthenticated,)
@@ -69,14 +73,18 @@ class ServiceOfferingViewSet(LoginRequiredMixin, NestedViewSetMixin, ModelViewSe
     def order(self, request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class ServiceOfferingNodeViewSet(LoginRequiredMixin, NestedViewSetMixin, ModelViewSet):
+class ServiceOfferingNodeViewSet(NestedViewSetMixin, ModelViewSet):
+    """API endpoint for listing and retrieving service offering nodes."""
+
     queryset = ServiceOfferingNode.objects.all().order_by("created_at")
     serializer_class = ServiceOfferingNodeSerializer
     permission_classes = (IsAuthenticated,)
 
     http_method_names = ["get", "head"]
 
-class ServiceInventoryViewSet(LoginRequiredMixin, TagMixin, NestedViewSetMixin, ModelViewSet):
+class ServiceInventoryViewSet(TagMixin, NestedViewSetMixin, ModelViewSet):
+    """API endpoint for listing and creating service inventories."""
+
     queryset = ServiceInventory.objects.all().order_by("created_at")
     serializer_class = ServiceInventorySerializer
     permission_classes = (IsAuthenticated,)

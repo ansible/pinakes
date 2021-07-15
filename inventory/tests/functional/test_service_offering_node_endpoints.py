@@ -1,46 +1,69 @@
-import pytest
+""" Module to test ServiceOfferingNode end points """
 import json
+import pytest
 from django.urls import reverse
 from inventory.tests.factories import ServiceOfferingNodeFactory
 
 @pytest.mark.django_db
-class TestServiceOfferingNodeEndPoints:
-    def test_service_offering_node_list(self, api_client):
-        ServiceOfferingNodeFactory()
-        url = reverse("inventory:serviceofferingnode-list")
-        response = api_client.get(url)
+def test_service_offering_node_list(api_request):
+    """Test to list ServiceOfferingNode endpoint"""
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
+    ServiceOfferingNodeFactory()
+    response = api_request("get", reverse("inventory:serviceofferingnode-list"))
 
-        assert content["count"] == 1
+    assert response.status_code == 200
+    content = json.loads(response.content)
 
-    def test_service_offering_node_retrieve(self, api_client):
-        service_offering_node = ServiceOfferingNodeFactory()
-        url = reverse("inventory:serviceofferingnode-detail", args=(service_offering_node.id,))
-        response = api_client.get(url)
+    assert content["count"] == 1
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
-        assert content["id"] == service_offering_node.id
+@pytest.mark.django_db
+def test_service_offering_node_retrieve(api_request):
+    """Test to retrieve ServiceOfferingNode endpoint"""
 
-    def test_service_offering_node_patch_not_supported(self, api_client):
-        service_offering_node = ServiceOfferingNodeFactory()
-        url = reverse("inventory:serviceofferingnode-detail", args=(service_offering_node.id,))
-        response = api_client.patch(url, {"name": "update"}, format="json")
+    service_offering_node = ServiceOfferingNodeFactory()
+    response = api_request(
+        "get",
+        reverse("inventory:serviceofferingnode-detail", args=(service_offering_node.id,)),
+    )
 
-        assert response.status_code == 405
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["id"] == service_offering_node.id
 
-    def test_service_offering_node_delete_not_supported(self, api_client):
-        service_offering_node = ServiceOfferingNodeFactory()
-        url = reverse("inventory:serviceofferingnode-detail", args=(service_offering_node.id,))
-        response = api_client.delete(url)
+@pytest.mark.django_db
+def test_service_offering_node_patch_not_supported(api_request):
+    """Test to patch ServiceOfferingNode endpoint"""
 
-        assert response.status_code == 405
+    service_offering_node = ServiceOfferingNodeFactory()
+    response = api_request(
+        "patch",
+        reverse("inventory:serviceofferingnode-detail", args=(service_offering_node.id,)),
+        {"name": "update"},
+    )
 
-    def test_service_offering_node_put_not_supported(self, api_client):
-        service_offering_node = ServiceOfferingNodeFactory()
-        url = reverse("inventory:serviceofferingnode-detail", args=(service_offering_node.id,))
-        response = api_client.put(url, {"name": "update"}, format="json")
+    assert response.status_code == 405
 
-        assert response.status_code == 405
+@pytest.mark.django_db
+def test_service_offering_node_delete_not_supported(api_request):
+    """Test to delete ServiceOfferingNode endpoint"""
+
+    service_offering_node = ServiceOfferingNodeFactory()
+    response = api_request(
+        "delete",
+        reverse("inventory:serviceofferingnode-detail", args=(service_offering_node.id,)),
+    )
+
+    assert response.status_code == 405
+
+@pytest.mark.django_db
+def test_service_offering_node_put_not_supported(api_request):
+    """Test to put ServiceOfferingNode endpoint"""
+
+    service_offering_node = ServiceOfferingNodeFactory()
+    response = api_request(
+        "put",
+        reverse("inventory:serviceofferingnode-detail", args=(service_offering_node.id,)),
+        {"name": "update"},
+    )
+
+    assert response.status_code == 405

@@ -39,6 +39,8 @@ class ServiceInventory(TowerModel):
 
 
 class OfferingKind(models.IntegerChoices):
+    """ Kind of Service Offering """
+
     JOB_TEMPLATE = 0, "JobTemplate"
     WORKFLOW = 1, "Workflow"
 

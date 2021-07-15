@@ -1,60 +1,101 @@
-import pytest
+""" Module to test ServiceInventory end points """
 import json
+import pytest
 from django.urls import reverse
+
 from inventory.tests.factories import ServiceInventoryFactory
 
+
 @pytest.mark.django_db
-class TestServiceInventoryEndPoints:
-    def test_service_inventory_list(self, api_client):
-        ServiceInventoryFactory()
-        url = reverse("inventory:serviceinventory-list")
-        response = api_client.get(url)
+def test_service_inventory_list(api_request):
+    """Test to list ServiceInventory endpoint """
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
+    ServiceInventoryFactory()
+    response = api_request("get", reverse("inventory:serviceinventory-list"))
 
-        assert content["count"] == 1
+    assert response.status_code == 200
+    content = json.loads(response.content)
 
-    def test_service_inventory_retrieve(self, api_client):
-        service_inventory = ServiceInventoryFactory()
-        url = reverse("inventory:serviceinventory-detail", args=(service_inventory.id,))
-        response = api_client.get(url)
+    assert content["count"] == 1
 
-        assert response.status_code == 200
-        content = json.loads(response.content)
-        assert content["id"] == service_inventory.id
 
-    def test_service_inventory_tags(self, api_client):
-        service_inventory = ServiceInventoryFactory()
-        url = reverse("inventory:serviceinventory-tags", args=(service_inventory.id,))
-        response = api_client.get(url)
+@pytest.mark.django_db
+def test_service_inventory_retrieve(api_request):
+    """Test to retrieve ServiceInventory endpoint """
 
-        assert response.status_code == 200
+    service_inventory = ServiceInventoryFactory()
+    response = api_request(
+        "get",
+        reverse("inventory:serviceinventory-detail", args=(service_inventory.id,)),
+    )
 
-    def test_service_inventory_tag(self, api_client):
-        service_inventory = ServiceInventoryFactory()
-        url = reverse("inventory:serviceinventory-tag", args=(service_inventory.id,))
-        response = api_client.post(url, {"name": "fred"}, format="json")
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["id"] == service_inventory.id
 
-        assert response.status_code == 201
 
-    def test_service_inventory_untag(self, api_client):
-        service_inventory = ServiceInventoryFactory()
-        url = reverse("inventory:serviceinventory-untag", args=(service_inventory.id,))
-        response = api_client.post(url, {"name": "fred"}, format="json")
+@pytest.mark.django_db
+def test_service_inventory_tags(api_request):
+    """Test to list ServiceInventory Tags endpoint """
 
-        assert response.status_code == 204
+    service_inventory = ServiceInventoryFactory()
+    response = api_request(
+        "get", reverse("inventory:serviceinventory-tags", args=(service_inventory.id,))
+    )
 
-    def test_service_inventory_delete_not_supported(self, api_client):
-        service_inventory = ServiceInventoryFactory()
-        url = reverse("inventory:serviceinventory-detail", args=(service_inventory.id,))
-        response = api_client.delete(url)
+    assert response.status_code == 200
 
-        assert response.status_code == 405
 
-    def test_service_inventory_put_not_supported(self, api_client):
-        service_inventory = ServiceInventoryFactory()
-        url = reverse("inventory:serviceinventory-detail", args=(service_inventory.id,))
-        response = api_client.put(url, {"name": "update"}, format="json")
+@pytest.mark.django_db
+def test_service_inventory_tag(api_request):
+    """Test to create ServiceInventory Tag endpoint """
 
-        assert response.status_code == 405
+    service_inventory = ServiceInventoryFactory()
+    response = api_request(
+        "post",
+        reverse("inventory:serviceinventory-tag", args=(service_inventory.id,)),
+        {"name": "fred"},
+    )
+
+    assert response.status_code == 201
+
+
+@pytest.mark.django_db
+def test_service_inventory_untag(api_request):
+    """Test to remove ServiceInventory Tag endpoint """
+
+    service_inventory = ServiceInventoryFactory()
+    response = api_request(
+        "post",
+        reverse("inventory:serviceinventory-untag", args=(service_inventory.id,)),
+        {"name": "fred"},
+    )
+
+    assert response.status_code == 204
+
+
+@pytest.mark.django_db
+def test_service_inventory_delete_not_supported(api_request):
+    """Test to delete ServiceInventory endpoint """
+
+    service_inventory = ServiceInventoryFactory()
+    response = api_request(
+        "delete",
+        reverse("inventory:serviceinventory-detail", args=(service_inventory.id,)),
+    )
+
+    assert response.status_code == 405
+
+
+@pytest.mark.django_db
+def test_service_inventory_put_not_supported(api_request):
+    """Test to put ServiceInventory endpoint """
+
+    service_inventory = ServiceInventoryFactory()
+    response = api_request(
+        "put",
+        reverse("inventory:serviceinventory-detail", args=(service_inventory.id,)),
+        {"name": "update"},
+    )
+
+    assert response.status_code == 405

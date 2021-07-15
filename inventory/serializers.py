@@ -1,4 +1,4 @@
-""" Serializers for Approval Model."""
+""" Serializers for Inventory Model."""
 from rest_framework import serializers
 
 from .basemodel import Tenant, Source
@@ -31,6 +31,9 @@ class SourceSerializer(serializers.ModelSerializer):
             "name"
         )
 
+    def create(self, validated_data):
+        return Source.objects.create(tenant=Tenant.current(), **validated_data)
+
 class ServiceInventorySerializer(serializers.ModelSerializer):
     """Serializer for ServiceInventory."""
 
@@ -48,6 +51,9 @@ class ServiceInventorySerializer(serializers.ModelSerializer):
         ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
+    def create(self, validated_data):
+        return ServiceInventory.objects.create(tenant=Tenant.current(), **validated_data)
+
 class ServiceOfferingSerializer(serializers.ModelSerializer):
     """Serializer for ServiceOffering."""
 
@@ -64,6 +70,9 @@ class ServiceOfferingSerializer(serializers.ModelSerializer):
         ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
+    def create(self, validated_data):
+        return ServiceOffering.objects.create(tenant=Tenant.current(), **validated_data)
+
 class ServiceOfferingNodeSerializer(serializers.ModelSerializer):
     """Serializer for ServiceOfferingNode."""
 
@@ -77,6 +86,9 @@ class ServiceOfferingNodeSerializer(serializers.ModelSerializer):
                  )
         ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
+
+    def create(self, validated_data):
+        return ServiceOfferingNode.objects.create(tenant=Tenant.current(), **validated_data)
 
 class ServicePlanSerializer(serializers.ModelSerializer):
     """Serializer for ServicePlan."""
@@ -92,3 +104,6 @@ class ServicePlanSerializer(serializers.ModelSerializer):
                  )
         ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
+
+    def create(self, validated_data):
+        return ServicePlan.objects.create(tenant=Tenant.current(), **validated_data)
