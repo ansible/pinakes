@@ -56,6 +56,7 @@ class RequestSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "requester_name",
+            "owner",
             "name",
             "description",
             "workflow",
@@ -69,6 +70,7 @@ class RequestSerializer(serializers.ModelSerializer):
             "notified_at",
             "finished_at",
         )
+        read_only_fields = ("__all__", "requester_name", "owner",)
 
     def create(self, validate_data):
         return Request.objects.create(tenant=Tenant.current(), **validate_data)
@@ -83,8 +85,10 @@ class RequestInSerializer(serializers.Serializer):
     def create(self, validate_data):
         content = validate_data.pop("content")
         request_context = RequestContext.objects.create(content=content, context={})
+        user = self.context['request'].user
         return Request.objects.create(
             tenant=Tenant.current(),
+            user=user,
             request_context=request_context,
             **validate_data
         )
@@ -95,7 +99,6 @@ class ActionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Action
-        ordering = ["-created_at"]
         fields = (
             "id",
             "created_at",
@@ -106,4 +109,5 @@ class ActionSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        return Action.objects.create(tenant=Tenant.current(), **validated_data)
+        user = self.context['request'].user
+        return Action.objects.create(tenant=Tenant.current(), user=user, **validated_data)

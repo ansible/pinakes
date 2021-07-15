@@ -1,6 +1,7 @@
 """Models for Approval"""
 from django.db import models
 from django.db.models.functions import Length
+from django.contrib.auth.models import User
 
 from .basemodel import BaseModel
 
@@ -82,14 +83,12 @@ class Request(BaseModel):
         CANCELED = 'Canceled'
         ERROR = 'Error'
 
-    requester_name = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     state = models.CharField(max_length=10, choices=State.choices, default=State.PENDING, editable=False)
     decision = models.CharField(max_length=10, choices=Decision.choices, default=Decision.UNDECIDED, editable=False)
     reason = models.TextField(blank=True, editable=False)
     process_ref = models.CharField(max_length=128, editable=False)
-    owner = models.CharField(max_length=128, editable=False)
     group_name = models.CharField(max_length=128, editable=False)
     group_ref = models.CharField(max_length=128, editable=False, db_index=True)
     notified_at = models.DateTimeField(editable=False, null=True)
@@ -99,9 +98,22 @@ class Request(BaseModel):
     workflow = models.ForeignKey(Workflow, null=True, on_delete=models.SET_NULL)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
     request_context = models.ForeignKey(RequestContext, null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
+    @property
+    def requester_name(self):
+        """virtual column requester_name"""
+        return f"{self.user.first_name} {self.user.last_name}"
+
+    @property
+    def owner(self):
+        """virtual column owner"""
+        return f"{self.user.username}"
+
 
     def __str__(self):
         return self.name
+
 
 class Action(BaseModel):
     """Action model"""
@@ -120,6 +132,12 @@ class Action(BaseModel):
     operation = models.CharField(max_length=10, choices=Operation.choices, default=Operation.Memo)
     comments = models.TextField(blank=True)
     request = models.ForeignKey(Request, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
+    @property
+    def processed_by(self):
+        """virtual column processed_by"""
+        return f"{self.user.first_name} {self.user.last_name}"
 
     def __str__(self):
         return self.operation

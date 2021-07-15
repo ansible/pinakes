@@ -57,7 +57,7 @@ class RequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     ordering = ("-id",)
 
     def create(self, request, *args, **kwargs):
-        serializer = RequestInSerializer(data=request.data)
+        serializer = RequestInSerializer(data=request.data, context={"request": request})
         output_serializer = serializer # default
         if not serializer.is_valid():
             return Response(
