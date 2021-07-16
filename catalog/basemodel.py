@@ -1,5 +1,6 @@
 """ This module stores the base models needed for Catalog. """
 from django.db import models
+from django.db.utils import OperationalError
 from django.contrib.auth.models import User
 
 
@@ -13,7 +14,10 @@ class Tenant(models.Model):
     @classmethod
     def current(cls):
         """ Return the first available tenant """
-        return cls.objects.first()
+        try:
+            return cls.objects.first()
+        except OperationalError: # Table does not exist at the first migration
+            return cls()
 
 
     def __str__(self):
