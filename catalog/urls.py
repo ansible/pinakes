@@ -1,14 +1,39 @@
-from rest_framework.routers import DefaultRouter
 from django.urls import include, path
+from rest_framework import routers
 
-from .views import TenantViewSet
-from .views import PortfolioViewSet
-from .views import PortfolioItemViewSet
+from rest_framework_extensions.routers import NestedRouterMixin
 
-router = DefaultRouter()
+from .views import (
+    TenantViewSet,
+    PortfolioViewSet,
+    PortfolioItemViewSet,
+    OrderViewSet,
+    OrderItemViewSet
+)
+
+class NestedDefaultRouter(NestedRouterMixin, routers.DefaultRouter):
+    pass
+
+router = NestedDefaultRouter()
+
 router.register("tenants", TenantViewSet)
-router.register("portfolios", PortfolioViewSet)
-router.register("portfolio_items", PortfolioItemViewSet)
+portfolios = router.register(r'portfolios', PortfolioViewSet)
+portfolios.register(
+    r"portfolio_items",
+    PortfolioItemViewSet,
+    basename='portfolio-portfolioitem',
+    parents_query_lookups=['pk']
+)
+portfolio_items = router.register(r'portfolio_items', PortfolioItemViewSet)
+
+orders = router.register(r'orders', OrderViewSet)
+orders.register(
+    r"order_items",
+    OrderItemViewSet,
+    basename='order-orderitem',
+    parents_query_lookups=['pk']
+)
+order_items = router.register(r'order_items', OrderItemViewSet)
 
 urlpatterns = [
     path("", include((router.urls, "catalog"))),

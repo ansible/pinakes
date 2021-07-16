@@ -2,17 +2,24 @@
 import logging
 
 from rest_framework import viewsets
-from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.decorators import action
-from .basemodel import Tenant
-from .models import Portfolio
-from .models import PortfolioItem
-from .serializers import TenantSerializer
-from .serializers import PortfolioSerializer
-from .serializers import PortfolioItemSerializer
-from common.tag_mixin import TagMixin
 from rest_framework.permissions import IsAuthenticated
+
+from common.tag_mixin import TagMixin
+from .basemodel import Tenant
+from .models import (
+    Portfolio,
+    PortfolioItem,
+    Order,
+    OrderItem
+)
+from .serializers import (
+    TenantSerializer,
+    PortfolioSerializer,
+    PortfolioItemSerializer,
+    OrderSerializer,
+    OrderItemSerializer
+)
 
 # Create your views here.
 
@@ -30,29 +37,9 @@ class PortfolioViewSet(TagMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating portfolios."""
 
     queryset = Portfolio.objects.all().order_by("created_at")
+    serializer_class = PortfolioSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
     permission_classes = (IsAuthenticated,)
-
-    def get_serializer_class(self):
-        if self.action == "portfolio_items":
-            return PortfolioItemSerializer
-        else:
-            return PortfolioSerializer
-
-    @action(detail=True, url_name="portfolio_items")
-    def portfolio_items(self, request, pk=None):
-        portfolio = self.get_object()
-        if request.method == "GET":
-            portfolio_items = PortfolioItem.objects.filter(
-                portfolio=portfolio
-            ).order_by("created_at")
-            page = self.paginate_queryset(portfolio_items)
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                return self.get_paginated_response(serializer.data)
-
-            serializer = self.get_serializer(portfolio_items, many=True)
-            return Response(serializer.data)
 
 
 class PortfolioItemViewSet(TagMixin, viewsets.ModelViewSet):
@@ -61,4 +48,34 @@ class PortfolioItemViewSet(TagMixin, viewsets.ModelViewSet):
     queryset = PortfolioItem.objects.all()
     serializer_class = PortfolioItemSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
+    permission_classes = (IsAuthenticated,)
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    """API endpoint for listing and creating orders."""
+
+    queryset = Order.objects.all().order_by("created_at")
+    serializer_class = OrderSerializer
+    http_method_names = ["get", "post", "head", "delete"]
+    permission_classes = (IsAuthenticated,)
+
+    # TODO:
+    @action(methods=["post"], detail=True)
+    def submit_order(self, request, pk):
+        """Orders the specified pk order."""
+        pass
+
+    # TODO:
+    @action(methods=["patch"], detail=True)
+    def cancel(self, request, pk):
+        """Cancels the specified pk order."""
+        pass
+
+
+class OrderItemViewSet(viewsets.ModelViewSet):
+    """API endpoint for listing and creating order items."""
+
+    queryset = OrderItem.objects.all().order_by("created_at")
+    serializer_class = OrderItemSerializer
+    http_method_names = ["get", "post", "head", "delete"]
     permission_classes = (IsAuthenticated,)
