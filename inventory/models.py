@@ -9,6 +9,7 @@
 """
 
 from django.db import models
+from taggit.managers import TaggableManager
 
 from .basemodel import BaseModel
 
@@ -31,11 +32,15 @@ class ServiceInventory(TowerModel):
     description = models.TextField(blank=True, default="")
     extra = models.JSONField()
 
+    tags = TaggableManager()
+
     def __str__(self):
         return self.name
 
 
 class OfferingKind(models.IntegerChoices):
+    """ Kind of Service Offering """
+
     JOB_TEMPLATE = 0, "JobTemplate"
     WORKFLOW = 1, "Workflow"
 

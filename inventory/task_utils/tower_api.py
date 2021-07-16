@@ -4,7 +4,6 @@
     3. POST a Job Template/Workflow
 """
 from distutils.util import strtobool
-import base64
 from django.conf import settings
 import requests
 
