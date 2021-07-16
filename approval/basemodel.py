@@ -1,5 +1,6 @@
 """ This module stores the base models needed for Approval. """
 from django.db import models
+from django.db.utils import OperationalError
 
 
 class Tenant(models.Model):
@@ -14,7 +15,11 @@ class Tenant(models.Model):
 
     @classmethod
     def current(cls):
-        return cls.objects.first()
+        """ Return the first available tenant """
+        try:
+            return cls.objects.first()
+        except OperationalError: # Table does not exist at the first migration
+            return cls()
 
 
 class BaseModel(models.Model):
