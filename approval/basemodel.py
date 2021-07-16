@@ -12,6 +12,10 @@ class Tenant(models.Model):
     def __str__(self):
         return self.external_tenant
 
+    @classmethod
+    def current(cls):
+        return cls.objects.first()
+
 
 class BaseModel(models.Model):
     """Base Model"""

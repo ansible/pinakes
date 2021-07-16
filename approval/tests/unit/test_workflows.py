@@ -1,5 +1,6 @@
 import pytest
 import pdb
+from decimal import Decimal
 
 from approval.tests.factories import TemplateFactory
 from approval.tests.factories import WorkflowFactory
@@ -40,3 +41,16 @@ class TestWorkflows:
             WorkflowFactory(tenant=tenant, template=template, name=name)
 
         assert "UNIQUE constraint failed: approval_workflow.name" in str(excinfo.value)
+
+    @pytest.mark.django_db
+    def test_duplicate_internal_sequence(self):
+        from django.db import IntegrityError
+
+        tenant = TenantFactory()
+        template = TemplateFactory(tenant=tenant)
+        name = "fred"
+        WorkflowFactory(tenant=tenant, template=template, internal_sequence=Decimal(3))
+        with pytest.raises(IntegrityError) as excinfo:
+            WorkflowFactory(tenant=tenant, template=template, internal_sequence=Decimal(3))
+
+        assert "UNIQUE constraint failed: approval_workflow.internal_sequence" in str(excinfo.value)
