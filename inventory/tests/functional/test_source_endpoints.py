@@ -1,4 +1,5 @@
 """ Module to test Source end points """
+from unittest.mock import patch
 import pytest
 import json
 from django.urls import reverse
@@ -37,10 +38,10 @@ def test_source_retrieve(api_request):
     content = json.loads(response.content)
     assert content["id"] == source.id
 
+@patch("inventory.views.RefreshInventory", autoSpec=True)
 @pytest.mark.django_db
-def test_source_refresh(api_request):
+def test_source_refresh(mock1, api_request):
     """Test to refresh Source endpoint"""
-
     source = SourceFactory()
     response = api_request(
         "patch",
@@ -48,6 +49,7 @@ def test_source_refresh(api_request):
     )
 
     assert response.status_code == 204
+    assert (mock1.return_value.process.call_count) == 1
 
 @pytest.mark.django_db
 def test_source_patch(api_request):
