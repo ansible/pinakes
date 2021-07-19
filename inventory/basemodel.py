@@ -1,5 +1,6 @@
 """ This module stores the base models needed for Catalog. """
 from django.db import models
+from django.db.utils import OperationalError
 
 
 class Tenant(models.Model):
