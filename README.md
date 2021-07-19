@@ -22,19 +22,23 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
 * Pre Requisites 
    Python 3.8 needs to be installed in your dev box
 * Create a Virtual Environment
-   *python3 -m venv venv*
+   ```python3 -m venv venv```
 * Activate the Virtual Enviornment
-    *source venv/bin/activate*
+    ```source venv/bin/activate```
 * Clone this repository
-     *git clone https://github.com/ansible/ansible-catalog*
-     *cd ansible-catalog*
+     ```
+     git clone https://github.com/ansible/ansible-catalog
+     cd ansible-catalog
+     ```
  * Install all the dependencies
-     *pip install -r requirements.txt*
+     ```pip install -r requirements.txt```
  * Prep the Database (Sqlite by default ansible_catalog/catalog.db)
-      *python3 manage.py migrate*
-      *python3 manage.py createsuperuser*
+ ```
+      python3 manage.py migrate
+      python3 manage.py createsuperuser
+```
 * Check for the existence of the log directory, by default we log to /var/log/ansible_catalog/ if you don't have access to this directory. You can use an environment variable CATALOG_LOG_ROOT and set it to the the directory that exists and you have access to e.g.
-  *export CATALOG_LOG_ROOT=/tmp*      
+  ```export CATALOG_LOG_ROOT=/tmp```    
 * Setup the development settings file
    You can override the Database and Tower information in your local development settings file.
    This settings file should not be checked into github, local settings file name should have a prefix of  **local** e.g.   **ansible_catalog/settings/local_info.py**
@@ -46,11 +50,11 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
   * TOWER_VERIFY_SSL="False"
   
 * Start the Server using development settings
-      *DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development python3 manage.py runserver*
+      ```DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development python3 manage.py runserver```
       
       Open your browser and open http://127.0.0.1:8000/catalog/api/v1/portfolios/
       
       When prompted provide the userid/password from the createsuperuser step
 
 * After you have tested in the dev environment you can deactivate the virtual env by using
-*deactivate*
+```deactivate```
