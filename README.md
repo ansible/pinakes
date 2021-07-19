@@ -15,3 +15,24 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
  3. Inventory, deals with connecting to the Ansible Controller using REST API to fetch objects and launch Ansible Controller Jobs.
 
 ![Alt UsingUploadService](./docs/ansible_catalog.png?raw=true)
+
+
+**Developer Setup**
+* Pre Requisites 
+   Python 3.8 needs to be installed in your dev box
+* Create a Virtual Environment
+   *python3 -m venv venv*
+* Activate the Virtual Enviornment
+    *source venv/bin/activate*
+* Clone this repository
+     *git clone https://github.com/ansible/ansible-catalog*
+     *cd ansible-catalog*
+ * Install all the dependencies
+     *pip install -r requirements.txt*
+ * Prep the Database
+      *python3 manage.py migrate*
+      *python3 manage.py createsuperuser*
+* Start the Server
+      *python3 manage.py runserver*
+      *Open your browser and open http://127.0.0.1:8000/catalog/api/v1/portfolios/*
+      * When prompted provide the userid/password from the createsuperuser step   

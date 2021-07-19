@@ -15,7 +15,7 @@ class Tenant(models.Model):
     def current(cls):
         """ Return the first available tenant """
         try:
-            return cls.objects.first()
+            return cls.objects.first() or Tenant.objects.create(external_tenant="default")
         except OperationalError: # Table does not exist at the first migration
             return cls()
 

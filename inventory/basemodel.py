@@ -12,6 +12,13 @@ class Tenant(models.Model):
     def __str__(self):
         return self.external_tenant
 
+    @classmethod
+    def current(cls):
+        """ Return the first available tenant """
+        try:
+            return cls.objects.first() or Tenant.objects.create(external_tenant="default")
+        except OperationalError: # Table does not exist at the first migration
+            return cls()
 
 class Source(models.Model):
     """Source"""
