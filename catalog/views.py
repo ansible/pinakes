@@ -4,6 +4,7 @@ import logging
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from common.tag_mixin import TagMixin
 from .basemodel import Tenant
@@ -33,7 +34,7 @@ class TenantViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
 
 
-class PortfolioViewSet(TagMixin, viewsets.ModelViewSet):
+class PortfolioViewSet(TagMixin, NestedViewSetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating portfolios."""
 
     queryset = Portfolio.objects.all().order_by("created_at")
@@ -42,7 +43,7 @@ class PortfolioViewSet(TagMixin, viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
 
-class PortfolioItemViewSet(TagMixin, viewsets.ModelViewSet):
+class PortfolioItemViewSet(TagMixin, NestedViewSetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating portfolio items."""
 
     queryset = PortfolioItem.objects.all()
@@ -51,7 +52,7 @@ class PortfolioItemViewSet(TagMixin, viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
 
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating orders."""
 
     queryset = Order.objects.all().order_by("created_at")
@@ -72,7 +73,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         pass
 
 
-class OrderItemViewSet(viewsets.ModelViewSet):
+class OrderItemViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating order items."""
 
     queryset = OrderItem.objects.all().order_by("created_at")

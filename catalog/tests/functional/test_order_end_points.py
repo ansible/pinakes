@@ -83,10 +83,14 @@ def test_order_post(api_request):
 @pytest.mark.django_db
 def test_order_order_items_get(api_request):
     """List OrderItems by order id"""
-    order = OrderFactory()
-    order_item = OrderItemFactory(order=order)
+    order1 = OrderFactory()
+    order2 = OrderFactory()
+    OrderItemFactory(order=order1)
+    OrderItemFactory(order=order1)
+    order_item = OrderItemFactory(order=order2)
+
     response = api_request(
-        "get", reverse("catalog:order-orderitem-list", args=(order.id,))
+        "get", reverse("catalog:order-orderitem-list", args=(order2.id,))
     )
 
     assert response.status_code == 200

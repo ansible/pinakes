@@ -76,18 +76,22 @@ def test_portfolio_post(api_request):
 
     assert response.status_code == 201
 
-
 @pytest.mark.django_db
 def test_portfolio_portfolio_items_get(api_request):
     """List PortfolioItems by portfolio id"""
-    portfolio = PortfolioFactory()
-    portfolio_item = PortfolioItemFactory(portfolio=portfolio)
+    tenant = TenantFactory()
+    portfolio1 = PortfolioFactory(tenant=tenant)
+    portfolio2 = PortfolioFactory(tenant=tenant)
+    PortfolioItemFactory(portfolio=portfolio1, tenant=tenant)
+    PortfolioItemFactory(portfolio=portfolio1, tenant=tenant)
+    portfolio_item3 = PortfolioItemFactory(portfolio=portfolio2, tenant=tenant)
+
     response = api_request(
-        "get", reverse("catalog:portfolio-portfolioitem-list", args=(portfolio.id,))
+        "get", reverse("catalog:portfolio-portfolioitem-list", args=(portfolio2.id,))
     )
 
     assert response.status_code == 200
     content = json.loads(response.content)
 
     assert content["count"] == 1
-    assert content["results"][0]["id"] == portfolio_item.id
+    assert content["results"][0]["id"] == portfolio_item3.id
