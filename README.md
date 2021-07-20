@@ -1,4 +1,5 @@
 
+
 # Ansible Catalog
 
 Ansible Catalog allows customers to expose their Ansible Job Templates and Workflows to business users with an added layer of governance. The Job Templates and Workflows are wrapped as Products into Portfolios which can be shared with different business users. An approval workflow can be attached to Products or Portfolios which adds governance and, in the future, will be able to notify the appropriate Administrators via email. Upon approval, the Job Template or workflow will be launched on the Ansible Controller.
@@ -40,8 +41,11 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
 * Check for the existence of the log directory, by default we log to /var/log/ansible_catalog/ if you don't have access to this directory. You can use an environment variable CATALOG_LOG_ROOT and set it to the the directory that exists and you have access to e.g.
   ```export CATALOG_LOG_ROOT=/tmp```    
 * Setup the development settings file
+```
+export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
+```
    You can override the Database and Tower information in your local development settings file.
-   This settings file should not be checked into github, local settings file name should have a prefix of  **local** e.g.   **ansible_catalog/settings/local_info.py**
+   This settings file should not be checked into github, local settings file name should have a prefix of  **local_** e.g.   **ansible_catalog/settings/local_info.py**
    
    To store tower info use the following keys
    
@@ -50,7 +54,7 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
   * TOWER_VERIFY_SSL="False"
   
 * Start the Server using development settings
-      ```DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development python3 manage.py runserver```
+      ```python3 manage.py runserver```
       
       Open your browser and open http://127.0.0.1:8000/catalog/api/v1/portfolios/
       
@@ -58,3 +62,16 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
 
 * After you have tested in the dev environment you can deactivate the virtual env by using
 ```deactivate```
+* (Optional) The default database for development is SQLite but you can change it to use PostgreSQL by configuring your database information in the **ansible_catalog/settings/local_info.py** settings file.
+```
+DATABASES = {
+  "default": {
+    "ENGINE": "django.db.backends.postgresql_psycopg2",
+    "NAME":"<<your_db_name>>",
+    "USER":"<<your_db_user>>",
+    "PASSWORD":"<<your_db_password>>",
+    "HOST":"<<your_db_host>>",
+    "PORT":"5432",
+  }
+}
+```
