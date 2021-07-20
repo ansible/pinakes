@@ -136,3 +136,6 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Local Developer settings files
+ansible_catalog/settings/local_*.py
