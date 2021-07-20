@@ -20,42 +20,42 @@ sources.register(
     r'service_inventories',
     ServiceInventoryViewSet,
     basename='source-service_inventory',
-    parents_query_lookups=['pk']
+    parents_query_lookups=['source']
 )
 
 sources.register(
     r'service_plans',
     ServicePlanViewSet,
     basename='source-service_plan',
-    parents_query_lookups=['pk']
+    parents_query_lookups=['source']
 )
 
 sources.register(
     r'service_offerings',
     ServiceOfferingViewSet,
     basename='source-service_offering',
-    parents_query_lookups=['pk']
+    parents_query_lookups=['source']
 )
 
 sources.register(
     r'service_offering_nodes',
     ServiceOfferingNodeViewSet,
     basename='source-service_offering_node',
-    parents_query_lookups=['pk']
+    parents_query_lookups=['source']
 )
 
 offerings = router.register('service_offerings', ServiceOfferingViewSet)
 offerings.register(
-    r'service_offerings_nodes',
-    ServiceOfferingViewSet,
+    r'service_offering_nodes',
+    ServiceOfferingNodeViewSet,
     basename='offering-nodes',
-    parents_query_lookups=['pk']
+    parents_query_lookups=['service_offering']
 )
 offerings.register(
     r'service_plans',
     ServicePlanViewSet,
     basename='offering-service_plans',
-    parents_query_lookups=['pk']
+    parents_query_lookups=['service_offering']
 )
 
 router.register('service_inventories', ServiceInventoryViewSet)

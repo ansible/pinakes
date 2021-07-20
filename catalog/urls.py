@@ -22,7 +22,7 @@ portfolios.register(
     r"portfolio_items",
     PortfolioItemViewSet,
     basename='portfolio-portfolioitem',
-    parents_query_lookups=['pk']
+    parents_query_lookups=['portfolio']
 )
 portfolio_items = router.register(r'portfolio_items', PortfolioItemViewSet)
 
@@ -31,7 +31,7 @@ orders.register(
     r"order_items",
     OrderItemViewSet,
     basename='order-orderitem',
-    parents_query_lookups=['pk']
+    parents_query_lookups=['order']
 )
 order_items = router.register(r'order_items', OrderItemViewSet)
 

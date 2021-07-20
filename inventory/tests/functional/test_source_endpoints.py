@@ -93,43 +93,55 @@ def test_source_put_not_supported(api_request):
 def test_source_service_inventory_list(api_request):
     """Test to list ServiceInventories by a certain Source endpoint"""
 
-    source = SourceFactory()
-    ServiceInventoryFactory(source=source)
+    source1 = SourceFactory()
+    source2 = SourceFactory()
+    ServiceInventoryFactory(source=source1)
+    ServiceInventoryFactory(source=source1)
+    service_inventory = ServiceInventoryFactory(source=source2)
+
     response = api_request(
         "get",
-        reverse("inventory:source-service_inventory-list", args=(source.id,)),
+        reverse("inventory:source-service_inventory-list", args=(source2.id,)),
     )
 
     assert response.status_code == 200
     content = json.loads(response.content)
 
     assert content["count"] == 1
+    assert content["results"][0]["id"] == service_inventory.id
 
 @pytest.mark.django_db
 def test_source_service_plan_list(api_request):
     """Test to list ServicePlans by a certain Source endpoint"""
 
-    source = SourceFactory()
-    ServicePlanFactory(source=source)
+    source1 = SourceFactory()
+    source2 = SourceFactory()
+    ServicePlanFactory(source=source1)
+    ServicePlanFactory(source=source1)
+    ServicePlanFactory(source=source2)
+
     response = api_request(
         "get",
-        reverse("inventory:source-service_plan-list", args=(source.id,)),
+        reverse("inventory:source-service_plan-list", args=(source1.id,)),
     )
 
     assert response.status_code == 200
     content = json.loads(response.content)
 
-    assert content["count"] == 1
+    assert content["count"] == 2
 
 @pytest.mark.django_db
 def test_source_service_offering_list(api_request):
     """Test to list ServiceOfferings by a certain Source endpoint"""
 
-    source = SourceFactory()
-    ServiceOfferingFactory(source=source)
+    source1 = SourceFactory()
+    source2 = SourceFactory()
+    ServiceOfferingFactory(source=source1)
+    ServiceOfferingFactory(source=source1)
+    ServiceOfferingFactory(source=source2)
     response = api_request(
         "get",
-        reverse("inventory:source-service_offering-list", args=(source.id,)),
+        reverse("inventory:source-service_offering-list", args=(source2.id,)),
     )
 
     assert response.status_code == 200
@@ -141,11 +153,15 @@ def test_source_service_offering_list(api_request):
 def test_source_service_offering_node_list(api_request):
     """Test to list ServiceOfferingNodes by a certain Source endpoint"""
 
-    source = SourceFactory()
-    ServiceOfferingNodeFactory(source=source)
+    source1 = SourceFactory()
+    source2 = SourceFactory()
+    ServiceOfferingNodeFactory(source=source1)
+    ServiceOfferingNodeFactory(source=source1)
+    ServiceOfferingNodeFactory(source=source2)
+
     response = api_request(
         "get",
-        reverse("inventory:source-service_offering_node-list", args=(source.id,)),
+        reverse("inventory:source-service_offering_node-list", args=(source2.id,)),
     )
 
     assert response.status_code == 200
