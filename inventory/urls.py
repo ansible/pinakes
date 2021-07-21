@@ -46,12 +46,6 @@ sources.register(
 
 offerings = router.register('service_offerings', ServiceOfferingViewSet)
 offerings.register(
-    r'service_offering_nodes',
-    ServiceOfferingNodeViewSet,
-    basename='offering-nodes',
-    parents_query_lookups=['service_offering']
-)
-offerings.register(
     r'service_plans',
     ServicePlanViewSet,
     basename='offering-service_plans',
