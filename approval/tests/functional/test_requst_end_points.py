@@ -114,7 +114,6 @@ def test_create_action(api_request):
         {
             "operation": "Deny",
             "comments": "not good",
-            "request": request.id,
         },
     )
 
