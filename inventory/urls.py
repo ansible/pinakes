@@ -8,7 +8,6 @@ from inventory.views import (
     SourceViewSet,
     ServicePlanViewSet,
     ServiceOfferingViewSet,
-    ServiceOfferingNodeViewSet
 )
 
 class NestedDefaultRouter(NestedRouterMixin, routers.DefaultRouter):
@@ -37,13 +36,6 @@ sources.register(
     parents_query_lookups=['source']
 )
 
-sources.register(
-    r'service_offering_nodes',
-    ServiceOfferingNodeViewSet,
-    basename='source-service_offering_node',
-    parents_query_lookups=['source']
-)
-
 offerings = router.register('service_offerings', ServiceOfferingViewSet)
 offerings.register(
     r'service_plans',
@@ -53,7 +45,6 @@ offerings.register(
 )
 
 router.register('service_inventories', ServiceInventoryViewSet)
-router.register('service_offering_nodes', ServiceOfferingNodeViewSet)
 router.register('service_plans', ServicePlanViewSet)
 
 urlpatterns = [

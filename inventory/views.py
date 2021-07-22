@@ -74,15 +74,6 @@ class ServiceOfferingViewSet(NestedViewSetMixin, ModelViewSet):
     def order(self, request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class ServiceOfferingNodeViewSet(NestedViewSetMixin, ModelViewSet):
-    """API endpoint for listing and retrieving service offering nodes."""
-
-    queryset = ServiceOfferingNode.objects.all().order_by("created_at")
-    serializer_class = ServiceOfferingNodeSerializer
-    permission_classes = (IsAuthenticated,)
-
-    http_method_names = ["get", "head"]
-
 class ServiceInventoryViewSet(TagMixin, NestedViewSetMixin, ModelViewSet):
     """API endpoint for listing and creating service inventories."""
 
