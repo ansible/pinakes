@@ -1,14 +1,13 @@
 """ Module to test Source end points """
 from unittest.mock import patch
-import pytest
 import json
+import pytest
 from django.urls import reverse
 from inventory.tests.factories import (
     SourceFactory,
     ServiceInventoryFactory,
     ServicePlanFactory,
     ServiceOfferingFactory,
-    ServiceOfferingNodeFactory
 )
 
 
@@ -142,26 +141,6 @@ def test_source_service_offering_list(api_request):
     response = api_request(
         "get",
         reverse("inventory:source-service_offering-list", args=(source2.id,)),
-    )
-
-    assert response.status_code == 200
-    content = json.loads(response.content)
-
-    assert content["count"] == 1
-
-@pytest.mark.django_db
-def test_source_service_offering_node_list(api_request):
-    """Test to list ServiceOfferingNodes by a certain Source endpoint"""
-
-    source1 = SourceFactory()
-    source2 = SourceFactory()
-    ServiceOfferingNodeFactory(source=source1)
-    ServiceOfferingNodeFactory(source=source1)
-    ServiceOfferingNodeFactory(source=source2)
-
-    response = api_request(
-        "get",
-        reverse("inventory:source-service_offering_node-list", args=(source2.id,)),
     )
 
     assert response.status_code == 200
