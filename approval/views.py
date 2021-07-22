@@ -21,10 +21,11 @@ from .serializers import (
     RequestInSerializer,
     ActionSerializer,
 )
+from common.queryset_mixin import QuerySetMixin
 
 logger = logging.getLogger("approval")
 
-class TemplateViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class TemplateViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and templates."""
 
     http_method_names = ["get", "head"]
@@ -34,23 +35,17 @@ class TemplateViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     ordering_fields = "__all__" # This line is optional, default
     ordering = ("-id",)
 
-    def get_queryset(self):
-        return Template.objects.filter(tenant=Tenant.current())
 
-
-class WorkflowViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class WorkflowViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     """API endpoint for listing, creating, and updating workflows."""
 
     serializer_class = WorkflowSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
     permission_classes = (IsAuthenticated,)
     filter_backends = (filters.OrderingFilter,)
-
-    def get_queryset(self):
-        queryset = Workflow.objects.filter(tenant=Tenant.current())
-        if "parent_lookup_template" in self.kwargs:
-            queryset = queryset.filter(template=self.kwargs["parent_lookup_template"])
-        return queryset.order_by("internal_sequence")
+    parent_field_name = "template"
+    parent_lookup_key = "parent_lookup_template"
+    queryset_order_by = "internal_sequence"
 
     def perform_create(self, serializer):
         max_obj = Workflow.objects.filter(tenant=Tenant.current()).order_by('-internal_sequence').first()
@@ -65,7 +60,7 @@ class WorkflowViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         )
 
 
-class RequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating requests"""
 
     serializer_class = RequestSerializer
@@ -73,12 +68,8 @@ class RequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     filter_backends = (filters.OrderingFilter,)
     ordering = ("-id",)
-
-    def get_queryset(self):
-        queryset = Request.objects.filter(tenant=Tenant.current())
-        if "parent_lookup_parent" in self.kwargs:
-            queryset = queryset.filter(parent=self.kwargs["parent_lookup_parent"])
-        return queryset
+    parent_field_name = "parent"
+    parent_lookup_key = "parent_lookup_parent"
 
     def create(self, request, *args, **kwargs):
         serializer = RequestInSerializer(data=request.data)
@@ -96,7 +87,7 @@ class RequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 
 
-class ActionViewSet(viewsets.ModelViewSet):
+class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating actions"""
 
     serializer_class = ActionSerializer
@@ -104,12 +95,8 @@ class ActionViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     filter_backends = (filters.OrderingFilter,)
     ordering = ("-id",)
-
-    def get_queryset(self):
-        queryset = Action.objects.filter(tenant=Tenant.current())
-        if "parent_lookup_request" in self.kwargs:
-            queryset = queryset.filter(request=self.kwargs["parent_lookup_request"])
-        return queryset
+    parent_field_name = "request"
+    parent_lookup_key = "parent_lookup_request"
 
     def perform_create(self, serializer):
         serializer.save(
