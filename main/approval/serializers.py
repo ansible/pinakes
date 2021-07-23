@@ -1,6 +1,5 @@
 """ Serializers for Approval Model."""
 from rest_framework import serializers
-from decimal import Decimal
 
 from main.models import Tenant
 from main.approval.models import (
@@ -20,9 +19,6 @@ class TemplateSerializer(serializers.ModelSerializer):
         fields = ("id", "title", "description", "created_at", "updated_at")
         read_only_fields = ("created_at", "updated_at")
 
-    def create(self, validated_data):
-        return Template.objects.create(tenant=Tenant.current(), **validated_data)
-
 
 class WorkflowSerializer(serializers.ModelSerializer):
     """Serializer for Workflow."""
@@ -37,15 +33,7 @@ class WorkflowSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
-        read_only_fields = ("created_at", "updated_at")
-
-    def create(self, validated_data):
-        max_obj = Workflow.objects.filter(tenant=Tenant.current()).order_by('-internal_sequence').first()
-        if max_obj is None:
-            next_seq = Decimal(1)
-        else:
-            next_seq = Decimal(max_obj.internal_sequence.to_integral_value() + 1)
-        return Workflow.objects.create(tenant=Tenant.current(), internal_sequence=next_seq, **validated_data)
+        read_only_fields = ("created_at", "updated_at", "template")
 
 
 class RequestSerializer(serializers.ModelSerializer):
@@ -72,9 +60,6 @@ class RequestSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("__all__", "requester_name", "owner",)
 
-    def create(self, validate_data):
-        return Request.objects.create(tenant=Tenant.current(), **validate_data)
-
 
 class RequestInSerializer(serializers.Serializer):
     """Serializer for RequestIn"""
@@ -85,10 +70,7 @@ class RequestInSerializer(serializers.Serializer):
     def create(self, validate_data):
         content = validate_data.pop("content")
         request_context = RequestContext.objects.create(content=content, context={})
-        user = self.context['request'].user
         return Request.objects.create(
-            tenant=Tenant.current(),
-            user=user,
             request_context=request_context,
             **validate_data
         )
@@ -107,7 +89,4 @@ class ActionSerializer(serializers.ModelSerializer):
             "operation",
             "comments",
         )
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        return Action.objects.create(tenant=Tenant.current(), user=user, **validated_data)
+        read_only_fields = ("created_at", "request")
