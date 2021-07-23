@@ -40,9 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "taggit",
-    "catalog",
-    "approval",
-    "inventory",
+    "main",
 ]
 
 MIDDLEWARE = [
