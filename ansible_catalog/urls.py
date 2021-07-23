@@ -15,9 +15,16 @@ Including another URLconf
 """
 
 from django.urls import include, path
+from rest_framework import routers
+from main.catalog.urls import router as catalog_router
+from main.approval.urls import router as approval_router
+from main.inventory.urls import router as inventory_router
+
+router = routers.DefaultRouter()
+router.registry.extend(catalog_router.registry)
+router.registry.extend(approval_router.registry)
+router.registry.extend(inventory_router.registry)
 
 urlpatterns = [
-    path(r"catalog/api/v1/", include("catalog.urls")),
-    path(r"approval/api/v1/", include("approval.urls")),
-    path(r"inventory/api/v1/", include("inventory.urls")),
+    path(r"api/v1/", include(router.urls)),
 ]
