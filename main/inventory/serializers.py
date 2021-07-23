@@ -1,19 +1,13 @@
 """ Serializers for Inventory Model."""
 from rest_framework import serializers
 
-from main.models import Tenant, Source
-from main.inventory.models import ServiceInventory, ServiceOffering, ServiceOfferingNode, ServicePlan
-
-
-class TenantSerializer(serializers.ModelSerializer):
-    """Serializer for Tenant"""
-
-    class Meta:
-        model = Tenant
-        fields = (
-            "id",
-            "external_tenant",
-        )
+from main.models import Source
+from main.inventory.models import (
+    ServiceInventory,
+    ServiceOffering,
+    ServiceOfferingNode,
+    ServicePlan,
+)
 
 
 class SourceSerializer(serializers.ModelSerializer):
