@@ -65,12 +65,11 @@ def test_workflow_put_not_supported(api_request):
 def test_workflow_post(api_request):
     """Create a new Workflow"""
     template = TemplateFactory()
-    url = reverse("workflow-list")
+    url = reverse("template-workflow-list", args=(template.id,))
     response = api_request(
         "post",
         url,
         {
-            "template": template.id,
             "name": "abcdef",
             "description": "abc",
         },
