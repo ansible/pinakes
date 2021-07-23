@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "taggit",
     "main",
+    "django_rq",
 ]
 
 MIDDLEWARE = [
@@ -247,3 +248,13 @@ LOGGING = {
 }
 
 LOGIN_URL='/api/login/'
+
+# Django Redis Queue Information
+RQ_QUEUES = {
+    "default": {
+        "HOST": "localhost",
+        "PORT": 6379,
+        "DB": 0,
+        "DEFAULT_TIMEOUT": 360,
+    },
+}

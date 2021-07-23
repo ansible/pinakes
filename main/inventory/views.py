@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from rest_framework_extensions.mixins import NestedViewSetMixin
+import django_rq
 
 from common.tag_mixin import TagMixin
 from main.models import Source
@@ -24,7 +25,7 @@ from main.inventory.serializers import (
     ServiceOfferingNodeSerializer,
     SourceSerializer
 )
-from main.inventory.task_utils.refresh_inventory import RefreshInventory
+from main.inventory.tasks import refresh_task
 
 # Create your views here.
 logger = logging.getLogger("inventory")
@@ -42,7 +43,9 @@ class SourceViewSet(NestedViewSetMixin, ModelViewSet):
     @action(methods=["patch"], detail=True)
     def refresh(self, request, pk):
         source = get_object_or_404(Source, pk=pk)
-        RefreshInventory(source.tenant_id, source.id).process()
+        result = django_rq.enqueue(refresh_task, source.tenant_id, source.id)
+        # This give a Job ID
+        print(result)
 
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
