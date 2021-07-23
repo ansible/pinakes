@@ -37,7 +37,7 @@ def test_source_retrieve(api_request):
     content = json.loads(response.content)
     assert content["id"] == source.id
 
-@patch("main.inventory.views.RefreshInventory", autoSpec=True)
+@patch("main.inventory.views.django_rq", autoSpec=True)
 @pytest.mark.django_db
 def test_source_refresh(mock1, api_request):
     """Test to refresh Source endpoint"""
@@ -48,7 +48,7 @@ def test_source_refresh(mock1, api_request):
     )
 
     assert response.status_code == 204
-    assert (mock1.return_value.process.call_count) == 1
+    assert (mock1.enqueue.call_count) == 1
 
 @pytest.mark.django_db
 def test_source_patch(api_request):
