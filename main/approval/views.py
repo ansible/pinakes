@@ -2,8 +2,8 @@
 import logging
 
 from decimal import Decimal
-from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
@@ -34,7 +34,6 @@ class TemplateViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     http_method_names = ["get", "head"]
     permission_classes = (IsAuthenticated,)
     serializer_class = TemplateSerializer
-    filter_backends = (filters.OrderingFilter,)
     ordering_fields = "__all__" # This line is optional, default
     ordering = ("-id",)
 
@@ -45,7 +44,7 @@ class WorkflowViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     serializer_class = WorkflowSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
     permission_classes = (IsAuthenticated,)
-    filter_backends = (filters.OrderingFilter,)
+    filter_fields = ("name", "description","template", "created_at", "updated_at")
     parent_field_name = "template"
     parent_lookup_key = "parent_lookup_template"
     queryset_order_by = "internal_sequence"
@@ -69,8 +68,8 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     serializer_class = RequestSerializer
     http_method_names = ["get", "post"]
     permission_classes = (IsAuthenticated,)
-    filter_backends = (filters.OrderingFilter,)
     ordering = ("-id",)
+    filter_fields = "__all__"
     parent_field_name = "parent"
     parent_lookup_key = "parent_lookup_parent"
 
@@ -103,8 +102,8 @@ class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
     serializer_class = ActionSerializer
     http_method_names = ["get", "post"]
     permission_classes = (IsAuthenticated,)
-    filter_backends = (filters.OrderingFilter,)
     ordering = ("-id",)
+    filter_fields = "__all__"
     parent_field_name = "request"
     parent_lookup_key = "parent_lookup_request"
 

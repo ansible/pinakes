@@ -30,7 +30,6 @@ class Portfolio(BaseModel):
                 fields=["name", "tenant"],
             ),
         ]
-        ordering = ["-created_at"]
 
     def __str__(self):
         return self.name
@@ -71,7 +70,6 @@ class PortfolioItem(BaseModel):
                 fields=["name", "tenant", "portfolio"],
             ),
         ]
-        ordering = ["-created_at"]
 
     def __str__(self):
         return self.name
@@ -100,7 +98,6 @@ class Order(UserOwnedModel):
     completed_at = models.DateTimeField(editable=False, null=True)
 
     class Meta:
-        ordering = ["-created_at"]
         indexes = [
             models.Index(fields=['tenant', 'user'])
         ]
@@ -159,7 +156,6 @@ class OrderItem(UserOwnedModel):
                 fields=["name", "tenant", "order", "portfolio_item"],
             ),
         ]
-        ordering = ["-created_at"]
 
     def __str__(self):
         return self.name

@@ -29,18 +29,22 @@ logger = logging.getLogger("catalog")
 class TenantViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for listing and creating tenants."""
 
-    queryset = Tenant.objects.all().order_by("id")
+    queryset = Tenant.objects.all()
     serializer_class = TenantSerializer
     permission_classes = (IsAuthenticated,)
+    ordering = ("id",)
+    filter_fields = "__all__"
 
 
 class PortfolioViewSet(TagMixin, NestedViewSetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating portfolios."""
 
-    queryset = Portfolio.objects.all().order_by("created_at")
+    queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
     permission_classes = (IsAuthenticated,)
+    ordering = ("-id",)
+    filter_fields = ("name", "description", "created_at", "updated_at")
 
 
 class PortfolioItemViewSet(TagMixin, NestedViewSetMixin, viewsets.ModelViewSet):
@@ -50,15 +54,32 @@ class PortfolioItemViewSet(TagMixin, NestedViewSetMixin, viewsets.ModelViewSet):
     serializer_class = PortfolioItemSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
     permission_classes = (IsAuthenticated,)
+    ordering = ("-id",)
+    filter_fields = (
+        "name", 
+        "description",
+        "service_offering_ref",
+        "portfolio",
+        "created_at",
+        "updated_at"
+    )
 
 
 class OrderViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating orders."""
 
-    queryset = Order.objects.all().order_by("created_at")
+    queryset = Order.objects.all()
     serializer_class = OrderSerializer
     http_method_names = ["get", "post", "head", "delete"]
     permission_classes = (IsAuthenticated,)
+    ordering = ("-id",)
+    filter_fields = (
+        "state",
+        "order_request_sent_at",
+        "created_at",
+        "updated_at",
+        "completed_at"
+    )
 
     # TODO:
     @action(methods=["post"], detail=True)
@@ -76,7 +97,20 @@ class OrderViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 class OrderItemViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating order items."""
 
-    queryset = OrderItem.objects.all().order_by("created_at")
+    queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
     http_method_names = ["get", "post", "head", "delete"]
     permission_classes = (IsAuthenticated,)
+    ordering = ("-id",)
+    filter_fields = (
+        "name",
+        "count",
+        "state",
+        "portfolio_item",
+        "order",
+        "external_url",
+        "order_request_sent_at",
+        "created_at",
+        "updated_at",
+        "completed_at"
+    )
