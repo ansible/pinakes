@@ -31,16 +31,16 @@ class CollectInventoryTags:
 
     def __collect_inventory(self, object_id, visited, inventory_ids):
         """Collect the Inventory ids for this node and its children"""
-        if id in visited:
+        if object_id in visited:
             return
 
-        visited.add(object_id)
         obj = ServiceOffering.objects.filter(id=object_id).first()
         if obj is None:
             raise RuntimeError(
                 _("ServiceOffering object {} not found").format(object_id)
             )
 
+        visited.add(object_id)
         if obj.service_inventory is not None:
             inventory_ids.add(obj.service_inventory.id)
 
