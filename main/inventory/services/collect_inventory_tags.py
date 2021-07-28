@@ -49,7 +49,7 @@ class CollectInventoryTags:
 
     def __process_children(self, root_id, visited, inventory_ids):
         """Collect Inventory objects for children"""
-        for son in ServiceOfferingNode.objects.filter(root_service_offering_id=root_id):
-            if son.service_inventory is not None:
-                inventory_ids.add(son.service_inventory_id)
-            self.__collect_inventory(son.service_offering_id, visited, inventory_ids)
+        for child in ServiceOfferingNode.objects.filter(root_service_offering_id=root_id):
+            if child.service_inventory is not None:
+                inventory_ids.add(child.service_inventory_id)
+            self.__collect_inventory(child.service_offering_id, visited, inventory_ids)
