@@ -1,7 +1,7 @@
 """ Serializers for Catalog Model."""
 from rest_framework import serializers
 
-from main.models import Tenant
+from main.models import Tenant, Image
 from main.catalog.models import Portfolio, PortfolioItem, Order, OrderItem
 
 
@@ -21,7 +21,8 @@ class PortfolioSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Portfolio
-        fields = ("id", "name", "description", "created_at", "updated_at")
+        fields = ("id", "name", "description", "icon", "created_at", "updated_at")
+        ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
@@ -42,6 +43,7 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
             "description",
             "service_offering_ref",
             "portfolio",
+            "icon",
             "created_at",
             "updated_at",
         )
@@ -109,4 +111,16 @@ class OrderItemSerializer(serializers.ModelSerializer):
         user = self.context["request"].user
         return OrderItem.objects.create(
             tenant=Tenant.current(), user=user, **validated_data
+        )
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    """Serializer for Image"""
+
+    file = serializers.FileField(required=False)
+    class Meta:
+        model = Image
+        fields = (
+            "source_ref",
+            "file",
         )

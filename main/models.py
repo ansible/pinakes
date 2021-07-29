@@ -68,3 +68,27 @@ class UserOwnedModel(BaseModel):
     def owner(self):
         "Use for serializer_class"
         return self.user.username
+
+
+class Image(models.Model):
+    """ImageModel"""
+
+    file = models.ImageField(blank=True, null=True)
+    source_ref = models.CharField(max_length=32, default="")
+
+    # delete image file from local storage
+    def delete(self):
+        self.file.storage.delete(self.file.name)
+        super().delete()
+
+    def __str__(self):
+        return str(self.id)
+
+
+class ImagableModel(BaseModel):
+    """ImagableModel"""
+
+    icon = models.ForeignKey(Image, blank=True, null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        abstract = True
