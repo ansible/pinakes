@@ -16,7 +16,7 @@ def refresh_task(tenant_id, source_id):
 
 def launch_tower_task(slug, body):
     """Launch a job on the tower"""
-    logger.ingo("Launching job")
+    logger.info("Launching job")
     obj = LaunchJob(slug, body).process()
     logger.info(obj)
     logger.info("Job finished")
