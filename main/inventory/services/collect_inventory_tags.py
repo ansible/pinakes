@@ -4,7 +4,6 @@ from main.inventory.models import (
     ServiceOffering,
     ServiceOfferingNode,
     OfferingKind,
-    ServiceInventory,
 )
 
 
@@ -20,10 +19,6 @@ class CollectInventoryTags:
         inventory_ids = set()
         visited = set()
         self.__collect_inventory(self.service_offering_id, visited, inventory_ids)
-        for object_id in inventory_ids:
-            for obj in ServiceInventory.objects.filter(id=object_id):
-                for tag in obj.tags.all():
-                    self.inventory_tags.append(tag.name)
 
     def tags(self):
         """Return the list of tags assigned to the given service_offering"""
@@ -42,14 +37,27 @@ class CollectInventoryTags:
 
         visited.add(object_id)
         if obj.service_inventory is not None:
-            inventory_ids.add(obj.service_inventory.id)
+            self.__collect_tags(obj.service_inventory, inventory_ids)
 
         if obj.kind == OfferingKind.WORKFLOW:
             self.__process_children(obj.id, visited, inventory_ids)
 
     def __process_children(self, root_id, visited, inventory_ids):
         """Collect Inventory objects for children"""
-        for child in ServiceOfferingNode.objects.filter(root_service_offering_id=root_id):
+        for child in ServiceOfferingNode.objects.filter(
+            root_service_offering_id=root_id
+        ):
             if child.service_inventory is not None:
-                inventory_ids.add(child.service_inventory_id)
+                self.__collect_tags(child.service_inventory, inventory_ids)
+
             self.__collect_inventory(child.service_offering_id, visited, inventory_ids)
+
+    def __collect_tags(self, obj, inventory_ids):
+        """COllect tags if the object has not been loaded yet"""
+        if obj.id in inventory_ids:
+            return
+
+        inventory_ids.add(obj.id)
+
+        for tag in obj.tags.all():
+            self.inventory_tags.append(tag.name)
