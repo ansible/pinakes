@@ -75,3 +75,14 @@ DATABASES = {
   }
 }
 ```
+* To run background tasks we use Django RQ, which has a dependency on Redis. You would have to install Redis locally on your dev box. To start the redis worker locally use the following command
+```redis-server /usr/local/etc/redis.conf```
+* To run a worker to handle the background tasks we need to run the worker separate from the server.
+  ```
+  #!/bin/sh
+  export CATALOG_ROOT_URL=/tmp
+  export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
+  # This is needed only on Mac OS
+  export OBJ_DISABLE_INITIALIZE_FORK_SAFETY=YES
+  python3 manage.py rqworker default
+  ```
