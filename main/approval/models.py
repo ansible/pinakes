@@ -60,9 +60,11 @@ class Workflow(BaseModel):
     def __str__(self):
         return self.name
 
+
 class RequestContext(models.Model):
     content = models.JSONField()
     context = models.JSONField()
+
 
 class Request(BaseModel):
     """Request model"""
@@ -96,7 +98,7 @@ class Request(BaseModel):
     number_of_children = models.SmallIntegerField(editable=False, default=0)
     number_of_finished_children = models.SmallIntegerField(editable=False, default=0)
     workflow = models.ForeignKey(Workflow, null=True, on_delete=models.SET_NULL)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name="sub_requests")
     request_context = models.ForeignKey(RequestContext, null=True, on_delete=models.SET_NULL)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
@@ -109,7 +111,6 @@ class Request(BaseModel):
     def owner(self):
         """virtual column owner"""
         return f"{self.user.username}"
-
 
     def __str__(self):
         return self.name
@@ -131,7 +132,7 @@ class Action(BaseModel):
     processed_by = models.CharField(max_length=128, editable=False)
     operation = models.CharField(max_length=10, choices=Operation.choices, default=Operation.Memo)
     comments = models.TextField(blank=True)
-    request = models.ForeignKey(Request, on_delete=models.CASCADE)
+    request = models.ForeignKey(Request, on_delete=models.CASCADE, related_name="actions")
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     @property

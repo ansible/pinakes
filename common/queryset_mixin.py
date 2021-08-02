@@ -13,7 +13,8 @@ class QuerySetMixin():
         parent_lookup_key = getattr(self, "parent_lookup_key", None)
         parent_field_name = getattr(self, "parent_field_name", None)
         queryset_order_by = getattr(self, "queryset_order_by", None)
-        queryset = self.serializer_class.Meta.model.objects.filter(tenant=Tenant.current())
+        serializer_class = self.get_serializer_class() or self.serializer_class
+        queryset = serializer_class.Meta.model.objects.filter(tenant=Tenant.current())
         if parent_lookup_key in self.kwargs:
             queryset = queryset.filter(**{parent_field_name: self.kwargs[parent_lookup_key]})
         if queryset_order_by is not None:

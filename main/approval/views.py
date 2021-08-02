@@ -3,6 +3,7 @@ import logging
 
 from decimal import Decimal
 from rest_framework import viewsets, status, filters
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
@@ -20,6 +21,7 @@ from main.approval.serializers import (
     WorkflowSerializer,
     RequestSerializer,
     RequestInSerializer,
+    RequestCompleteSerializer,
     ActionSerializer,
 )
 from common.queryset_mixin import QuerySetMixin
@@ -60,6 +62,7 @@ class WorkflowViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
             tenant=Tenant.current()
         )
 
+
 class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating requests"""
 
@@ -85,6 +88,13 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
         except Exception as error:
             raise ValidationError({"detail": error}) from error
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(methods=["get"], detail=True)
+    def full(self, request, pk):
+        """Details of a request with its sub_requests and actions"""
+        instance = self.get_object()
+        serializer = RequestCompleteSerializer(instance)
+        return Response(serializer.data)
 
 
 class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
