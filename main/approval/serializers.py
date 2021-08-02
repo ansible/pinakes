@@ -35,29 +35,31 @@ class WorkflowSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("created_at", "updated_at", "template")
 
+class RequestFields:
+    FIELDS = (
+        "id",
+        "requester_name",
+        "owner",
+        "name",
+        "description",
+        "workflow",
+        "state",
+        "decision",
+        "reason",
+        "number_of_children",
+        "number_of_finished_children",
+        "created_at",
+        "notified_at",
+        "finished_at",
+    )
+
 
 class RequestSerializer(serializers.ModelSerializer):
     """Serializer for Request"""
 
     class Meta:
         model = Request
-        fields = (
-            "id",
-            "requester_name",
-            "owner",
-            "name",
-            "description",
-            "workflow",
-            "state",
-            "decision",
-            "reason",
-            "parent",
-            "number_of_children",
-            "number_of_finished_children",
-            "created_at",
-            "notified_at",
-            "finished_at",
-        )
+        fields = (*RequestFields.FIELDS, "parent",)
         read_only_fields = ("__all__", "requester_name", "owner",)
 
 
@@ -90,3 +92,15 @@ class ActionSerializer(serializers.ModelSerializer):
             "comments",
         )
         read_only_fields = ("created_at", "request")
+
+
+class RequestCompleteSerializer(serializers.ModelSerializer):
+    """Serializer for Request with nested actions and children"""
+
+    actions = ActionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Request
+        fields = (*RequestFields.FIELDS, "actions", "sub_requests",)
+
+RequestCompleteSerializer._declared_fields['sub_requests'] = RequestCompleteSerializer(many=True)
