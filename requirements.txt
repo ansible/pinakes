@@ -15,6 +15,7 @@ cwcwidth==0.1.4
 defusedxml==0.7.1
 Django==3.2.5
 django-rq==2.4.1
+django-filter==2.4.0
 django-split-settings==1.0.1
 django-taggit==1.5.1
 djangorestframework==3.12.4

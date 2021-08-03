@@ -33,7 +33,6 @@ class ServiceInventorySerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
-        ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
 
@@ -51,7 +50,6 @@ class ServiceOfferingSerializer(serializers.ModelSerializer):
             "extra",
             "service_inventory",
         )
-        ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
 
@@ -67,7 +65,6 @@ class ServiceOfferingNodeSerializer(serializers.ModelSerializer):
             "root_service_offering",
             "extra",
         )
-        ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
 
@@ -84,5 +81,4 @@ class ServicePlanSerializer(serializers.ModelSerializer):
             "update_json_schema",
             "service_offering",
         )
-        ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")

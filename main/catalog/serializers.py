@@ -27,7 +27,6 @@ class PortfolioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Portfolio
         fields = ("id", "name", "description", "created_at", "updated_at")
-        ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
@@ -40,7 +39,6 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PortfolioItem
-        ordering = ["-created_at"]
         fields = (
             "id",
             "name",
@@ -72,7 +70,6 @@ class OrderSerializer(serializers.ModelSerializer):
             "updated_at",
             "completed_at"
         )
-        ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
@@ -103,7 +100,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "updated_at",
             "completed_at"
         )
-        ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):

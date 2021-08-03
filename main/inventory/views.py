@@ -33,9 +33,11 @@ logger = logging.getLogger("inventory")
 class SourceViewSet(NestedViewSetMixin, ModelViewSet):
     """API endpoint for listing and updating sources."""
 
-    queryset = Source.objects.all().order_by("created_at")
+    queryset = Source.objects.all()
     serializer_class = SourceSerializer
     permission_classes = (IsAuthenticated,)
+    ordering = ("-id",)
+    filter_fields = ("name",)
 
     # Enable PATCH for refresh API
     http_method_names = ["get", "patch", "head"]
@@ -51,18 +53,28 @@ class SourceViewSet(NestedViewSetMixin, ModelViewSet):
 class ServicePlanViewSet(NestedViewSetMixin, ModelViewSet):
     """API endpoint for listing and retrieving service plans."""
 
-    queryset = ServicePlan.objects.all().order_by("created_at")
+    queryset = ServicePlan.objects.all()
     serializer_class = ServicePlanSerializer
     permission_classes = (IsAuthenticated,)
+    ordering = ("-id",)
+    filter_fields = ("name", "service_offering",)
 
     http_method_names = ["get", "head"]
 
 class ServiceOfferingViewSet(NestedViewSetMixin, ModelViewSet):
     """API endpoint for listing and retrieving service offerings."""
 
-    queryset = ServiceOffering.objects.all().order_by("created_at")
+    queryset = ServiceOffering.objects.all()
     serializer_class = ServiceOfferingSerializer
     permission_classes = (IsAuthenticated,)
+    ordering = ("-id",)
+    filter_fields = (
+        "name",
+        "description",
+        "survey_enabled",
+        "kind",
+        "service_inventory",
+    )
 
     http_method_names = ["get", "head"]
 
@@ -79,9 +91,18 @@ class ServiceOfferingViewSet(NestedViewSetMixin, ModelViewSet):
 class ServiceInventoryViewSet(TagMixin, NestedViewSetMixin, ModelViewSet):
     """API endpoint for listing and creating service inventories."""
 
-    queryset = ServiceInventory.objects.all().order_by("created_at")
+    queryset = ServiceInventory.objects.all()
     serializer_class = ServiceInventorySerializer
     permission_classes = (IsAuthenticated,)
+    ordering = ("-id",)
+    filter_fields = (
+        "description",
+        "source_ref",
+        "source_created_at",
+        "source_updated_at",
+        "created_at",
+        "updated_at",
+    )
 
     # For tagging purpose, enable POST action here
     http_method_names = ["get", "post", "head"]
