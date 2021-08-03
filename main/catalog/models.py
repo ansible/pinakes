@@ -4,12 +4,12 @@ from django.db import models
 from django.db.models.functions import Length
 from taggit.managers import TaggableManager
 
-from main.models import ImagableModel, UserOwnedModel, Image
+from main.models import ImageableModel, UserOwnedModel, Image
 
 models.CharField.register_lookup(Length)
 
 
-class Portfolio(ImagableModel):
+class Portfolio(ImageableModel):
     """Portfolio object to wrap products."""
 
     name = models.CharField(max_length=255, unique=True)
@@ -42,7 +42,7 @@ class Portfolio(ImagableModel):
         return self.name
 
 
-class PortfolioItem(ImagableModel):
+class PortfolioItem(ImageableModel):
     """Portfolio Item represent a Job Template or a Workflow."""
 
     favorite = models.BooleanField(default=False)

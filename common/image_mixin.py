@@ -33,74 +33,88 @@ class ImageMixin:
         serializer = ImageSerializer(data=request.data)
 
         if self.request.method == "POST":
-            # Not allow to update existing icon
-            if instance.icon is not None:
-                return Response(
-                    _("Icon attribute has been set on {} object (id: {pk}).").format(
-                        model.__name__
-                    ),
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            if serializer.is_valid():
-                # create image
-                obj = Image.objects.create(
-                    file=request.data["icon"], source_ref=request.data["source_ref"]
-                )
-                obj.save()
-
-                # update instance when icon is None
-                instance.icon = obj
-                instance.save()
-
-                return Response(status=status.HTTP_201_CREATED)
+            return self.__post_image(model=model, instance=instance, serializer=serializer, pk=pk)
         elif self.request.method == "PATCH":
-            # Not allow to update null icon
-            if instance.icon is None:
-                return Response(
-                    _("Icon attribute has not been set on {} object (id: {}).").format(
-                        model.__name__, pk
-                    ),
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            if serializer.is_valid():
-                # remove existing image
-                old = Image.objects.get(id=instance.icon.id)
-                old.delete()
-
-                # create a new image
-                obj = Image.objects.create(
-                    file=request.data["icon"], source_ref=request.data["source_ref"]
-                )
-                obj.save()
-
-                # update instance when icon is None
-                instance.icon = obj
-                instance.save()
-
-                return Response(status=status.HTTP_201_CREATED)
-        elif self.request.method == "DELETE":
-            if instance.icon is None:
-                return Response(
-                    _("Icon attribute has not been set on {} object (id: {}).").format(
-                        model.__name__, pk
-                    ),
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            if serializer.is_valid():
-                # remove existing image
-                old = Image.objects.get(id=instance.icon.id)
-                old.delete()
-
-                return Response(status=status.HTTP_204_NO_CONTENT)
+            return self.__patch_image(model=model, instance=instance, serializer=serializer, pk=pk)
         else:
+            return self.__delete_image(model=model, instance=instance, serializer=serializer, pk=pk)
+
+    def __post_image(self, model, instance, serializer, pk):
+        """Create a new image"""
+
+        # Not allow to update existing icon
+        if instance.icon is not None:
             return Response(
-                _("{} is not supported on {}.").format(
-                    self.request.method, model.__name__
+                _("Icon attribute has been set on {} object (id: {}).").format(
+                    model.__name__, pk
                 ),
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            # create image
+            obj = Image.objects.create(
+                file=self.request.data["icon"],
+                source_ref=self.request.data["source_ref"],
+            )
+            obj.save()
+
+            # update instance when icon is None
+            instance.icon = obj
+            instance.save()
+
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def __patch_image(self, model, instance, serializer, pk):
+        """Update the image"""
+
+        # Not allow to update null icon
+        if instance.icon is None:
+            return Response(
+                _("Icon attribute has not been set on {} object (id: {}).").format(
+                    model.__name__, pk
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if serializer.is_valid():
+            # remove existing image
+            old = Image.objects.get(id=instance.icon.id)
+            old.delete()
+
+            # create a new image
+            obj = Image.objects.create(
+                file=self.request.data["icon"],
+                source_ref=self.request.data["source_ref"],
+            )
+            obj.save()
+
+            # update instance when icon is None
+            instance.icon = obj
+            instance.save()
+
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def __delete_image(self, model, instance, serializer, pk):
+        """Delete the image"""
+
+        if instance.icon is None:
+            return Response(
+                _("Icon attribute has not been set on {} object (id: {}).").format(
+                    model.__name__, pk
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if serializer.is_valid():
+            # remove existing image
+            old = Image.objects.get(id=instance.icon.id)
+            old.delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

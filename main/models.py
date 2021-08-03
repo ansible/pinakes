@@ -85,7 +85,7 @@ class Image(models.Model):
         return str(self.id)
 
 
-class ImagableModel(BaseModel):
+class ImageableModel(BaseModel):
     """ImagableModel"""
 
     icon = models.ForeignKey(Image, blank=True, null=True, on_delete=models.SET_NULL)
