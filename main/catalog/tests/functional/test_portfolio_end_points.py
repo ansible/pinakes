@@ -1,6 +1,10 @@
 """ Test portfolio end points """
 import json
 import pytest
+
+import os
+import glob
+
 from django.urls import reverse
 from main.tests.factories import TenantFactory
 from main.catalog.tests.factories import PortfolioFactory
@@ -23,9 +27,7 @@ def test_portfolio_list(api_request):
 def test_portfolio_retrieve(api_request):
     """Retrieve a single portfolio by id"""
     portfolio = PortfolioFactory()
-    response = api_request(
-        "get", reverse("portfolio-detail", args=(portfolio.id,))
-    )
+    response = api_request("get", reverse("portfolio-detail", args=(portfolio.id,)))
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -36,9 +38,7 @@ def test_portfolio_retrieve(api_request):
 def test_portfolio_delete(api_request):
     """Delete a single portfolio by id"""
     portfolio = PortfolioFactory()
-    response = api_request(
-        "delete", reverse("portfolio-detail", args=(portfolio.id,))
-    )
+    response = api_request("delete", reverse("portfolio-detail", args=(portfolio.id,)))
 
     assert response.status_code == 204
 
@@ -96,3 +96,96 @@ def test_portfolio_portfolio_items_get(api_request):
 
     assert content["count"] == 1
     assert content["results"][0]["id"] == portfolio_item3.id
+
+
+@pytest.mark.django_db
+def test_portfolio_icon_post(api_request, small_image, media_dir):
+    """Create a icon image for a portfolio"""
+    image_path = os.path.join(media_dir, "*.png")
+    orignal_images = glob.glob(image_path)
+
+    tenant = TenantFactory()
+    portfolio = PortfolioFactory(tenant=tenant)
+    data = {"icon": small_image, "source_ref": "abc"}
+
+    assert portfolio.icon is None
+
+    response = api_request(
+        "post",
+        reverse("portfolio-icon", args=(portfolio.id,)),
+        data,
+        format="multipart",
+    )
+
+    assert response.status_code == 201
+    portfolio.refresh_from_db()
+    assert portfolio.icon is not None
+
+    images = glob.glob(image_path)
+    assert len(images) == len(orignal_images) + 1
+
+
+@pytest.mark.django_db
+def test_portfolio_icon_patch(api_request, small_image, media_dir):
+    """Update a icon image for a portfolio"""
+    image_path = os.path.join(media_dir, "*.png")
+
+    tenant = TenantFactory()
+    portfolio = PortfolioFactory(tenant=tenant)
+
+    data = {"icon": small_image, "source_ref": "abc"}
+
+    api_request(
+        "post",
+        reverse("portfolio-icon", args=(portfolio.id,)),
+        data,
+        format="multipart",
+    )
+    orignal_images = glob.glob(image_path)
+
+    response = api_request(
+        "patch",
+        reverse("portfolio-icon", args=(portfolio.id,)),
+        data,
+        format="multipart",
+    )
+
+    assert response.status_code == 201
+
+    images = glob.glob(image_path)
+    assert len(images) == len(orignal_images)
+    portfolio.refresh_from_db()
+    assert portfolio.icon is not None
+
+
+@pytest.mark.django_db
+def test_portfolio_icon_delete(api_request, small_image, media_dir):
+    """Update a icon image for a portfolio"""
+    image_path = os.path.join(media_dir, "*.png")
+    orignal_images = glob.glob(image_path)
+
+    tenant = TenantFactory()
+    portfolio = PortfolioFactory(tenant=tenant)
+
+    data = {"icon": small_image, "source_ref": "abc"}
+
+    api_request(
+        "post",
+        reverse("portfolio-icon", args=(portfolio.id,)),
+        data,
+        format="multipart",
+    )
+
+    response = api_request(
+        "delete",
+        reverse("portfolio-icon", args=(portfolio.id,)),
+        data,
+        format="multipart",
+    )
+
+    assert response.status_code == 204
+
+    images = glob.glob(image_path)
+    assert len(images) == len(orignal_images)
+    portfolio.refresh_from_db()
+    assert portfolio.icon is None
