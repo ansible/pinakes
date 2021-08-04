@@ -23,6 +23,7 @@ def test_source_list(api_request):
 
     assert content["count"] == 1
 
+
 @pytest.mark.django_db
 def test_source_retrieve(api_request):
     """Test to retrieve Source endpoint"""
@@ -37,6 +38,7 @@ def test_source_retrieve(api_request):
     content = json.loads(response.content)
     assert content["id"] == source.id
 
+
 @patch("main.inventory.views.django_rq", autoSpec=True)
 @pytest.mark.django_db
 def test_source_refresh(mock1, api_request):
@@ -49,6 +51,7 @@ def test_source_refresh(mock1, api_request):
 
     assert response.status_code == 204
     assert (mock1.enqueue.call_count) == 1
+
 
 @pytest.mark.django_db
 def test_source_patch(api_request):
@@ -63,6 +66,7 @@ def test_source_patch(api_request):
 
     assert response.status_code == 200
 
+
 @pytest.mark.django_db
 def test_source_delete_not_supported(api_request):
     """Test to delete Source endpoint"""
@@ -74,6 +78,7 @@ def test_source_delete_not_supported(api_request):
     )
 
     assert response.status_code == 405
+
 
 @pytest.mark.django_db
 def test_source_put_not_supported(api_request):
@@ -87,6 +92,7 @@ def test_source_put_not_supported(api_request):
     )
 
     assert response.status_code == 405
+
 
 @pytest.mark.django_db
 def test_source_service_inventory_list(api_request):
@@ -109,6 +115,7 @@ def test_source_service_inventory_list(api_request):
     assert content["count"] == 1
     assert content["results"][0]["id"] == service_inventory.id
 
+
 @pytest.mark.django_db
 def test_source_service_plan_list(api_request):
     """Test to list ServicePlans by a certain Source endpoint"""
@@ -128,6 +135,7 @@ def test_source_service_plan_list(api_request):
     content = json.loads(response.content)
 
     assert content["count"] == 2
+
 
 @pytest.mark.django_db
 def test_source_service_offering_list(api_request):

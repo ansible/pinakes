@@ -16,6 +16,7 @@ from main.models import BaseModel, SourceOwnedModel
 
 models.CharField.register_lookup(Length)
 
+
 class TowerModel(SourceOwnedModel):
     """The common properties across Tower object"""
 

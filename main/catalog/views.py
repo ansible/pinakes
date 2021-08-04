@@ -26,6 +26,7 @@ from main.catalog.serializers import (
 
 logger = logging.getLogger("catalog")
 
+
 class TenantViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for listing and creating tenants."""
 

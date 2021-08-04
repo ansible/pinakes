@@ -21,6 +21,7 @@ def test_orderitem():
     assert tenant.id == order_item.tenant.id
     assert order_item.state == order_item.state.CREATED
 
+
 @pytest.mark.django_db
 def test_empty_orderitem_name():
     """ Test empty name constraint on order item """
@@ -34,6 +35,7 @@ def test_empty_orderitem_name():
     assert f"CHECK constraint failed: {order._meta.app_label}_orderitem_name_empty" in str(
         excinfo.value
     )
+
 
 @pytest.mark.django_db
 def test_duplicate_orderitem_name():

@@ -10,6 +10,7 @@ from main.inventory.views import (
     ServiceOfferingViewSet,
 )
 
+
 class NestedDefaultRouter(NestedRouterMixin, routers.DefaultRouter):
     pass
 

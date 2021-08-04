@@ -35,6 +35,7 @@ class WorkflowSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("created_at", "updated_at", "template")
 
+
 class RequestFields:
     FIELDS = (
         "id",

@@ -28,6 +28,7 @@ from common.queryset_mixin import QuerySetMixin
 
 logger = logging.getLogger("approval")
 
+
 class TemplateViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and templates."""
 

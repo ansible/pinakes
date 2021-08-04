@@ -12,6 +12,7 @@ from main.inventory.tests.factories import (
 )
 from main.inventory.models import ServiceOfferingNode
 
+
 class TestServiceOfferingNodeImport:
     """Test ServiceOfferingNode import"""
 

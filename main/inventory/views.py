@@ -30,6 +30,7 @@ from main.inventory.tasks import refresh_task
 # Create your views here.
 logger = logging.getLogger("inventory")
 
+
 class SourceViewSet(NestedViewSetMixin, ModelViewSet):
     """API endpoint for listing and updating sources."""
 
@@ -50,6 +51,7 @@ class SourceViewSet(NestedViewSetMixin, ModelViewSet):
 
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
+
 class ServicePlanViewSet(NestedViewSetMixin, ModelViewSet):
     """API endpoint for listing and retrieving service plans."""
 
@@ -60,6 +62,7 @@ class ServicePlanViewSet(NestedViewSetMixin, ModelViewSet):
     filter_fields = ("name", "service_offering",)
 
     http_method_names = ["get", "head"]
+
 
 class ServiceOfferingViewSet(NestedViewSetMixin, ModelViewSet):
     """API endpoint for listing and retrieving service offerings."""
@@ -87,6 +90,7 @@ class ServiceOfferingViewSet(NestedViewSetMixin, ModelViewSet):
     @action(methods=["post"], detail=True)
     def order(self, request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class ServiceInventoryViewSet(TagMixin, NestedViewSetMixin, ModelViewSet):
     """API endpoint for listing and creating service inventories."""

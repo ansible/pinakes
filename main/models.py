@@ -3,6 +3,7 @@ from django.db import models
 from django.db.utils import OperationalError
 from django.contrib.auth.models import User
 
+
 class Tenant(models.Model):
     """Tenant"""
 
@@ -22,6 +23,7 @@ class Tenant(models.Model):
         except OperationalError:  # Table does not exist at the first migration
             return cls()
 
+
 class BaseModel(models.Model):
     """Base Model"""
 
@@ -31,6 +33,7 @@ class BaseModel(models.Model):
 
     class Meta:
         abstract = True
+
 
 class Source(models.Model):
     """Source"""
@@ -51,6 +54,7 @@ class SourceOwnedModel(BaseModel):
 
     class Meta:
         abstract = True
+
 
 class UserOwnedModel(BaseModel):
     """User Owned Model"""

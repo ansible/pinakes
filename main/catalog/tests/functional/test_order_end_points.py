@@ -80,6 +80,7 @@ def test_order_post(api_request):
     assert response.status_code == 201
     assert content["owner"] == "admin"
 
+
 @pytest.mark.django_db
 def test_order_order_items_get(api_request):
     """List OrderItems by order id"""

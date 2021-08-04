@@ -2,6 +2,7 @@
 
 from main.models import Tenant
 
+
 class QuerySetMixin():
     """
     A Mixin class to be inherited by a customer ViewSet class

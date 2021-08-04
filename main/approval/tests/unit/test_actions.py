@@ -4,6 +4,7 @@ from main.tests.factories import TenantFactory
 from main.approval.tests.factories import ActionFactory
 from main.approval.models import Action
 
+
 class TestAction:
     @pytest.mark.django_db
     def test_action(self):

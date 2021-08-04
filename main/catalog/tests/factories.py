@@ -11,6 +11,7 @@ from main.catalog.models import (
 )
 from main.tests.factories import TenantFactory, UserFactory
 
+
 class PortfolioFactory(factory.django.DjangoModelFactory):
     """ Portfolio Factory """
     class Meta:
