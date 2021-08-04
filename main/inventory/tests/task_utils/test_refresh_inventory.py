@@ -10,13 +10,20 @@ class TestRefreshInventory:
     """Refresh Inventory Class."""
 
     @patch(
-        "main.inventory.task_utils.refresh_inventory.ServiceOfferingNodeImport", autoSpec=True
+        "main.inventory.task_utils.refresh_inventory.ServiceOfferingNodeImport",
+        autoSpec=True,
     )
-    @patch("main.inventory.task_utils.refresh_inventory.ServiceInventoryImport", autoSpec=True)
-    @patch("main.inventory.task_utils.refresh_inventory.ServiceOfferingImport", autoSpec=True)
+    @patch(
+        "main.inventory.task_utils.refresh_inventory.ServiceInventoryImport",
+        autoSpec=True,
+    )
+    @patch(
+        "main.inventory.task_utils.refresh_inventory.ServiceOfferingImport",
+        autoSpec=True,
+    )
     @pytest.mark.django_db
     def test_process(self, mock1, mock2, mock3):
-        """ Test the process method """
+        """Test the process method"""
         tenant = TenantFactory()
         source = SourceFactory(tenant=tenant)
         refresh_inventory = RefreshInventory(tenant.id, source.id)

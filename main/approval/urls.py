@@ -10,8 +10,10 @@ from main.approval.views import (
     ActionViewSet,
 )
 
+
 class NestedDefaultRouter(NestedRouterMixin, DefaultRouter):
     pass
+
 
 router = NestedDefaultRouter()
 
@@ -20,7 +22,7 @@ templates.register(
     "workflows",
     WorkflowViewSet,
     basename="template-workflow",
-    parents_query_lookups=["template"]
+    parents_query_lookups=["template"],
 )
 
 router.register("workflows", WorkflowViewSet, basename="workflow")
@@ -30,13 +32,13 @@ requests.register(
     "actions",
     ActionViewSet,
     basename="request-action",
-    parents_query_lookups=["request"]
+    parents_query_lookups=["request"],
 )
 requests.register(
     "requests",
     RequestViewSet,
     basename="request-request",
-    parents_query_lookups=["parent"]
+    parents_query_lookups=["parent"],
 )
 
 router.register("actions", ActionViewSet, basename="action")

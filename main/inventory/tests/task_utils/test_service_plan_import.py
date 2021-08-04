@@ -40,4 +40,6 @@ class TestServicePlanImport:
             service_offering.source_ref,
         )
         assert (ServicePlan.objects.all().count()) == 1
-        assert (ServicePlan.objects.first().service_offering.id) == service_offering.id
+        assert (
+            ServicePlan.objects.first().service_offering.id
+        ) == service_offering.id

@@ -1,9 +1,15 @@
 """ Task to Refresh Inventory from the Tower """
 from main.models import Source, Tenant
-from main.inventory.task_utils.service_inventory_import import ServiceInventoryImport
-from main.inventory.task_utils.service_offering_import import ServiceOfferingImport
+from main.inventory.task_utils.service_inventory_import import (
+    ServiceInventoryImport,
+)
+from main.inventory.task_utils.service_offering_import import (
+    ServiceOfferingImport,
+)
 from main.inventory.task_utils.service_plan_import import ServicePlanImport
-from main.inventory.task_utils.service_offering_node_import import ServiceOfferingNodeImport
+from main.inventory.task_utils.service_offering_node_import import (
+    ServiceOfferingNodeImport,
+)
 from main.inventory.task_utils.tower_api import TowerAPI
 from main.inventory.task_utils.spec_to_ddf import SpecToDDF
 
@@ -32,6 +38,8 @@ class RefreshInventory:
         )
         print("Fetching Job Templates & Workflows")
         soi.process()
-        son = ServiceOfferingNodeImport(self.tenant, self.source, self.tower, sii, soi)
+        son = ServiceOfferingNodeImport(
+            self.tenant, self.source, self.tower, sii, soi
+        )
         print("Fetching Workflow Template Nodes")
         son.process()

@@ -8,23 +8,19 @@ from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from common.tag_mixin import TagMixin
 from main.models import Tenant
-from main.catalog.models import (
-    Portfolio,
-    PortfolioItem,
-    Order,
-    OrderItem
-)
+from main.catalog.models import Portfolio, PortfolioItem, Order, OrderItem
 from main.catalog.serializers import (
     TenantSerializer,
     PortfolioSerializer,
     PortfolioItemSerializer,
     OrderSerializer,
-    OrderItemSerializer
+    OrderItemSerializer,
 )
 
 # Create your views here.
 
 logger = logging.getLogger("catalog")
+
 
 class TenantViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for listing and creating tenants."""
@@ -47,7 +43,9 @@ class PortfolioViewSet(TagMixin, NestedViewSetMixin, viewsets.ModelViewSet):
     filter_fields = ("name", "description", "created_at", "updated_at")
 
 
-class PortfolioItemViewSet(TagMixin, NestedViewSetMixin, viewsets.ModelViewSet):
+class PortfolioItemViewSet(
+    TagMixin, NestedViewSetMixin, viewsets.ModelViewSet
+):
     """API endpoint for listing and creating portfolio items."""
 
     queryset = PortfolioItem.objects.all()
@@ -56,12 +54,12 @@ class PortfolioItemViewSet(TagMixin, NestedViewSetMixin, viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
     filter_fields = (
-        "name", 
+        "name",
         "description",
         "service_offering_ref",
         "portfolio",
         "created_at",
-        "updated_at"
+        "updated_at",
     )
 
 
@@ -78,7 +76,7 @@ class OrderViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         "order_request_sent_at",
         "created_at",
         "updated_at",
-        "completed_at"
+        "completed_at",
     )
 
     # TODO:
@@ -112,5 +110,5 @@ class OrderItemViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         "order_request_sent_at",
         "created_at",
         "updated_at",
-        "completed_at"
+        "completed_at",
     )

@@ -2,12 +2,7 @@
 from rest_framework import serializers
 
 from main.models import Tenant
-from main.catalog.models import (
-    Portfolio,
-    PortfolioItem,
-    Order,
-    OrderItem
-)
+from main.catalog.models import Portfolio, PortfolioItem, Order, OrderItem
 
 
 class TenantSerializer(serializers.ModelSerializer):
@@ -30,7 +25,9 @@ class PortfolioSerializer(serializers.ModelSerializer):
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
-        return Portfolio.objects.create(tenant=Tenant.current(), **validated_data)
+        return Portfolio.objects.create(
+            tenant=Tenant.current(), **validated_data
+        )
 
 
 class PortfolioItemSerializer(serializers.ModelSerializer):
@@ -52,11 +49,14 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
-        return PortfolioItem.objects.create(tenant=Tenant.current(), **validated_data)
+        return PortfolioItem.objects.create(
+            tenant=Tenant.current(), **validated_data
+        )
 
 
 class OrderSerializer(serializers.ModelSerializer):
     """Serializer for Order"""
+
     owner = serializers.ReadOnlyField()
 
     class Meta:
@@ -68,17 +68,20 @@ class OrderSerializer(serializers.ModelSerializer):
             "order_request_sent_at",
             "created_at",
             "updated_at",
-            "completed_at"
+            "completed_at",
         )
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
-        user = self.context['request'].user
-        return Order.objects.create(tenant=Tenant.current(), user=user, **validated_data)
+        user = self.context["request"].user
+        return Order.objects.create(
+            tenant=Tenant.current(), user=user, **validated_data
+        )
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
     """Serializer for OrderItem"""
+
     owner = serializers.ReadOnlyField()
 
     class Meta:
@@ -98,10 +101,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "order_request_sent_at",
             "created_at",
             "updated_at",
-            "completed_at"
+            "completed_at",
         )
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
-        user = self.context['request'].user
-        return OrderItem.objects.create(tenant=Tenant.current(), user=user, **validated_data)
+        user = self.context["request"].user
+        return OrderItem.objects.create(
+            tenant=Tenant.current(), user=user, **validated_data
+        )

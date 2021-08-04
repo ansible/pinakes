@@ -27,13 +27,23 @@ class ServiceInventoryImport:
     def process(self):
         """Process, the import handle add, update and deletes"""
         old_ids = self.__get_old_ids()
-        attrs = ["id", "type", "created", "name", "modified", "description", "kind"]
+        attrs = [
+            "id",
+            "type",
+            "created",
+            "name",
+            "modified",
+            "description",
+            "kind",
+        ]
 
         for new_obj in self.tower.get("/api/v2/inventories?order=id", attrs):
             source_ref = str(new_obj["id"])
             if source_ref in old_ids.keys():
                 self.__update_db_obj(old_ids[source_ref], new_obj)
-                self.service_inventory_objects[source_ref] = old_ids[source_ref][0]
+                self.service_inventory_objects[source_ref] = old_ids[
+                    source_ref
+                ][0]
                 del old_ids[source_ref]
             else:
                 db_obj = self.__create_db_obj(new_obj)

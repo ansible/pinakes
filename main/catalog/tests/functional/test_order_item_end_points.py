@@ -5,7 +5,7 @@ from django.urls import reverse
 from main.catalog.tests.factories import (
     OrderFactory,
     OrderItemFactory,
-    PortfolioItemFactory
+    PortfolioItemFactory,
 )
 
 

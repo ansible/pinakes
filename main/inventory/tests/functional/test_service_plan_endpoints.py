@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 from main.inventory.tests.factories import ServicePlanFactory
 
+
 @pytest.mark.django_db
 def test_service_plan_list(api_request):
     """Test to list ServicePlan endpoint"""
@@ -15,6 +16,7 @@ def test_service_plan_list(api_request):
     content = json.loads(response.content)
 
     assert content["count"] == 1
+
 
 @pytest.mark.django_db
 def test_service_plan_retrieve(api_request):
@@ -30,6 +32,7 @@ def test_service_plan_retrieve(api_request):
     content = json.loads(response.content)
     assert content["id"] == service_plan.id
 
+
 @pytest.mark.django_db
 def test_service_plan_patch_not_supported(api_request):
     """Test to patch ServicePlan endpoint"""
@@ -43,6 +46,7 @@ def test_service_plan_patch_not_supported(api_request):
 
     assert response.status_code == 405
 
+
 @pytest.mark.django_db
 def test_service_plan_delete_not_supported(api_request):
     """Test to delete ServicePlan endpoint"""
@@ -54,6 +58,7 @@ def test_service_plan_delete_not_supported(api_request):
     )
 
     assert response.status_code == 405
+
 
 @pytest.mark.django_db
 def test_service_plan_put_not_supported(api_request):

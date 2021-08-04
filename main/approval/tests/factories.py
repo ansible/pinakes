@@ -12,6 +12,7 @@ from main.approval.models import (
 )
 from main.tests.factories import TenantFactory, default_tenant
 
+
 class TemplateFactory(factory.django.DjangoModelFactory):
     """Template factory class"""
 

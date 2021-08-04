@@ -16,6 +16,7 @@ from main.models import BaseModel, SourceOwnedModel
 
 models.CharField.register_lookup(Length)
 
+
 class TowerModel(SourceOwnedModel):
     """The common properties across Tower object"""
 
@@ -41,7 +42,7 @@ class ServiceInventory(TowerModel):
 
 
 class OfferingKind(models.IntegerChoices):
-    """ Kind of Service Offering """
+    """Kind of Service Offering"""
 
     JOB_TEMPLATE = 0, "JobTemplate"
     WORKFLOW = 1, "Workflow"

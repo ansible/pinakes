@@ -2,7 +2,10 @@
 from unittest.mock import Mock
 import pytest
 from django.core.exceptions import ObjectDoesNotExist
-from main.inventory.task_utils.service_offering_import import ServiceOfferingImport, OfferingKind
+from main.inventory.task_utils.service_offering_import import (
+    ServiceOfferingImport,
+    OfferingKind,
+)
 from main.inventory.tests.factories import (
     TenantFactory,
     SourceFactory,
@@ -10,7 +13,11 @@ from main.inventory.tests.factories import (
     ServiceOfferingFactory,
     ServicePlanFactory,
 )
-from main.inventory.models import ServiceInventory, ServiceOffering, ServicePlan
+from main.inventory.models import (
+    ServiceInventory,
+    ServiceOffering,
+    ServicePlan,
+)
 
 
 class TestServiceOfferingImport:
@@ -21,8 +28,10 @@ class TestServiceOfferingImport:
         """Test adding new objects."""
         tenant = TenantFactory()
         source = SourceFactory()
-        inventory_source_ref = '999'
-        inventory = ServiceInventoryFactory(tenant=tenant, source=source, source_ref=inventory_source_ref)
+        inventory_source_ref = "999"
+        inventory = ServiceInventoryFactory(
+            tenant=tenant, source=source, source_ref=inventory_source_ref
+        )
         tower_mock = Mock()
         template_objs = [
             {
@@ -55,13 +64,14 @@ class TestServiceOfferingImport:
 
         def fake_method(*args, **_kwarg):
             if "workflow_job_templates" in args[0]:
-               for i in workflow_objs:
-                   yield i
+                for i in workflow_objs:
+                    yield i
             else:
-               for i in template_objs:
-                   yield i
+                for i in template_objs:
+                    yield i
 
         surveys = []
+
         def survey_requests(*args, **_kwarg):
             surveys.append(args[0])
 
@@ -71,12 +81,16 @@ class TestServiceOfferingImport:
         plan_import_mock = Mock()
         plan_import_mock.process.side_effect = survey_requests
 
-        soi = ServiceOfferingImport(tenant, source, tower_mock, inventory_import_mock, plan_import_mock)
+        soi = ServiceOfferingImport(
+            tenant, source, tower_mock, inventory_import_mock, plan_import_mock
+        )
         soi.process()
         assert (ServiceOffering.objects.all().count()) == 2
-        assert (ServiceOffering.objects.first().service_inventory.id) ==  inventory.id
+        assert (
+            ServiceOffering.objects.first().service_inventory.id
+        ) == inventory.id
         assert (soi.get_stats().get("adds")) == 2
-        assert (len(surveys)) ==  1
+        assert (len(surveys)) == 1
 
     @pytest.mark.django_db
     def test_update(self):
@@ -84,11 +98,17 @@ class TestServiceOfferingImport:
         tenant = TenantFactory()
         source = SourceFactory()
         inventory = ServiceInventoryFactory(tenant=tenant, source=source)
-        inventory_source_ref = '999'
+        inventory_source_ref = "999"
         inventory.source_ref = inventory_source_ref
         inventory.save()
-        service_offering_source_ref = '997'
-        service_offering = ServiceOfferingFactory(tenant=tenant, source=source, service_inventory=inventory, kind=OfferingKind.JOB_TEMPLATE, source_ref=service_offering_source_ref)
+        service_offering_source_ref = "997"
+        service_offering = ServiceOfferingFactory(
+            tenant=tenant,
+            source=source,
+            service_inventory=inventory,
+            kind=OfferingKind.JOB_TEMPLATE,
+            source_ref=service_offering_source_ref,
+        )
         tower_mock = Mock()
         template_objs = [
             {
@@ -108,13 +128,14 @@ class TestServiceOfferingImport:
 
         def fake_method(*args, **_kwarg):
             if "workflow_job_templates" in args[0]:
-               for i in workflow_objs:
-                   yield i
+                for i in workflow_objs:
+                    yield i
             else:
-               for i in template_objs:
-                   yield i
+                for i in template_objs:
+                    yield i
 
         surveys = []
+
         def survey_requests(*args, **_kwarg):
             surveys.append(args[0])
 
@@ -124,15 +145,17 @@ class TestServiceOfferingImport:
         plan_import_mock = Mock()
         plan_import_mock.process.side_effect = survey_requests
 
-        soi = ServiceOfferingImport(tenant, source, tower_mock, inventory_import_mock, plan_import_mock)
+        soi = ServiceOfferingImport(
+            tenant, source, tower_mock, inventory_import_mock, plan_import_mock
+        )
         soi.process()
         assert (ServiceOffering.objects.all().count()) == 1
         obj = ServiceOffering.objects.first()
-        assert (obj.service_inventory.id) ==  inventory.id
-        assert (obj.name) ==  "Fred"
-        assert (obj.description) ==  "Bedrock Template"
+        assert (obj.service_inventory.id) == inventory.id
+        assert (obj.name) == "Fred"
+        assert (obj.description) == "Bedrock Template"
         assert (soi.get_stats().get("updates")) == 1
-        assert (len(surveys)) ==  1
+        assert (len(surveys)) == 1
 
     @pytest.mark.django_db
     def test_delete(self):
@@ -140,28 +163,36 @@ class TestServiceOfferingImport:
         tenant = TenantFactory()
         source = SourceFactory()
         inventory = ServiceInventoryFactory(tenant=tenant, source=source)
-        inventory_source_ref = '999'
+        inventory_source_ref = "999"
         inventory.source_ref = inventory_source_ref
         inventory.save()
-        service_offering_source_ref = '997'
-        service_offering = ServiceOfferingFactory(tenant=tenant, source=source, service_inventory=inventory, kind=OfferingKind.JOB_TEMPLATE, source_ref=service_offering_source_ref)
+        service_offering_source_ref = "997"
+        service_offering = ServiceOfferingFactory(
+            tenant=tenant,
+            source=source,
+            service_inventory=inventory,
+            kind=OfferingKind.JOB_TEMPLATE,
+            source_ref=service_offering_source_ref,
+        )
         tower_mock = Mock()
         template_objs = []
         workflow_objs = []
 
         def fake_method(*args, **_kwarg):
             if "workflow_job_templates" in args[0]:
-               for i in workflow_objs:
-                   yield i
+                for i in workflow_objs:
+                    yield i
             else:
-               for i in template_objs:
-                   yield i
+                for i in template_objs:
+                    yield i
 
         tower_mock.get.side_effect = fake_method
         inventory_import_mock = Mock()
         plan_import_mock = Mock()
 
-        soi = ServiceOfferingImport(tenant, source, tower_mock, inventory_import_mock, plan_import_mock)
+        soi = ServiceOfferingImport(
+            tenant, source, tower_mock, inventory_import_mock, plan_import_mock
+        )
         soi.process()
         assert (ServiceOffering.objects.all().count()) == 0
         assert (soi.get_stats().get("deletes")) == 1
@@ -171,9 +202,21 @@ class TestServiceOfferingImport:
         """Test update existing objects but survey is disabled."""
         tenant = TenantFactory()
         source = SourceFactory(tenant=tenant)
-        service_inventory = ServiceInventoryFactory(source=source, tenant=tenant)
-        service_offering = ServiceOfferingFactory(source=source, tenant=tenant, service_inventory=service_inventory, survey_enabled=True)
-        service_plan = ServicePlanFactory(tenant=tenant, source=source, service_offering=service_offering, source_ref=service_offering.source_ref)
+        service_inventory = ServiceInventoryFactory(
+            source=source, tenant=tenant
+        )
+        service_offering = ServiceOfferingFactory(
+            source=source,
+            tenant=tenant,
+            service_inventory=service_inventory,
+            survey_enabled=True,
+        )
+        service_plan = ServicePlanFactory(
+            tenant=tenant,
+            source=source,
+            service_offering=service_offering,
+            source_ref=service_offering.source_ref,
+        )
 
         tower_mock = Mock()
         template_objs = [
@@ -194,30 +237,37 @@ class TestServiceOfferingImport:
 
         def fake_method(*args, **_kwarg):
             if "workflow_job_templates" in args[0]:
-               for i in workflow_objs:
-                   yield i
+                for i in workflow_objs:
+                    yield i
             else:
-               for i in template_objs:
-                   yield i
+                for i in template_objs:
+                    yield i
 
         surveys = []
+
         def survey_requests(*args, **_kwarg):
             surveys.append(args[0])
 
         tower_mock.get.side_effect = fake_method
         inventory_import_mock = Mock()
-        inventory_import_mock.source_ref_to_id.return_value = service_inventory.id
+        inventory_import_mock.source_ref_to_id.return_value = (
+            service_inventory.id
+        )
         plan_import_mock = Mock()
         plan_import_mock.process.side_effect = survey_requests
 
-        soi = ServiceOfferingImport(tenant, source, tower_mock, inventory_import_mock, plan_import_mock)
+        soi = ServiceOfferingImport(
+            tenant, source, tower_mock, inventory_import_mock, plan_import_mock
+        )
         soi.process()
         assert (ServiceOffering.objects.all().count()) == 1
         obj = ServiceOffering.objects.first()
-        assert (obj.service_inventory.id) ==  service_inventory.id
-        assert (obj.name) ==  "Fred"
-        assert (obj.description) ==  "Bedrock Template"
+        assert (obj.service_inventory.id) == service_inventory.id
+        assert (obj.name) == "Fred"
+        assert (obj.description) == "Bedrock Template"
         assert (soi.get_stats().get("updates")) == 1
-        assert (len(surveys)) ==  0
+        assert (len(surveys)) == 0
         assert (ServicePlan.objects.all().count()) == 0
-        assert (soi.source_ref_to_id(service_offering.source_ref)) == service_offering.id
+        assert (
+            soi.source_ref_to_id(service_offering.source_ref)
+        ) == service_offering.id

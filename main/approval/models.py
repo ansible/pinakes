@@ -38,7 +38,9 @@ class Workflow(BaseModel):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     group_refs = models.JSONField(default=list)
-    internal_sequence = models.DecimalField(max_digits=16, decimal_places=6, db_index=True)
+    internal_sequence = models.DecimalField(
+        max_digits=16, decimal_places=6, db_index=True
+    )
     template = models.ForeignKey(Template, on_delete=models.CASCADE)
 
     class Meta:
@@ -54,7 +56,7 @@ class Workflow(BaseModel):
             models.UniqueConstraint(
                 name="%(app_label)s_%(class)s_internal_sequence_unique",
                 fields=["internal_sequence", "tenant"],
-            )
+            ),
         ]
 
     def __str__(self):
@@ -70,25 +72,35 @@ class Request(BaseModel):
     """Request model"""
 
     class State(models.TextChoices):
-        PENDING = 'Pending'
-        SKIPPED = 'Skipped'
-        STARTED = 'Started'
-        NOTIFIED = 'Notified'
-        COMPLETED = 'Completed'
-        CANCELED = 'Canceled'
-        FAILED = 'Failed'
+        PENDING = "Pending"
+        SKIPPED = "Skipped"
+        STARTED = "Started"
+        NOTIFIED = "Notified"
+        COMPLETED = "Completed"
+        CANCELED = "Canceled"
+        FAILED = "Failed"
 
     class Decision(models.TextChoices):
-        UNDECIDED = 'Undecided'
-        APPROVED = 'Approved'
-        DENIED = 'Denied'
-        CANCELED = 'Canceled'
-        ERROR = 'Error'
+        UNDECIDED = "Undecided"
+        APPROVED = "Approved"
+        DENIED = "Denied"
+        CANCELED = "Canceled"
+        ERROR = "Error"
 
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    state = models.CharField(max_length=10, choices=State.choices, default=State.PENDING, editable=False)
-    decision = models.CharField(max_length=10, choices=Decision.choices, default=Decision.UNDECIDED, editable=False)
+    state = models.CharField(
+        max_length=10,
+        choices=State.choices,
+        default=State.PENDING,
+        editable=False,
+    )
+    decision = models.CharField(
+        max_length=10,
+        choices=Decision.choices,
+        default=Decision.UNDECIDED,
+        editable=False,
+    )
     reason = models.TextField(blank=True, editable=False)
     process_ref = models.CharField(max_length=128, editable=False)
     group_name = models.CharField(max_length=128, editable=False)
@@ -96,10 +108,21 @@ class Request(BaseModel):
     notified_at = models.DateTimeField(editable=False, null=True)
     finished_at = models.DateTimeField(editable=False, null=True)
     number_of_children = models.SmallIntegerField(editable=False, default=0)
-    number_of_finished_children = models.SmallIntegerField(editable=False, default=0)
-    workflow = models.ForeignKey(Workflow, null=True, on_delete=models.SET_NULL)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name="sub_requests")
-    request_context = models.ForeignKey(RequestContext, null=True, on_delete=models.SET_NULL)
+    number_of_finished_children = models.SmallIntegerField(
+        editable=False, default=0
+    )
+    workflow = models.ForeignKey(
+        Workflow, null=True, on_delete=models.SET_NULL
+    )
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="sub_requests",
+    )
+    request_context = models.ForeignKey(
+        RequestContext, null=True, on_delete=models.SET_NULL
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     @property
@@ -120,19 +143,23 @@ class Action(BaseModel):
     """Action model"""
 
     class Operation(models.TextChoices):
-        NOTIFY = 'Notify'
-        START = 'Start'
-        SKIP = 'Skip'
-        Memo = 'Memo'
-        APPROVE = 'Approve'
-        DENY = 'Deny'
-        CANCEL = 'Cancel'
-        ERROR = 'Error'
+        NOTIFY = "Notify"
+        START = "Start"
+        SKIP = "Skip"
+        Memo = "Memo"
+        APPROVE = "Approve"
+        DENY = "Deny"
+        CANCEL = "Cancel"
+        ERROR = "Error"
 
     processed_by = models.CharField(max_length=128, editable=False)
-    operation = models.CharField(max_length=10, choices=Operation.choices, default=Operation.Memo)
+    operation = models.CharField(
+        max_length=10, choices=Operation.choices, default=Operation.Memo
+    )
     comments = models.TextField(blank=True)
-    request = models.ForeignKey(Request, on_delete=models.CASCADE, related_name="actions")
+    request = models.ForeignKey(
+        Request, on_delete=models.CASCADE, related_name="actions"
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     @property

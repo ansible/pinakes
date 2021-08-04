@@ -63,7 +63,10 @@ class ServicePlanFactory(factory.django.DjangoModelFactory):
     tenant = factory.SubFactory(TenantFactory)
     source = factory.SubFactory(SourceFactory, tenant=tenant)
     service_offering = factory.SubFactory(
-        ServiceOfferingFactory, tenant=tenant, source=source, survey_enabled=True
+        ServiceOfferingFactory,
+        tenant=tenant,
+        source=source,
+        survey_enabled=True,
     )
     name = factory.Sequence(lambda n: f"service_plan{n}")
     source_created_at = timezone.now()
@@ -81,10 +84,16 @@ class ServiceOfferingNodeFactory(factory.django.DjangoModelFactory):
     tenant = factory.SubFactory(TenantFactory)
     source = factory.SubFactory(SourceFactory, tenant=tenant)
     service_offering = factory.SubFactory(
-        ServiceOfferingFactory, tenant=tenant, source=source, survey_enabled=True
+        ServiceOfferingFactory,
+        tenant=tenant,
+        source=source,
+        survey_enabled=True,
     )
     root_service_offering = factory.SubFactory(
-        ServiceOfferingFactory, tenant=tenant, source=source, survey_enabled=True
+        ServiceOfferingFactory,
+        tenant=tenant,
+        source=source,
+        survey_enabled=True,
     )
     source_created_at = timezone.now()
     source_updated_at = timezone.now()

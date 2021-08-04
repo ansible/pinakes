@@ -11,369 +11,888 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('taggit', '0001_initial'),
+        ("taggit", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Order',
+            name="Order",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('state', models.CharField(choices=[('Pending', 'Pending'), ('Approved', 'Approved'), ('Canceled', 'Canceled'), ('Completed', 'Completed'), ('Created', 'Created'), ('Denied', 'Denied'), ('Failed', 'Failed'), ('Ordered', 'Ordered')], default='Created', editable=False, max_length=10)),
-                ('order_request_sent_at', models.DateTimeField(editable=False, null=True)),
-                ('completed_at', models.DateTimeField(editable=False, null=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "state",
+                    models.CharField(
+                        choices=[
+                            ("Pending", "Pending"),
+                            ("Approved", "Approved"),
+                            ("Canceled", "Canceled"),
+                            ("Completed", "Completed"),
+                            ("Created", "Created"),
+                            ("Denied", "Denied"),
+                            ("Failed", "Failed"),
+                            ("Ordered", "Ordered"),
+                        ],
+                        default="Created",
+                        editable=False,
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "order_request_sent_at",
+                    models.DateTimeField(editable=False, null=True),
+                ),
+                (
+                    "completed_at",
+                    models.DateTimeField(editable=False, null=True),
+                ),
             ],
             options={
-                'ordering': ['-created_at'],
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='Portfolio',
+            name="Portfolio",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=255, unique=True)),
-                ('description', models.TextField(blank=True, default='')),
-                ('enabled', models.BooleanField(default=False)),
-                ('owner', models.CharField(max_length=255)),
-                ('tags', taggit.managers.TaggableManager(help_text='A comma-separated list of tags.', through='taggit.TaggedItem', to='taggit.Tag', verbose_name='Tags')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=255, unique=True)),
+                ("description", models.TextField(blank=True, default="")),
+                ("enabled", models.BooleanField(default=False)),
+                ("owner", models.CharField(max_length=255)),
+                (
+                    "tags",
+                    taggit.managers.TaggableManager(
+                        help_text="A comma-separated list of tags.",
+                        through="taggit.TaggedItem",
+                        to="taggit.Tag",
+                        verbose_name="Tags",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created_at'],
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='RequestContext',
+            name="RequestContext",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('content', models.JSONField()),
-                ('context', models.JSONField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("content", models.JSONField()),
+                ("context", models.JSONField()),
             ],
         ),
         migrations.CreateModel(
-            name='ServiceInventory',
+            name="ServiceInventory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('source_created_at', models.DateTimeField()),
-                ('source_updated_at', models.DateTimeField()),
-                ('source_ref', models.CharField(max_length=32)),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.TextField(blank=True, default='')),
-                ('extra', models.JSONField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("source_created_at", models.DateTimeField()),
+                ("source_updated_at", models.DateTimeField()),
+                ("source_ref", models.CharField(max_length=32)),
+                ("name", models.CharField(max_length=255)),
+                ("description", models.TextField(blank=True, default="")),
+                ("extra", models.JSONField()),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='ServiceOffering',
+            name="ServiceOffering",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('source_created_at', models.DateTimeField()),
-                ('source_updated_at', models.DateTimeField()),
-                ('source_ref', models.CharField(max_length=32)),
-                ('name', models.CharField(max_length=255, unique=True)),
-                ('description', models.TextField(blank=True, default='')),
-                ('survey_enabled', models.BooleanField(default=False)),
-                ('kind', models.IntegerField(choices=[(0, 'JobTemplate'), (1, 'Workflow')], default=0)),
-                ('extra', models.JSONField()),
-                ('service_inventory', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='main.serviceinventory')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("source_created_at", models.DateTimeField()),
+                ("source_updated_at", models.DateTimeField()),
+                ("source_ref", models.CharField(max_length=32)),
+                ("name", models.CharField(max_length=255, unique=True)),
+                ("description", models.TextField(blank=True, default="")),
+                ("survey_enabled", models.BooleanField(default=False)),
+                (
+                    "kind",
+                    models.IntegerField(
+                        choices=[(0, "JobTemplate"), (1, "Workflow")],
+                        default=0,
+                    ),
+                ),
+                ("extra", models.JSONField()),
+                (
+                    "service_inventory",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="main.serviceinventory",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='Template',
+            name="Template",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('title', models.CharField(max_length=255)),
-                ('description', models.TextField(blank=True, default='')),
-                ('process_setting', models.JSONField(blank=True, null=True)),
-                ('signal_setting', models.JSONField(blank=True, null=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("title", models.CharField(max_length=255)),
+                ("description", models.TextField(blank=True, default="")),
+                ("process_setting", models.JSONField(blank=True, null=True)),
+                ("signal_setting", models.JSONField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Tenant',
+            name="Tenant",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('external_tenant', models.CharField(max_length=32, unique=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "external_tenant",
+                    models.CharField(max_length=32, unique=True),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Workflow',
+            name="Workflow",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.TextField(blank=True, default='')),
-                ('group_refs', models.JSONField(default=list)),
-                ('internal_sequence', models.DecimalField(db_index=True, decimal_places=6, max_digits=16)),
-                ('template', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.template')),
-                ('tenant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=255)),
+                ("description", models.TextField(blank=True, default="")),
+                ("group_refs", models.JSONField(default=list)),
+                (
+                    "internal_sequence",
+                    models.DecimalField(
+                        db_index=True, decimal_places=6, max_digits=16
+                    ),
+                ),
+                (
+                    "template",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.template",
+                    ),
+                ),
+                (
+                    "tenant",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.tenant",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='template',
-            name='tenant',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant'),
+            model_name="template",
+            name="tenant",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="main.tenant"
+            ),
         ),
         migrations.CreateModel(
-            name='Source',
+            name="Source",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('tenant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, unique=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "tenant",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.tenant",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ServicePlan',
+            name="ServicePlan",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('source_created_at', models.DateTimeField()),
-                ('source_updated_at', models.DateTimeField()),
-                ('source_ref', models.CharField(max_length=32)),
-                ('name', models.CharField(blank=True, max_length=255)),
-                ('extra', models.JSONField()),
-                ('create_json_schema', models.JSONField()),
-                ('update_json_schema', models.JSONField(null=True)),
-                ('service_offering', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='main.serviceoffering')),
-                ('source', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.source')),
-                ('tenant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("source_created_at", models.DateTimeField()),
+                ("source_updated_at", models.DateTimeField()),
+                ("source_ref", models.CharField(max_length=32)),
+                ("name", models.CharField(blank=True, max_length=255)),
+                ("extra", models.JSONField()),
+                ("create_json_schema", models.JSONField()),
+                ("update_json_schema", models.JSONField(null=True)),
+                (
+                    "service_offering",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="main.serviceoffering",
+                    ),
+                ),
+                (
+                    "source",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.source",
+                    ),
+                ),
+                (
+                    "tenant",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.tenant",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='ServiceOfferingNode',
+            name="ServiceOfferingNode",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('source_created_at', models.DateTimeField()),
-                ('source_updated_at', models.DateTimeField()),
-                ('source_ref', models.CharField(max_length=32)),
-                ('extra', models.JSONField()),
-                ('root_service_offering', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='root_service_offering', to='main.serviceoffering')),
-                ('service_inventory', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='main.serviceinventory')),
-                ('service_offering', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='main.serviceoffering')),
-                ('source', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.source')),
-                ('tenant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("source_created_at", models.DateTimeField()),
+                ("source_updated_at", models.DateTimeField()),
+                ("source_ref", models.CharField(max_length=32)),
+                ("extra", models.JSONField()),
+                (
+                    "root_service_offering",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="root_service_offering",
+                        to="main.serviceoffering",
+                    ),
+                ),
+                (
+                    "service_inventory",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="main.serviceinventory",
+                    ),
+                ),
+                (
+                    "service_offering",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="main.serviceoffering",
+                    ),
+                ),
+                (
+                    "source",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.source",
+                    ),
+                ),
+                (
+                    "tenant",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.tenant",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.AddField(
-            model_name='serviceoffering',
-            name='source',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.source'),
+            model_name="serviceoffering",
+            name="source",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="main.source"
+            ),
         ),
         migrations.AddField(
-            model_name='serviceoffering',
-            name='tenant',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant'),
+            model_name="serviceoffering",
+            name="tenant",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="main.tenant"
+            ),
         ),
         migrations.AddField(
-            model_name='serviceinventory',
-            name='source',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.source'),
+            model_name="serviceinventory",
+            name="source",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="main.source"
+            ),
         ),
         migrations.AddField(
-            model_name='serviceinventory',
-            name='tags',
-            field=taggit.managers.TaggableManager(help_text='A comma-separated list of tags.', through='taggit.TaggedItem', to='taggit.Tag', verbose_name='Tags'),
+            model_name="serviceinventory",
+            name="tags",
+            field=taggit.managers.TaggableManager(
+                help_text="A comma-separated list of tags.",
+                through="taggit.TaggedItem",
+                to="taggit.Tag",
+                verbose_name="Tags",
+            ),
         ),
         migrations.AddField(
-            model_name='serviceinventory',
-            name='tenant',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant'),
+            model_name="serviceinventory",
+            name="tenant",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="main.tenant"
+            ),
         ),
         migrations.CreateModel(
-            name='Request',
+            name="Request",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.TextField(blank=True)),
-                ('state', models.CharField(choices=[('Pending', 'Pending'), ('Skipped', 'Skipped'), ('Started', 'Started'), ('Notified', 'Notified'), ('Completed', 'Completed'), ('Canceled', 'Canceled'), ('Failed', 'Failed')], default='Pending', editable=False, max_length=10)),
-                ('decision', models.CharField(choices=[('Undecided', 'Undecided'), ('Approved', 'Approved'), ('Denied', 'Denied'), ('Canceled', 'Canceled'), ('Error', 'Error')], default='Undecided', editable=False, max_length=10)),
-                ('reason', models.TextField(blank=True, editable=False)),
-                ('process_ref', models.CharField(editable=False, max_length=128)),
-                ('group_name', models.CharField(editable=False, max_length=128)),
-                ('group_ref', models.CharField(db_index=True, editable=False, max_length=128)),
-                ('notified_at', models.DateTimeField(editable=False, null=True)),
-                ('finished_at', models.DateTimeField(editable=False, null=True)),
-                ('number_of_children', models.SmallIntegerField(default=0, editable=False)),
-                ('number_of_finished_children', models.SmallIntegerField(default=0, editable=False)),
-                ('parent', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='main.request')),
-                ('request_context', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='main.requestcontext')),
-                ('tenant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant')),
-                ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('workflow', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='main.workflow')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=255)),
+                ("description", models.TextField(blank=True)),
+                (
+                    "state",
+                    models.CharField(
+                        choices=[
+                            ("Pending", "Pending"),
+                            ("Skipped", "Skipped"),
+                            ("Started", "Started"),
+                            ("Notified", "Notified"),
+                            ("Completed", "Completed"),
+                            ("Canceled", "Canceled"),
+                            ("Failed", "Failed"),
+                        ],
+                        default="Pending",
+                        editable=False,
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "decision",
+                    models.CharField(
+                        choices=[
+                            ("Undecided", "Undecided"),
+                            ("Approved", "Approved"),
+                            ("Denied", "Denied"),
+                            ("Canceled", "Canceled"),
+                            ("Error", "Error"),
+                        ],
+                        default="Undecided",
+                        editable=False,
+                        max_length=10,
+                    ),
+                ),
+                ("reason", models.TextField(blank=True, editable=False)),
+                (
+                    "process_ref",
+                    models.CharField(editable=False, max_length=128),
+                ),
+                (
+                    "group_name",
+                    models.CharField(editable=False, max_length=128),
+                ),
+                (
+                    "group_ref",
+                    models.CharField(
+                        db_index=True, editable=False, max_length=128
+                    ),
+                ),
+                (
+                    "notified_at",
+                    models.DateTimeField(editable=False, null=True),
+                ),
+                (
+                    "finished_at",
+                    models.DateTimeField(editable=False, null=True),
+                ),
+                (
+                    "number_of_children",
+                    models.SmallIntegerField(default=0, editable=False),
+                ),
+                (
+                    "number_of_finished_children",
+                    models.SmallIntegerField(default=0, editable=False),
+                ),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.request",
+                    ),
+                ),
+                (
+                    "request_context",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="main.requestcontext",
+                    ),
+                ),
+                (
+                    "tenant",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.tenant",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "workflow",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="main.workflow",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='PortfolioItem',
+            name="PortfolioItem",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('favorite', models.BooleanField(default=False)),
-                ('description', models.TextField(blank=True, default='')),
-                ('orphan', models.BooleanField(default=False)),
-                ('state', models.CharField(max_length=64)),
-                ('service_offering_ref', models.CharField(max_length=64)),
-                ('service_offering_source_ref', models.CharField(blank=True, default='', max_length=64)),
-                ('name', models.CharField(max_length=64)),
-                ('long_description', models.TextField(blank=True, default='')),
-                ('distributor', models.CharField(max_length=64)),
-                ('documentation_url', models.URLField(blank=True)),
-                ('support_url', models.URLField(blank=True)),
-                ('portfolio', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.portfolio')),
-                ('tags', taggit.managers.TaggableManager(help_text='A comma-separated list of tags.', through='taggit.TaggedItem', to='taggit.Tag', verbose_name='Tags')),
-                ('tenant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("favorite", models.BooleanField(default=False)),
+                ("description", models.TextField(blank=True, default="")),
+                ("orphan", models.BooleanField(default=False)),
+                ("state", models.CharField(max_length=64)),
+                ("service_offering_ref", models.CharField(max_length=64)),
+                (
+                    "service_offering_source_ref",
+                    models.CharField(blank=True, default="", max_length=64),
+                ),
+                ("name", models.CharField(max_length=64)),
+                ("long_description", models.TextField(blank=True, default="")),
+                ("distributor", models.CharField(max_length=64)),
+                ("documentation_url", models.URLField(blank=True)),
+                ("support_url", models.URLField(blank=True)),
+                (
+                    "portfolio",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.portfolio",
+                    ),
+                ),
+                (
+                    "tags",
+                    taggit.managers.TaggableManager(
+                        help_text="A comma-separated list of tags.",
+                        through="taggit.TaggedItem",
+                        to="taggit.Tag",
+                        verbose_name="Tags",
+                    ),
+                ),
+                (
+                    "tenant",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.tenant",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created_at'],
+                "ordering": ["-created_at"],
             },
         ),
         migrations.AddField(
-            model_name='portfolio',
-            name='tenant',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant'),
+            model_name="portfolio",
+            name="tenant",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="main.tenant"
+            ),
         ),
         migrations.CreateModel(
-            name='OrderItem',
+            name="OrderItem",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=64)),
-                ('state', models.CharField(choices=[('Pending', 'Pending'), ('Approved', 'Approved'), ('Canceled', 'Canceled'), ('Completed', 'Completed'), ('Created', 'Created'), ('Denied', 'Denied'), ('Failed', 'Failed'), ('Ordered', 'Ordered')], default='Created', editable=False, max_length=10)),
-                ('order_request_sent_at', models.DateTimeField(editable=False, null=True)),
-                ('completed_at', models.DateTimeField(editable=False, null=True)),
-                ('count', models.SmallIntegerField(default=0, editable=False)),
-                ('inventory_task_ref', models.CharField(default='', max_length=64)),
-                ('service_plan_ref', models.CharField(default='', max_length=64)),
-                ('service_instance_ref', models.CharField(default='', max_length=64)),
-                ('service_parameters', models.JSONField(blank=True, null=True)),
-                ('service_parameters_raw', models.JSONField(blank=True, null=True)),
-                ('provider_control_parameters', models.JSONField(blank=True, null=True)),
-                ('context', models.JSONField(blank=True, null=True)),
-                ('artifacts', models.JSONField(blank=True, null=True)),
-                ('external_url', models.URLField(blank=True)),
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.order')),
-                ('portfolio_item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.portfolioitem')),
-                ('tenant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=64)),
+                (
+                    "state",
+                    models.CharField(
+                        choices=[
+                            ("Pending", "Pending"),
+                            ("Approved", "Approved"),
+                            ("Canceled", "Canceled"),
+                            ("Completed", "Completed"),
+                            ("Created", "Created"),
+                            ("Denied", "Denied"),
+                            ("Failed", "Failed"),
+                            ("Ordered", "Ordered"),
+                        ],
+                        default="Created",
+                        editable=False,
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "order_request_sent_at",
+                    models.DateTimeField(editable=False, null=True),
+                ),
+                (
+                    "completed_at",
+                    models.DateTimeField(editable=False, null=True),
+                ),
+                ("count", models.SmallIntegerField(default=0, editable=False)),
+                (
+                    "inventory_task_ref",
+                    models.CharField(default="", max_length=64),
+                ),
+                (
+                    "service_plan_ref",
+                    models.CharField(default="", max_length=64),
+                ),
+                (
+                    "service_instance_ref",
+                    models.CharField(default="", max_length=64),
+                ),
+                (
+                    "service_parameters",
+                    models.JSONField(blank=True, null=True),
+                ),
+                (
+                    "service_parameters_raw",
+                    models.JSONField(blank=True, null=True),
+                ),
+                (
+                    "provider_control_parameters",
+                    models.JSONField(blank=True, null=True),
+                ),
+                ("context", models.JSONField(blank=True, null=True)),
+                ("artifacts", models.JSONField(blank=True, null=True)),
+                ("external_url", models.URLField(blank=True)),
+                (
+                    "order",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.order",
+                    ),
+                ),
+                (
+                    "portfolio_item",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.portfolioitem",
+                    ),
+                ),
+                (
+                    "tenant",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.tenant",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created_at'],
+                "ordering": ["-created_at"],
             },
         ),
         migrations.AddField(
-            model_name='order',
-            name='tenant',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant'),
+            model_name="order",
+            name="tenant",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="main.tenant"
+            ),
         ),
         migrations.AddField(
-            model_name='order',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="order",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.CreateModel(
-            name='Action',
+            name="Action",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('operation', models.CharField(choices=[('Notify', 'Notify'), ('Start', 'Start'), ('Skip', 'Skip'), ('Memo', 'Memo'), ('Approve', 'Approve'), ('Deny', 'Deny'), ('Cancel', 'Cancel'), ('Error', 'Error')], default='Memo', max_length=10)),
-                ('comments', models.TextField(blank=True)),
-                ('request', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.request')),
-                ('tenant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.tenant')),
-                ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "operation",
+                    models.CharField(
+                        choices=[
+                            ("Notify", "Notify"),
+                            ("Start", "Start"),
+                            ("Skip", "Skip"),
+                            ("Memo", "Memo"),
+                            ("Approve", "Approve"),
+                            ("Deny", "Deny"),
+                            ("Cancel", "Cancel"),
+                            ("Error", "Error"),
+                        ],
+                        default="Memo",
+                        max_length=10,
+                    ),
+                ),
+                ("comments", models.TextField(blank=True)),
+                (
+                    "request",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.request",
+                    ),
+                ),
+                (
+                    "tenant",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="main.tenant",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.AddConstraint(
-            model_name='workflow',
-            constraint=models.CheckConstraint(check=models.Q(('name__length__gt', 0)), name='main_workflow_name_empty'),
+            model_name="workflow",
+            constraint=models.CheckConstraint(
+                check=models.Q(("name__length__gt", 0)),
+                name="main_workflow_name_empty",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='workflow',
-            constraint=models.UniqueConstraint(fields=('name', 'tenant', 'template'), name='main_workflow_name_unique'),
+            model_name="workflow",
+            constraint=models.UniqueConstraint(
+                fields=("name", "tenant", "template"),
+                name="main_workflow_name_unique",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='workflow',
-            constraint=models.UniqueConstraint(fields=('internal_sequence', 'tenant'), name='main_workflow_internal_sequence_unique'),
+            model_name="workflow",
+            constraint=models.UniqueConstraint(
+                fields=("internal_sequence", "tenant"),
+                name="main_workflow_internal_sequence_unique",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='template',
-            constraint=models.CheckConstraint(check=models.Q(('title__length__gt', 0)), name='main_template_title_empty'),
+            model_name="template",
+            constraint=models.CheckConstraint(
+                check=models.Q(("title__length__gt", 0)),
+                name="main_template_title_empty",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='template',
-            constraint=models.UniqueConstraint(fields=('title', 'tenant'), name='main_template_title_unique'),
+            model_name="template",
+            constraint=models.UniqueConstraint(
+                fields=("title", "tenant"), name="main_template_title_unique"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='portfolioitem',
-            constraint=models.CheckConstraint(check=models.Q(('name__length__gt', 0)), name='main_portfolioitem_name_empty'),
+            model_name="portfolioitem",
+            constraint=models.CheckConstraint(
+                check=models.Q(("name__length__gt", 0)),
+                name="main_portfolioitem_name_empty",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='portfolioitem',
-            constraint=models.CheckConstraint(check=models.Q(('service_offering_ref__length__gt', 0)), name='main_portfolioitem_service_offering_empty'),
+            model_name="portfolioitem",
+            constraint=models.CheckConstraint(
+                check=models.Q(("service_offering_ref__length__gt", 0)),
+                name="main_portfolioitem_service_offering_empty",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='portfolioitem',
-            constraint=models.UniqueConstraint(fields=('name', 'tenant', 'portfolio'), name='main_portfolioitem_name_unique'),
+            model_name="portfolioitem",
+            constraint=models.UniqueConstraint(
+                fields=("name", "tenant", "portfolio"),
+                name="main_portfolioitem_name_unique",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='portfolio',
-            constraint=models.CheckConstraint(check=models.Q(('name__length__gt', 0)), name='main_portfolio_name_empty'),
+            model_name="portfolio",
+            constraint=models.CheckConstraint(
+                check=models.Q(("name__length__gt", 0)),
+                name="main_portfolio_name_empty",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='portfolio',
-            constraint=models.UniqueConstraint(fields=('name', 'tenant'), name='main_portfolio_name_unique'),
+            model_name="portfolio",
+            constraint=models.UniqueConstraint(
+                fields=("name", "tenant"), name="main_portfolio_name_unique"
+            ),
         ),
         migrations.AddIndex(
-            model_name='orderitem',
-            index=models.Index(fields=['tenant', 'user'], name='main_orderi_tenant__57608b_idx'),
+            model_name="orderitem",
+            index=models.Index(
+                fields=["tenant", "user"],
+                name="main_orderi_tenant__57608b_idx",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='orderitem',
-            constraint=models.CheckConstraint(check=models.Q(('name__length__gt', 0)), name='main_orderitem_name_empty'),
+            model_name="orderitem",
+            constraint=models.CheckConstraint(
+                check=models.Q(("name__length__gt", 0)),
+                name="main_orderitem_name_empty",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='orderitem',
-            constraint=models.UniqueConstraint(fields=('name', 'tenant', 'order', 'portfolio_item'), name='main_orderitem_name_unique'),
+            model_name="orderitem",
+            constraint=models.UniqueConstraint(
+                fields=("name", "tenant", "order", "portfolio_item"),
+                name="main_orderitem_name_unique",
+            ),
         ),
         migrations.AddIndex(
-            model_name='order',
-            index=models.Index(fields=['tenant', 'user'], name='main_order_tenant__9f158a_idx'),
+            model_name="order",
+            index=models.Index(
+                fields=["tenant", "user"], name="main_order_tenant__9f158a_idx"
+            ),
         ),
     ]

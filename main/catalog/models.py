@@ -80,27 +80,27 @@ class Order(UserOwnedModel):
 
     class State(models.TextChoices):
         """Available states for Order"""
-        PENDING = 'Pending' # Approval
-        APPROVED = 'Approved'
-        CANCELED = 'Canceled'
-        COMPLETED = 'Completed'
-        CREATED = 'Created'
-        DENIED = 'Denied'
-        FAILED = 'Failed'
-        ORDERED = 'Ordered'
+
+        PENDING = "Pending"  # Approval
+        APPROVED = "Approved"
+        CANCELED = "Canceled"
+        COMPLETED = "Completed"
+        CREATED = "Created"
+        DENIED = "Denied"
+        FAILED = "Failed"
+        ORDERED = "Ordered"
 
     state = models.CharField(
         max_length=10,
         choices=State.choices,
         default=State.CREATED,
-        editable=False)
+        editable=False,
+    )
     order_request_sent_at = models.DateTimeField(editable=False, null=True)
     completed_at = models.DateTimeField(editable=False, null=True)
 
     class Meta:
-        indexes = [
-            models.Index(fields=['tenant', 'user'])
-        ]
+        indexes = [models.Index(fields=["tenant", "user"])]
 
     def __str__(self):
         return str(self.id)
@@ -111,21 +111,23 @@ class OrderItem(UserOwnedModel):
 
     class State(models.TextChoices):
         """Available states for Order Item"""
-        PENDING = 'Pending' # Approval
-        APPROVED = 'Approved'
-        CANCELED = 'Canceled'
-        COMPLETED = 'Completed'
-        CREATED = 'Created'
-        DENIED = 'Denied'
-        FAILED = 'Failed'
-        ORDERED = 'Ordered'
+
+        PENDING = "Pending"  # Approval
+        APPROVED = "Approved"
+        CANCELED = "Canceled"
+        COMPLETED = "Completed"
+        CREATED = "Created"
+        DENIED = "Denied"
+        FAILED = "Failed"
+        ORDERED = "Ordered"
 
     name = models.CharField(max_length=64)
     state = models.CharField(
         max_length=10,
         choices=State.choices,
         default=State.CREATED,
-        editable=False)
+        editable=False,
+    )
     order_request_sent_at = models.DateTimeField(editable=False, null=True)
     completed_at = models.DateTimeField(editable=False, null=True)
     count = models.SmallIntegerField(editable=False, default=0)
@@ -143,9 +145,7 @@ class OrderItem(UserOwnedModel):
     portfolio_item = models.ForeignKey(PortfolioItem, on_delete=models.CASCADE)
 
     class Meta:
-        indexes = [
-            models.Index(fields=['tenant', 'user'])
-        ]
+        indexes = [models.Index(fields=["tenant", "user"])]
         constraints = [
             models.CheckConstraint(
                 name="%(app_label)s_%(class)s_name_empty",

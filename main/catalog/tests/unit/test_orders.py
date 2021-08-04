@@ -8,7 +8,7 @@ from main.tests.factories import UserFactory
 
 @pytest.mark.django_db
 def test_order():
-    """ Test on Order Creation """
+    """Test on Order Creation"""
     tenant = TenantFactory()
     user = UserFactory()
 

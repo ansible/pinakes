@@ -3,16 +3,13 @@ import factory
 from django.contrib.auth.models import User
 
 from main.models import Tenant
-from main.catalog.models import (
-    Portfolio,
-    PortfolioItem,
-    Order,
-    OrderItem
-)
+from main.catalog.models import Portfolio, PortfolioItem, Order, OrderItem
 from main.tests.factories import TenantFactory, UserFactory
 
+
 class PortfolioFactory(factory.django.DjangoModelFactory):
-    """ Portfolio Factory """
+    """Portfolio Factory"""
+
     class Meta:
         model = Portfolio
 
@@ -22,7 +19,8 @@ class PortfolioFactory(factory.django.DjangoModelFactory):
 
 
 class PortfolioItemFactory(factory.django.DjangoModelFactory):
-    """ Portfolio Item Factory """
+    """Portfolio Item Factory"""
+
     class Meta:
         model = PortfolioItem
 
@@ -34,7 +32,8 @@ class PortfolioItemFactory(factory.django.DjangoModelFactory):
 
 
 class OrderFactory(factory.django.DjangoModelFactory):
-    """ Order Factory """
+    """Order Factory"""
+
     class Meta:
         model = Order
 
@@ -43,7 +42,8 @@ class OrderFactory(factory.django.DjangoModelFactory):
 
 
 class OrderItemFactory(factory.django.DjangoModelFactory):
-    """ OrderItem Factory """
+    """OrderItem Factory"""
+
     class Meta:
         model = OrderItem
 

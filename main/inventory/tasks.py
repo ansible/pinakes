@@ -5,6 +5,7 @@ from main.inventory.task_utils.launch_job import LaunchJob
 
 logger = logging.getLogger("inventory")
 
+
 def refresh_task(tenant_id, source_id):
     """Run the Refresh task"""
     logger.info("Starting Inventory Refresh")

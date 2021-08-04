@@ -18,8 +18,16 @@ class TestTowerAPI:
             "next": "/api/v2/job_templates/?page=2",
             "previous": None,
             "results": [
-                {"name": "abc", "description": "desc1", "related": {"inventory": 2}},
-                {"name": "xyz", "description": "desc2", "related": {"inventory": 3}},
+                {
+                    "name": "abc",
+                    "description": "desc1",
+                    "related": {"inventory": 2},
+                },
+                {
+                    "name": "xyz",
+                    "description": "desc2",
+                    "related": {"inventory": 3},
+                },
             ],
         }
         data2 = {
@@ -27,10 +35,16 @@ class TestTowerAPI:
             "previous": "/api/v2/job_templates/?page=1",
             "next": None,
             "results": [
-                {"name": "mno", "description": "desc3", "related": {"inventory": 5}},
+                {
+                    "name": "mno",
+                    "description": "desc3",
+                    "related": {"inventory": 5},
+                },
             ],
         }
-        tower_api = TowerAPI("https://www.example.com", "gobbledegook", "false")
+        tower_api = TowerAPI(
+            "https://www.example.com", "gobbledegook", "false"
+        )
         responses.add(
             responses.GET,
             "https://www.example.com/api/v2/job_templates",
@@ -46,7 +60,8 @@ class TestTowerAPI:
 
         names = []
         for obj in tower_api.get(
-            "/api/v2/job_templates", ["name", "description", "related.inventory"]
+            "/api/v2/job_templates",
+            ["name", "description", "related.inventory"],
         ):
             names.append(obj["name"])
 
@@ -55,8 +70,14 @@ class TestTowerAPI:
     @responses.activate
     def test_single_object(self):
         """Fetch a single object from tower sans pagination data"""
-        data = {"name": "abc", "description": "desc1", "related": {"inventory": 2}}
-        tower_api = TowerAPI("https://www.example.com", "gobbledegook", "false")
+        data = {
+            "name": "abc",
+            "description": "desc1",
+            "related": {"inventory": 2},
+        }
+        tower_api = TowerAPI(
+            "https://www.example.com", "gobbledegook", "false"
+        )
         responses.add(
             responses.GET,
             "https://www.example.com/api/v2/job_templates/1/",
@@ -65,7 +86,8 @@ class TestTowerAPI:
         )
         names = []
         for obj in tower_api.get(
-            "/api/v2/job_templates/1/", ["name", "description", "related.inventory"]
+            "/api/v2/job_templates/1/",
+            ["name", "description", "related.inventory"],
         ):
             names.append(obj["name"])
 
@@ -74,7 +96,9 @@ class TestTowerAPI:
     @responses.activate
     def test_errors(self):
         """Test errors when we get HTTP Error Codes"""
-        tower_api = TowerAPI("https://www.example.com", "gobbledegook", "false")
+        tower_api = TowerAPI(
+            "https://www.example.com", "gobbledegook", "false"
+        )
         responses.add(
             responses.GET,
             "https://www.example.com/api/v2/job_templates/1/",
@@ -83,22 +107,28 @@ class TestTowerAPI:
         )
         with pytest.raises(RuntimeError, match=r"not found"):
             for _ in tower_api.get(
-                "/api/v2/job_templates/1/", ["name", "description", "related.inventory"]
+                "/api/v2/job_templates/1/",
+                ["name", "description", "related.inventory"],
             ):
                 pass
 
     @responses.activate
     def test_exception(self):
         """Test exceptions raised by the requests module"""
-        tower_api = TowerAPI("https://www.example.com", "gobbledegook", "false")
+        tower_api = TowerAPI(
+            "https://www.example.com", "gobbledegook", "false"
+        )
         responses.add(
             responses.GET,
             "https://www.example.com/api/v2/job_templates/1/",
             body=requests.exceptions.RequestException("Kaboom"),
         )
-        with pytest.raises(requests.exceptions.RequestException, match=r"Kaboom"):
+        with pytest.raises(
+            requests.exceptions.RequestException, match=r"Kaboom"
+        ):
             for _ in tower_api.get(
-                "/api/v2/job_templates/1/", ["name", "description", "related.inventory"]
+                "/api/v2/job_templates/1/",
+                ["name", "description", "related.inventory"],
             ):
                 pass
 
@@ -106,8 +136,14 @@ class TestTowerAPI:
     def test_post(self):
         """Test POST with JSON body"""
         job_url = "/api/v2/jobs/123/"
-        tower_api = TowerAPI("https://www.example.com", "gobbledegook", "false")
-        data = {"url": job_url, "status": "running", "artifacts": {"inventory": 2}}
+        tower_api = TowerAPI(
+            "https://www.example.com", "gobbledegook", "false"
+        )
+        data = {
+            "url": job_url,
+            "status": "running",
+            "artifacts": {"inventory": 2},
+        }
         responses.add(
             responses.POST,
             "https://www.example.com/api/v2/job_templates/1/launch/",
@@ -115,26 +151,34 @@ class TestTowerAPI:
             status=200,
         )
         obj = tower_api.post(
-            "/api/v2/job_templates/1/launch/", {"name": "Fred"}, ["url", "status"]
+            "/api/v2/job_templates/1/launch/",
+            {"name": "Fred"},
+            ["url", "status"],
         )
         assert (obj["url"]) == job_url
 
     @responses.activate
     def test_post_exception(self):
         """Test POST exceptions raised by the requests module"""
-        tower_api = TowerAPI("https://www.example.com", "gobbledegook", "false")
+        tower_api = TowerAPI(
+            "https://www.example.com", "gobbledegook", "false"
+        )
         responses.add(
             responses.POST,
             "https://www.example.com/api/v2/job_templates/1/launch/",
             body=requests.exceptions.RequestException("Kaboom"),
         )
-        with pytest.raises(requests.exceptions.RequestException, match=r"Kaboom"):
+        with pytest.raises(
+            requests.exceptions.RequestException, match=r"Kaboom"
+        ):
             tower_api.post("/api/v2/job_templates/1/launch/", {"a": 1}, [])
 
     @responses.activate
     def test_post_errors(self):
         """Test POST errors when we get HTTP Error Codes"""
-        tower_api = TowerAPI("https://www.example.com", "gobbledegook", "false")
+        tower_api = TowerAPI(
+            "https://www.example.com", "gobbledegook", "false"
+        )
         responses.add(
             responses.POST,
             "https://www.example.com/api/v2/job_templates/1/launch/",
