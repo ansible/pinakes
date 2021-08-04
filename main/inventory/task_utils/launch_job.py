@@ -8,6 +8,7 @@ class LaunchJob:
 
     REFRESH_INTERVAL = 10
     JOB_COMPLETION_STATUSES = ("successful", "failed", "error", "canceled")
+
     # default constructor
     def __init__(self, slug, body):
         self.tower = TowerAPI()
