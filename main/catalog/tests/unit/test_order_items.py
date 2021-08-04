@@ -48,5 +48,4 @@ def test_duplicate_orderitem_name():
         OrderItemFactory(tenant=tenant, order=order, portfolio_item=portfolio_item, name=name)
 
     assert f"UNIQUE constraint failed: {order._meta.app_label}_orderitem.name" in str(
-        excinfo.value
-        )
+        excinfo.value)
