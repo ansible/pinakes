@@ -2,3 +2,4 @@ black
 pytest
 pytest-django
 pytest-factoryboy
+responses
