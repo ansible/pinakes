@@ -149,9 +149,9 @@ STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Tower Info
-TOWER_URL="https://Your_Tower_URL"
-TOWER_TOKEN="Your Token"
-TOWER_VERIFY_SSL="False"
+TOWER_URL = "https://Your_Tower_URL"
+TOWER_TOKEN = "Your Token"
+TOWER_VERIFY_SSL = "False"
 
 # Logging configuration
 LOG_ROOT = os.getenv("CATALOG_LOG_ROOT", "/var/log/ansible_catalog/")
@@ -252,7 +252,7 @@ LOGGING = {
     }
 }
 
-LOGIN_URL='/api/login/'
+LOGIN_URL = '/api/login/'
 
 # Django Redis Queue Information
 RQ_QUEUES = {

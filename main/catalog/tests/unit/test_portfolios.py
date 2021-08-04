@@ -17,7 +17,7 @@ class TestPortfolios:
 
         tenant = TenantFactory()
         name = "fred"
-        temp="%(app_label)s_%(class)s_name_empty"
+        temp = "%(app_label)s_%(class)s_name_empty"
         portfolio = PortfolioFactory(tenant=tenant, name=name)
         with pytest.raises(IntegrityError) as excinfo:
             PortfolioFactory(tenant=tenant, name=name)
