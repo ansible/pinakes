@@ -55,11 +55,11 @@ class TestServiceOfferingImport:
 
         def fake_method(*args, **_kwarg):
             if "workflow_job_templates" in args[0]:
-               for i in workflow_objs:
-                   yield i
+                for i in workflow_objs:
+                    yield i
             else:
-               for i in template_objs:
-                   yield i
+                for i in template_objs:
+                    yield i
 
         surveys = []
         def survey_requests(*args, **_kwarg):
@@ -108,11 +108,11 @@ class TestServiceOfferingImport:
 
         def fake_method(*args, **_kwarg):
             if "workflow_job_templates" in args[0]:
-               for i in workflow_objs:
-                   yield i
+                for i in workflow_objs:
+                    yield i
             else:
-               for i in template_objs:
-                   yield i
+                for i in template_objs:
+                    yield i
 
         surveys = []
         def survey_requests(*args, **_kwarg):
@@ -151,11 +151,11 @@ class TestServiceOfferingImport:
 
         def fake_method(*args, **_kwarg):
             if "workflow_job_templates" in args[0]:
-               for i in workflow_objs:
-                   yield i
+                for i in workflow_objs:
+                    yield i
             else:
-               for i in template_objs:
-                   yield i
+                for i in template_objs:
+                    yield i
 
         tower_mock.get.side_effect = fake_method
         inventory_import_mock = Mock()
@@ -194,11 +194,11 @@ class TestServiceOfferingImport:
 
         def fake_method(*args, **_kwarg):
             if "workflow_job_templates" in args[0]:
-               for i in workflow_objs:
-                   yield i
+                for i in workflow_objs:
+                    yield i
             else:
-               for i in template_objs:
-                   yield i
+                for i in template_objs:
+                    yield i
 
         surveys = []
         def survey_requests(*args, **_kwarg):
