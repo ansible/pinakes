@@ -13,4 +13,4 @@ class TestAction:
     @pytest.mark.django_db
     def test_action_operation(self):
         action = ActionFactory(operation="bad")
-        assert action.operation == "bad" # TODO: why allow any string?
+        assert action.operation == "bad"  # TODO: why allow any string?

@@ -80,7 +80,7 @@ class Order(UserOwnedModel):
 
     class State(models.TextChoices):
         """Available states for Order"""
-        PENDING = 'Pending' # Approval
+        PENDING = 'Pending'  # Approval
         APPROVED = 'Approved'
         CANCELED = 'Canceled'
         COMPLETED = 'Completed'
@@ -111,7 +111,7 @@ class OrderItem(UserOwnedModel):
 
     class State(models.TextChoices):
         """Available states for Order Item"""
-        PENDING = 'Pending' # Approval
+        PENDING = 'Pending'  # Approval
         APPROVED = 'Approved'
         CANCELED = 'Canceled'
         COMPLETED = 'Completed'

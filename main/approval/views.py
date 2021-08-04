@@ -34,7 +34,7 @@ class TemplateViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     http_method_names = ["get", "head"]
     permission_classes = (IsAuthenticated,)
     serializer_class = TemplateSerializer
-    ordering_fields = "__all__" # This line is optional, default
+    ordering_fields = "__all__"  # This line is optional, default
     ordering = ("-id",)
 
 
@@ -75,7 +75,7 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = RequestInSerializer(data=request.data)
-        output_serializer = serializer # default
+        output_serializer = serializer  # default
         if not serializer.is_valid():
             return Response(
                 {"errors": serializer.errors},

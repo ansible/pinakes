@@ -19,7 +19,7 @@ class Tenant(models.Model):
         try:
             tenant, _ = cls.objects.get_or_create(external_tenant="default")
             return tenant
-        except OperationalError: # Table does not exist at the first migration
+        except OperationalError:  # Table does not exist at the first migration
             return cls()
 
 class BaseModel(models.Model):
