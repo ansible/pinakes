@@ -6,4 +6,5 @@ django-taggit
 djangorestframework
 drf-extensions
 psycopg2
+python-dateutil
 requests
