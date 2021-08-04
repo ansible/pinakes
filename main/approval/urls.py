@@ -14,6 +14,7 @@ from main.approval.views import (
 class NestedDefaultRouter(NestedRouterMixin, DefaultRouter):
     pass
 
+
 router = NestedDefaultRouter()
 
 templates = router.register("templates", TemplateViewSet, basename="template")

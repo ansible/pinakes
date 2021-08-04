@@ -15,8 +15,8 @@ from main.catalog.views import (
 class NestedDefaultRouter(NestedRouterMixin, routers.DefaultRouter):
     pass
 
-router = NestedDefaultRouter()
 
+router = NestedDefaultRouter()
 router.register("tenants", TenantViewSet)
 portfolios = router.register(r'portfolios', PortfolioViewSet)
 portfolios.register(

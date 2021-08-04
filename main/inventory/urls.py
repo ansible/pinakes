@@ -14,6 +14,7 @@ from main.inventory.views import (
 class NestedDefaultRouter(NestedRouterMixin, routers.DefaultRouter):
     pass
 
+
 router = NestedDefaultRouter()
 sources = router.register(r'sources', SourceViewSet)
 sources.register(

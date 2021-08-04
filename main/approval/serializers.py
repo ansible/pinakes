@@ -104,4 +104,5 @@ class RequestCompleteSerializer(serializers.ModelSerializer):
         model = Request
         fields = (*RequestFields.FIELDS, "actions", "sub_requests",)
 
+
 RequestCompleteSerializer._declared_fields['sub_requests'] = RequestCompleteSerializer(many=True)
