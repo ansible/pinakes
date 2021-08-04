@@ -3,6 +3,7 @@ from django.db import models
 from django.db.utils import OperationalError
 from django.contrib.auth.models import User
 
+
 class Tenant(models.Model):
     """Tenant"""
 
@@ -15,12 +16,13 @@ class Tenant(models.Model):
 
     @classmethod
     def current(cls):
-        """ Return the first available tenant """
+        """Return the first available tenant"""
         try:
             tenant, _ = cls.objects.get_or_create(external_tenant="default")
             return tenant
-        except OperationalError: # Table does not exist at the first migration
+        except OperationalError:  # Table does not exist at the first migration
             return cls()
+
 
 class BaseModel(models.Model):
     """Base Model"""
@@ -31,6 +33,7 @@ class BaseModel(models.Model):
 
     class Meta:
         abstract = True
+
 
 class Source(models.Model):
     """Source"""
@@ -52,8 +55,10 @@ class SourceOwnedModel(BaseModel):
     class Meta:
         abstract = True
 
+
 class UserOwnedModel(BaseModel):
     """User Owned Model"""
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
@@ -61,5 +66,5 @@ class UserOwnedModel(BaseModel):
 
     @property
     def owner(self):
-        " Use for serializer_class "
+        "Use for serializer_class"
         return self.user.username

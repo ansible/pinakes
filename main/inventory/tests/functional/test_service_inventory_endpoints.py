@@ -8,7 +8,7 @@ from main.inventory.tests.factories import ServiceInventoryFactory
 
 @pytest.mark.django_db
 def test_service_inventory_list(api_request):
-    """Test to list ServiceInventory endpoint """
+    """Test to list ServiceInventory endpoint"""
 
     ServiceInventoryFactory()
     response = api_request("get", reverse("serviceinventory-list"))
@@ -21,7 +21,7 @@ def test_service_inventory_list(api_request):
 
 @pytest.mark.django_db
 def test_service_inventory_retrieve(api_request):
-    """Test to retrieve ServiceInventory endpoint """
+    """Test to retrieve ServiceInventory endpoint"""
 
     service_inventory = ServiceInventoryFactory()
     response = api_request(
@@ -36,7 +36,7 @@ def test_service_inventory_retrieve(api_request):
 
 @pytest.mark.django_db
 def test_service_inventory_tags(api_request):
-    """Test to list ServiceInventory Tags endpoint """
+    """Test to list ServiceInventory Tags endpoint"""
 
     service_inventory = ServiceInventoryFactory()
     response = api_request(
@@ -48,7 +48,7 @@ def test_service_inventory_tags(api_request):
 
 @pytest.mark.django_db
 def test_service_inventory_tag(api_request):
-    """Test to create ServiceInventory Tag endpoint """
+    """Test to create ServiceInventory Tag endpoint"""
 
     service_inventory = ServiceInventoryFactory()
     response = api_request(
@@ -62,7 +62,7 @@ def test_service_inventory_tag(api_request):
 
 @pytest.mark.django_db
 def test_service_inventory_untag(api_request):
-    """Test to remove ServiceInventory Tag endpoint """
+    """Test to remove ServiceInventory Tag endpoint"""
 
     service_inventory = ServiceInventoryFactory()
     response = api_request(
@@ -76,7 +76,7 @@ def test_service_inventory_untag(api_request):
 
 @pytest.mark.django_db
 def test_service_inventory_delete_not_supported(api_request):
-    """Test to delete ServiceInventory endpoint """
+    """Test to delete ServiceInventory endpoint"""
 
     service_inventory = ServiceInventoryFactory()
     response = api_request(
@@ -89,7 +89,7 @@ def test_service_inventory_delete_not_supported(api_request):
 
 @pytest.mark.django_db
 def test_service_inventory_put_not_supported(api_request):
-    """Test to put ServiceInventory endpoint """
+    """Test to put ServiceInventory endpoint"""
 
     service_inventory = ServiceInventoryFactory()
     response = api_request(

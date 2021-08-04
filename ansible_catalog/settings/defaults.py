@@ -18,13 +18,15 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Django gettext files path: locale/<lang-code>/LC_MESSAGES/django.po, django.mo
-LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
+LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
+SECRET_KEY = (
+    "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -92,13 +94,13 @@ DATABASES = {
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 25,
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ),
-    'DEFAULT_FILTER_BACKENDS': (
-        'django_filters.rest_framework.DjangoFilterBackend',
-        'rest_framework.filters.OrderingFilter',
+    "DEFAULT_FILTER_BACKENDS": (
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.OrderingFilter",
     ),
 }
 
@@ -149,9 +151,9 @@ STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Tower Info
-TOWER_URL="https://Your_Tower_URL"
-TOWER_TOKEN="Your Token"
-TOWER_VERIFY_SSL="False"
+TOWER_URL = "https://Your_Tower_URL"
+TOWER_TOKEN = "Your Token"
+TOWER_VERIFY_SSL = "False"
 
 # Logging configuration
 LOG_ROOT = os.getenv("CATALOG_LOG_ROOT", "/var/log/ansible_catalog/")
@@ -193,7 +195,7 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
             "filename": os.path.join(LOG_ROOT, LOG_FILE),
-            "formatter": "simple"
+            "formatter": "simple",
         },
         "approval": {
             "level": "DEBUG",
@@ -201,7 +203,7 @@ LOGGING = {
             "filename": os.path.join(LOG_ROOT, LOG_FILE),
             "maxBytes": MAX_BYTES,
             "backupCount": BACKUP_COUNT,
-            "formatter": "simple"
+            "formatter": "simple",
         },
         "inventory": {
             "level": "DEBUG",
@@ -209,7 +211,7 @@ LOGGING = {
             "filename": os.path.join(LOG_ROOT, LOG_FILE),
             "maxBytes": MAX_BYTES,
             "backupCount": BACKUP_COUNT,
-            "formatter": "simple"
+            "formatter": "simple",
         },
         "catalog": {
             "level": "DEBUG",
@@ -217,8 +219,8 @@ LOGGING = {
             "filename": os.path.join(LOG_ROOT, LOG_FILE),
             "maxBytes": MAX_BYTES,
             "backupCount": BACKUP_COUNT,
-            "formatter": "simple"
-        }
+            "formatter": "simple",
+        },
     },
     "root": {
         "handlers": ["console"],
@@ -236,23 +238,23 @@ LOGGING = {
         },
         "approval": {
             "handlers": ["console", "approval"],
-            'level': 'INFO',
-            'propagate': False
+            "level": "INFO",
+            "propagate": False,
         },
         "catalog": {
             "handlers": ["console", "catalog"],
-            'level': 'INFO',
-            'propagate': False
+            "level": "INFO",
+            "propagate": False,
         },
         "inventory": {
             "handlers": ["console", "inventory"],
-            'level': 'INFO',
-            'propagate': False
+            "level": "INFO",
+            "propagate": False,
         },
-    }
+    },
 }
 
-LOGIN_URL='/api/login/'
+LOGIN_URL = "/api/login/"
 
 # Django Redis Queue Information
 RQ_QUEUES = {

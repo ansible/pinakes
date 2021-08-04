@@ -18,7 +18,9 @@ class CollectInventoryTags:
         """Process the nodes"""
         inventory_ids = set()
         visited = set()
-        self.__collect_inventory(self.service_offering_id, visited, inventory_ids)
+        self.__collect_inventory(
+            self.service_offering_id, visited, inventory_ids
+        )
 
     def tags(self):
         """Return the list of tags assigned to the given service_offering"""
@@ -50,7 +52,9 @@ class CollectInventoryTags:
             if child.service_inventory is not None:
                 self.__collect_tags(child.service_inventory, inventory_ids)
 
-            self.__collect_inventory(child.service_offering_id, visited, inventory_ids)
+            self.__collect_inventory(
+                child.service_offering_id, visited, inventory_ids
+            )
 
     def __collect_tags(self, obj, inventory_ids):
         """COllect tags if the object has not been loaded yet"""

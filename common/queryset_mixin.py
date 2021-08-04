@@ -2,7 +2,8 @@
 
 from main.models import Tenant
 
-class QuerySetMixin():
+
+class QuerySetMixin:
     """
     A Mixin class to be inherited by a customer ViewSet class
     """
@@ -14,9 +15,13 @@ class QuerySetMixin():
         parent_field_name = getattr(self, "parent_field_name", None)
         queryset_order_by = getattr(self, "queryset_order_by", None)
         serializer_class = self.get_serializer_class() or self.serializer_class
-        queryset = serializer_class.Meta.model.objects.filter(tenant=Tenant.current())
+        queryset = serializer_class.Meta.model.objects.filter(
+            tenant=Tenant.current()
+        )
         if parent_lookup_key in self.kwargs:
-            queryset = queryset.filter(**{parent_field_name: self.kwargs[parent_lookup_key]})
+            queryset = queryset.filter(
+                **{parent_field_name: self.kwargs[parent_lookup_key]}
+            )
         if queryset_order_by is not None:
             queryset = queryset.order_by(queryset_order_by)
         return queryset

@@ -29,7 +29,9 @@ SQL_DEBUG = DEBUG
 
 # Load settings from any .py files in the global conf.d directory specified in
 # the environment, defaulting to /etc/ansible_catalog/conf.d/.
-settings_dir = os.environ.get("CATALOG_SETTINGS_DIR", "/etc/ansible_catalog/conf.d/")
+settings_dir = os.environ.get(
+    "CATALOG_SETTINGS_DIR", "/etc/ansible_catalog/conf.d/"
+)
 settings_files = os.path.join(settings_dir, "*.py")
 
 # Load remaining settings from the global settings file specified in the
@@ -62,7 +64,9 @@ except IOError:
             LOGGING = {}
         else:
             msg = "No CATALOG configuration found at %s." % settings_file
-            msg += "\nDefine the CATALOG_SETTINGS_FILE environment variable to "
+            msg += (
+                "\nDefine the CATALOG_SETTINGS_FILE environment variable to "
+            )
             msg += "specify an alternate path."
             raise ImproperlyConfigured(msg)
     else:

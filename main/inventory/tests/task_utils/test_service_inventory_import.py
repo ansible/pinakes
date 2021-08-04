@@ -2,7 +2,9 @@
 from unittest.mock import Mock
 import pytest
 from django.core.exceptions import ObjectDoesNotExist
-from main.inventory.task_utils.service_inventory_import import ServiceInventoryImport
+from main.inventory.task_utils.service_inventory_import import (
+    ServiceInventoryImport,
+)
 from main.inventory.tests.factories import (
     TenantFactory,
     SourceFactory,
@@ -12,9 +14,10 @@ from main.inventory.models import ServiceInventory
 
 
 class TestServiceInventoryImport:
-    """ Test class for ServiceInventoryImport. """
+    """Test class for ServiceInventoryImport."""
+
     def fake_new_inventory(self, *_args, **_kwargs):
-        """ Create a fake response object """
+        """Create a fake response object"""
         objs = [
             {
                 "name": "Fred",
@@ -38,7 +41,7 @@ class TestServiceInventoryImport:
 
     @pytest.mark.django_db
     def test_add(self):
-        """ Test adding new objects. """
+        """Test adding new objects."""
         tenant = TenantFactory()
         source = SourceFactory()
         tower_mock = Mock()
@@ -50,10 +53,12 @@ class TestServiceInventoryImport:
 
     @pytest.mark.django_db
     def test_delete(self):
-        """ Test deleting old objects. """
+        """Test deleting old objects."""
         tenant = TenantFactory()
         source = SourceFactory(tenant=tenant)
-        service_inventory = ServiceInventoryFactory(tenant=tenant, source=source)
+        service_inventory = ServiceInventoryFactory(
+            tenant=tenant, source=source
+        )
         assert (ServiceInventory.objects.all().count()) == 1
         tower_mock = Mock()
         sii = ServiceInventoryImport(tenant, source, tower_mock)
@@ -67,10 +72,12 @@ class TestServiceInventoryImport:
 
     @pytest.mark.django_db
     def test_update(self):
-        """ Test updating existing objects. """
+        """Test updating existing objects."""
         tenant = TenantFactory()
         source = SourceFactory(tenant=tenant)
-        service_inventory = ServiceInventoryFactory(tenant=tenant, source=source)
+        service_inventory = ServiceInventoryFactory(
+            tenant=tenant, source=source
+        )
         service_inventory.source_ref = str(service_inventory.id)
         service_inventory.save()
         assert (ServiceInventory.objects.all().count()) == 1
@@ -93,7 +100,9 @@ class TestServiceInventoryImport:
 
         tower_mock.get.side_effect = fake_method
         sii.process()
-        service_inventory_reloaded = ServiceInventory.objects.get(pk=service_inventory.id)
+        service_inventory_reloaded = ServiceInventory.objects.get(
+            pk=service_inventory.id
+        )
         assert (service_inventory_reloaded.name) == "Fred Flintstone"
         assert (sii.get_stats().get("deletes")) == 0
         assert (sii.get_stats().get("adds")) == 0
@@ -101,10 +110,12 @@ class TestServiceInventoryImport:
 
     @pytest.mark.django_db
     def test_no_change(self):
-        """ Test no change. """
+        """Test no change."""
         tenant = TenantFactory()
         source = SourceFactory(tenant=tenant)
-        service_inventory = ServiceInventoryFactory(tenant=tenant, source=source)
+        service_inventory = ServiceInventoryFactory(
+            tenant=tenant, source=source
+        )
         source_ref = str(service_inventory.id)
         service_inventory.source_ref = source_ref
         service_inventory.save()
@@ -128,7 +139,9 @@ class TestServiceInventoryImport:
 
         tower_mock.get.side_effect = fake_method
         sii.process()
-        service_inventory_reloaded = ServiceInventory.objects.get(pk=service_inventory.id)
+        service_inventory_reloaded = ServiceInventory.objects.get(
+            pk=service_inventory.id
+        )
         assert (service_inventory_reloaded.name) != "Fred Flintstone"
         assert (sii.source_ref_to_id(source_ref)) == service_inventory.id
         assert (sii.get_stats().get("deletes")) == 0

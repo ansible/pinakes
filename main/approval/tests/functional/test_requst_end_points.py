@@ -92,11 +92,7 @@ def test_create_request(api_request):
     response = api_request(
         "post",
         url,
-        {
-            "name": "abcdef",
-            "description": "abc",
-            "content": {"item1": "val1"}
-        },
+        {"name": "abcdef", "description": "abc", "content": {"item1": "val1"}},
     )
 
     assert response.status_code == 201
@@ -150,14 +146,20 @@ def test_request_request_not_create(api_request):
         },
     )
 
-    assert response.status_code == 400       
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
 def test_request_request_not_supported_methods(api_request):
     parent = RequestFactory()
     child = RequestFactory(parent=parent)
-    url = reverse("request-request-detail", args=(parent.id,child.id,))
+    url = reverse(
+        "request-request-detail",
+        args=(
+            parent.id,
+            child.id,
+        ),
+    )
 
     response = api_request("put", url, {"name": "update"})
     assert response.status_code == 405
@@ -200,5 +202,8 @@ def test_request_full_action(api_request):
     assert content["sub_requests"][0]["id"] == child.id
     assert content["actions"][0]["operation"] == parent_action.operation
     assert content["actions"][0]["id"] == parent_action.id
-    assert content["sub_requests"][0]["actions"][0]["operation"] == child_action.operation
+    assert (
+        content["sub_requests"][0]["actions"][0]["operation"]
+        == child_action.operation
+    )
     assert content["sub_requests"][0]["actions"][0]["id"] == child_action.id

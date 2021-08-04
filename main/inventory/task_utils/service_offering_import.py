@@ -10,7 +10,9 @@ class ServiceOfferingImport:
     """Import Job Template and Workflow Job Template from tower."""
 
     # default constructor
-    def __init__(self, tenant, source, tower, inventory, service_plan_importer):
+    def __init__(
+        self, tenant, source, tower, inventory, service_plan_importer
+    ):
         self.tenant = tenant
         self.source = source
         self.stats = {"adds": 0, "updates": 0, "deletes": 0}
@@ -85,7 +87,9 @@ class ServiceOfferingImport:
 
     def __process_job_templates(self):
         """Process Job Templates."""
-        for new_obj in self.tower.get("/api/v2/job_templates?order=id", self.attrs):
+        for new_obj in self.tower.get(
+            "/api/v2/job_templates?order=id", self.attrs
+        ):
             self.__handle_obj(new_obj, OfferingKind.JOB_TEMPLATE)
 
     def __process_workflow_job_templates(self):
@@ -126,9 +130,14 @@ class ServiceOfferingImport:
         if info[1] != modified:
             self.stats["updates"] += 1
             db_obj = ServiceOffering.objects.get(pk=info[0])
-            if db_obj.survey_enabled is True and new_obj["survey_enabled"] is False:
+            if (
+                db_obj.survey_enabled is True
+                and new_obj["survey_enabled"] is False
+            ):
                 ServicePlan.objects.filter(
-                    tenant=self.tenant, source=self.source, source_ref=source_ref
+                    tenant=self.tenant,
+                    source=self.source,
+                    source_ref=source_ref,
                 ).first().delete()
 
             print("Updating modified object")

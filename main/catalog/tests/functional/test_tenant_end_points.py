@@ -32,7 +32,9 @@ def test_tenant_retrieve(api_request):
 def test_tenant_delete_fail(api_request):
     """Delete on Tenant not supported"""
     tenant = TenantFactory()
-    response = api_request("delete", reverse("tenant-detail", args=(tenant.id,)))
+    response = api_request(
+        "delete", reverse("tenant-detail", args=(tenant.id,))
+    )
 
     assert response.status_code == 405
 

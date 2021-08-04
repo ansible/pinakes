@@ -9,6 +9,7 @@ import requests
 
 requests.packages.urllib3.disable_warnings()
 
+
 class TowerAPI:
     """TowerAPI class supports GET/POST to tower given a slug"""
 

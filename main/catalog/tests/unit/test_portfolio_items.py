@@ -10,7 +10,9 @@ class TestPortfolioItems:
     def test_portfolioitem(self):
         tenant = TenantFactory()
         portfolio = PortfolioFactory(tenant=tenant)
-        portfolio_item = PortfolioItemFactory(tenant=tenant, portfolio=portfolio)
+        portfolio_item = PortfolioItemFactory(
+            tenant=tenant, portfolio=portfolio
+        )
         assert tenant.id == portfolio_item.tenant.id
 
     @pytest.mark.django_db
@@ -22,8 +24,9 @@ class TestPortfolioItems:
         with pytest.raises(IntegrityError) as excinfo:
             PortfolioItemFactory(tenant=tenant, portfolio=portfolio, name="")
 
-        assert f"CHECK constraint failed: {portfolio._meta.app_label}_portfolioitem_name_empty" in str(
-            excinfo.value
+        assert (
+            f"CHECK constraint failed: {portfolio._meta.app_label}_portfolioitem_name_empty"
+            in str(excinfo.value)
         )
 
     @pytest.mark.django_db
@@ -37,6 +40,7 @@ class TestPortfolioItems:
         with pytest.raises(IntegrityError) as excinfo:
             PortfolioItemFactory(tenant=tenant, portfolio=portfolio, name=name)
 
-        assert f"UNIQUE constraint failed: {portfolio._meta.app_label}_portfolioitem.name" in str(
-            excinfo.value
+        assert (
+            f"UNIQUE constraint failed: {portfolio._meta.app_label}_portfolioitem.name"
+            in str(excinfo.value)
         )

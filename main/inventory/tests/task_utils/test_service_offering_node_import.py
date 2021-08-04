@@ -2,7 +2,9 @@
 from unittest.mock import Mock
 import pytest
 
-from main.inventory.task_utils.service_offering_node_import import ServiceOfferingNodeImport
+from main.inventory.task_utils.service_offering_node_import import (
+    ServiceOfferingNodeImport,
+)
 from main.inventory.tests.factories import (
     TenantFactory,
     SourceFactory,
@@ -11,6 +13,7 @@ from main.inventory.tests.factories import (
     ServiceOfferingNodeFactory,
 )
 from main.inventory.models import ServiceOfferingNode
+
 
 class TestServiceOfferingNodeImport:
     """Test ServiceOfferingNode import"""
@@ -62,7 +65,9 @@ class TestServiceOfferingNodeImport:
         inventory_import_mock.source_ref_to_id.return_value = inventory.id
 
         service_offering_import_mock = Mock()
-        service_offering_import_mock.source_ref_to_id.return_value = service_offering.id
+        service_offering_import_mock.source_ref_to_id.return_value = (
+            service_offering.id
+        )
 
         soni = ServiceOfferingNodeImport(
             tenant,
@@ -100,7 +105,9 @@ class TestServiceOfferingNodeImport:
         inventory_import_mock.source_ref_to_id.return_value = inventory.id
 
         service_offering_import_mock = Mock()
-        service_offering_import_mock.source_ref_to_id.return_value = service_offering.id
+        service_offering_import_mock.source_ref_to_id.return_value = (
+            service_offering.id
+        )
 
         soni = ServiceOfferingNodeImport(
             tenant,
@@ -119,7 +126,9 @@ class TestServiceOfferingNodeImport:
         tenant = TenantFactory()
         source = SourceFactory()
         inventory_source_ref = "999"
-        service_offering_node = ServiceOfferingNodeFactory(tenant=tenant, source=source)
+        service_offering_node = ServiceOfferingNodeFactory(
+            tenant=tenant, source=source
+        )
         inventory = ServiceInventoryFactory(
             tenant=tenant, source=source, source_ref=inventory_source_ref
         )

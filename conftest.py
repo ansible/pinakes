@@ -32,7 +32,9 @@ def admin():
 def api_request(admin):
     def rf(verb, url, data=None, user=admin):
         view, view_args, view_kwargs = resolve(urllib.parse.urlparse(url)[2])
-        request = getattr(APIRequestFactory(), verb)(url, data=data, format="json")
+        request = getattr(APIRequestFactory(), verb)(
+            url, data=data, format="json"
+        )
         if user:
             force_authenticate(request, user=user)
         response = view(request, *view_args, **view_kwargs)

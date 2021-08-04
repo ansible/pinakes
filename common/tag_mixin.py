@@ -36,9 +36,13 @@ class TagMixin:
         tag_serializer = TagSerializer(data=request.data)
         if tag_serializer.is_valid():
             instance.tags.add(request.data["name"])
-            return Response(tag_serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                tag_serializer.data, status=status.HTTP_201_CREATED
+            )
 
-        return Response(tag_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            tag_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(methods=["post"], detail=True)
     def untag(self, request, pk):
@@ -54,4 +58,6 @@ class TagMixin:
             instance.tags.remove(request.data["name"])
             return Response(None, status=status.HTTP_204_NO_CONTENT)
 
-        return Response(tag_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            tag_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )

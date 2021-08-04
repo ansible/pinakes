@@ -17,11 +17,14 @@ class TestPortfolios:
 
         tenant = TenantFactory()
         name = "fred"
-        temp="%(app_label)s_%(class)s_name_empty"
+        temp = "%(app_label)s_%(class)s_name_empty"
         portfolio = PortfolioFactory(tenant=tenant, name=name)
         with pytest.raises(IntegrityError) as excinfo:
             PortfolioFactory(tenant=tenant, name=name)
-        assert f"UNIQUE constraint failed: {portfolio._meta.app_label}_portfolio.name" in str(excinfo.value)
+        assert (
+            f"UNIQUE constraint failed: {portfolio._meta.app_label}_portfolio.name"
+            in str(excinfo.value)
+        )
 
     @pytest.mark.django_db
     def test_empty_portfolio_name(self):

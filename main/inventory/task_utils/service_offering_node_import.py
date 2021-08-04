@@ -70,7 +70,9 @@ class ServiceOfferingNodeImport:
         for new_obj in self.tower.get(
             "/api/v2/workflow_job_template_nodes?order=id", self.attrs
         ):
-            obj_type = new_obj["summary_fields.unified_job_template.unified_job_type"]
+            obj_type = new_obj[
+                "summary_fields.unified_job_template.unified_job_type"
+            ]
             if obj_type in ("job", "workflow_job"):
                 self.__handle_obj(new_obj)
 

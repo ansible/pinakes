@@ -24,9 +24,7 @@ def test_order_list(api_request):
 def test_order_retrieve(api_request):
     """Retrieve a single order by id"""
     order = OrderFactory()
-    response = api_request(
-        "get", reverse("order-detail", args=(order.id,))
-    )
+    response = api_request("get", reverse("order-detail", args=(order.id,)))
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -38,9 +36,7 @@ def test_order_retrieve(api_request):
 def test_order_delete(api_request):
     """Delete a single order by id"""
     order = OrderFactory()
-    response = api_request(
-        "delete", reverse("order-detail", args=(order.id,))
-    )
+    response = api_request("delete", reverse("order-detail", args=(order.id,)))
 
     assert response.status_code == 204
 
@@ -79,6 +75,7 @@ def test_order_post(api_request):
 
     assert response.status_code == 201
     assert content["owner"] == "admin"
+
 
 @pytest.mark.django_db
 def test_order_order_items_get(api_request):

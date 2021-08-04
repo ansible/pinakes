@@ -20,7 +20,10 @@ class TestTemplate:
         template = TemplateFactory(tenant=tenant, title=title)
         with pytest.raises(IntegrityError) as excinfo:
             TemplateFactory(tenant=tenant, title=title)
-        assert f"UNIQUE constraint failed: {template._meta.app_label}_template.title" in str(excinfo.value)
+        assert (
+            f"UNIQUE constraint failed: {template._meta.app_label}_template.title"
+            in str(excinfo.value)
+        )
 
     @pytest.mark.django_db
     def test_empty_template_title(self):

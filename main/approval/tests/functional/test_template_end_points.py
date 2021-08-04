@@ -81,9 +81,7 @@ def test_template_post_not_supported(api_request):
     TenantFactory()
     url = reverse("template-list")
     response = api_request(
-        "post",
-        url,
-        {"title": "abcdef", "description": "abc"}
+        "post", url, {"title": "abcdef", "description": "abc"}
     )
 
     assert response.status_code == 405

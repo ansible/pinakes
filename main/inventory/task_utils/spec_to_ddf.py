@@ -13,7 +13,11 @@ class SpecToDDF:
             "type": "number",
             "data_type": "integer",
         },
-        "float": {"component": "text-field", "type": "number", "data_type": "float"},
+        "float": {
+            "component": "text-field",
+            "type": "number",
+            "data_type": "float",
+        },
         "password": {"component": "text-field", "type": "password"},
         "textarea": {"component": "textarea-field"},
     }
@@ -81,7 +85,9 @@ class SpecToDDF:
                     {"type": "min-length-validator", "threshold": field["min"]}
                 )
             elif field["type"] == "integer" or field["type"] == "float":
-                result.append({"type": "min-number-value", "value": field["min"]})
+                result.append(
+                    {"type": "min-number-value", "value": field["min"]}
+                )
 
         if "max" in field:
             if (
@@ -93,6 +99,8 @@ class SpecToDDF:
                     {"type": "max-length-validator", "threshold": field["max"]}
                 )
             elif field["type"] == "integer" or field["type"] == "float":
-                result.append({"type": "max-number-value", "value": field["max"]})
+                result.append(
+                    {"type": "max-number-value", "value": field["max"]}
+                )
 
         return result

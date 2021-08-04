@@ -35,6 +35,7 @@ class WorkflowSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("created_at", "updated_at", "template")
 
+
 class RequestFields:
     FIELDS = (
         "id",
@@ -59,22 +60,31 @@ class RequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Request
-        fields = (*RequestFields.FIELDS, "parent",)
-        read_only_fields = ("__all__", "requester_name", "owner",)
+        fields = (
+            *RequestFields.FIELDS,
+            "parent",
+        )
+        read_only_fields = (
+            "__all__",
+            "requester_name",
+            "owner",
+        )
 
 
 class RequestInSerializer(serializers.Serializer):
     """Serializer for RequestIn"""
+
     name = serializers.CharField(required=True)
     description = serializers.CharField()
     content = serializers.JSONField()
 
     def create(self, validate_data):
         content = validate_data.pop("content")
-        request_context = RequestContext.objects.create(content=content, context={})
+        request_context = RequestContext.objects.create(
+            content=content, context={}
+        )
         return Request.objects.create(
-            request_context=request_context,
-            **validate_data
+            request_context=request_context, **validate_data
         )
 
 
@@ -101,6 +111,13 @@ class RequestCompleteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Request
-        fields = (*RequestFields.FIELDS, "actions", "sub_requests",)
+        fields = (
+            *RequestFields.FIELDS,
+            "actions",
+            "sub_requests",
+        )
 
-RequestCompleteSerializer._declared_fields['sub_requests'] = RequestCompleteSerializer(many=True)
+
+RequestCompleteSerializer._declared_fields[
+    "sub_requests"
+] = RequestCompleteSerializer(many=True)
