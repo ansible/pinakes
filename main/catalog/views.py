@@ -5,6 +5,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
+from rest_framework.response import Response
+from rest_framework import status
 
 from common.tag_mixin import TagMixin
 from main.models import Tenant
@@ -16,6 +18,7 @@ from main.catalog.serializers import (
     OrderSerializer,
     OrderItemSerializer,
 )
+from main.catalog.services.start_order_item import StartOrderItem
 
 # Create your views here.
 
@@ -79,11 +82,18 @@ class OrderViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         "completed_at",
     )
 
-    # TODO:
+    # TODO: Add Approval Hook, handle multiple order items
     @action(methods=["post"], detail=True)
-    def submit_order(self, request, pk):
+    def submit(self, request, pk):
         """Orders the specified pk order."""
-        pass
+        order_item = OrderItem.objects.filter(order_id=pk).first()
+        if order_item is None:
+            return Response(
+                {"status": "details"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        StartOrderItem(order_item).process()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
     # TODO:
     @action(methods=["patch"], detail=True)
