@@ -1,7 +1,6 @@
 """ Serializers for Approval Model."""
 from rest_framework import serializers
 
-from main.models import Tenant
 from main.approval.models import (
     Template,
     Workflow,

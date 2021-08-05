@@ -9,7 +9,7 @@ import traceback
 from split_settings.tools import optional, include
 
 # Load Default Settings
-from .defaults import *  # noqa # pylint: disable=unused-import
+from .defaults import BASE_DIR
 
 # If any local_*.py files are present in ansible_catalog/settings/, use them to override
 # default settings for development.  If not present, we can still run using

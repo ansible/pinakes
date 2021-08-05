@@ -21,7 +21,7 @@ class TestSpecToDDF:
                 "choices": "Cricket\\nTable Tennis\\nLawn Tennis",
                 "new_question": true
             }
-	]
+    ]
     }
     """
 
@@ -63,7 +63,7 @@ class TestSpecToDDF:
                 "choices": "",
                 "new_question": true
             }
-	]
+    ]
     }
     """
 

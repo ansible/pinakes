@@ -1,8 +1,6 @@
 """ Factory for catalog objects """
 import factory
-from django.contrib.auth.models import User
 
-from main.models import Tenant
 from main.catalog.models import Portfolio, PortfolioItem, Order, OrderItem
 from main.tests.factories import TenantFactory, UserFactory
 

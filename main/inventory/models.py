@@ -12,7 +12,7 @@ from django.db import models
 from taggit.managers import TaggableManager
 
 from django.db.models.functions import Length
-from main.models import BaseModel, SourceOwnedModel
+from main.models import SourceOwnedModel
 
 models.CharField.register_lookup(Length)
 

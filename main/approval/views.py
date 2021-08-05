@@ -14,7 +14,6 @@ from main.approval.models import (
     Template,
     Workflow,
     Request,
-    Action,
 )
 from main.approval.serializers import (
     TemplateSerializer,

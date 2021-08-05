@@ -1,7 +1,6 @@
 """ Test module for ServiceOfferingImport  """
 from unittest.mock import Mock
 import pytest
-from django.core.exceptions import ObjectDoesNotExist
 from main.inventory.task_utils.service_offering_import import (
     ServiceOfferingImport,
     OfferingKind,
@@ -14,7 +13,6 @@ from main.inventory.tests.factories import (
     ServicePlanFactory,
 )
 from main.inventory.models import (
-    ServiceInventory,
     ServiceOffering,
     ServicePlan,
 )
@@ -102,7 +100,7 @@ class TestServiceOfferingImport:
         inventory.source_ref = inventory_source_ref
         inventory.save()
         service_offering_source_ref = "997"
-        service_offering = ServiceOfferingFactory(
+        ServiceOfferingFactory(
             tenant=tenant,
             source=source,
             service_inventory=inventory,
@@ -167,7 +165,7 @@ class TestServiceOfferingImport:
         inventory.source_ref = inventory_source_ref
         inventory.save()
         service_offering_source_ref = "997"
-        service_offering = ServiceOfferingFactory(
+        ServiceOfferingFactory(
             tenant=tenant,
             source=source,
             service_inventory=inventory,
@@ -211,7 +209,7 @@ class TestServiceOfferingImport:
             service_inventory=service_inventory,
             survey_enabled=True,
         )
-        service_plan = ServicePlanFactory(
+        ServicePlanFactory(
             tenant=tenant,
             source=source,
             service_offering=service_offering,
