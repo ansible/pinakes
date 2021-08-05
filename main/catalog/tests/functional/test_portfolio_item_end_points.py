@@ -87,6 +87,31 @@ def test_portfolio_item_post(api_request):
 
 
 @pytest.mark.django_db
+def test_portfolio_item_icon_get(api_request, small_image):
+    """Get the icon image for a portfolio item"""
+    portfolio_item = PortfolioItemFactory()
+    data = {"icon": small_image, "source_ref": "abc"}
+    api_request(
+        "post",
+        reverse("portfolioitem-icon", args=(portfolio_item.id,)),
+        data,
+        format="multipart",
+    )
+    portfolio_item.refresh_from_db()
+
+    response = api_request(
+        "get", reverse("portfolioitem-icon", args=(portfolio_item.id,))
+    )
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["id"] == portfolio_item.icon.id
+    assert content["source_ref"] == "abc"
+    assert content["file"] == portfolio_item.icon.file.url
+    portfolio_item.delete()
+
+
+@pytest.mark.django_db
 def test_portfolio_item_icon_post(api_request, small_image, media_dir):
     """Create a icon image for a portfolio item"""
     image_path = os.path.join(media_dir, "*.png")
@@ -110,6 +135,8 @@ def test_portfolio_item_icon_post(api_request, small_image, media_dir):
 
     images = glob.glob(image_path)
     assert len(images) == len(orignal_images) + 1
+
+    portfolio_item.delete()
 
 
 @pytest.mark.django_db
@@ -136,12 +163,13 @@ def test_portfolio_item_icon_patch(api_request, small_image, media_dir):
         format="multipart",
     )
 
-    assert response.status_code == 201
+    assert response.status_code == 200
 
     images = glob.glob(image_path)
     assert len(images) == len(orignal_images)
     portfolio_item.refresh_from_db()
     assert portfolio_item.icon is not None
+    portfolio_item.delete()
 
 
 @pytest.mark.django_db
@@ -164,7 +192,6 @@ def test_portfolio_item_icon_delete(api_request, small_image, media_dir):
     response = api_request(
         "delete",
         reverse("portfolioitem-icon", args=(portfolio_item.id,)),
-        data,
         format="multipart",
     )
 

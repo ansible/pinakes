@@ -14,7 +14,7 @@ class ImageMixin:
     Image mixin shared with Catalog Portfolio and PortfolioItem
     """
 
-    @action(methods=["post", "patch", "delete"], detail=True)
+    @action(methods=["get", "post", "patch", "delete"], detail=True)
     def icon(self, request, pk):
         """
         Actions on the image for the given instance
@@ -32,12 +32,30 @@ class ImageMixin:
         instance = get_object_or_404(model, pk=pk)
         serializer = ImageSerializer(data=request.data)
 
-        if self.request.method == "POST":
+        if self.request.method == "GET":
+            return self.__get_image(model=model, instance=instance, pk=pk)
+        elif self.request.method == "POST":
             return self.__post_image(model=model, instance=instance, serializer=serializer, pk=pk)
         elif self.request.method == "PATCH":
             return self.__patch_image(model=model, instance=instance, serializer=serializer, pk=pk)
         else:
             return self.__delete_image(model=model, instance=instance, serializer=serializer, pk=pk)
+
+    def __get_image(self, model, instance, pk):
+        """Get the image"""
+
+        # Not allow to update existing icon
+        if instance.icon is None:
+            return Response(
+                _("Icon attribute has not been set on {} object (id: {}).").format(
+                    model.__name__, pk
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        obj = Image.objects.get(id=instance.icon.id)
+
+        return Response(ImageSerializer(obj).data)
 
     def __post_image(self, model, instance, serializer, pk):
         """Create a new image"""
@@ -63,7 +81,7 @@ class ImageMixin:
             instance.icon = obj
             instance.save()
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(ImageSerializer(obj).data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -95,7 +113,7 @@ class ImageMixin:
             instance.icon = obj
             instance.save()
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(ImageSerializer(obj).data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -115,6 +133,6 @@ class ImageMixin:
             old = Image.objects.get(id=instance.icon.id)
             old.delete()
 
-            return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+            return Response(ImageSerializer(old).data, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

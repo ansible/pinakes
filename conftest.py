@@ -49,8 +49,10 @@ def media_dir():
     return os.path.join(base_dir, "ansible_catalog/media")
 
 @pytest.fixture
-def small_image(tmp_path):
+def small_image():
     base_dir = os.path.dirname(__file__)
     image_path = os.path.join(base_dir, "main/catalog/tests/data/redhat_icon.png")
 
-    return File(open(image_path, encoding="utf8", errors='ignore'))
+    with open(image_path, "rb") as f:
+        yield f
+        f.close()
