@@ -25,6 +25,6 @@ class TenantFactory(factory.django.DjangoModelFactory):
 
 def default_tenant():
     current = Tenant.current()
-    if current == None:
+    if current is None:
         current = Tenant.objects.create(external_tenant="default")
     return current
