@@ -2,8 +2,6 @@ from django.urls import include, path
 from rest_framework import routers
 
 from rest_framework_extensions.routers import NestedRouterMixin
-from django.conf import settings
-from django.conf.urls.static import static
 
 from main.catalog.views import (
     TenantViewSet,
@@ -41,4 +39,4 @@ order_items = router.register(r"order_items", OrderItemViewSet)
 
 urlpatterns = [
     path("", include((router.urls, "catalog"))),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]

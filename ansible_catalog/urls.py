@@ -16,6 +16,9 @@ Including another URLconf
 
 from django.urls import include, path
 from rest_framework import routers
+from django.conf import settings
+from django.conf.urls.static import static
+
 from main.catalog.urls import router as catalog_router
 from main.approval.urls import router as approval_router
 from main.inventory.urls import router as inventory_router
@@ -27,4 +30,4 @@ router.registry.extend(inventory_router.registry)
 
 urlpatterns = [
     path(r"api/v1/", include(router.urls)),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

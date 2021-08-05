@@ -87,31 +87,6 @@ def test_portfolio_item_post(api_request):
 
 
 @pytest.mark.django_db
-def test_portfolio_item_icon_get(api_request, small_image):
-    """Get the icon image for a portfolio item"""
-    portfolio_item = PortfolioItemFactory()
-    data = {"icon": small_image, "source_ref": "abc"}
-    api_request(
-        "post",
-        reverse("portfolioitem-icon", args=(portfolio_item.id,)),
-        data,
-        format="multipart",
-    )
-    portfolio_item.refresh_from_db()
-
-    response = api_request(
-        "get", reverse("portfolioitem-icon", args=(portfolio_item.id,))
-    )
-
-    assert response.status_code == 200
-    content = json.loads(response.content)
-    assert content["id"] == portfolio_item.icon.id
-    assert content["source_ref"] == "abc"
-    assert content["file"] == portfolio_item.icon.file.url
-    portfolio_item.delete()
-
-
-@pytest.mark.django_db
 def test_portfolio_item_icon_post(api_request, small_image, media_dir):
     """Create a icon image for a portfolio item"""
     image_path = os.path.join(media_dir, "*.png")
