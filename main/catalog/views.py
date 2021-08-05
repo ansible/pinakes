@@ -93,7 +93,7 @@ class OrderViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
             )
 
         StartOrderItem(order_item).process()
-        return Response(None, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     # TODO:
     @action(methods=["patch"], detail=True)

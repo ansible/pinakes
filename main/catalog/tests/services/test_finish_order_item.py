@@ -20,6 +20,6 @@ def test_finish_order_item_success():
     """Test starting an order item"""
     job_id = "abcdef"
     order_item = OrderItemFactory(inventory_task_ref=job_id)
-    FinishOrderItem(job_id, {"abc": 123}, None).process()
+    FinishOrderItem(job_id, {"abc": 123}).process()
     order_item.refresh_from_db()
     assert order_item.state == OrderItem.State.COMPLETED
