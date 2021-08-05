@@ -144,7 +144,9 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     """Serializer for Image"""
 
-    file = serializers.ImageField(required=False, max_length=None, use_url=True)
+    file = serializers.ImageField(
+        required=False, max_length=None, use_url=True
+    )
 
     class Meta:
         model = Image

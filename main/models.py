@@ -88,7 +88,9 @@ class Image(models.Model):
 class ImageableModel(BaseModel):
     """ImagableModel"""
 
-    icon = models.ForeignKey(Image, blank=True, null=True, on_delete=models.SET_NULL)
+    icon = models.ForeignKey(
+        Image, blank=True, null=True, on_delete=models.SET_NULL
+    )
 
     class Meta:
         abstract = True

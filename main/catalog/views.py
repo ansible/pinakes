@@ -34,7 +34,9 @@ class TenantViewSet(viewsets.ReadOnlyModelViewSet):
     filter_fields = "__all__"
 
 
-class PortfolioViewSet(ImageMixin, TagMixin, NestedViewSetMixin, viewsets.ModelViewSet):
+class PortfolioViewSet(
+    ImageMixin, TagMixin, NestedViewSetMixin, viewsets.ModelViewSet
+):
     """API endpoint for listing and creating portfolios."""
 
     queryset = Portfolio.objects.all()
@@ -45,7 +47,9 @@ class PortfolioViewSet(ImageMixin, TagMixin, NestedViewSetMixin, viewsets.ModelV
     filter_fields = ("name", "description", "created_at", "updated_at")
 
 
-class PortfolioItemViewSet(ImageMixin, TagMixin, NestedViewSetMixin, viewsets.ModelViewSet):
+class PortfolioItemViewSet(
+    ImageMixin, TagMixin, NestedViewSetMixin, viewsets.ModelViewSet
+):
     """API endpoint for listing and creating portfolio items."""
 
     queryset = PortfolioItem.objects.all()

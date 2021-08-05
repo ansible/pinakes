@@ -33,11 +33,17 @@ class ImageMixin:
         serializer = ImageSerializer(data=request.data)
 
         if self.request.method == "POST":
-            return self.__post_image(model=model, instance=instance, serializer=serializer, pk=pk)
+            return self.__post_image(
+                model=model, instance=instance, serializer=serializer, pk=pk
+            )
         elif self.request.method == "PATCH":
-            return self.__patch_image(model=model, instance=instance, serializer=serializer, pk=pk)
+            return self.__patch_image(
+                model=model, instance=instance, serializer=serializer, pk=pk
+            )
         else:
-            return self.__delete_image(model=model, instance=instance, serializer=serializer, pk=pk)
+            return self.__delete_image(
+                model=model, instance=instance, serializer=serializer, pk=pk
+            )
 
     def __post_image(self, model, instance, serializer, pk):
         """Create a new image"""
@@ -63,9 +69,13 @@ class ImageMixin:
             instance.icon = obj
             instance.save()
 
-            return Response(ImageSerializer(obj).data, status=status.HTTP_201_CREATED)
+            return Response(
+                ImageSerializer(obj).data, status=status.HTTP_201_CREATED
+            )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
     def __patch_image(self, model, instance, serializer, pk):
         """Update the image"""
@@ -73,9 +83,9 @@ class ImageMixin:
         # Not allow to update null icon
         if instance.icon is None:
             return Response(
-                _("Icon attribute has not been set on {} object (id: {}).").format(
-                    model.__name__, pk
-                ),
+                _(
+                    "Icon attribute has not been set on {} object (id: {})."
+                ).format(model.__name__, pk),
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -97,16 +107,18 @@ class ImageMixin:
 
             return Response(ImageSerializer(obj).data)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
     def __delete_image(self, model, instance, serializer, pk):
         """Delete the image"""
 
         if instance.icon is None:
             return Response(
-                _("Icon attribute has not been set on {} object (id: {}).").format(
-                    model.__name__, pk
-                ),
+                _(
+                    "Icon attribute has not been set on {} object (id: {})."
+                ).format(model.__name__, pk),
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -117,4 +129,6 @@ class ImageMixin:
 
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )

@@ -27,7 +27,9 @@ def test_portfolio_list(api_request):
 def test_portfolio_retrieve(api_request):
     """Retrieve a single portfolio by id"""
     portfolio = PortfolioFactory()
-    response = api_request("get", reverse("portfolio-detail", args=(portfolio.id,)))
+    response = api_request(
+        "get", reverse("portfolio-detail", args=(portfolio.id,))
+    )
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -38,7 +40,9 @@ def test_portfolio_retrieve(api_request):
 def test_portfolio_delete(api_request):
     """Delete a single portfolio by id"""
     portfolio = PortfolioFactory()
-    response = api_request("delete", reverse("portfolio-detail", args=(portfolio.id,)))
+    response = api_request(
+        "delete", reverse("portfolio-detail", args=(portfolio.id,))
+    )
 
     assert response.status_code == 204
 
