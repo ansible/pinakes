@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from common.tag_mixin import TagMixin
+from common.image_mixin import ImageMixin
+
 from main.models import Tenant
 from main.catalog.models import Portfolio, PortfolioItem, Order, OrderItem
 from main.catalog.serializers import (
@@ -32,7 +34,9 @@ class TenantViewSet(viewsets.ReadOnlyModelViewSet):
     filter_fields = "__all__"
 
 
-class PortfolioViewSet(TagMixin, NestedViewSetMixin, viewsets.ModelViewSet):
+class PortfolioViewSet(
+    ImageMixin, TagMixin, NestedViewSetMixin, viewsets.ModelViewSet
+):
     """API endpoint for listing and creating portfolios."""
 
     queryset = Portfolio.objects.all()
@@ -44,7 +48,7 @@ class PortfolioViewSet(TagMixin, NestedViewSetMixin, viewsets.ModelViewSet):
 
 
 class PortfolioItemViewSet(
-    TagMixin, NestedViewSetMixin, viewsets.ModelViewSet
+    ImageMixin, TagMixin, NestedViewSetMixin, viewsets.ModelViewSet
 ):
     """API endpoint for listing and creating portfolio items."""
 

@@ -1,7 +1,7 @@
 """ Serializers for Catalog Model."""
 from rest_framework import serializers
 
-from main.models import Tenant
+from main.models import Tenant, Image
 from main.catalog.models import Portfolio, PortfolioItem, Order, OrderItem
 
 
@@ -19,9 +19,19 @@ class TenantSerializer(serializers.ModelSerializer):
 class PortfolioSerializer(serializers.ModelSerializer):
     """Serializer for Portfolio, which is a wrapper for PortfolioItems."""
 
+    icon_url = serializers.SerializerMethodField("get_icon_url")
+
     class Meta:
         model = Portfolio
-        fields = ("id", "name", "description", "created_at", "updated_at")
+        fields = (
+            "id",
+            "name",
+            "description",
+            "icon_url",
+            "created_at",
+            "updated_at",
+        )
+        ordering = ["-created_at"]
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
@@ -29,10 +39,20 @@ class PortfolioSerializer(serializers.ModelSerializer):
             tenant=Tenant.current(), **validated_data
         )
 
+    def get_icon_url(self, obj):
+        request = self.context.get("request")
+        return (
+            request.build_absolute_uri(obj.icon.file.url)
+            if obj.icon is not None
+            else None
+        )
+
 
 class PortfolioItemSerializer(serializers.ModelSerializer):
     """Serializer for PortfolioItem, which maps to a Tower Job Template
     via the service_offering_ref."""
+
+    icon_url = serializers.SerializerMethodField("get_icon_url")
 
     class Meta:
         model = PortfolioItem
@@ -42,6 +62,7 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
             "description",
             "service_offering_ref",
             "portfolio",
+            "icon_url",
             "created_at",
             "updated_at",
         )
@@ -51,6 +72,14 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return PortfolioItem.objects.create(
             tenant=Tenant.current(), **validated_data
+        )
+
+    def get_icon_url(self, obj):
+        request = self.context.get("request")
+        return (
+            request.build_absolute_uri(obj.icon.file.url)
+            if obj.icon is not None
+            else None
         )
 
 
@@ -109,4 +138,20 @@ class OrderItemSerializer(serializers.ModelSerializer):
         user = self.context["request"].user
         return OrderItem.objects.create(
             tenant=Tenant.current(), user=user, **validated_data
+        )
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    """Serializer for Image"""
+
+    file = serializers.ImageField(
+        required=False, max_length=None, use_url=True
+    )
+
+    class Meta:
+        model = Image
+        fields = (
+            "id",
+            "source_ref",
+            "file",
         )

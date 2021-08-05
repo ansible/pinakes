@@ -155,6 +155,10 @@ TOWER_URL = "https://Your_Tower_URL"
 TOWER_TOKEN = "Your Token"
 TOWER_VERIFY_SSL = "False"
 
+# Media (Icons) configuration
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+
 # Logging configuration
 LOG_ROOT = os.getenv("CATALOG_LOG_ROOT", "/var/log/ansible_catalog/")
 LOG_FILE = "ansible_catalog.log"

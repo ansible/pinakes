@@ -4,12 +4,12 @@ from django.db import models
 from django.db.models.functions import Length
 from taggit.managers import TaggableManager
 
-from main.models import BaseModel, UserOwnedModel
+from main.models import ImageableModel, UserOwnedModel, Image
 
 models.CharField.register_lookup(Length)
 
 
-class Portfolio(BaseModel):
+class Portfolio(ImageableModel):
     """Portfolio object to wrap products."""
 
     name = models.CharField(max_length=255, unique=True)
@@ -31,11 +31,18 @@ class Portfolio(BaseModel):
             ),
         ]
 
+    def delete(self):
+        if self.icon_id is not None:
+            image = Image.objects.get(id=self.icon_id)
+            image.delete()
+
+        super().delete()
+
     def __str__(self):
         return self.name
 
 
-class PortfolioItem(BaseModel):
+class PortfolioItem(ImageableModel):
     """Portfolio Item represent a Job Template or a Workflow."""
 
     favorite = models.BooleanField(default=False)
@@ -70,6 +77,13 @@ class PortfolioItem(BaseModel):
                 fields=["name", "tenant", "portfolio"],
             ),
         ]
+
+    def delete(self):
+        if self.icon_id is not None:
+            icon = Image.objects.get(id=self.icon_id)
+            icon.delete()
+
+        super().delete()
 
     def __str__(self):
         return self.name
