@@ -1,6 +1,5 @@
 import pytest
 
-from main.tests.factories import TenantFactory
 from main.approval.tests.factories import RequestFactory
 
 from main.approval.models import Request

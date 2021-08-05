@@ -1,7 +1,7 @@
 """ Factory for the Inventory objects """
 import factory
 from django.utils import timezone
-from main.models import Tenant, Source
+from main.models import Source
 from main.tests.factories import TenantFactory
 from main.inventory.models import ServiceInventory
 from main.inventory.models import ServiceOffering, OfferingKind

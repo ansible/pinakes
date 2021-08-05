@@ -1,7 +1,6 @@
 """ Test module for ServiceOfferingImport  """
 from unittest.mock import Mock
 import pytest
-from django.core.exceptions import ObjectDoesNotExist
 from main.inventory.task_utils.service_offering_import import (
     ServiceOfferingImport,
     OfferingKind,
@@ -14,7 +13,6 @@ from main.inventory.tests.factories import (
     ServicePlanFactory,
 )
 from main.inventory.models import (
-    ServiceInventory,
     ServiceOffering,
     ServicePlan,
 )

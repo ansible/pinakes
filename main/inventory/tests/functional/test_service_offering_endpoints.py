@@ -5,7 +5,6 @@ from django.urls import reverse
 from main.inventory.tests.factories import (
     ServicePlanFactory,
     ServiceOfferingFactory,
-    ServiceOfferingNodeFactory,
 )
 
 

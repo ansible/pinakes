@@ -1,6 +1,5 @@
 """ Module to Test Launching of Job """
 from unittest.mock import patch
-import pytest
 from main.inventory.task_utils.launch_job import LaunchJob
 
 

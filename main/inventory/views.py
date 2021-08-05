@@ -15,14 +15,12 @@ from main.models import Source
 from main.inventory.models import (
     ServiceInventory,
     ServiceOffering,
-    ServiceOfferingNode,
     ServicePlan,
 )
 from main.inventory.serializers import (
     ServiceInventorySerializer,
     ServicePlanSerializer,
     ServiceOfferingSerializer,
-    ServiceOfferingNodeSerializer,
     SourceSerializer,
 )
 from main.inventory.tasks import refresh_task

@@ -10,9 +10,6 @@ import errno
 # Django Split Settings
 from split_settings.tools import optional, include
 
-# Load Default Settings
-from .defaults import *
-
 # Clear database settings to force production environment to define them.
 DATABASES = {}
 

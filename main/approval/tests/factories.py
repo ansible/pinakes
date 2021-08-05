@@ -1,16 +1,14 @@
 """Collection of factory classes for approval models"""
 import factory
-import functools
 from decimal import Decimal
 
-from main.models import Tenant
 from main.approval.models import (
     Template,
     Workflow,
     Request,
     Action,
 )
-from main.tests.factories import TenantFactory, default_tenant
+from main.tests.factories import default_tenant
 
 
 class TemplateFactory(factory.django.DjangoModelFactory):
