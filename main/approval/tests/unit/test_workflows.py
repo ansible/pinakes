@@ -51,7 +51,6 @@ class TestWorkflows:
 
         tenant = TenantFactory()
         template = TemplateFactory(tenant=tenant)
-        name = "fred"
         WorkflowFactory(
             tenant=tenant, template=template, internal_sequence=Decimal(3)
         )

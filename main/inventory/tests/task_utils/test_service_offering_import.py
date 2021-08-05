@@ -100,7 +100,7 @@ class TestServiceOfferingImport:
         inventory.source_ref = inventory_source_ref
         inventory.save()
         service_offering_source_ref = "997"
-        service_offering = ServiceOfferingFactory(
+        ServiceOfferingFactory(
             tenant=tenant,
             source=source,
             service_inventory=inventory,
@@ -165,7 +165,7 @@ class TestServiceOfferingImport:
         inventory.source_ref = inventory_source_ref
         inventory.save()
         service_offering_source_ref = "997"
-        service_offering = ServiceOfferingFactory(
+        ServiceOfferingFactory(
             tenant=tenant,
             source=source,
             service_inventory=inventory,
@@ -209,7 +209,7 @@ class TestServiceOfferingImport:
             service_inventory=service_inventory,
             survey_enabled=True,
         )
-        service_plan = ServicePlanFactory(
+        ServicePlanFactory(
             tenant=tenant,
             source=source,
             service_offering=service_offering,
