@@ -1,12 +1,22 @@
 """ This modules stores the definition of the Catalog model."""
+import logging
 
+from django.utils import timezone
 from django.db import models
 from django.db.models.functions import Length
 from taggit.managers import TaggableManager
 
-from main.models import ImageableModel, UserOwnedModel, Image
+from main.models import (
+    BaseModel,
+    Tenant,
+    ImageableModel,
+    UserOwnedModel,
+    Image,
+)
 
 models.CharField.register_lookup(Length)
+
+logger = logging.getLogger("catalog")
 
 
 class Portfolio(ImageableModel):
@@ -89,7 +99,85 @@ class PortfolioItem(ImageableModel):
         return self.name
 
 
-class Order(UserOwnedModel):
+class ProgressMessage(BaseModel):
+    """Progress Message Model"""
+
+    class Level(models.TextChoices):
+        """Available levels for ProgressMessage"""
+
+        INFO = "Info"
+        ERROR = "Error"
+        WARNING = "Warning"
+        DEBUG = "Debug"
+
+    level = models.CharField(
+        max_length=10,
+        choices=Level.choices,
+        default=Level.INFO,
+        editable=False,
+    )
+
+    received_at = models.DateTimeField(auto_now_add=True)
+    message = models.TextField(blank=True, default="")
+    messageable_type = models.CharField(max_length=64, null=True)
+    messageable_id = models.IntegerField(editable=False, null=True)
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=["tenant", "messageable_id", "messageable_type"]
+            )
+        ]
+
+    def __str__(self):
+        return self.message
+
+
+class MessageableMixin:
+    """MessageableModel"""
+
+    def update_message(self, level, message):
+        ProgressMessage.objects.create(
+            level=level,
+            messageable_type=self.__class__.__name__,
+            messageable_id=self.id,
+            message=message,
+            tenant=Tenant.current(),
+        )
+
+    def mark_completed(self, message=None):
+        if self.state == self.__class__.State.COMPLETED:
+            return
+
+        self.__mark_item(
+            message,
+            completed_at=timezone.now(),
+            state=self.__class__.State.COMPLETED,
+        )
+
+    def mark_canceled(self, message=None):
+        if self.state == self.__class__.State.CANCELED:
+            return
+
+        self.__mark_item(
+            message,
+            completed_at=timezone.now(),
+            state=self.__class__.State.CANCELED,
+        )
+
+    def __mark_item(
+        self, message, level=ProgressMessage.Level.INFO, **options
+    ):
+        if message is not None:
+            self.update_message(level, message)
+
+        self.__class__.objects.filter(id=self.id).update(**options)
+        logger.info(
+            f"Updated {self.__class__.__name__}: {self.id} with state: {options['state']}"
+        )
+
+
+class Order(UserOwnedModel, MessageableMixin):
     """Order object to wrap order items."""
 
     class State(models.TextChoices):
@@ -120,7 +208,7 @@ class Order(UserOwnedModel):
         return str(self.id)
 
 
-class OrderItem(UserOwnedModel):
+class OrderItem(UserOwnedModel, MessageableMixin):
     """Order Item Model"""
 
     class State(models.TextChoices):
@@ -173,3 +261,69 @@ class OrderItem(UserOwnedModel):
 
     def __str__(self):
         return self.name
+
+
+class ApprovalRequestManager(models.Manager):
+    """Override default manager with create method"""
+
+    def create(self, *args, **kwargs):
+        approval_request = super(ApprovalRequestManager, self).create(
+            *args, **kwargs
+        )
+
+        approval_request_ref = kwargs.pop("approval_request_ref", None)
+        order_item = OrderItem.objects.filter(
+            id=approval_request.order_item.id
+        ).first()
+        order = Order.objects.filter(id=order_item.id).first()
+        message = f"Created Approval Request ref: {approval_request_ref}. Catalog approval request id: {approval_request.id}"
+        order.update_message(ProgressMessage.Level.INFO, message)
+
+        return approval_request
+
+
+class ApprovalRequest(BaseModel):
+    """Approval Request Model"""
+
+    class State(models.TextChoices):
+        """Available states for Order Item"""
+
+        UNDECIDED = "Undecided"
+        APPROVED = "Approved"
+        CANCELED = "Canceled"
+        DENIED = "Denied"
+        FAILED = "Failed"
+
+    objects = ApprovalRequestManager()
+    approval_request_ref = models.CharField(max_length=64, default="")
+    reason = models.TextField(blank=True, default="")
+    request_completed_at = models.DateTimeField(editable=False, null=True)
+    state = models.CharField(
+        max_length=10,
+        choices=State.choices,
+        default=State.UNDECIDED,
+        editable=False,
+    )
+
+    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+
+    class Meta:
+        indexes = [models.Index(fields=["tenant"])]
+
+    def __str__(self):
+        return str(self.id)
+
+    @classmethod
+    def create(cls, **kwargs):
+        approval_request = cls(**kwargs)
+        approval_request.save()
+
+        approval_request_ref = kwargs.pop("approval_request_ref", None)
+        order_item = OrderItem.objects.filter(
+            id=approval_request.order_item.id
+        ).first()
+        order = Order.objects.filter(id=order_item.id).first()
+        message = f"Created Approval Request ref: {approval_request_ref}. Catalog approval request id: {approval_request.id}"
+        order.update_message(ProgressMessage.Level.INFO, message)
+
+        return approval_request

@@ -2,7 +2,14 @@
 from rest_framework import serializers
 
 from main.models import Tenant, Image
-from main.catalog.models import Portfolio, PortfolioItem, Order, OrderItem
+from main.catalog.models import (
+    Portfolio,
+    PortfolioItem,
+    Order,
+    OrderItem,
+    ApprovalRequest,
+    ProgressMessage,
+)
 
 
 class TenantSerializer(serializers.ModelSerializer):
@@ -155,3 +162,34 @@ class ImageSerializer(serializers.ModelSerializer):
             "source_ref",
             "file",
         )
+
+
+class ApprovalRequestSerializer(serializers.ModelSerializer):
+    """Serializer for ApprovalRequest"""
+
+    class Meta:
+        model = ApprovalRequest
+        fields = (
+            "id",
+            "approval_request_ref",
+            "order_item",
+            "reason",
+            "request_completed_at",
+            "state",
+        )
+        read_only_fields = ("created_at", "updated_at")
+
+
+class ProgressMessageSerializer(serializers.ModelSerializer):
+    """Serializer for ProgressMessage"""
+
+    class Meta:
+        model = ProgressMessage
+        fields = (
+            "received_at",
+            "level",
+            "message",
+            "messageable_type",
+            "messageable_id",
+        )
+        read_only_fields = ("created_at", "updated_at")
