@@ -2,12 +2,12 @@
 import factory
 
 from main.catalog.models import (
-    Portfolio,
-    PortfolioItem,
+    ApprovalRequest,
     Order,
     OrderItem,
+    Portfolio,
+    PortfolioItem,
     ProgressMessage,
-    ApprovalRequest,
 )
 from main.tests.factories import TenantFactory, UserFactory
 
@@ -66,7 +66,7 @@ class ApprovalRequestFactory(factory.django.DjangoModelFactory):
         model = ApprovalRequest
 
     tenant = factory.SubFactory(TenantFactory)
-    order_item = factory.SubFactory(OrderItemFactory, tenant=tenant)
+    order = factory.SubFactory(OrderFactory, tenant=tenant)
     reason = factory.Sequence(lambda n: f"reason_{n}")
     approval_request_ref = factory.Sequence(
         lambda n: f"approval_request_ref{n}"

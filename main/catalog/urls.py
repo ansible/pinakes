@@ -38,6 +38,12 @@ orders.register(
     parents_query_lookups=["order"],
 )
 orders.register(
+    r"approval_requests",
+    ApprovalRequestViewSet,
+    basename="order-approvalrequest",
+    parents_query_lookups=["order"],
+)
+orders.register(
     r"progress_messages",
     ProgressMessageViewSet,
     basename="order-progressmessage",
@@ -45,12 +51,6 @@ orders.register(
 )
 
 order_items = router.register(r"order_items", OrderItemViewSet)
-order_items.register(
-    r"approval_requests",
-    ApprovalRequestViewSet,
-    basename="orderitem-approvalrequest",
-    parents_query_lookups=["order_item"],
-)
 order_items.register(
     r"progress_messages",
     ProgressMessageViewSet,

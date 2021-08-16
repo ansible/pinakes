@@ -13,22 +13,24 @@ from common.image_mixin import ImageMixin
 
 from main.models import Tenant
 from main.catalog.models import (
-    Portfolio,
-    PortfolioItem,
+    ApprovalRequest,
     Order,
     OrderItem,
-    ApprovalRequest,
+    Portfolio,
+    PortfolioItem,
     ProgressMessage,
 )
 from main.catalog.serializers import (
-    TenantSerializer,
-    PortfolioSerializer,
-    PortfolioItemSerializer,
-    OrderSerializer,
-    OrderItemSerializer,
     ApprovalRequestSerializer,
+    OrderItemSerializer,
+    OrderSerializer,
+    PortfolioItemSerializer,
+    PortfolioSerializer,
     ProgressMessageSerializer,
+    TenantSerializer,
 )
+from main.catalog.services.collect_tag_resources import CollectTagResources
+from main.catalog.services.create_approval_request import CreateApprovalRequest
 from main.catalog.services.start_order_item import StartOrderItem
 
 # Create your views here.
@@ -105,6 +107,14 @@ class OrderViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
                 {"status": "details"}, status=status.HTTP_404_NOT_FOUND
             )
 
+        order = Order.objects.filter(id=order_item.order.id).first()
+        tag_resources = CollectTagResources(order_item).process()
+        message = f"Computed tags for order {order.id}: {tag_resources}"
+        order.update_message("Info", message)
+
+        logger.info(f"Creating approval request for order id {order.id}")
+        CreateApprovalRequest(tag_resources, order_item).process()
+
         StartOrderItem(order_item).process()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -146,7 +156,7 @@ class ApprovalRequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
     filter_fields = (
-        "order_item",
+        "order",
         "approval_request_ref",
         "state",
         "reason",

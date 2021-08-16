@@ -3,20 +3,19 @@ import json
 import pytest
 from django.urls import reverse
 
-from main.catalog.tests.factories import OrderItemFactory
 from main.catalog.tests.factories import ApprovalRequestFactory
 
 
 @pytest.mark.django_db
-def test_order_item_approval_request_get(api_request):
+def test_order_approval_request_get(api_request):
     """Get List of approval requests of an order item"""
     approval_request = ApprovalRequestFactory()
 
     response = api_request(
         "get",
         reverse(
-            "orderitem-approvalrequest-list",
-            args=(approval_request.order_item.id,),
+            "order-approvalrequest-list",
+            args=(approval_request.order.id,),
         ),
     )
 

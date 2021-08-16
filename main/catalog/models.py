@@ -8,10 +8,10 @@ from taggit.managers import TaggableManager
 
 from main.models import (
     BaseModel,
-    Tenant,
-    ImageableModel,
-    UserOwnedModel,
     Image,
+    ImageableModel,
+    Tenant,
+    UserOwnedModel,
 )
 
 models.CharField.register_lookup(Length)
@@ -47,6 +47,10 @@ class Portfolio(ImageableModel):
             image.delete()
 
         super().delete()
+
+    @property
+    def tag_resources(self):
+        return list(self.tags.all())
 
     def __str__(self):
         return self.name
@@ -94,6 +98,10 @@ class PortfolioItem(ImageableModel):
             icon.delete()
 
         super().delete()
+
+    @property
+    def tag_resources(self):
+        return list(self.tags.all())
 
     def __str__(self):
         return self.name
@@ -143,6 +151,16 @@ class MessageableMixin:
             messageable_id=self.id,
             message=message,
             tenant=Tenant.current(),
+        )
+
+    def mark_approval_pending(self, message=None):
+        if self.state == self.__class__.State.PENDING:
+            return
+
+        self.__mark_item(
+            message,
+            completed_at=timezone.now(),
+            state=self.__class__.State.PENDING,
         )
 
     def mark_completed(self, message=None):
@@ -203,6 +221,10 @@ class Order(UserOwnedModel, MessageableMixin):
 
     class Meta:
         indexes = [models.Index(fields=["tenant", "user"])]
+
+    @property
+    def order_items(self):
+        return OrderItem.objects.filter(order_id=self.id)
 
     def __str__(self):
         return str(self.id)
@@ -272,10 +294,7 @@ class ApprovalRequestManager(models.Manager):
         )
 
         approval_request_ref = kwargs.pop("approval_request_ref", None)
-        order_item = OrderItem.objects.filter(
-            id=approval_request.order_item.id
-        ).first()
-        order = Order.objects.filter(id=order_item.id).first()
+        order = Order.objects.filter(id=approval_request.order.id).first()
         message = f"Created Approval Request ref: {approval_request_ref}. Catalog approval request id: {approval_request.id}"
         order.update_message(ProgressMessage.Level.INFO, message)
 
@@ -305,7 +324,7 @@ class ApprovalRequest(BaseModel):
         editable=False,
     )
 
-    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+    order = models.OneToOneField(Order, on_delete=models.CASCADE)
 
     class Meta:
         indexes = [models.Index(fields=["tenant"])]
@@ -319,10 +338,7 @@ class ApprovalRequest(BaseModel):
         approval_request.save()
 
         approval_request_ref = kwargs.pop("approval_request_ref", None)
-        order_item = OrderItem.objects.filter(
-            id=approval_request.order_item.id
-        ).first()
-        order = Order.objects.filter(id=order_item.id).first()
+        order = Order.objects.filter(id=approval_request.order.id).first()
         message = f"Created Approval Request ref: {approval_request_ref}. Catalog approval request id: {approval_request.id}"
         order.update_message(ProgressMessage.Level.INFO, message)
 

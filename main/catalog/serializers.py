@@ -3,11 +3,11 @@ from rest_framework import serializers
 
 from main.models import Tenant, Image
 from main.catalog.models import (
-    Portfolio,
-    PortfolioItem,
+    ApprovalRequest,
     Order,
     OrderItem,
-    ApprovalRequest,
+    Portfolio,
+    PortfolioItem,
     ProgressMessage,
 )
 
@@ -172,7 +172,7 @@ class ApprovalRequestSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "approval_request_ref",
-            "order_item",
+            "order",
             "reason",
             "request_completed_at",
             "state",

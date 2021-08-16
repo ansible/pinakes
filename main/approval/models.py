@@ -68,6 +68,30 @@ class RequestContext(models.Model):
     context = models.JSONField()
 
 
+class RequestManager(models.Manager):
+    """Override default manager with create method"""
+
+    def create(self, *args, **kwargs):
+        # TODO: find workflow based on tag resources
+        tag_resources = kwargs.pop("tag_resources", None)
+        if tag_resources is not None:
+            pass
+
+        request_context = kwargs.pop("request_context", None)
+
+        if request_context is None:
+            content = kwargs.pop("content", None)
+            request_context = (
+                RequestContext.objects.create(content=content, context={})
+                if content is not None
+                else None
+            )
+
+        return super(RequestManager, self).create(
+            request_context=request_context, **kwargs
+        )
+
+
 class Request(BaseModel):
     """Request model"""
 
@@ -87,6 +111,7 @@ class Request(BaseModel):
         CANCELED = "Canceled"
         ERROR = "Error"
 
+    objects = RequestManager()
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     state = models.CharField(
