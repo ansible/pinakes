@@ -2,15 +2,17 @@
 import logging
 from django.utils.translation import gettext_lazy as _
 
-from main.approval.models import Request
+from main.approval.services.create_approval_request import (
+    CreateApprovalRequest,
+)
 from main.catalog.models import ApprovalRequest
 from main.models import Source
 
 logger = logging.getLogger("catalog")
 
 
-class CreateApprovalRequest:
-    """Create a new approval request"""
+class SubmitApprovalRequest:
+    """Submit a new approval request"""
 
     def __init__(self, tag_resources, order_item):
         self.order_item = order_item
@@ -19,22 +21,20 @@ class CreateApprovalRequest:
 
     def process(self):
         self.order.mark_approval_pending()
-        self.submit_approval_request(self.order)
+        self.submit_approval_request()
 
         return self
 
-    def submit_approval_request(self, order):
+    def submit_approval_request(self):
         try:
             request_body = self.__create_approval_request_body()
-            req = Request.objects.create(
-                tenant_id=order.tenant_id, **request_body
-            )
+            svc = CreateApprovalRequest(request_body).process()
 
             ApprovalRequest.objects.create(
-                approval_request_ref=req.id,
-                state=str(req.decision),
-                order_id=order.id,
-                tenant_id=order.tenant_id,
+                approval_request_ref=svc.request.id,
+                state=str(svc.request.decision),
+                order_id=self.order.id,
+                tenant_id=self.order.tenant_id,
             )
 
             logger.info(
@@ -55,6 +55,7 @@ class CreateApprovalRequest:
                 "params": self.order_item.service_parameters,
             },
             "tag_resources": self.tag_resources,
+            "tenant_id": self.order.tenant_id,
         }
 
     def __platform(self):

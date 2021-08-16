@@ -1,6 +1,7 @@
 """ This modules stores the definition of the Catalog model."""
 import logging
 
+from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.db import models
 from django.db.models.functions import Length
@@ -150,7 +151,7 @@ class MessageableMixin:
             messageable_type=self.__class__.__name__,
             messageable_id=self.id,
             message=message,
-            tenant=Tenant.current(),
+            tenant=self.tenant,
         )
 
     def mark_approval_pending(self, message=None):
@@ -294,9 +295,12 @@ class ApprovalRequestManager(models.Manager):
         )
 
         approval_request_ref = kwargs.pop("approval_request_ref", None)
-        order = Order.objects.filter(id=approval_request.order.id).first()
-        message = f"Created Approval Request ref: {approval_request_ref}. Catalog approval request id: {approval_request.id}"
-        order.update_message(ProgressMessage.Level.INFO, message)
+        message = _(
+            "Created Approval Request ref: {}. Catalog approval request id: {}"
+        ).format(approval_request_ref, approval_request.id)
+        approval_request.order.update_message(
+            ProgressMessage.Level.INFO, message
+        )
 
         return approval_request
 
@@ -338,8 +342,11 @@ class ApprovalRequest(BaseModel):
         approval_request.save()
 
         approval_request_ref = kwargs.pop("approval_request_ref", None)
-        order = Order.objects.filter(id=approval_request.order.id).first()
-        message = f"Created Approval Request ref: {approval_request_ref}. Catalog approval request id: {approval_request.id}"
-        order.update_message(ProgressMessage.Level.INFO, message)
+        message = _(
+            "Created Approval Request ref: {}. Catalog approval request id: {}"
+        ).format(approval_request_ref, approval_request.id)
+        approval_request.order.update_message(
+            ProgressMessage.Level.INFO, message
+        )
 
         return approval_request

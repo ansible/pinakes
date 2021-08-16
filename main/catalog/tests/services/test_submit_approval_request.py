@@ -3,7 +3,7 @@ import pytest
 
 from main.approval.models import Request
 from main.catalog.models import ApprovalRequest
-from main.catalog.services.create_approval_request import CreateApprovalRequest
+from main.catalog.services.submit_approval_request import SubmitApprovalRequest
 
 from main.catalog.tests.factories import (
     PortfolioFactory,
@@ -19,7 +19,7 @@ from main.inventory.tests.factories import (
 
 
 @pytest.mark.django_db
-def test_create_approval_request():
+def test_submit_approval_request():
     """Test on creating ApprovalRequest service"""
 
     source = SourceFactory()
@@ -38,7 +38,7 @@ def test_create_approval_request():
         }
     ]
 
-    svc = CreateApprovalRequest(tag_resources, order_item)
+    svc = SubmitApprovalRequest(tag_resources, order_item)
     svc.process()
 
     assert svc.order == order

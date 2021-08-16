@@ -28,9 +28,9 @@ def test_collect_empty_tag_resources():
         portfolio=portfolio, service_offering_ref=service_offering.id
     )
     order = OrderFactory()
-    order_item = OrderItemFactory(order=order, portfolio_item=portfolio_item)
+    OrderItemFactory(order=order, portfolio_item=portfolio_item)
 
-    svc = CollectTagResources(order_item)
+    svc = CollectTagResources(order)
     svc.process()
 
     assert svc.tag_resources == []
@@ -51,9 +51,9 @@ def test_collect_remote_tag_resources():
         portfolio=portfolio, service_offering_ref=service_offering.id
     )
     order = OrderFactory()
-    order_item = OrderItemFactory(order=order, portfolio_item=portfolio_item)
+    OrderItemFactory(order=order, portfolio_item=portfolio_item)
 
-    svc = CollectTagResources(order_item)
+    svc = CollectTagResources(order)
     svc.process()
 
     assert len(svc.tag_resources) == 1
@@ -79,9 +79,9 @@ def test_collect_local_tag_resources():
     portfolio_item.tags.add("/xyz")
 
     order = OrderFactory()
-    order_item = OrderItemFactory(order=order, portfolio_item=portfolio_item)
+    OrderItemFactory(order=order, portfolio_item=portfolio_item)
 
-    svc = CollectTagResources(order_item)
+    svc = CollectTagResources(order)
     svc.process()
 
     assert len(svc.tag_resources) == 2

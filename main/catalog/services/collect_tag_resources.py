@@ -10,8 +10,8 @@ logger = logging.getLogger("catalog")
 class CollectTagResources:
     """Collection of collect inventories"""
 
-    def __init__(self, order_item):
-        self.order_item = order_item
+    def __init__(self, order):
+        self.order = order
         self.tag_resources = []
 
     def process(self):
@@ -25,7 +25,7 @@ class CollectTagResources:
         self.__collect_remote_tags()
 
     def __collect_local_tags(self):
-        for item in self.order_item.order.order_items:
+        for item in self.order.order_items:
             self.tag_resources += self.__tag_resources(
                 item.portfolio_item.portfolio
             )
@@ -34,8 +34,12 @@ class CollectTagResources:
         logger.info(f" Applied Local Tags {self.tag_resources}")
 
     def __collect_remote_tags(self):
+        for item in self.order.order_items:
+            self.__collect_remote_order_item_tags(item)
+
+    def __collect_remote_order_item_tags(self, order_item):
         service_offering_id = str(
-            self.order_item.portfolio_item.service_offering_ref
+            order_item.portfolio_item.service_offering_ref
         )
 
         if service_offering_id is None:
