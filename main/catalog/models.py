@@ -328,25 +328,10 @@ class ApprovalRequest(BaseModel):
         editable=False,
     )
 
-    order = models.OneToOneField(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
 
     class Meta:
-        indexes = [models.Index(fields=["tenant"])]
+        indexes = [models.Index(fields=["tenant", "order"])]
 
     def __str__(self):
         return str(self.id)
-
-    @classmethod
-    def create(cls, **kwargs):
-        approval_request = cls(**kwargs)
-        approval_request.save()
-
-        approval_request_ref = kwargs.pop("approval_request_ref", None)
-        message = _(
-            "Created Approval Request ref: {}. Catalog approval request id: {}"
-        ).format(approval_request_ref, approval_request.id)
-        approval_request.order.update_message(
-            ProgressMessage.Level.INFO, message
-        )
-
-        return approval_request

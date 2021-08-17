@@ -30,9 +30,7 @@ from main.catalog.serializers import (
     ProgressMessageSerializer,
     TenantSerializer,
 )
-from main.catalog.services.collect_tag_resources import CollectTagResources
 from main.catalog.services.start_order_item import StartOrderItem
-from main.catalog.services.submit_approval_request import SubmitApprovalRequest
 
 # Create your views here.
 
@@ -107,16 +105,6 @@ class OrderViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
             return Response(
                 {"status": "details"}, status=status.HTTP_404_NOT_FOUND
             )
-
-        order = Order.objects.filter(id=pk).first()
-        tag_resources = CollectTagResources(order).process()
-        message = _("Computed tags for order {}: {}").format(
-            order.id, tag_resources
-        )
-        order.update_message(ProgressMessage.Level.INFO, message)
-
-        logger.info(f"Creating approval request for order id {order.id}")
-        SubmitApprovalRequest(tag_resources, order_item).process()
 
         StartOrderItem(order_item).process()
         return Response(status=status.HTTP_204_NO_CONTENT)
