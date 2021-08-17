@@ -2,6 +2,7 @@
 import pytest
 import json
 from django.urls import reverse
+from main.approval.services.create_request import CreateRequest
 from main.tests.factories import default_tenant
 from main.approval.tests.factories import (
     RequestFactory,
@@ -86,7 +87,10 @@ def test_request_action_detail(api_request):
 
 
 @pytest.mark.django_db
-def test_create_request(api_request):
+def test_create_request(api_request, mocker):
+    mocker.patch.object(
+        CreateRequest, "_CreateRequest__prepare_request", return_value=None
+    )
     default_tenant()
     url = reverse("request-list")
     response = api_request(
