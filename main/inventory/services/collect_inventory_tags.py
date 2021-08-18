@@ -21,6 +21,7 @@ class CollectInventoryTags:
         self.__collect_inventory(
             self.service_offering_id, visited, inventory_ids
         )
+        return self
 
     def tags(self):
         """Return the list of tags assigned to the given service_offering"""

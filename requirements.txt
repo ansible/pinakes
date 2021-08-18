@@ -5,6 +5,7 @@ django-split-settings
 django-taggit
 djangorestframework
 drf-extensions
+Pillow
 psycopg2
 python-dateutil
 requests
