@@ -1,12 +1,8 @@
 """ Create an approval request """
+import django_rq
 import logging
-import threading
-from os import getenv
-from time import sleep
-
 from main.approval.models import Request, RequestContext
-from .send_event import SendEvent
-
+from main.approval.tasks import start_request_task
 
 logger = logging.getLogger("approval")
 
@@ -17,10 +13,7 @@ class CreateRequest:
     def __init__(self, data):
         self.data = data
         self.request = None
-        try:
-            self.__auto_interval = float(getenv("AUTO_APPROVAL_INTERVAL"))
-        except:
-            self.__auto_interval = 0.5
+        self.job = None
 
     def process(self):
         content = self.data.pop("content")
@@ -30,21 +23,8 @@ class CreateRequest:
         self.request = Request.objects.create(
             request_context=request_context, **self.data
         )
-        self.__prepare_request()
+        self.job = django_rq.enqueue(start_request_task, self.request.id)
+        logger.info(
+            "Enqueued job {} for request {}", self.job.id, self.request.id
+        )
         return self
-
-    def __prepare_request(self):
-        try:
-            threading.Thread(target=self.__start_request).start()
-        except:
-            logger.error(
-                f"Failed to start a thread to execute request (id={self.request.id})"
-            )
-
-    def __start_request(self):
-        sleep(self.__auto_interval)
-        SendEvent(self.request, SendEvent.EVENT_REQUEST_STARTED).process()
-        self.request.state = Request.State.COMPLETED
-        self.request.decision = Request.Decision.APPROVED
-        self.request.save()
-        SendEvent(self.request, SendEvent.EVENT_REQUEST_FINISHED).process()
