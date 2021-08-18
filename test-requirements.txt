@@ -3,4 +3,5 @@ flake8
 pytest
 pytest-django
 pytest-factoryboy
+pytest-mock
 responses
