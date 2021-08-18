@@ -1,5 +1,4 @@
 """URLs for Inventory"""
-from django.urls import include, path
 from rest_framework import routers
 
 from rest_framework_extensions.routers import NestedRouterMixin
@@ -9,6 +8,8 @@ from main.inventory.views import (
     ServicePlanViewSet,
     ServiceOfferingViewSet,
 )
+
+urls_views = {}
 
 
 class NestedDefaultRouter(NestedRouterMixin, routers.DefaultRouter):
@@ -23,6 +24,10 @@ sources.register(
     basename="source-service_inventory",
     parents_query_lookups=["source"],
 )
+urls_views["source-service_inventory-detail"] = None  # disable
+urls_views["source-service_inventory-tag"] = None
+urls_views["source-service_inventory-tags"] = None
+urls_views["source-service_inventory-untag"] = None
 
 sources.register(
     r"service_plans",
@@ -30,6 +35,7 @@ sources.register(
     basename="source-service_plan",
     parents_query_lookups=["source"],
 )
+urls_views["source-service_plan-detail"] = None
 
 sources.register(
     r"service_offerings",
@@ -37,6 +43,9 @@ sources.register(
     basename="source-service_offering",
     parents_query_lookups=["source"],
 )
+urls_views["source-service_offering-detail"] = None
+urls_views["source-service_offering-order"] = None
+urls_views["source-service_offering-applied-inventories-tags"] = None
 
 offerings = router.register("service_offerings", ServiceOfferingViewSet)
 offerings.register(
@@ -45,10 +54,7 @@ offerings.register(
     basename="offering-service_plans",
     parents_query_lookups=["service_offering"],
 )
+urls_views["offering-service_plans-detail"] = None
 
 router.register("service_inventories", ServiceInventoryViewSet)
 router.register("service_plans", ServicePlanViewSet)
-
-urlpatterns = [
-    path("", include((router.urls, "inventory"))),
-]

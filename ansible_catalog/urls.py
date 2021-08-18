@@ -19,15 +19,38 @@ from rest_framework import routers
 from django.conf import settings
 from django.conf.urls.static import static
 
-from main.catalog.urls import router as catalog_router
-from main.approval.urls import router as approval_router
-from main.inventory.urls import router as inventory_router
+from main.catalog.urls import (
+    router as catalog_router,
+    urls_views as catalog_views,
+)
+from main.approval.urls import (
+    router as approval_router,
+    urls_views as approval_views,
+)
+from main.inventory.urls import (
+    router as inventory_router,
+    urls_views as inventory_views,
+)
+
+
+def __filter_by_view(pattern):
+    name = pattern.name
+    if name in urls_views:
+        if urls_views[name] == None:
+            return False
+        pattern.callback = urls_views[name]
+    return True
+
 
 router = routers.DefaultRouter()
 router.registry.extend(catalog_router.registry)
 router.registry.extend(approval_router.registry)
 router.registry.extend(inventory_router.registry)
 
+urls_patterns = router.urls
+urls_views = {**catalog_views, **approval_views, **inventory_views}
+urls_patterns = [p for p in urls_patterns if __filter_by_view(p)]
+
 urlpatterns = [
-    path(r"api/v1/", include(router.urls)),
+    path(r"api/v1/", include(urls_patterns)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
