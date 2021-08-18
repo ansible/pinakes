@@ -18,14 +18,14 @@ class TowerAPI:
 
     def __init__(self, url=None, token=None, verify_ssl=None):
         if url is None:
-            url = settings.TOWER_URL
+            url = settings.CONTROLLER_URL
         self.url = url.rstrip("/")
 
         if token is None:
-            token = settings.TOWER_TOKEN
+            token = settings.CONTROLLER_TOKEN
 
         if verify_ssl is None:
-            verify_ssl = settings.TOWER_VERIFY_SSL
+            verify_ssl = settings.CONTROLLER_VERIFY_SSL
 
         self.verify_ssl = strtobool(verify_ssl)
 

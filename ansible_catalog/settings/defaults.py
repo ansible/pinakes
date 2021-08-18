@@ -150,10 +150,10 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Tower Info
-TOWER_URL = "https://Your_Tower_URL"
-TOWER_TOKEN = "Your Token"
-TOWER_VERIFY_SSL = "False"
+# Controller Info
+CONTROLLER_URL = "https://Your_Controller_URL"
+CONTROLLER_TOKEN = "Your Token"
+CONTROLLER_VERIFY_SSL = "False"
 
 # Media (Icons) configuration
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
