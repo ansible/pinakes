@@ -62,6 +62,8 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+*.db
+apispec.json
 
 # Flask stuff:
 instance/
@@ -141,3 +143,7 @@ cython_debug/
 
 # Local Developer settings files
 ansible_catalog/settings/local_*.py
+
+# IDE's
+.vscode
+.idea
