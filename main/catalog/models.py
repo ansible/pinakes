@@ -49,10 +49,6 @@ class Portfolio(ImageableModel):
 
         super().delete()
 
-    @property
-    def tag_resources(self):
-        return list(self.tags.all())
-
     def __str__(self):
         return self.name
 
@@ -99,10 +95,6 @@ class PortfolioItem(ImageableModel):
             icon.delete()
 
         super().delete()
-
-    @property
-    def tag_resources(self):
-        return list(self.tags.all())
 
     def __str__(self):
         return self.name
@@ -223,10 +215,6 @@ class Order(UserOwnedModel, MessageableMixin):
     class Meta:
         indexes = [models.Index(fields=["tenant", "user"])]
 
-    @property
-    def order_items(self):
-        return OrderItem.objects.filter(order_id=self.id)
-
     def __str__(self):
         return str(self.id)
 
@@ -328,7 +316,7 @@ class ApprovalRequest(BaseModel):
         editable=False,
     )
 
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.OneToOneField(Order, on_delete=models.CASCADE)
 
     class Meta:
         indexes = [models.Index(fields=["tenant", "order"])]

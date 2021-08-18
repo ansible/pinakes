@@ -156,6 +156,13 @@ class ApprovalRequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         "updated_at",
     )
 
+    def list(self, request, *args, **kwargs):
+        order_id = kwargs.pop("parent_lookup_order")
+        approval_request = ApprovalRequest.objects.get(order_id=order_id)
+
+        serializer = self.get_serializer(approval_request)
+        return Response(serializer.data)
+
 
 class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     """API endpoint for listing progress messages."""

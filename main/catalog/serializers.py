@@ -177,7 +177,6 @@ class ApprovalRequestSerializer(serializers.ModelSerializer):
             "request_completed_at",
             "state",
         )
-        read_only_fields = ("created_at", "updated_at")
 
 
 class ProgressMessageSerializer(serializers.ModelSerializer):
@@ -192,4 +191,3 @@ class ProgressMessageSerializer(serializers.ModelSerializer):
             "messageable_type",
             "messageable_id",
         )
-        read_only_fields = ("created_at", "updated_at")

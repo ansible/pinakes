@@ -21,5 +21,9 @@ def test_order_approval_request_get(api_request):
 
     assert response.status_code == 200
 
-    content = json.loads(response.content)
-    assert content["count"] == 1
+    data = response.data
+    assert data["id"] == approval_request.id
+    assert (
+        data["approval_request_ref"] == approval_request.approval_request_ref
+    )
+    assert data["reason"] == approval_request.reason

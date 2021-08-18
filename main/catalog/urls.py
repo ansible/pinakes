@@ -38,7 +38,7 @@ orders.register(
     parents_query_lookups=["order"],
 )
 orders.register(
-    r"approval_requests",
+    r"approval_request",
     ApprovalRequestViewSet,
     basename="order-approvalrequest",
     parents_query_lookups=["order"],
