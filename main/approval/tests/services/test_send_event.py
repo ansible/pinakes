@@ -1,21 +1,21 @@
 """Module to test send events"""
 import pytest
-from main.tests.factories import default_tenant
+
 from main.approval.tests.factories import RequestFactory, WorkflowFactory
-from main.approval.services.create_request import CreateRequest
-from main.approval.models import Request
-from main.models import Tenant
 from main.approval.services.send_event import SendEvent
-from main.catalog.services.receive_approval_events import ReceiveApprovalEvents
+from main.catalog.services.notify_approval_request import NotifyApprovalRequest
 
 
 @pytest.mark.django_db
 def test_request_started(mocker):
     receive_service = mocker.patch.object(
-        ReceiveApprovalEvents, "__init__", return_value=None
+        NotifyApprovalRequest, "__init__", return_value=None
     )
     request = RequestFactory()
+
+    mocker.patch.object(NotifyApprovalRequest, "process", return_value=None)
     SendEvent(request, SendEvent.EVENT_REQUEST_STARTED).process()
+
     receive_service.assert_called_once_with(
         event=SendEvent.EVENT_REQUEST_STARTED,
         payload={"request_id": request.id},
@@ -25,9 +25,10 @@ def test_request_started(mocker):
 @pytest.mark.django_db
 def test_request_finished(mocker):
     receive_service = mocker.patch.object(
-        ReceiveApprovalEvents, "__init__", return_value=None
+        NotifyApprovalRequest, "__init__", return_value=None
     )
     request = RequestFactory(decision="Approved", reason="Good")
+    mocker.patch.object(NotifyApprovalRequest, "process", return_value=None)
     SendEvent(request, SendEvent.EVENT_REQUEST_FINISHED).process()
     receive_service.assert_called_once_with(
         event=SendEvent.EVENT_REQUEST_FINISHED,
@@ -42,9 +43,10 @@ def test_request_finished(mocker):
 @pytest.mark.django_db
 def test_request_canceled(mocker):
     receive_service = mocker.patch.object(
-        ReceiveApprovalEvents, "__init__", return_value=None
+        NotifyApprovalRequest, "__init__", return_value=None
     )
     request = RequestFactory(decision="Canceled", reason="by user")
+    mocker.patch.object(NotifyApprovalRequest, "process", return_value=None)
     SendEvent(request, SendEvent.EVENT_REQUEST_CANCELED).process()
     receive_service.assert_called_once_with(
         event=SendEvent.EVENT_REQUEST_CANCELED,
@@ -55,9 +57,10 @@ def test_request_canceled(mocker):
 @pytest.mark.django_db
 def test_workflow_deleted(mocker):
     receive_service = mocker.patch.object(
-        ReceiveApprovalEvents, "__init__", return_value=None
+        NotifyApprovalRequest, "__init__", return_value=None
     )
     workflow = WorkflowFactory()
+    mocker.patch.object(NotifyApprovalRequest, "process", return_value=None)
     SendEvent(workflow.id, SendEvent.EVENT_WORKFLOW_DELETED).process()
     receive_service.assert_called_once_with(
         event=SendEvent.EVENT_WORKFLOW_DELETED,

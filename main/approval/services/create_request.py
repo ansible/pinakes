@@ -16,6 +16,9 @@ class CreateRequest:
         self.job = None
 
     def process(self):
+        # TODO: find workflow based on tags
+        tag_resources = self.data.pop("tag_resources", None)
+
         content = self.data.pop("content")
         request_context = RequestContext.objects.create(
             content=content, context={}

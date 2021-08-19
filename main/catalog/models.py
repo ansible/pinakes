@@ -49,6 +49,10 @@ class Portfolio(ImageableModel):
 
         super().delete()
 
+    @property
+    def tag_resources(self):
+        return list(self.tags.all())
+
     def __str__(self):
         return self.name
 
@@ -95,6 +99,10 @@ class PortfolioItem(ImageableModel):
             icon.delete()
 
         super().delete()
+
+    @property
+    def tag_resources(self):
+        return list(self.tags.all())
 
     def __str__(self):
         return self.name
@@ -156,6 +164,16 @@ class MessageableMixin:
             state=self.__class__.State.PENDING,
         )
 
+    def mark_failed(self, message=None):
+        if self.state == self.__class__.State.FAILED:
+            return
+
+        self.__mark_item(
+            message,
+            completed_at=timezone.now(),
+            state=self.__class__.State.FAILED,
+        )
+
     def mark_completed(self, message=None):
         if self.state == self.__class__.State.COMPLETED:
             return
@@ -214,6 +232,10 @@ class Order(UserOwnedModel, MessageableMixin):
 
     class Meta:
         indexes = [models.Index(fields=["tenant", "user"])]
+
+    @property
+    def order_items(self):
+        return OrderItem.objects.filter(order_id=self.id)
 
     def __str__(self):
         return str(self.id)
@@ -297,7 +319,7 @@ class ApprovalRequest(BaseModel):
     """Approval Request Model"""
 
     class State(models.TextChoices):
-        """Available states for Order Item"""
+        """Available states for approval request"""
 
         UNDECIDED = "Undecided"
         APPROVED = "Approved"
