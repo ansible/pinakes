@@ -153,12 +153,16 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Tower Info
-TOWER_URL = env.str(
-    "ANSIBLE_CATALOG_TOWER_URL", default="https://Your_Tower_URL"
+# Controller Info
+CONTROLLER_URL = env.str(
+    "ANSIBLE_CATALOG_CONTROLLER_URL", default="https://Your_Tower_URL"
 )
-TOWER_TOKEN = env.str("ANSIBLE_CATALOG_TOWER_TOKEN", default="Secret Token")
-TOWER_VERIFY_SSL = env.bool("ANSIBLE_CATALOG_TOWER_VERIFY_SSL", default=False)
+CONTROLLER_TOKEN = env.str(
+    "ANSIBLE_CATALOG_CONTROLLER_TOKEN", default="Secret Token"
+)
+CONTROLLER_VERIFY_SSL = env.bool(
+    "ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL", default=False
+)
 
 # Media (Icons) configuration
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")

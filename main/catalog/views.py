@@ -1,5 +1,6 @@
 """ Default views for Catalog."""
 import logging
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -12,13 +13,22 @@ from common.tag_mixin import TagMixin
 from common.image_mixin import ImageMixin
 
 from main.models import Tenant
-from main.catalog.models import Portfolio, PortfolioItem, Order, OrderItem
+from main.catalog.models import (
+    ApprovalRequest,
+    Order,
+    OrderItem,
+    Portfolio,
+    PortfolioItem,
+    ProgressMessage,
+)
 from main.catalog.serializers import (
-    TenantSerializer,
-    PortfolioSerializer,
-    PortfolioItemSerializer,
-    OrderSerializer,
+    ApprovalRequestSerializer,
     OrderItemSerializer,
+    OrderSerializer,
+    PortfolioItemSerializer,
+    PortfolioSerializer,
+    ProgressMessageSerializer,
+    TenantSerializer,
 )
 from main.catalog.services.start_order_item import StartOrderItem
 
@@ -126,3 +136,63 @@ class OrderItemViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         "updated_at",
         "completed_at",
     )
+
+
+class ApprovalRequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    """API endpoint for listing approval requests."""
+
+    queryset = ApprovalRequest.objects.all()
+    serializer_class = ApprovalRequestSerializer
+    http_method_names = ["get"]
+    permission_classes = (IsAuthenticated,)
+    ordering = ("-id",)
+    filter_fields = (
+        "order",
+        "approval_request_ref",
+        "state",
+        "reason",
+        "request_completed_at",
+        "created_at",
+        "updated_at",
+    )
+
+    def list(self, request, *args, **kwargs):
+        order_id = kwargs.pop("parent_lookup_order")
+        approval_request = ApprovalRequest.objects.get(order_id=order_id)
+
+        serializer = self.get_serializer(approval_request)
+        return Response(serializer.data)
+
+
+class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    """API endpoint for listing progress messages."""
+
+    serializer_class = ProgressMessageSerializer
+    http_method_names = ["get"]
+    permission_classes = (IsAuthenticated,)
+    ordering = ("-id",)
+    filter_fields = (
+        "received_at",
+        "messageable_id",
+        "messageable_type",
+        "level",
+        "created_at",
+        "updated_at",
+    )
+
+    def get_queryset(self):
+        """return queryset based on messageable_type"""
+
+        messageable_type = self.request.path.split("/")[3]
+        messageable_id = self.kwargs.get("parent_lookup_messageable_id")
+
+        if messageable_type == "orders":
+            queryset = ProgressMessage.objects.filter(
+                messageable_type="Order", messageable_id=messageable_id
+            )
+        else:
+            queryset = ProgressMessage.objects.filter(
+                messageable_type="OrderItem", messageable_id=messageable_id
+            )
+
+        return queryset

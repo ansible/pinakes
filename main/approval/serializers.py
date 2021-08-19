@@ -1,4 +1,4 @@
-""" Serializers for Approval Model."""
+"""Serializers for Approval Model."""
 from rest_framework import serializers
 
 from main.approval.models import (
@@ -8,6 +8,7 @@ from main.approval.models import (
     RequestContext,
     Action,
 )
+from main.approval.services.create_request import CreateRequest
 
 
 class TemplateSerializer(serializers.ModelSerializer):
@@ -78,13 +79,7 @@ class RequestInSerializer(serializers.Serializer):
     content = serializers.JSONField()
 
     def create(self, validate_data):
-        content = validate_data.pop("content")
-        request_context = RequestContext.objects.create(
-            content=content, context={}
-        )
-        return Request.objects.create(
-            request_context=request_context, **validate_data
-        )
+        return CreateRequest(validate_data).process().request
 
 
 class ActionSerializer(serializers.ModelSerializer):

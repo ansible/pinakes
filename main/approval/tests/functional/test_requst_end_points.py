@@ -1,7 +1,9 @@
 """ Module to test approval requests and actions """
 import pytest
 import json
+import django_rq
 from django.urls import reverse
+from main.approval.services.create_request import CreateRequest
 from main.tests.factories import default_tenant
 from main.approval.tests.factories import (
     RequestFactory,
@@ -86,7 +88,8 @@ def test_request_action_detail(api_request):
 
 
 @pytest.mark.django_db
-def test_create_request(api_request):
+def test_create_request(api_request, mocker):
+    mocker.patch("django_rq.enqueue")
     default_tenant()
     url = reverse("request-list")
     response = api_request(

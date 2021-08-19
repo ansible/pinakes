@@ -49,9 +49,9 @@ export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
    
    To store tower info use the following keys
    
-  * TOWER_TOKEN="Your Token"
-  * TOWER_URL="Your Tower URL"
-  * TOWER_VERIFY_SSL="False"
+  * CONTROLLER_TOKEN="Your Token"
+  * CONTROLLER_URL="Your Controller URL"
+  * CONTROLLER_VERIFY_SSL="False"
   
 * Start the Server using development settings
       ```python3 manage.py runserver```
