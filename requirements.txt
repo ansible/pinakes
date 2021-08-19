@@ -9,5 +9,4 @@ Pillow
 psycopg2
 python-dateutil
 requests
-pillow
 django-environ

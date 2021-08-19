@@ -23,6 +23,7 @@ services:
       - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
       - CATALOG_LOG_ROOT=/app
       - OBJ_DISABLE_INITIALIZE_FORK_SAFETY=YES
+      - ANSIBLE_CATALOG_REDIS_HOST=redis
     volumes:
       - "./:/app:z"
     depends_on:

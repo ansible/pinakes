@@ -88,11 +88,11 @@ DATABASES = {
   ```
 ## Local Container ##
 ### Requirements
-You need before install docker/podman and docker-compose. 
+You will need to install docker/podman and docker-compose. 
 
 
 #### previous steps for podman
-You must to init first the api socket for podman:
+You must first init the api socket for podman:
 ```
 # only linux 
 systemctl --user enable --now podman.socket
@@ -118,7 +118,7 @@ docker-compose up
 ```
 
 Now you can try to open http://localhost:8000/api/v1/
-The project path is mounted in the pod and you can edit it in Real Time from outside the container. 
+The project path is mounted in the pod and you can edit it in real time from outside the container. 
 
 You can get an interactive shell inside the application pod with the command:
 ```
