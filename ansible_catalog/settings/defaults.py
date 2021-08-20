@@ -9,10 +9,13 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import environ
 import os
 import sys
 from pathlib import Path
+
+env = environ.Env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -151,23 +154,29 @@ STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Controller Info
-CONTROLLER_URL = "https://Your_Controller_URL"
-CONTROLLER_TOKEN = "Your Token"
-CONTROLLER_VERIFY_SSL = "False"
+CONTROLLER_URL = env.str(
+    "ANSIBLE_CATALOG_CONTROLLER_URL", default="https://Your_Controller_URL"
+)
+CONTROLLER_TOKEN = env.str(
+    "ANSIBLE_CATALOG_CONTROLLER_TOKEN", default="Secret Token"
+)
+CONTROLLER_VERIFY_SSL = env.str(
+    "ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL", default="True"
+)
 
 # Media (Icons) configuration
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
 # Logging configuration
-LOG_ROOT = os.getenv("CATALOG_LOG_ROOT", "/var/log/ansible_catalog/")
+LOG_ROOT = env.str("CATALOG_LOG_ROOT", default="/var/log/ansible_catalog/")
 LOG_FILE = "ansible_catalog.log"
 MAX_BYTES = 10 * 1024 * 1024
 BACKUP_COUNT = 5
 
 
 if "pytest" in sys.modules:
-    LOG_ROOT = os.getenv("CATALOG_LOG_ROOT", "/tmp/ansible_catalog/")
+    LOG_ROOT = env.str("CATALOG_LOG_ROOT", default="/tmp/ansible_catalog/")
     Path(LOG_ROOT).mkdir(parents=True, exist_ok=True)
 
 LOGGING = {
@@ -263,8 +272,8 @@ LOGIN_URL = "/api/login/"
 # Django Redis Queue Information
 RQ_QUEUES = {
     "default": {
-        "HOST": "localhost",
-        "PORT": 6379,
+        "HOST": env.str("ANSIBLE_CATALOG_REDIS_HOST", default="localhost"),
+        "PORT": env.int("ANSIBLE_CATALOG_REDIS_PORT", default=6379),
         "DB": 0,
         "DEFAULT_TIMEOUT": 360,
     },

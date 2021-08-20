@@ -86,3 +86,56 @@ DATABASES = {
   export OBJ_DISABLE_INITIALIZE_FORK_SAFETY=YES
   python3 manage.py rqworker default
   ```
+## Local Container ##
+### Requirements
+You will need to install docker/podman and docker-compose. 
+
+
+#### previous steps for podman
+You must first init the api socket for podman:
+```
+# only linux 
+systemctl --user enable --now podman.socket
+```
+
+And also export the socket:
+
+```
+# only linux 
+export DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock
+```
+
+### Build and Run
+
+Build the containers
+```
+docker-compose build
+```
+
+Run the application
+```
+docker-compose up
+```
+
+Now you can try to open http://localhost:8000/api/v1/
+The project path is mounted in the pod and you can edit it in real time from outside the container. 
+
+You can get an interactive shell inside the application pod with the command:
+```
+docker-compose exec app bash
+```
+
+### Things to do manually the first time
+- create a superuser:
+```
+docker-compose exec app python manage.py createsuperuser
+```
+
+- create the source: (Ensure before you have configured the tower connection, see above)
+```
+docker-compose exec app python manage.py shell
+>>> from main.models import Source, Tenant
+>>> Source.objects.create(name="source_1", tenant=Tenant.current())
+```
+open in your browser: http://localhost:8000/api/v1/sources/1/refresh/
+and execute a patch with empty body. (this may take a while)
