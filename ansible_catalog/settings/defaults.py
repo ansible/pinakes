@@ -27,7 +27,9 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
+SECRET_KEY = (
+    "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -155,9 +157,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CONTROLLER_URL = env.str(
     "ANSIBLE_CATALOG_CONTROLLER_URL", default="https://Your_Controller_URL"
 )
-CONTROLLER_TOKEN = env.str("ANSIBLE_CATALOG_CONTROLLER_TOKEN", default="Secret Token")
+CONTROLLER_TOKEN = env.str(
+    "ANSIBLE_CATALOG_CONTROLLER_TOKEN", default="Secret Token"
+)
 CONTROLLER_VERIFY_SSL = env.str(
-    "ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL", default="False"
+    "ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL", default="True"
 )
 
 # Media (Icons) configuration

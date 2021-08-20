@@ -28,3 +28,5 @@ if "pytest" in sys.modules:
             "NAME": BASE_DIR / "catalog_test.db",
         },
     }
+
+CONTROLLER_VERIFY_SSL = "False"

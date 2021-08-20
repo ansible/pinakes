@@ -13,6 +13,7 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
       - CATALOG_LOG_ROOT=/app
+      - CONTROLLER_VERIFY_SSL=False
   redis:
     image: redis:alpine
     ports:
@@ -24,6 +25,7 @@ services:
       - CATALOG_LOG_ROOT=/app
       - OBJ_DISABLE_INITIALIZE_FORK_SAFETY=YES
       - ANSIBLE_CATALOG_REDIS_HOST=redis
+      - CONTROLLER_VERIFY_SSL=False
     volumes:
       - "./:/app:z"
     depends_on:
