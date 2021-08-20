@@ -2,6 +2,7 @@
 from django.db import models
 from django.db.utils import OperationalError
 from django.contrib.auth.models import User
+from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 
 class Tenant(models.Model):
@@ -65,8 +66,9 @@ class UserOwnedModel(BaseModel):
         abstract = True
 
     @property
+    @extend_schema_field(OpenApiTypes.STR)
     def owner(self):
-        "Use for serializer_class"
+        """Use for serializer_class"""
         return self.user.username
 
 

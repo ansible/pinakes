@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "taggit",
     "main",
     "django_rq",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -102,6 +103,7 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.OrderingFilter",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 # Password validation
@@ -268,4 +270,32 @@ RQ_QUEUES = {
         "DB": 0,
         "DEFAULT_TIMEOUT": 360,
     },
+}
+
+# Auto generation of openapi spec using Spectacular
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Catalog API",
+    "DESCRIPTION": "A set of APIs to create and manage Ansible catalogs and order from them.",
+    "VERSION": "0.1.0",
+    "CONTACT": {
+        "email": "support@redhat.com",
+    },
+    "LICENSE": {
+        "name": "Apache 2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0.html",
+    },
+    "SERVERS": [
+        {
+            "url": "http://localhost:{port}/{basePath}",
+            "description": "Development Server",
+            "variables": {
+                "port": {
+                    "default": "8000",
+                },
+                "basePath": {
+                    "default": "/api/v1",
+                },
+            },
+        },
+    ],
 }

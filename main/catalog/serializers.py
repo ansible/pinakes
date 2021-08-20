@@ -1,5 +1,6 @@
 """ Serializers for Catalog Model."""
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 from main.models import Tenant, Image
 from main.catalog.models import (
@@ -46,6 +47,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
             tenant=Tenant.current(), **validated_data
         )
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_icon_url(self, obj):
         request = self.context.get("request")
         return (
@@ -81,6 +83,7 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
             tenant=Tenant.current(), **validated_data
         )
 
+    @extend_schema_field(OpenApiTypes.STR)
     def get_icon_url(self, obj):
         request = self.context.get("request")
         return (
