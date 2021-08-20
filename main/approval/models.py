@@ -2,6 +2,7 @@
 from django.db import models
 from django.db.models.functions import Length
 from django.contrib.auth.models import User
+from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 from main.models import BaseModel
 
@@ -126,11 +127,13 @@ class Request(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     @property
+    @extend_schema_field(OpenApiTypes.STR)
     def requester_name(self):
         """virtual column requester_name"""
         return f"{self.user.first_name} {self.user.last_name}"
 
     @property
+    @extend_schema_field(OpenApiTypes.STR)
     def owner(self):
         """virtual column owner"""
         return f"{self.user.username}"
@@ -152,7 +155,6 @@ class Action(BaseModel):
         CANCEL = "Cancel"
         ERROR = "Error"
 
-    processed_by = models.CharField(max_length=128, editable=False)
     operation = models.CharField(
         max_length=10, choices=Operation.choices, default=Operation.Memo
     )
@@ -163,6 +165,7 @@ class Action(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     @property
+    @extend_schema_field(OpenApiTypes.STR)
     def processed_by(self):
         """virtual column processed_by"""
         return f"{self.user.first_name} {self.user.last_name}"
