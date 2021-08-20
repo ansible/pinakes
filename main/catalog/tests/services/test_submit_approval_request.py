@@ -39,7 +39,7 @@ def test_submit_approval_request(mocker):
     ]
 
     mocker.patch("django_rq.enqueue")
-    svc = SubmitApprovalRequest(tag_resources, order_item)
+    svc = SubmitApprovalRequest(tag_resources, order)
     svc.process()
 
     assert svc.order == order

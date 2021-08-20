@@ -159,29 +159,43 @@ class MessageableMixin:
             return
 
         self.__mark_item(
-            message,
+            message=message,
             completed_at=timezone.now(),
             state=self.__class__.State.PENDING,
         )
 
-    def mark_failed(self, message=None):
+    def mark_ordered(self, message=None, **kwargs):
+        if self.state == self.__class__.State.ORDERED:
+            return
+
+        self.__mark_item(
+            message=message,
+            order_request_sent_at=timezone.now(),
+            state=self.__class__.State.ORDERED,
+            **kwargs,
+        )
+
+    def mark_failed(self, message=None, **kwargs):
         if self.state == self.__class__.State.FAILED:
             return
 
         self.__mark_item(
-            message,
+            message=message,
+            level=ProgressMessage.Level.ERROR,
             completed_at=timezone.now(),
             state=self.__class__.State.FAILED,
+            **kwargs,
         )
 
-    def mark_completed(self, message=None):
+    def mark_completed(self, message=None, **kwargs):
         if self.state == self.__class__.State.COMPLETED:
             return
 
         self.__mark_item(
-            message,
+            message=message,
             completed_at=timezone.now(),
             state=self.__class__.State.COMPLETED,
+            **kwargs,
         )
 
     def mark_canceled(self, message=None):
@@ -189,7 +203,7 @@ class MessageableMixin:
             return
 
         self.__mark_item(
-            message,
+            message=message,
             completed_at=timezone.now(),
             state=self.__class__.State.CANCELED,
         )
@@ -201,8 +215,10 @@ class MessageableMixin:
             self.update_message(level, message)
 
         self.__class__.objects.filter(id=self.id).update(**options)
+        self.refresh_from_db()
+
         logger.info(
-            f"Updated {self.__class__.__name__}: {self.id} with state: {options['state']}"
+            f"Updated {self.__class__.__name__} {self.id} with state: {options['state']}"
         )
 
 
@@ -237,6 +253,11 @@ class Order(UserOwnedModel, MessageableMixin):
     def order_items(self):
         return OrderItem.objects.filter(order_id=self.id)
 
+    @property
+    def product(self):
+        # TODO: return the true product when order process introduced
+        return OrderItem.objects.filter(order_id=self.id).first()
+
     def __str__(self):
         return str(self.id)
 
@@ -255,6 +276,13 @@ class OrderItem(UserOwnedModel, MessageableMixin):
         DENIED = "Denied"
         FAILED = "Failed"
         ORDERED = "Ordered"
+
+    FINISHED_STATES = [
+        State.COMPLETED,
+        State.CANCELED,
+        State.FAILED,
+        State.DENIED,
+    ]
 
     name = models.CharField(max_length=64)
     state = models.CharField(
@@ -303,6 +331,7 @@ class ApprovalRequestManager(models.Manager):
         approval_request = super(ApprovalRequestManager, self).create(
             *args, **kwargs
         )
+        approval_request.save()
 
         approval_request_ref = kwargs.pop("approval_request_ref", None)
         message = _(

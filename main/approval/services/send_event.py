@@ -1,7 +1,7 @@
 """ Send an event when a request changes it state """
 import logging
 
-from main.catalog.services.notify_approval_request import NotifyApprovalRequest
+from main.catalog.services.handle_approval_events import HandleApprovalEvents
 
 
 logger = logging.getLogger("approval")
@@ -49,7 +49,7 @@ class SendEvent:
         logger.info(
             "Sending event {} with payload({})".format(self.event, payload)
         )
-        NotifyApprovalRequest(
+        HandleApprovalEvents(
             event=self.event,
             payload=payload,
         ).process()

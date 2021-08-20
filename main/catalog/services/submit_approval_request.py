@@ -14,10 +14,10 @@ logger = logging.getLogger("catalog")
 class SubmitApprovalRequest:
     """Submit a new approval request"""
 
-    def __init__(self, tag_resources, order_item):
-        self.order_item = order_item
+    def __init__(self, tag_resources, order):
         self.tag_resources = tag_resources
-        self.order = order_item.order
+        self.order = order
+        self.order_item = order.product
 
     def process(self):
         self.order.mark_approval_pending()
@@ -31,9 +31,9 @@ class SubmitApprovalRequest:
             svc = CreateRequest(request_body).process()
 
             ApprovalRequest.objects.create(
-                approval_request_ref=svc.request.id,
+                approval_request_ref=str(svc.request.id),
                 state=str(svc.request.decision),
-                order_id=self.order.id,
+                order=self.order,
                 tenant_id=self.order.tenant_id,
             )
 
@@ -42,6 +42,9 @@ class SubmitApprovalRequest:
             )
 
         except Exception as error:
+            logger.error(
+                f"Failed to submit request to approval for Order {self.order.id}, error: {error}"
+            )
             raise error
 
     def __create_approval_request_body(self):
@@ -60,6 +63,6 @@ class SubmitApprovalRequest:
 
     def __platform(self):
         source_ref = self.order_item.portfolio_item.service_offering_source_ref
-        obj = Source.objects.filter(id=int(source_ref)).first()
+        obj = Source.objects.get(id=int(source_ref))
 
         return obj.name if obj is not None else ""

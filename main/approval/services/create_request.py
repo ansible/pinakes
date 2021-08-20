@@ -28,6 +28,8 @@ class CreateRequest:
         )
         self.job = django_rq.enqueue(start_request_task, self.request.id)
         logger.info(
-            "Enqueued job {} for request {}", self.job.id, self.request.id
+            "Enqueued job {} for request {}".format(
+                self.job.id, self.request.id
+            )
         )
         return self
