@@ -83,7 +83,7 @@ DATABASES = {
   export CATALOG_ROOT_URL=/tmp
   export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
   # This is needed only on Mac OS
-  export OBJ_DISABLE_INITIALIZE_FORK_SAFETY=YES
+  export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
   python3 manage.py rqworker default
   ```
 ## Local Container ##
