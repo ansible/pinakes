@@ -3,13 +3,14 @@ from rest_framework import routers
 from rest_framework_extensions.routers import NestedRouterMixin
 
 from main.catalog.views import (
-    TenantViewSet,
-    PortfolioViewSet,
-    PortfolioItemViewSet,
+    ApprovalRequestViewSet,
+    CatalogServicePlanViewSet,
     OrderViewSet,
     OrderItemViewSet,
-    ApprovalRequestViewSet,
+    PortfolioViewSet,
+    PortfolioItemViewSet,
     ProgressMessageViewSet,
+    TenantViewSet,
 )
 
 urls_views = {}
@@ -31,7 +32,7 @@ portfolios.register(
     basename="portfolio-portfolioitem",
     parents_query_lookups=["portfolio"],
 )
-router.register(
+portfolio_items = router.register(
     r"portfolio_items", PortfolioItemViewSet, basename="portfolioitem"
 )
 urls_views["portfolio-portfolioitem-detail"] = None  # disable
@@ -42,6 +43,18 @@ urls_views["portfolio-portfolioitem-untag"] = None
 urls_views["portfolio-portfolioitem-list"] = PortfolioItemViewSet.as_view(
     {"get": "list"}
 )  # read only
+
+portfolio_items.register(
+    r"service_plans",
+    CatalogServicePlanViewSet,
+    basename="portfolioitem-serviceplan",
+    parents_query_lookups=["portfolio_item"],
+)
+
+urls_views["portfolioitem-serviceplan-detail"] = None  # disable
+urls_views["portfolioitem-serviceplan-base"] = None  # disable
+urls_views["portfolioitem-serviceplan-modified"] = None  # disable
+urls_views["portfolioitem-serviceplan-reset"] = None  # disable
 
 orders = router.register(r"orders", OrderViewSet, basename="order")
 orders.register(

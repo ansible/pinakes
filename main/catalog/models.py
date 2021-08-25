@@ -64,7 +64,7 @@ class PortfolioItem(ImageableModel):
     description = models.TextField(blank=True, default="")
     orphan = models.BooleanField(default=False)
     state = models.CharField(max_length=64)
-    service_offering_ref = models.CharField(max_length=64)
+    service_offering_ref = models.CharField(max_length=64, null=True)
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
     service_offering_source_ref = models.CharField(
         max_length=64, blank=True, default=""
@@ -297,9 +297,9 @@ class OrderItem(UserOwnedModel, MessageableMixin):
     order_request_sent_at = models.DateTimeField(editable=False, null=True)
     completed_at = models.DateTimeField(editable=False, null=True)
     count = models.SmallIntegerField(editable=False, default=0)
-    inventory_task_ref = models.CharField(max_length=64, default="")
-    service_plan_ref = models.CharField(max_length=64, default="")
-    service_instance_ref = models.CharField(max_length=64, default="")
+    inventory_task_ref = models.CharField(max_length=64, null=True)
+    service_plan_ref = models.CharField(max_length=64, null=True)
+    service_instance_ref = models.CharField(max_length=64, null=True)
     service_parameters = models.JSONField(blank=True, null=True)
     service_parameters_raw = models.JSONField(blank=True, null=True)
     provider_control_parameters = models.JSONField(blank=True, null=True)
@@ -376,3 +376,38 @@ class ApprovalRequest(BaseModel):
 
     def __str__(self):
         return str(self.id)
+
+
+class CatalogServicePlan(BaseModel):
+    """Catalog Service Plan Model"""
+
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, default="")
+    base = models.JSONField(blank=True, null=True)
+    modified = models.JSONField(blank=True, null=True)
+
+    portfolio_item = models.ForeignKey(PortfolioItem, on_delete=models.CASCADE)
+
+    class Meta:
+        indexes = [models.Index(fields=["tenant", "portfolio_item"])]
+        constraints = [
+            models.CheckConstraint(
+                name="%(app_label)s_%(class)s_name_empty",
+                check=models.Q(name__length__gt=0),
+            ),
+            models.UniqueConstraint(
+                name="%(app_label)s_%(class)s_name_unique",
+                fields=["name", "tenant", "portfolio_item"],
+            ),
+        ]
+
+    @property
+    def create_json_schema(self):
+        pass
+
+    @property
+    def imported(self):
+        pass
+
+    def __str__(self):
+        return self.name

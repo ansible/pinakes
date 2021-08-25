@@ -5,6 +5,7 @@ from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 from main.models import Tenant, Image
 from main.catalog.models import (
     ApprovalRequest,
+    CatalogServicePlan,
     Order,
     OrderItem,
     Portfolio,
@@ -193,4 +194,27 @@ class ProgressMessageSerializer(serializers.ModelSerializer):
             "message",
             "messageable_type",
             "messageable_id",
+        )
+
+
+class CatalogServicePlanSerializer(serializers.ModelSerializer):
+    """Serializer for CatalogServicePlan"""
+
+    class Meta:
+        model = CatalogServicePlan
+        fields = (
+            "id",
+            "name",
+            "description",
+            "create_json_schema",
+            "imported",
+            "modified",
+            "portfolio_item",
+            "created_at",
+            "updated_at",
+        )
+
+    def create(self, validated_data):
+        return CatalogServicePlan.objects.create(
+            tenant=Tenant.current(), **validated_data
         )

@@ -3,6 +3,7 @@ import factory
 
 from main.catalog.models import (
     ApprovalRequest,
+    CatalogServicePlan,
     Order,
     OrderItem,
     Portfolio,
@@ -33,7 +34,6 @@ class PortfolioItemFactory(factory.django.DjangoModelFactory):
     portfolio = factory.SubFactory(PortfolioFactory)
     name = factory.Sequence(lambda n: f"portfolio_item{n}")
     description = factory.Sequence(lambda n: f"portfolio_item{n}_description")
-    service_offering_ref = factory.Sequence(lambda n: f"service_offering_{n}")
 
 
 class OrderFactory(factory.django.DjangoModelFactory):
@@ -81,3 +81,18 @@ class ProgressMessageFactory(factory.django.DjangoModelFactory):
 
     tenant = factory.LazyAttribute(lambda _: default_tenant())
     message = factory.Sequence(lambda n: f"message_{n}")
+
+
+class ServicePlanFactory(factory.django.DjangoModelFactory):
+    """Catalog ServicePlan Factory"""
+
+    class Meta:
+        model = CatalogServicePlan
+
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
+    portfolio_item = factory.SubFactory(PortfolioItemFactory)
+
+    name = factory.Sequence(lambda n: f"catalog service_plan_{n}")
+    description = factory.Sequence(
+        lambda n: f"catalog_service_plan_{n}_description"
+    )
