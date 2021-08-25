@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
 
 from main.models import Tenant
 from main.approval.models import (
@@ -23,6 +24,8 @@ from main.approval.serializers import (
     RequestCompleteSerializer,
     ActionSerializer,
 )
+from main.approval.services.tag_workflow import TagWorkflow
+
 from common.queryset_mixin import QuerySetMixin
 
 logger = logging.getLogger("approval")
@@ -58,6 +61,20 @@ class WorkflowViewSet(
     parent_field_name = "template"
     parent_lookup_key = "parent_lookup_template"
     queryset_order_by = "internal_sequence"
+
+    @action(methods=["post"], detail=True)
+    def link(self, request, pk):
+        workflow = get_object_or_404(Workflow, pk=pk)
+
+        TagWorkflow(workflow, request.data).process(TagWorkflow.ADD)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=["post"], detail=True)
+    def unlink(self, request, pk):
+        workflow = get_object_or_404(Workflow, pk=pk)
+
+        TagWorkflow(workflow, request.data).process(TagWorkflow.REMOVE)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def perform_create(self, serializer):
         max_obj = (
