@@ -45,7 +45,7 @@ class SourceViewSet(NestedViewSetMixin, ModelViewSet):
     def refresh(self, request, pk):
         source = get_object_or_404(Source, pk=pk)
         result = django_rq.enqueue(refresh_task, source.tenant_id, source.id)
-        logger.info(f"Job Id is {result.id}")
+        logger.info("Job Id is %s", result.id)
 
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 

@@ -189,7 +189,7 @@ class TagLink(BaseModel):
         constraints = [
             models.UniqueConstraint(
                 name="%(app_label)s_%(class)s_tag_unique",
-                fields=["app_name", "object_type", "tenant"],
+                fields=["app_name", "object_type", "tenant", "workflow"],
             ),
         ]
 

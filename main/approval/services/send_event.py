@@ -46,9 +46,7 @@ class SendEvent:
         return self.__send_event({"workflow_id": self.subject})
 
     def __send_event(self, payload):
-        logger.info(
-            "Sending event {} with payload({})".format(self.event, payload)
-        )
+        logger.info("Sending event %s with payload(%s)", self.event, payload)
         HandleApprovalEvents(
             event=self.event,
             payload=payload,
