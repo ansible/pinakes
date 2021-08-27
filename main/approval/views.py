@@ -62,6 +62,35 @@ class WorkflowViewSet(
     parent_lookup_key = "parent_lookup_template"
     queryset_order_by = "internal_sequence"
 
+    def get_queryset(self):
+        """Returns the queryset based on the query params"""
+        queryset = Workflow.objects.all()
+        resource_params = {
+            "app_name": self.request.query_params.get("app_name", None),
+            "object_type": self.request.query_params.get("object_type", None),
+            "object_id": self.request.query_params.get("object_id"),
+        }
+        num_of_nones = list(resource_params.values()).count(None)
+
+        # Normal list workflows operation
+        if num_of_nones == 3:
+            return queryset
+        # List workflows by query parameters
+        elif num_of_nones == 0:
+            workflow_ids = (
+                TagWorkflow(None, resource_params)
+                .process(TagWorkflow.FIND)
+                .workflow_ids
+            )
+            return queryset.filter(id__in=workflow_ids)
+        else:
+            logging.error(
+                "Invalid resource object params: {}".format(resource_params)
+            )
+            raise RuntimeError(
+                "Invalid resource object params: {}".format(resource_params)
+            )
+
     @action(methods=["post"], detail=True)
     def link(self, request, pk):
         workflow = get_object_or_404(Workflow, pk=pk)
