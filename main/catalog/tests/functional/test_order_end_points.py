@@ -4,8 +4,11 @@ import pytest
 from django.urls import reverse
 
 from main.tests.factories import TenantFactory
-from main.catalog.tests.factories import OrderFactory
-from main.catalog.tests.factories import OrderItemFactory
+from main.catalog.tests.factories import (
+    OrderFactory,
+    OrderItemFactory,
+    PortfolioItemFactory,
+)
 
 
 @pytest.mark.django_db
@@ -95,3 +98,19 @@ def test_order_order_items_get(api_request):
 
     assert content["count"] == 1
     assert content["results"][0]["id"] == order_item.id
+
+
+@pytest.mark.django_db
+def test_order_order_item_post(api_request):
+    """Create a new order item from an order"""
+    order = OrderFactory()
+    portfolio_item = PortfolioItemFactory()
+    data = {
+        "order": order.id,  # TODO: remove order from data
+        "portfolio_item": portfolio_item.id,
+        "name": "abcdef",
+    }
+    response = api_request(
+        "post", reverse("order-orderitem-list", args=(order.id,)), data
+    )
+    assert response.status_code == 201
