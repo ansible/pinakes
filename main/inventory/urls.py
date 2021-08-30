@@ -17,7 +17,7 @@ class NestedDefaultRouter(NestedRouterMixin, routers.DefaultRouter):
 
 
 router = NestedDefaultRouter()
-sources = router.register(r"sources", SourceViewSet)
+sources = router.register(r"sources", SourceViewSet, basename="source")
 sources.register(
     r"service_inventories",
     ServiceInventoryViewSet,
@@ -47,7 +47,9 @@ urls_views["source-service_offering-detail"] = None
 urls_views["source-service_offering-order"] = None
 urls_views["source-service_offering-applied-inventories-tags"] = None
 
-offerings = router.register("service_offerings", ServiceOfferingViewSet)
+offerings = router.register(
+    "service_offerings", ServiceOfferingViewSet, basename="serviceoffering"
+)
 offerings.register(
     r"service_plans",
     ServicePlanViewSet,
@@ -56,5 +58,7 @@ offerings.register(
 )
 urls_views["offering-service_plans-detail"] = None
 
-router.register("service_inventories", ServiceInventoryViewSet)
-router.register("service_plans", ServicePlanViewSet)
+router.register(
+    "service_inventories", ServiceInventoryViewSet, basename="serviceinventory"
+)
+router.register("service_plans", ServicePlanViewSet, basename="serviceplan")

@@ -72,7 +72,7 @@ class WorkflowViewSet(
                 max_obj.internal_sequence.to_integral_value() + 1
             )
         serializer.save(
-            template=Template(id=self.kwargs["parent_lookup_template"]),
+            template=Template(id=self.kwargs[self.parent_lookup_key]),
             internal_sequence=next_seq,
             tenant=Tenant.current(),
         )
@@ -128,7 +128,7 @@ class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(
-            request=Request(id=self.kwargs["parent_lookup_request"]),
+            request=Request(id=self.kwargs[self.parent_lookup_key]),
             user=self.request.user,
             tenant=Tenant.current(),
         )

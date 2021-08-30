@@ -9,7 +9,7 @@ from main.catalog.models import (
     PortfolioItem,
     ProgressMessage,
 )
-from main.tests.factories import TenantFactory, UserFactory
+from main.tests.factories import TenantFactory, UserFactory, default_tenant
 
 
 class PortfolioFactory(factory.django.DjangoModelFactory):
@@ -18,7 +18,7 @@ class PortfolioFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Portfolio
 
-    tenant = factory.SubFactory(TenantFactory)
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
     name = factory.Sequence(lambda n: f"portfolio{n}")
     description = factory.Sequence(lambda n: f"portfolio{n}_description")
 
@@ -29,8 +29,8 @@ class PortfolioItemFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = PortfolioItem
 
-    tenant = factory.SubFactory(TenantFactory)
-    portfolio = factory.SubFactory(PortfolioFactory, tenant=tenant)
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
+    portfolio = factory.SubFactory(PortfolioFactory)
     name = factory.Sequence(lambda n: f"portfolio_item{n}")
     description = factory.Sequence(lambda n: f"portfolio_item{n}_description")
     service_offering_ref = factory.Sequence(lambda n: f"service_offering_{n}")
@@ -42,7 +42,7 @@ class OrderFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Order
 
-    tenant = factory.SubFactory(TenantFactory)
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
     user = factory.SubFactory(UserFactory)
 
 
@@ -52,9 +52,9 @@ class OrderItemFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = OrderItem
 
-    tenant = factory.SubFactory(TenantFactory)
-    order = factory.SubFactory(OrderFactory, tenant=tenant)
-    portfolio_item = factory.SubFactory(PortfolioItemFactory, tenant=tenant)
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
+    order = factory.SubFactory(OrderFactory)
+    portfolio_item = factory.SubFactory(PortfolioItemFactory)
     user = factory.SubFactory(UserFactory)
     name = factory.Sequence(lambda n: f"order_item{n}")
 
@@ -65,8 +65,8 @@ class ApprovalRequestFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ApprovalRequest
 
-    tenant = factory.SubFactory(TenantFactory)
-    order = factory.SubFactory(OrderFactory, tenant=tenant)
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
+    order = factory.SubFactory(OrderFactory)
     reason = factory.Sequence(lambda n: f"reason_{n}")
     approval_request_ref = factory.Sequence(
         lambda n: f"approval_request_ref{n}"
@@ -79,5 +79,5 @@ class ProgressMessageFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ProgressMessage
 
-    tenant = factory.SubFactory(TenantFactory)
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
     message = factory.Sequence(lambda n: f"message_{n}")
