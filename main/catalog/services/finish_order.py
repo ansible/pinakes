@@ -1,6 +1,7 @@
-""" Approval Request State Transition """
+"""Finish an order with correct state and status"""
 
 import logging
+from django.utils.translation import gettext_lazy as _
 
 from main.catalog.models import (
     ApprovalRequest,
@@ -13,7 +14,7 @@ logger = logging.getLogger("catalog")
 
 
 class FinishOrder:
-    """Approval Request State Transition"""
+    """Finish an order with correct state and status"""
 
     def __init__(self, order):
         self.order = order
@@ -30,14 +31,14 @@ class FinishOrder:
                 item.state for item in self.order.order_items
             ]:
                 self.order.mark_failed(
-                    "Order {} is failed".format(self.order.id)
+                    _("Order {} is failed".format(self.order.id))
                 )
-                logger.error("Order {} failed".format(self.order.id))
+                logger.error("Order %d failed", self.order.id)
             else:
                 self.order.mark_completed(
-                    "Order {} is completed".format(self.order.id)
+                    _("Order {} is completed".format(self.order.id))
                 )
-                logger.info("Order {} is completed".format(self.order.id))
+                logger.info("Order %d is completed", self.order.id)
 
             return self
 
@@ -50,8 +51,10 @@ class FinishOrder:
         for item in self.order.order_items:
             if item.state not in OrderItem.FINISHED_STATES:
                 item.mark_failed(
-                    "This order item has failed due to the entire order {} before it ran".format(
-                        self.order.approvalrequest.state
+                    _(
+                        "This order item has failed due to the entire order {} before it ran".format(
+                            self.order.approvalrequest.state
+                        )
                     )
                 )
 

@@ -1,8 +1,10 @@
 """ Start processing the next order item """
 import logging
+from django.utils.translation import gettext_lazy as _
 
 from main.catalog.models import Order, OrderItem, ProgressMessage
 from main.catalog.services.finish_order import FinishOrder
+from main.catalog.services.finish_order_item import FinishOrderItem
 from main.catalog.services.provision_order_item import ProvisionOrderItem
 
 logger = logging.getLogger("catalog")
@@ -30,40 +32,28 @@ class StartOrderItem:
         item = items[0]
 
         try:
-            logger.info(
-                "Submitting Order Item {} for provisioning".format(item.id)
-            )
+            logger.info("Submitting Order Item %d for provisioning", item.id)
 
             item.update_message(
                 ProgressMessage.Level.INFO,
-                "Submitting Order Item {} for provisioning".format(item.id),
+                _("Submitting Order Item {} for provisioning".format(item.id)),
             )
 
             self.__validate_before_provision()
             ProvisionOrderItem(item).process()
 
             logger.info(
-                "OrderItem {} ordered with inventory task ref {}".format(
-                    item.id, item.inventory_task_ref
-                )
+                "OrderItem %d ordered with inventory task ref %s",
+                item.id,
+                item.inventory_task_ref,
             )
         except Exception as error:
-            item.mark_failed(
-                "Error Submitting Order Item: {}".format(str(error))
-            )
-            logger.error("Error Submitting Order Item: {}".format(str(error)))
+            logger.error("Error Submitting Order Item: %s", str(error))
 
-            # continue to process next order item if order is approved
-            if self.order.state == Order.State.ORDERED:
-                StartOrderItem(self.order).process()
-            else:
-                for item in self.order.order_items:
-                    if item.state not in OrderItem.FINISHED_STATES:
-                        item.mark_failed(
-                            "This order item has failed due to the entire order failing before it ran"
-                        )
-
-                self.order.mark_failed(str(error))
+            if item.inventory_task_ref is not None:
+                FinishOrderItem(
+                    item.inventory_task_ref, {}, str(error)
+                ).process()
 
         # TODO: compute runtime parameters later
 

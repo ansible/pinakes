@@ -38,12 +38,14 @@ class SubmitApprovalRequest:
             )
 
             logger.info(
-                f"Approval Requests Submitted for Order {self.order.id}"
+                "Approval Requests Submitted for Order %d", self.order.id
             )
 
         except Exception as error:
             logger.error(
-                f"Failed to submit request to approval for Order {self.order.id}, error: {error}"
+                "Failed to submit request to approval for Order %d, error: %s",
+                self.order.id,
+                error,
             )
             raise error
 

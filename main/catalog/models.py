@@ -218,7 +218,10 @@ class MessageableMixin:
         self.refresh_from_db()
 
         logger.info(
-            f"Updated {self.__class__.__name__} {self.id} with state: {options['state']}"
+            "Updated %s %d with state: %s",
+            self.__class__.__name__,
+            self.id,
+            options["state"],
         )
 
 
@@ -331,7 +334,6 @@ class ApprovalRequestManager(models.Manager):
         approval_request = super(ApprovalRequestManager, self).create(
             *args, **kwargs
         )
-        approval_request.save()
 
         approval_request_ref = kwargs.pop("approval_request_ref", None)
         message = _(

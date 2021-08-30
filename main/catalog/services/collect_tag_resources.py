@@ -17,7 +17,7 @@ class CollectTagResources:
     def process(self):
         self.consolidate_inventory_tags()
 
-        logger.info(f"Applied Tags {self.tag_resources}")
+        logger.info("Applied Tags: %s", self.tag_resources)
         return self
 
     def consolidate_inventory_tags(self):
@@ -25,16 +25,29 @@ class CollectTagResources:
         self.__collect_remote_tags()
 
     def __collect_local_tags(self):
+        visited = set()
+
         for item in self.order.order_items:
+            if item.portfolio_item.portfolio.id in visited:
+                return
+
             self.tag_resources += self.__tag_resources(
                 item.portfolio_item.portfolio
             )
+            visited.add(item.portfolio_item.portfolio.id)
+
             self.tag_resources += self.__tag_resources(item.portfolio_item)
 
-        logger.info(f" Applied Local Tags {self.tag_resources}")
+        logger.info(" Applied Local Tags: %s", self.tag_resources)
 
     def __collect_remote_tags(self):
+        visited = set()
+
         for item in self.order.order_items:
+            if item.portfolio_item.service_offering_ref in visited:
+                return
+
+            visited.add(item.portfolio_item.service_offering_ref)
             self.__collect_remote_order_item_tags(item)
 
     def __collect_remote_order_item_tags(self, order_item):
@@ -57,7 +70,7 @@ class CollectTagResources:
                 "tags": [dict(name=tag) for tag in tags],
             }
 
-            logger.info(f" Applied Remote Tags {tag_resource}")
+            logger.info(" Applied Remote Tags: %s", tag_resource)
 
             self.tag_resources += [tag_resource]
 

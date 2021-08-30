@@ -104,13 +104,13 @@ class OrderViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         """Orders the specified pk order."""
         order = get_object_or_404(Order, pk=pk)
 
-        tag_resources = CollectTagResources(order).process()
+        tag_resources = CollectTagResources(order).process().tag_resources
         message = _("Computed tags for order {}: {}").format(
             order.id, tag_resources
         )
         order.update_message(ProgressMessage.Level.INFO, message)
 
-        logger.info(f"Creating approval request for order id {order.id}")
+        logger.info("Creating approval request for order id %d", order.id)
         SubmitApprovalRequest(tag_resources, order).process()
 
         return Response(status=status.HTTP_204_NO_CONTENT)

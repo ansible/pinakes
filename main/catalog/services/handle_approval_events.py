@@ -34,7 +34,7 @@ class HandleApprovalEvents:
                 return self
 
             if self.event not in self.COMPLETED_EVENTS:
-                logger.warn("Event {} is skipped".format(self.event))
+                logger.warn("Event %s is skipped", self.event)
                 return self
 
             request_id = self.payload.pop("request_id")
@@ -68,9 +68,9 @@ class HandleApprovalEvents:
                 raise error
         except Exception as error:
             logger.error(
-                "Error processing approval event {}: {}".format(
-                    self.event, str(error)
-                )
+                "Error processing approval event %s: %s",
+                self.event,
+                str(error),
             )
             raise error
 
@@ -96,7 +96,7 @@ class HandleApprovalEvents:
                 ProgressMessage.Level.INFO,
                 _("Approval Request finished with status '{}'").format(state),
             )
-            logger.info(f"Approval Request finished with status {state}")
+            logger.info("Approval Request finished with status %s", state)
         else:
             self.approval_request.order.update_message(
                 ProgressMessage.Level.INFO,
@@ -105,7 +105,7 @@ class HandleApprovalEvents:
                 ).format(state, approval_reason),
             )
             logger.info(
-                "Approval Request finished with status {} and reason {}".format(
-                    state, approval_reason
-                )
+                "Approval Request finished with status %s and reason %s",
+                state,
+                approval_reason,
             )

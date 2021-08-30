@@ -1,5 +1,6 @@
 """ Module to Finish Processing an OrderItem """
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from main.catalog.models import OrderItem, ProgressMessage
 
 
@@ -19,7 +20,7 @@ class FinishOrderItem:
         """Finish processing the order_item"""
         if self.error_msg is None:
             self.order_item.mark_completed(
-                "Order Item {} is completed".format(self.order_item.id),
+                _("Order Item {} is completed").format(self.order_item.id),
                 artifacts=self.artifacts,
             )
         else:
