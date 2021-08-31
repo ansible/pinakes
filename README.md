@@ -139,3 +139,8 @@ docker-compose exec app python manage.py shell
 ```
 open in your browser: http://localhost:8000/api/v1/sources/1/refresh/
 and execute a patch with empty body. (this may take a while)
+
+### Generate the open api specfile
+```
+docker-compose exec app python manage.py spectacular --format openapi-json --file apispec.json
+```
