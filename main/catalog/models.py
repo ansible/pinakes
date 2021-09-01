@@ -218,7 +218,7 @@ class MessageableMixin:
         self.refresh_from_db()
 
         logger.info(
-            "Updated %s %d with state: %s",
+            "Updated %s: %d with state: %s",
             self.__class__.__name__,
             self.id,
             options["state"],

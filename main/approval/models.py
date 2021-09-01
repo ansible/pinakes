@@ -172,3 +172,26 @@ class Action(BaseModel):
 
     def __str__(self):
         return self.operation
+
+
+class TagLink(BaseModel):
+    """TagLink model"""
+
+    app_name = models.CharField(max_length=128, editable=False)
+    tag_name = models.CharField(max_length=128, editable=False)
+    object_type = models.CharField(max_length=32, editable=False)
+
+    workflow = models.ForeignKey(
+        Workflow, null=True, on_delete=models.SET_NULL
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name="%(app_label)s_%(class)s_tag_unique",
+                fields=["app_name", "object_type", "tenant", "workflow"],
+            ),
+        ]
+
+    def __str__(self):
+        return self.tag_name
