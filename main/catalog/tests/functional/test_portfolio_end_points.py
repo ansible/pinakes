@@ -6,7 +6,6 @@ import os
 import glob
 
 from django.urls import reverse
-from main.tests.factories import TenantFactory
 from main.catalog.tests.factories import PortfolioFactory
 from main.catalog.tests.factories import PortfolioItemFactory
 
@@ -74,7 +73,6 @@ def test_portfolio_put_not_supported(api_request):
 @pytest.mark.django_db
 def test_portfolio_post(api_request):
     """Create a Portfolio"""
-    TenantFactory()
     data = {"name": "abcdef", "description": "abc"}
     response = api_request("post", reverse("portfolio-list"), data)
 
@@ -84,12 +82,11 @@ def test_portfolio_post(api_request):
 @pytest.mark.django_db
 def test_portfolio_portfolio_items_get(api_request):
     """List PortfolioItems by portfolio id"""
-    tenant = TenantFactory()
-    portfolio1 = PortfolioFactory(tenant=tenant)
-    portfolio2 = PortfolioFactory(tenant=tenant)
-    PortfolioItemFactory(portfolio=portfolio1, tenant=tenant)
-    PortfolioItemFactory(portfolio=portfolio1, tenant=tenant)
-    portfolio_item3 = PortfolioItemFactory(portfolio=portfolio2, tenant=tenant)
+    portfolio1 = PortfolioFactory()
+    portfolio2 = PortfolioFactory()
+    PortfolioItemFactory(portfolio=portfolio1)
+    PortfolioItemFactory(portfolio=portfolio1)
+    portfolio_item3 = PortfolioItemFactory(portfolio=portfolio2)
 
     response = api_request(
         "get", reverse("portfolio-portfolioitem-list", args=(portfolio2.id,))
@@ -108,8 +105,7 @@ def test_portfolio_icon_post(api_request, small_image, media_dir):
     image_path = os.path.join(media_dir, "*.png")
     orignal_images = glob.glob(image_path)
 
-    tenant = TenantFactory()
-    portfolio = PortfolioFactory(tenant=tenant)
+    portfolio = PortfolioFactory()
     data = {"icon": small_image, "source_ref": "abc"}
 
     assert portfolio.icon is None
@@ -136,8 +132,7 @@ def test_portfolio_icon_patch(api_request, small_image, media_dir):
     """Update a icon image for a portfolio"""
     image_path = os.path.join(media_dir, "*.png")
 
-    tenant = TenantFactory()
-    portfolio = PortfolioFactory(tenant=tenant)
+    portfolio = PortfolioFactory()
 
     data = {"icon": small_image, "source_ref": "abc"}
 
@@ -171,8 +166,7 @@ def test_portfolio_icon_delete(api_request, small_image, media_dir):
     image_path = os.path.join(media_dir, "*.png")
     orignal_images = glob.glob(image_path)
 
-    tenant = TenantFactory()
-    portfolio = PortfolioFactory(tenant=tenant)
+    portfolio = PortfolioFactory()
 
     data = {"icon": small_image, "source_ref": "abc"}
 

@@ -3,7 +3,6 @@ import json
 import pytest
 from django.urls import reverse
 
-from main.tests.factories import TenantFactory
 from main.catalog.tests.factories import (
     OrderFactory,
     OrderItemFactory,
@@ -71,7 +70,6 @@ def test_order_put_not_supported(api_request):
 @pytest.mark.django_db
 def test_order_post(api_request):
     """Create a Order"""
-    TenantFactory()
     data = {"name": "abcdef", "description": "abc"}
     response = api_request("post", reverse("order-list"), data)
     content = json.loads(response.content)

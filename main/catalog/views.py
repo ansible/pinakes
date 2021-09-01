@@ -12,6 +12,7 @@ from rest_framework import status
 
 from common.tag_mixin import TagMixin
 from common.image_mixin import ImageMixin
+from common.queryset_mixin import QuerySetMixin
 
 from main.models import Tenant
 from main.catalog.models import (
@@ -51,11 +52,14 @@ class TenantViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class PortfolioViewSet(
-    ImageMixin, TagMixin, NestedViewSetMixin, viewsets.ModelViewSet
+    ImageMixin,
+    TagMixin,
+    NestedViewSetMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
 ):
     """API endpoint for listing and creating portfolios."""
 
-    queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
     permission_classes = (IsAuthenticated,)
@@ -64,11 +68,14 @@ class PortfolioViewSet(
 
 
 class PortfolioItemViewSet(
-    ImageMixin, TagMixin, NestedViewSetMixin, viewsets.ModelViewSet
+    ImageMixin,
+    TagMixin,
+    NestedViewSetMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
 ):
     """API endpoint for listing and creating portfolio items."""
 
-    queryset = PortfolioItem.objects.all()
     serializer_class = PortfolioItemSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
     permission_classes = (IsAuthenticated,)
@@ -81,12 +88,13 @@ class PortfolioItemViewSet(
         "created_at",
         "updated_at",
     )
+    parent_field_name = "portfolio"
+    parent_lookup_key = "parent_lookup_portfolio"
 
 
-class OrderViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating orders."""
 
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
     http_method_names = ["get", "post", "head", "delete"]
     permission_classes = (IsAuthenticated,)
@@ -122,10 +130,11 @@ class OrderViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         pass
 
 
-class OrderItemViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class OrderItemViewSet(
+    NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
+):
     """API endpoint for listing and creating order items."""
 
-    queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
     http_method_names = ["get", "post", "head", "delete"]
     permission_classes = (IsAuthenticated,)
@@ -142,9 +151,13 @@ class OrderItemViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         "updated_at",
         "completed_at",
     )
+    parent_field_name = "order"
+    parent_lookup_key = "parent_lookup_order"
 
 
-class ApprovalRequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class ApprovalRequestViewSet(
+    NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
+):
     """API endpoint for listing approval requests."""
 
     queryset = ApprovalRequest.objects.all()
@@ -161,9 +174,11 @@ class ApprovalRequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         "created_at",
         "updated_at",
     )
+    parent_field_name = "order"
+    parent_lookup_key = "parent_lookup_order"
 
     def list(self, request, *args, **kwargs):
-        order_id = kwargs.pop("parent_lookup_order")
+        order_id = kwargs.pop(self.parent_lookup_key)
         approval_request = ApprovalRequest.objects.get(order_id=order_id)
 
         serializer = self.get_serializer(approval_request)
@@ -189,16 +204,13 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         """return queryset based on messageable_type"""
 
-        messageable_type = self.request.path.split("/")[3]
+        parent_type = self.request.path.split("/")[3]
         messageable_id = self.kwargs.get("parent_lookup_messageable_id")
 
-        if messageable_type == "orders":
-            queryset = ProgressMessage.objects.filter(
-                messageable_type="Order", messageable_id=messageable_id
-            )
-        else:
-            queryset = ProgressMessage.objects.filter(
-                messageable_type="OrderItem", messageable_id=messageable_id
-            )
+        messageable_type = "Order" if parent_type == "orders" else "OrderItem"
 
-        return queryset
+        return ProgressMessage.objects.filter(
+            tenant=Tenant.current(),
+            messageable_type=messageable_type,
+            messageable_id=messageable_id,
+        )

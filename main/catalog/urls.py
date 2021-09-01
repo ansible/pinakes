@@ -22,14 +22,18 @@ class NestedDefaultRouter(NestedRouterMixin, routers.DefaultRouter):
 router = NestedDefaultRouter()
 
 router.register("tenants", TenantViewSet)
-portfolios = router.register(r"portfolios", PortfolioViewSet)
+portfolios = router.register(
+    r"portfolios", PortfolioViewSet, basename="portfolio"
+)
 portfolios.register(
     r"portfolio_items",
     PortfolioItemViewSet,
     basename="portfolio-portfolioitem",
     parents_query_lookups=["portfolio"],
 )
-router.register(r"portfolio_items", PortfolioItemViewSet)
+router.register(
+    r"portfolio_items", PortfolioItemViewSet, basename="portfolioitem"
+)
 urls_views["portfolio-portfolioitem-detail"] = None  # disable
 urls_views["portfolio-portfolioitem-icon"] = None
 urls_views["portfolio-portfolioitem-tag"] = None
@@ -39,7 +43,7 @@ urls_views["portfolio-portfolioitem-list"] = PortfolioItemViewSet.as_view(
     {"get": "list"}
 )  # read only
 
-orders = router.register(r"orders", OrderViewSet)
+orders = router.register(r"orders", OrderViewSet, basename="order")
 orders.register(
     r"order_items",
     OrderItemViewSet,
@@ -64,7 +68,9 @@ urls_views["order-orderitem-detail"] = OrderItemViewSet.as_view(
 urls_views["order-approvalrequest-detail"] = None
 urls_views["order-progressmessage-detail"] = None
 
-order_items = router.register(r"order_items", OrderItemViewSet)
+order_items = router.register(
+    r"order_items", OrderItemViewSet, basename="orderitem"
+)
 order_items.register(
     r"progress_messages",
     ProgressMessageViewSet,

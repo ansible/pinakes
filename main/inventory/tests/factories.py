@@ -2,7 +2,7 @@
 import factory
 from django.utils import timezone
 from main.models import Source
-from main.tests.factories import TenantFactory
+from main.tests.factories import TenantFactory, default_tenant
 from main.inventory.models import ServiceInventory
 from main.inventory.models import ServiceOffering, OfferingKind
 from main.inventory.models import ServicePlan
@@ -15,7 +15,7 @@ class SourceFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Source
 
-    tenant = factory.SubFactory(TenantFactory)
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
     name = factory.Sequence(lambda n: f"source{n}")
 
 
@@ -25,8 +25,8 @@ class ServiceInventoryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ServiceInventory
 
-    tenant = factory.SubFactory(TenantFactory)
-    source = factory.SubFactory(SourceFactory, tenant=tenant)
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
+    source = factory.SubFactory(SourceFactory)
     name = factory.Sequence(lambda n: f"inventory{n}")
     source_created_at = timezone.now()
     source_updated_at = timezone.now()
@@ -40,8 +40,8 @@ class ServiceOfferingFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ServiceOffering
 
-    tenant = factory.SubFactory(TenantFactory)
-    source = factory.SubFactory(SourceFactory, tenant=tenant)
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
+    source = factory.SubFactory(SourceFactory)
     service_inventory = factory.SubFactory(
         ServiceInventoryFactory, tenant=tenant, source=source
     )
@@ -60,8 +60,8 @@ class ServicePlanFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ServicePlan
 
-    tenant = factory.SubFactory(TenantFactory)
-    source = factory.SubFactory(SourceFactory, tenant=tenant)
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
+    source = factory.SubFactory(SourceFactory)
     service_offering = factory.SubFactory(
         ServiceOfferingFactory,
         tenant=tenant,
@@ -81,8 +81,8 @@ class ServiceOfferingNodeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ServiceOfferingNode
 
-    tenant = factory.SubFactory(TenantFactory)
-    source = factory.SubFactory(SourceFactory, tenant=tenant)
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
+    source = factory.SubFactory(SourceFactory)
     service_offering = factory.SubFactory(
         ServiceOfferingFactory,
         tenant=tenant,

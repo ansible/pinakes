@@ -11,6 +11,7 @@ from rest_framework_extensions.mixins import NestedViewSetMixin
 import django_rq
 
 from common.tag_mixin import TagMixin
+from common.queryset_mixin import QuerySetMixin
 from main.models import Source
 from main.inventory.models import (
     ServiceInventory,
@@ -29,10 +30,9 @@ from main.inventory.tasks import refresh_task
 logger = logging.getLogger("inventory")
 
 
-class SourceViewSet(NestedViewSetMixin, ModelViewSet):
+class SourceViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     """API endpoint for listing and updating sources."""
 
-    queryset = Source.objects.all()
     serializer_class = SourceSerializer
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
@@ -50,10 +50,9 @@ class SourceViewSet(NestedViewSetMixin, ModelViewSet):
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
-class ServicePlanViewSet(NestedViewSetMixin, ModelViewSet):
+class ServicePlanViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     """API endpoint for listing and retrieving service plans."""
 
-    queryset = ServicePlan.objects.all()
     serializer_class = ServicePlanSerializer
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
@@ -61,14 +60,15 @@ class ServicePlanViewSet(NestedViewSetMixin, ModelViewSet):
         "name",
         "service_offering",
     )
-
+    # TODO: service plan has another parent called service. This endpoint may no longer be needed
+    parent_field_name = "service_offering"
+    parent_lookup_key = "parent_lookup_service_offering"
     http_method_names = ["get", "head"]
 
 
-class ServiceOfferingViewSet(NestedViewSetMixin, ModelViewSet):
+class ServiceOfferingViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     """API endpoint for listing and retrieving service offerings."""
 
-    queryset = ServiceOffering.objects.all()
     serializer_class = ServiceOfferingSerializer
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
@@ -79,7 +79,8 @@ class ServiceOfferingViewSet(NestedViewSetMixin, ModelViewSet):
         "kind",
         "service_inventory",
     )
-
+    parent_field_name = "source"
+    parent_lookup_key = "parent_lookup_source"
     http_method_names = ["get", "head"]
 
     # TODO:
@@ -93,10 +94,11 @@ class ServiceOfferingViewSet(NestedViewSetMixin, ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ServiceInventoryViewSet(TagMixin, NestedViewSetMixin, ModelViewSet):
+class ServiceInventoryViewSet(
+    TagMixin, NestedViewSetMixin, QuerySetMixin, ModelViewSet
+):
     """API endpoint for listing and creating service inventories."""
 
-    queryset = ServiceInventory.objects.all()
     serializer_class = ServiceInventorySerializer
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
@@ -108,6 +110,8 @@ class ServiceInventoryViewSet(TagMixin, NestedViewSetMixin, ModelViewSet):
         "created_at",
         "updated_at",
     )
+    parent_field_name = "source"
+    parent_lookup_key = "parent_lookup_source"
 
     # For tagging purpose, enable POST action here
     http_method_names = ["get", "post", "head"]
