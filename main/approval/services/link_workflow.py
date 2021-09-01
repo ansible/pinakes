@@ -3,22 +3,20 @@ import logging
 from django.apps import apps
 
 from main.approval.models import TagLink, Workflow
+from main.catalog.services.operate_tag import OperateTag
 
 logger = logging.getLogger("approval")
 
 
-class TagWorkflow:
-    ADD = "tag_add"
-    REMOVE = "tag_remove"
-    FIND = "tag_find"
+class LinkWorkflow:
+    """Link workflow with tags"""
 
     def __init__(self, workflow=None, data=None):
         self.workflow = workflow
-        self.data = data.copy() if data else {}
         self.params = (
-            self.data if workflow is None else self.__tag_params(self.data)
+            data.copy() if workflow is None else self.__tag_params(data)
         )
-        self.object_id = self.data.pop("object_id", None)
+        self.object_id = data.get("object_id", None)
         self.workflow_ids = []
 
     def process(self, operation):
@@ -26,15 +24,14 @@ class TagWorkflow:
         model = apps.get_model("main", object_type)
         instance = model.objects.get(id=self.object_id)
 
-        if operation == TagWorkflow.ADD:
-            instance.tags.add(self.__tag_name()["name"])
+        # Operate tags on Catalog side
+        OperateTag(instance).process(operation, self.__tag_name()["name"])
 
+        if operation == OperateTag.Operation.Add:
             obj, created = TagLink.objects.get_or_create(**self.params)
             if not created:
-                logger.info("Tag ''{}'' is found".format(obj))
-        elif operation == TagWorkflow.REMOVE:
-            instance.tags.remove(self.__tag_name()["name"])
-        elif operation == TagWorkflow.FIND:
+                logger.info("Tag '%s' is found", obj)
+        elif operation == OperateTag.Operation.Find:
             tag_names = [{"name": tag.name} for tag in instance.tags.all()]
             self.workflow_ids = [
                 tag_link.workflow.id
@@ -67,11 +64,13 @@ class TagWorkflow:
         return Workflow.objects.filter(id__in=list(set(workflow_ids)))
 
     def __tag_params(self, data):
-        data["tenant_id"] = self.workflow.tenant.id
-        data["workflow_id"] = self.workflow.id
-        data["tag_name"] = self.__tag_name()
+        params = data.copy()
+        params["tenant_id"] = self.workflow.tenant.id
+        params["workflow_id"] = self.workflow.id
+        params["tag_name"] = self.__tag_name()
+        params.pop("object_id")
 
-        return data
+        return params
 
     def __tag_name(self):
         return {"name": "approval/workflows/{}".format(self.workflow.id)}

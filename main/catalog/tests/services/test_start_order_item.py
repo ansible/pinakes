@@ -39,8 +39,7 @@ def test_place_order_item(mocker):
 @pytest.mark.django_db
 def test_place_order_item_raise_error(mocker):
     order = OrderFactory()
-    order_item_1 = OrderItemFactory(state=OrderItem.State.PENDING, order=order)
-    order_item_2 = OrderItemFactory(state=OrderItem.State.PENDING, order=order)
+    order_item = OrderItemFactory(state=OrderItem.State.PENDING, order=order)
 
     with mocker.patch(
         "main.catalog.services.provision_order_item",
@@ -48,8 +47,6 @@ def test_place_order_item_raise_error(mocker):
     ):
         svc = StartOrderItem(order)
         svc.process()
-        order_item_1.refresh_from_db()
-        order_item_2.refresh_from_db()
+        order_item.refresh_from_db()
 
-        assert order_item_1.state == Order.State.FAILED
-        assert order_item_2.state == Order.State.FAILED
+        assert order_item.state == Order.State.FAILED
