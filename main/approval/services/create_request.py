@@ -16,6 +16,9 @@ class CreateRequest:
         self.job = None
 
     def process(self):
+        # TODO: find workflow based on tags
+        tag_resources = self.data.pop("tag_resources", None)
+
         content = self.data.pop("content")
         request_context = RequestContext.objects.create(
             content=content, context={}
@@ -25,6 +28,7 @@ class CreateRequest:
         )
         self.job = django_rq.enqueue(start_request_task, self.request.id)
         logger.info(
-            "Enqueued job {} for request {}", self.job.id, self.request.id
+            "Enqueued job %s for request %d", self.job.id, self.request.id
         )
+
         return self

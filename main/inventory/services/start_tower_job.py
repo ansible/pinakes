@@ -12,7 +12,7 @@ class StartTowerJob:
             id=service_offering_id
         ).first()
         self.params = {}
-        self.params["extra_vars"] = params["service_parameters"]
+        self.params["extra_vars"] = params["service_parameters"] or {}
         self.job = None
 
     def process(self):

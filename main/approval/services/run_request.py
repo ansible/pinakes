@@ -13,6 +13,7 @@ class RunRequest:
         SendEvent(self.request, SendEvent.EVENT_REQUEST_STARTED).process()
         self.request.state = Request.State.COMPLETED
         self.request.decision = Request.Decision.APPROVED
+        self.request.reason = "Auto-Approved"
         self.request.save()
         SendEvent(self.request, SendEvent.EVENT_REQUEST_FINISHED).process()
         return self

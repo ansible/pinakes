@@ -1,6 +1,7 @@
 """ Default views for Catalog."""
 import logging
 from django.utils.translation import gettext_lazy as _
+from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -30,7 +31,9 @@ from main.catalog.serializers import (
     ProgressMessageSerializer,
     TenantSerializer,
 )
-from main.catalog.services.start_order_item import StartOrderItem
+from main.catalog.services.collect_tag_resources import CollectTagResources
+from main.catalog.services.submit_approval_request import SubmitApprovalRequest
+from main.catalog.services.start_order import StartOrder
 
 # Create your views here.
 
@@ -96,17 +99,20 @@ class OrderViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         "completed_at",
     )
 
-    # TODO: Add Approval Hook, handle multiple order items
     @action(methods=["post"], detail=True)
     def submit(self, request, pk):
         """Orders the specified pk order."""
-        order_item = OrderItem.objects.filter(order_id=pk).first()
-        if order_item is None:
-            return Response(
-                {"status": "details"}, status=status.HTTP_404_NOT_FOUND
-            )
+        order = get_object_or_404(Order, pk=pk)
 
-        StartOrderItem(order_item).process()
+        tag_resources = CollectTagResources(order).process().tag_resources
+        message = _("Computed tags for order {}: {}").format(
+            order.id, tag_resources
+        )
+        order.update_message(ProgressMessage.Level.INFO, message)
+
+        logger.info("Creating approval request for order id %d", order.id)
+        SubmitApprovalRequest(tag_resources, order).process()
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     # TODO:
