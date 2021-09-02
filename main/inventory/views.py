@@ -37,6 +37,7 @@ class SourceViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
     filter_fields = ("name",)
+    search_fields = ("name",)
 
     # Enable PATCH for refresh API
     http_method_names = ["get", "patch", "head"]
@@ -60,6 +61,7 @@ class ServicePlanViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
         "name",
         "service_offering",
     )
+    search_fields = ("name",)
     # TODO: service plan has another parent called service. This endpoint may no longer be needed
     parent_field_name = "service_offering"
     parent_lookup_key = "parent_lookup_service_offering"
@@ -79,6 +81,7 @@ class ServiceOfferingViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
         "kind",
         "service_inventory",
     )
+    search_fields = ("name", "description")
     parent_field_name = "source"
     parent_lookup_key = "parent_lookup_source"
     http_method_names = ["get", "head"]
@@ -110,6 +113,7 @@ class ServiceInventoryViewSet(
         "created_at",
         "updated_at",
     )
+    search_fields = ("description",)
     parent_field_name = "source"
     parent_lookup_key = "parent_lookup_source"
 
