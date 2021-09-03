@@ -65,6 +65,7 @@ class PortfolioViewSet(
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
     filter_fields = ("name", "description", "created_at", "updated_at")
+    search_fields = ("name", "description")
 
 
 class PortfolioItemViewSet(
@@ -88,6 +89,7 @@ class PortfolioItemViewSet(
         "created_at",
         "updated_at",
     )
+    search_fields = ("name", "description")
     parent_field_name = "portfolio"
     parent_lookup_key = "parent_lookup_portfolio"
 
@@ -106,6 +108,7 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
         "updated_at",
         "completed_at",
     )
+    search_fields = ("state",)
 
     @action(methods=["post"], detail=True)
     def submit(self, request, pk):
@@ -151,6 +154,7 @@ class OrderItemViewSet(
         "updated_at",
         "completed_at",
     )
+    search_fields = ("name", "state")
     parent_field_name = "order"
     parent_lookup_key = "parent_lookup_order"
 
@@ -173,6 +177,10 @@ class ApprovalRequestViewSet(
         "request_completed_at",
         "created_at",
         "updated_at",
+    )
+    search_fields = (
+        "state",
+        "reason",
     )
     parent_field_name = "order"
     parent_lookup_key = "parent_lookup_order"

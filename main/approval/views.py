@@ -42,6 +42,7 @@ class TemplateViewSet(
     serializer_class = TemplateSerializer
     ordering_fields = "__all__"  # This line is optional, default
     ordering = ("-id",)
+    search_fields = ("title", "description")
 
 
 class WorkflowViewSet(
@@ -59,6 +60,7 @@ class WorkflowViewSet(
         "created_at",
         "updated_at",
     )
+    search_fields = ("name", "description")
     parent_field_name = "template"
     parent_lookup_key = "parent_lookup_template"
     queryset_order_by = "internal_sequence"
@@ -106,6 +108,7 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
     filter_fields = "__all__"
+    search_fields = ("name", "description", "state", "decision", "reason")
     parent_field_name = "parent"
     parent_lookup_key = "parent_lookup_parent"
 
@@ -143,6 +146,7 @@ class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
     filter_fields = "__all__"
+    search_fields = ("operation", "comments")
     parent_field_name = "request"
     parent_lookup_key = "parent_lookup_request"
 
