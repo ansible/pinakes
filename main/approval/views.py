@@ -9,6 +9,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
+from rest_framework.filters import (
+    BaseFilterBackend,
+    OrderingFilter,
+    SearchFilter,
+)
+from django_filters.rest_framework import DjangoFilterBackend
 
 from main.models import Tenant
 from main.approval.models import (
@@ -25,7 +31,6 @@ from main.approval.serializers import (
     ActionSerializer,
 )
 from main.approval.services.link_workflow import LinkWorkflow
-from main.catalog.services.operate_tag import OperateTag
 
 from common.queryset_mixin import QuerySetMixin
 
@@ -45,6 +50,39 @@ class TemplateViewSet(
     search_fields = ("title", "description")
 
 
+class WorkflowFilterBackend(BaseFilterBackend):
+    """
+    Filter that selects workflows assigned to external resource.
+    """
+
+    def filter_queryset(self, request, queryset, _view):
+        resource_params = {
+            "app_name": request.query_params.get("app_name", None),
+            "object_type": request.query_params.get("object_type", None),
+            "object_id": request.query_params.get("object_id"),
+        }
+        num_of_nones = list(resource_params.values()).count(None)
+
+        # Normal list workflows operation
+        if num_of_nones == 3:
+            return queryset
+        # List workflows by query parameters
+        elif num_of_nones == 0:
+            workflow_ids = (
+                LinkWorkflow(None, resource_params)
+                .process(LinkWorkflow.Operation.FIND)
+                .workflow_ids
+            )
+            return queryset.filter(id__in=workflow_ids)
+
+        logger.error(
+            "Insufficient resource object params: %s", resource_params
+        )
+        raise RuntimeError(
+            "Insufficient resource object params: {}".format(resource_params)
+        )
+
+
 class WorkflowViewSet(
     NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
 ):
@@ -53,6 +91,12 @@ class WorkflowViewSet(
     serializer_class = WorkflowSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
     permission_classes = (IsAuthenticated,)
+    filter_backends = (
+        WorkflowFilterBackend,
+        DjangoFilterBackend,
+        OrderingFilter,
+        SearchFilter,
+    )
     filter_fields = (
         "name",
         "description",
@@ -69,7 +113,9 @@ class WorkflowViewSet(
     def link(self, request, pk):
         workflow = get_object_or_404(Workflow, pk=pk)
 
-        LinkWorkflow(workflow, request.data).process(OperateTag.Operation.Add)
+        LinkWorkflow(workflow, request.data).process(
+            LinkWorkflow.Operation.ADD
+        )
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=["post"], detail=True)
@@ -77,7 +123,7 @@ class WorkflowViewSet(
         workflow = get_object_or_404(Workflow, pk=pk)
 
         LinkWorkflow(workflow, request.data).process(
-            OperateTag.Operation.Remove
+            LinkWorkflow.Operation.REMOVE
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
 

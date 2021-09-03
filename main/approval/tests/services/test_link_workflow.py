@@ -5,7 +5,6 @@ import pytest
 from main.approval.models import TagLink
 from main.approval.services.link_workflow import LinkWorkflow
 from main.approval.tests.factories import WorkflowFactory
-from main.catalog.services.operate_tag import OperateTag
 
 from main.catalog.tests.factories import PortfolioFactory
 
@@ -22,7 +21,7 @@ def test_tag_workflow_operations():
     }
 
     svc = LinkWorkflow(workflow, data)
-    svc.process(OperateTag.Operation.Add)
+    svc.process(LinkWorkflow.Operation.ADD)
 
     assert TagLink.objects.count() == 1
     assert portfolio.tags.count() == 1
@@ -30,6 +29,6 @@ def test_tag_workflow_operations():
         portfolio.id
     )
 
-    svc.process(OperateTag.Operation.Remove)
+    svc.process(LinkWorkflow.Operation.REMOVE)
 
     assert portfolio.tags.count() == 0

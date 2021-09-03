@@ -4,6 +4,8 @@ import pytest
 from django.urls import reverse
 from main.approval.tests.factories import TemplateFactory
 from main.approval.tests.factories import WorkflowFactory
+from main.approval.services.link_workflow import LinkWorkflow
+from main.catalog.tests.factories import PortfolioFactory
 
 
 @pytest.mark.django_db
@@ -17,6 +19,7 @@ def test_workflow_list(api_request):
     content = json.loads(response.content)
 
     assert content["count"] == 1
+
 
 @pytest.mark.django_db
 def test_searching(api_request):
@@ -44,7 +47,9 @@ def test_filtering(api_request):
     WorkflowFactory(name="alpha", description="hello")
     WorkflowFactory(name="beta", description="world")
     url = reverse("workflow-list")
-    response = api_request("get", url, {"name": "beta", "description": "world"})
+    response = api_request(
+        "get", url, {"name": "beta", "description": "world"}
+    )
     content = json.loads(response.content)
     assert content["count"] == 1
     assert content["results"][0]["name"] == "beta"
@@ -74,6 +79,27 @@ def test_ordering(api_request):
     content = json.loads(response.content)
     assert content["results"][0]["name"] == "beta"
     assert content["results"][1]["name"] == "alpha"
+
+
+@pytest.mark.django_db
+def test_list_by_external_object(api_request):
+    """List workflows by linked external object"""
+    workflow = WorkflowFactory()
+    WorkflowFactory()
+
+    portfolio = PortfolioFactory()
+    data = {
+        "object_type": "Portfolio",
+        "object_id": portfolio.id,
+        "app_name": "catalog",
+    }
+    LinkWorkflow(workflow, data).process(LinkWorkflow.Operation.ADD)
+
+    url = reverse("workflow-list")
+    response = api_request("get", url, data)
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["count"] == 1
 
 
 @pytest.mark.django_db
