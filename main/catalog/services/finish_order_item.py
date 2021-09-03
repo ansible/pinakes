@@ -1,21 +1,35 @@
 """ Module to Finish Processing an OrderItem """
+import logging
+
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from main.catalog.models import OrderItem, ProgressMessage
+
+logger = logging.getLogger("catalog")
 
 
 class FinishOrderItem:
     """Finish an OrderItem"""
 
-    def __init__(self, task_id, artifacts, error_msg=None):
-        self.order_item = OrderItem.objects.filter(
-            inventory_task_ref=task_id
-        ).first()
+    def __init__(
+        self,
+        order_item=None,
+        inventory_task_ref=None,
+        artifacts={},
+        error_msg=None,
+    ):
+        self.order_item = order_item or self._get_order_item(
+            inventory_task_ref
+        )
         self.error_msg = error_msg
         self.artifacts = artifacts
 
     def process(self):
         from main.catalog.services.start_order_item import StartOrderItem
+
+        if self.order_item is None:
+            logger.warn("Order item is not available")
+            return self
 
         """Finish processing the order_item"""
         if self.error_msg is None:
@@ -29,3 +43,8 @@ class FinishOrderItem:
         StartOrderItem(self.order_item.order).process()
 
         return self
+
+    def _get_order_item(self, inventory_task_ref):
+        return OrderItem.objects.filter(
+            inventory_task_ref=inventory_task_ref
+        ).first()

@@ -18,6 +18,7 @@ def test_workflow_list(api_request):
 
     assert content["count"] == 1
 
+
 @pytest.mark.django_db
 def test_searching(api_request):
     """Search by query parameter"""
@@ -44,7 +45,9 @@ def test_filtering(api_request):
     WorkflowFactory(name="alpha", description="hello")
     WorkflowFactory(name="beta", description="world")
     url = reverse("workflow-list")
-    response = api_request("get", url, {"name": "beta", "description": "world"})
+    response = api_request(
+        "get", url, {"name": "beta", "description": "world"}
+    )
     content = json.loads(response.content)
     assert content["count"] == 1
     assert content["results"][0]["name"] == "beta"

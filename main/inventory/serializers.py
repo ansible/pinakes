@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from main.models import Source
 from main.inventory.models import (
+    ServiceInstance,
     ServiceInventory,
     ServiceOffering,
     ServiceOfferingNode,
@@ -82,3 +83,19 @@ class ServicePlanSerializer(serializers.ModelSerializer):
             "service_offering",
         )
         read_only_fields = ("created_at", "updated_at")
+
+
+class ServiceInstanceSerializer(serializers.ModelSerializer):
+    """Serializer for ServiceInstance."""
+
+    class Meta:
+        model = ServiceInstance
+        fields = (
+            "id",
+            "name",
+            "extra",
+            "external_url",
+            "service_offering",
+            "service_inventory",
+            "service_plan",
+        )

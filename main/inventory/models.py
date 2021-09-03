@@ -20,8 +20,8 @@ models.CharField.register_lookup(Length)
 class TowerModel(SourceOwnedModel):
     """The common properties across Tower object"""
 
-    source_created_at = models.DateTimeField()
-    source_updated_at = models.DateTimeField()
+    source_created_at = models.DateTimeField(null=True)
+    source_updated_at = models.DateTimeField(null=True)
     source_ref = models.CharField(max_length=32)
 
     class Meta:
@@ -101,6 +101,25 @@ class ServicePlan(TowerModel):
     extra = models.JSONField()
     create_json_schema = models.JSONField()
     update_json_schema = models.JSONField(null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class ServiceInstance(TowerModel):
+    name = models.CharField(max_length=255, blank=True)
+    extra = models.JSONField(null=True)
+    external_url = models.CharField(max_length=255, blank=True)
+
+    service_offering = models.ForeignKey(
+        ServiceOffering, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    service_plan = models.ForeignKey(
+        ServicePlan, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    service_inventory = models.ForeignKey(
+        ServiceInventory, on_delete=models.SET_NULL, blank=True, null=True
+    )
 
     def __str__(self):
         return self.name

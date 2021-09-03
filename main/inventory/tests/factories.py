@@ -3,7 +3,7 @@ import factory
 from django.utils import timezone
 from main.models import Source
 from main.tests.factories import TenantFactory, default_tenant
-from main.inventory.models import ServiceInventory
+from main.inventory.models import ServiceInstance, ServiceInventory
 from main.inventory.models import ServiceOffering, OfferingKind
 from main.inventory.models import ServicePlan
 from main.inventory.models import ServiceOfferingNode
@@ -98,4 +98,34 @@ class ServiceOfferingNodeFactory(factory.django.DjangoModelFactory):
     source_created_at = timezone.now()
     source_updated_at = timezone.now()
     source_ref = factory.Sequence(lambda n: f"{n}")
+    extra = {}
+
+
+class ServiceInstanceFactory(factory.django.DjangoModelFactory):
+    """ServiceInstance Factory"""
+
+    class Meta:
+        model = ServiceInstance
+
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
+    source = factory.SubFactory(SourceFactory)
+    service_offering = factory.SubFactory(
+        ServiceOfferingFactory,
+        tenant=tenant,
+        source=source,
+        survey_enabled=True,
+    )
+    service_plan = factory.SubFactory(
+        ServicePlanFactory,
+        tenant=tenant,
+        source=source,
+    )
+    service_inventory = factory.SubFactory(
+        ServiceInventoryFactory,
+        tenant=tenant,
+        source=source,
+    )
+    name = factory.Sequence(lambda n: f"service_instance{n}")
+    source_created_at = timezone.now()
+    source_updated_at = timezone.now()
     extra = {}

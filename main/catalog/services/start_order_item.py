@@ -39,7 +39,7 @@ class StartOrderItem:
                 _("Submitting Order Item {} for provisioning".format(item.id)),
             )
 
-            self.__validate_before_provision()
+            self._validate_before_provision()
             ProvisionOrderItem(item).process()
 
             logger.info(
@@ -50,13 +50,12 @@ class StartOrderItem:
         except Exception as error:
             logger.error("Error Submitting Order Item: %s", str(error))
 
-            if item.inventory_task_ref is not None:
-                FinishOrderItem(
-                    item.inventory_task_ref, {}, str(error)
-                ).process()
+            FinishOrderItem(
+                order_item=item, error_msg=str(error)
+            ).process()
 
         # TODO: compute runtime parameters later
 
-    def __validate_before_provision(self):
+    def _validate_before_provision(self):
         # TODO:
         pass

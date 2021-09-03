@@ -3,6 +3,7 @@ from rest_framework import routers
 
 from rest_framework_extensions.routers import NestedRouterMixin
 from main.inventory.views import (
+    ServiceInstanceViewSet,
     ServiceInventoryViewSet,
     SourceViewSet,
     ServicePlanViewSet,
@@ -62,3 +63,6 @@ router.register(
     "service_inventories", ServiceInventoryViewSet, basename="serviceinventory"
 )
 router.register("service_plans", ServicePlanViewSet, basename="serviceplan")
+router.register(
+    "service_instances", ServiceInstanceViewSet, basename="serviceinstance"
+)
