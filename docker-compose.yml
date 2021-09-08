@@ -7,17 +7,14 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8000:8000
+      - '8000:8000'
     volumes:
       - "./:/app:z"
     environment:
       - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
       - CATALOG_LOG_ROOT=/app
       - CONTROLLER_VERIFY_SSL=False
-  redis:
-    image: redis:alpine
-    ports:
-      - 6379:6379
+
   worker:
     image: ansible-catalog:dev
     environment:
@@ -32,4 +29,37 @@ services:
       - app
       - redis
     command: python manage.py rqworker default
-        
+
+  keycloak:
+    image: 'quay.io/keycloak/keycloak:15.0.2'
+    environment:
+      - 'DB_VENDOR=postgres'
+      - 'DB_ADDR=postgres'
+      - 'DB_DATABASE=keycloak'
+      - 'DB_USER=keycloak'
+      - 'DB_PASSWORD=password'
+      - 'KEYCLOAK_USER=admin'
+      - 'KEYCLOAK_PASSWORD=admin'
+    ports:
+      - '8080:8080'
+    depends_on:
+      - 'postgres'
+
+  redis:
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+
+  postgres:
+    image: 'postgres:13-alpine'
+    environment:
+      - 'POSTGRES_USER=keycloak'
+      - 'POSTGRES_PASSWORD=password'
+      - 'POSTGRES_DB=keycloak'
+    volumes:
+      - 'pg_data:/var/lib/postgresql/data'
+    ports:
+      - '5432:5432'
+
+volumes:
+  pg_data: {}
