@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from drf_spectacular.utils import extend_schema
 
 from main.catalog.serializers import ImageSerializer
 from main.models import Image
@@ -14,6 +15,14 @@ class ImageMixin:
     Image mixin shared with Catalog Portfolio and PortfolioItem
     """
 
+    @extend_schema(
+        request=ImageSerializer, responses=ImageSerializer, methods=("PATCH",)
+    )
+    @extend_schema(
+        request=ImageSerializer,
+        responses={201: ImageSerializer},
+        methods=("POST",),
+    )
     @action(methods=["post", "patch", "delete"], detail=True)
     def icon(self, request, pk):
         """

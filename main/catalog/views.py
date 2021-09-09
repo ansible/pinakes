@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from rest_framework.response import Response
 from rest_framework import status
+from drf_spectacular.utils import extend_schema
 
 from common.tag_mixin import TagMixin
 from common.image_mixin import ImageMixin
@@ -110,6 +111,10 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     )
     search_fields = ("state",)
 
+    @extend_schema(
+        request=None,
+        responses={204: None},
+    )
     @action(methods=["post"], detail=True)
     def submit(self, request, pk):
         """Orders the specified pk order."""
@@ -127,6 +132,10 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     # TODO:
+    @extend_schema(
+        request=None,
+        responses={204: None},
+    )
     @action(methods=["patch"], detail=True)
     def cancel(self, request, pk):
         """Cancels the specified pk order."""

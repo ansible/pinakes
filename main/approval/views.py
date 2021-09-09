@@ -5,16 +5,17 @@ from decimal import Decimal
 from rest_framework.decorators import action
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_extensions.mixins import NestedViewSetMixin
-from django.core.exceptions import ValidationError
-from django.shortcuts import get_object_or_404
 from rest_framework.filters import (
     BaseFilterBackend,
     OrderingFilter,
     SearchFilter,
 )
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_extensions.mixins import NestedViewSetMixin
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 
 from main.models import Tenant
 from main.approval.models import (
@@ -29,6 +30,7 @@ from main.approval.serializers import (
     RequestInSerializer,
     RequestCompleteSerializer,
     ActionSerializer,
+    ResourceObjectSerializer,
 )
 from main.approval.services.link_workflow import LinkWorkflow
 
@@ -109,6 +111,10 @@ class WorkflowViewSet(
     parent_lookup_key = "parent_lookup_template"
     queryset_order_by = "internal_sequence"
 
+    @extend_schema(
+        request=ResourceObjectSerializer,
+        responses={204: None},
+    )
     @action(methods=["post"], detail=True)
     def link(self, request, pk):
         workflow = get_object_or_404(Workflow, pk=pk)
@@ -118,6 +124,10 @@ class WorkflowViewSet(
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @extend_schema(
+        request=ResourceObjectSerializer,
+        responses={204: None},
+    )
     @action(methods=["post"], detail=True)
     def unlink(self, request, pk):
         workflow = get_object_or_404(Workflow, pk=pk)
@@ -158,6 +168,10 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     parent_field_name = "parent"
     parent_lookup_key = "parent_lookup_parent"
 
+    @extend_schema(
+        request=RequestInSerializer,
+        responses={201: RequestSerializer},
+    )
     def create(self, request, *args, **kwargs):
         serializer = RequestInSerializer(data=request.data)
         output_serializer = serializer  # default
@@ -176,6 +190,9 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
             raise ValidationError({"detail": error}) from error
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 
+    @extend_schema(
+        responses={200: RequestCompleteSerializer},
+    )
     @action(methods=["get"], detail=True)
     def full(self, request, pk):
         """Details of a request with its sub_requests and actions"""
