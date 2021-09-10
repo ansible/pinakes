@@ -26,6 +26,8 @@ templates.register(
     parents_query_lookups=["template"],
 )
 urls_views["template-workflow-detail"] = None  # disable
+urls_views["template-workflow-link"] = None
+urls_views["template-workflow-unlink"] = None
 
 router.register("workflows", WorkflowViewSet, basename="workflow")
 urls_views["workflow-list"] = WorkflowViewSet.as_view(

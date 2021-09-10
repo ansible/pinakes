@@ -6,6 +6,7 @@ from main.approval.tests.factories import TemplateFactory
 from main.approval.tests.factories import WorkflowFactory
 from main.approval.services.link_workflow import LinkWorkflow
 from main.catalog.tests.factories import PortfolioFactory
+from main.approval.tests.services.test_link_workflow import create_and_link
 
 
 @pytest.mark.django_db
@@ -84,19 +85,10 @@ def test_ordering(api_request):
 @pytest.mark.django_db
 def test_list_by_external_object(api_request):
     """List workflows by linked external object"""
-    workflow = WorkflowFactory()
-    WorkflowFactory()
-
-    portfolio = PortfolioFactory()
-    data = {
-        "object_type": "Portfolio",
-        "object_id": portfolio.id,
-        "app_name": "catalog",
-    }
-    LinkWorkflow(workflow, data).process(LinkWorkflow.Operation.ADD)
+    _workflow, _portfolio, resource_obj = create_and_link()
 
     url = reverse("workflow-list")
-    response = api_request("get", url, data)
+    response = api_request("get", url, resource_obj)
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["count"] == 1
@@ -159,3 +151,30 @@ def test_workflow_post(api_request):
     )
 
     assert response.status_code == 201
+
+
+@pytest.mark.django_db
+def test_workflow_link(api_request):
+    workflow = WorkflowFactory()
+    portfolio = PortfolioFactory()
+    resource_obj = {
+        "object_type": "Portfolio",
+        "object_id": portfolio.id,
+        "app_name": "catalog",
+    }
+
+    url = reverse("workflow-link", args=(workflow.id,))
+    response = api_request("post", url, resource_obj)
+
+    assert response.status_code == 204
+
+
+@pytest.mark.django_db
+def test_workflow_unlink(api_request):
+    """Remove approval tag on a remote object"""
+    workflow, _portfolio, resource_obj = create_and_link()
+
+    url = reverse("workflow-unlink", args=(workflow.id,))
+    response = api_request("post", url, resource_obj)
+
+    assert response.status_code == 204
