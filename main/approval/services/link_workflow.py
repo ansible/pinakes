@@ -1,6 +1,7 @@
 """Unlink workflow service"""
 import logging
 from django.apps import apps
+from enum import Enum
 
 from main.approval.models import TagLink, Workflow
 from main.catalog.services.operate_tag import OperateTag
@@ -11,10 +12,12 @@ logger = logging.getLogger("approval")
 class LinkWorkflow:
     """Link workflow with tags"""
 
+    Operation = Enum("Operation", ["ADD", "REMOVE", "FIND"])
+
     def __init__(self, workflow=None, data=None):
         self.workflow = workflow
         self.params = (
-            data.copy() if workflow is None else self.__tag_params(data)
+            data.copy() if workflow is None else self._tag_params(data)
         )
         self.object_id = data.get("object_id", None)
         self.workflow_ids = []
@@ -24,20 +27,24 @@ class LinkWorkflow:
         model = apps.get_model("main", object_type)
         instance = model.objects.get(id=self.object_id)
 
-        # Operate tags on Catalog side
-        OperateTag(instance).process(operation, self.__tag_name()["name"])
-
-        if operation == OperateTag.Operation.Add:
+        if operation == self.Operation.ADD:
+            OperateTag(instance).process(
+                OperateTag.Operation.ADD, self._tag_name()["name"]
+            )
             obj, created = TagLink.objects.get_or_create(**self.params)
             if not created:
                 logger.info("Tag '%s' is found", obj)
-        elif operation == OperateTag.Operation.Find:
+        elif operation == self.Operation.REMOVE:
+            OperateTag(instance).process(
+                OperateTag.Operation.REMOVE, self._tag_name()["name"]
+            )
+        elif operation == self.Operation.FIND:
             tag_names = [{"name": tag.name} for tag in instance.tags.all()]
             self.workflow_ids = [
                 tag_link.workflow.id
-                for tag_link in TagLink.objects.filter(**self.params).filter(
-                    tag_name__in=tag_names
-                )[::1]
+                for tag_link in TagLink.objects.filter(
+                    object_type=self.params["object_type"]
+                ).filter(tag_name__in=tag_names)[::1]
             ]
 
         return self
@@ -63,14 +70,14 @@ class LinkWorkflow:
 
         return Workflow.objects.filter(id__in=list(set(workflow_ids)))
 
-    def __tag_params(self, data):
+    def _tag_params(self, data):
         params = data.copy()
         params["tenant_id"] = self.workflow.tenant.id
         params["workflow_id"] = self.workflow.id
-        params["tag_name"] = self.__tag_name()
+        params["tag_name"] = self._tag_name()
         params.pop("object_id")
 
         return params
 
-    def __tag_name(self):
+    def _tag_name(self):
         return {"name": "approval/workflows/{}".format(self.workflow.id)}
