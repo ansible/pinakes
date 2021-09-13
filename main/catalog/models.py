@@ -265,6 +265,28 @@ class Order(UserOwnedModel, MessageableMixin):
         return str(self.id)
 
 
+class OrderItemManager(models.Manager):
+    """Override default manager with create method"""
+
+    def create(self, *args, **kwargs):
+        from main.catalog.services.sanitize_parameters import SanitizeParameters
+
+        order_item = super(OrderItemManager, self).create(
+            *args, **kwargs
+        )
+
+        sanitized_parameters = (
+            SanitizeParameters(order_item).process().sanitized_parameters
+        )
+        if order_item.service_parameters == sanitized_parameters:
+            return order_item
+
+        order_item.service_parameters_raw = order_item.service_parameters
+        order_item.service_parameters = sanitized_parameters
+
+        return order_item
+
+
 class OrderItem(UserOwnedModel, MessageableMixin):
     """Order Item Model"""
 
@@ -287,6 +309,7 @@ class OrderItem(UserOwnedModel, MessageableMixin):
         State.DENIED,
     ]
 
+    objects = OrderItemManager()
     name = models.CharField(max_length=64)
     state = models.CharField(
         max_length=10,

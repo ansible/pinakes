@@ -2,13 +2,14 @@
 import pytest
 from django.db import IntegrityError
 
-from main.catalog.models import ProgressMessage
+from main.catalog.models import OrderItem, ProgressMessage
 
 from main.tests.factories import TenantFactory, UserFactory
 from main.catalog.tests.factories import (
     OrderFactory,
     OrderItemFactory,
     PortfolioItemFactory,
+    ServicePlanFactory,
 )
 
 
@@ -111,3 +112,69 @@ def test_mark_canceled():
     assert ProgressMessage.objects.first().message == "canceled"
     assert ProgressMessage.objects.first().messageable_type == "OrderItem"
     assert ProgressMessage.objects.first().messageable_id == order_item.id
+
+
+@pytest.mark.django_db
+def test_sanitized_params():
+    fields = [
+        {
+            "name": "Totally not a pass",
+            "type": "password",
+            "label": "Totally not a pass",
+            "component": "text-field",
+            "helperText": "",
+            "isRequired": True,
+            "initialValue": "",
+        },
+        {
+            "name": "most_important_var1",
+            "label": "secret field 1",
+            "component": "textarea-field",
+            "helperText": "Has no effect on anything, ever.",
+            "initialValue": "",
+        },
+        {
+            "name": "token idea",
+            "label": "field 1",
+            "component": "textarea-field",
+            "helperText": "Don't look.",
+            "initialValue": "",
+        },
+        {
+            "name": "name",
+            "label": "field 1",
+            "component": "textarea-field",
+            "helperText": "That's not my name.",
+            "initialValue": "{{product.artifacts.testk}}",
+            "isSubstitution": True,
+        },
+    ]
+    base = {"schema": {"fields": fields}}
+    tenant = TenantFactory()
+    user = UserFactory()
+    order = OrderFactory(tenant=tenant, user=user)
+    portfolio_item = PortfolioItemFactory()
+    service_plan = ServicePlanFactory(portfolio_item=portfolio_item, base=base)
+
+    service_parameters = {
+        "name": "Joe",
+        "Totally not a pass": "s3crete",
+        "token idea": "my secret",
+    }
+
+    order_item = OrderItem.objects.create(
+        name="order_item",
+        service_parameters=service_parameters,
+        service_plan_ref=str(service_plan.id),
+        order=order,
+        portfolio_item=portfolio_item,
+        tenant=tenant,
+        user=user
+    )
+
+    assert order_item.service_parameters == {
+        "name": "Joe",
+        "Totally not a pass": "$protected$",
+        "token idea": "$protected$",
+    }
+    assert order_item.service_parameters_raw == service_parameters
