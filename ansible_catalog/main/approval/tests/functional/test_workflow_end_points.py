@@ -96,6 +96,16 @@ def test_list_by_external_object(api_request):
 
 
 @pytest.mark.django_db
+def test_workflow_link_bad(api_request):
+    resource_obj = {"object_id": 1}
+
+    url = reverse("workflow-list")
+    response = api_request("get", url, resource_obj)
+
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
 def test_workflow_retrieve(api_request):
     """Retrieve a workflow by its ID"""
     workflow = WorkflowFactory()

@@ -78,6 +78,22 @@ def test_create_request(api_request, mocker):
 
 
 @pytest.mark.django_db
+def test_create_request_bad(api_request, mocker):
+    mocker.patch("django_rq.enqueue", side_effect=Exception('whoops'))
+    default_tenant()
+    url = reverse("request-list")
+    response = api_request(
+        "post",
+        url,
+        {"name": "abcdef", "description": "abc", "content": {"item1": "val1"}},
+    )
+
+    assert response.status_code == 500
+    content = json.loads(response.content)
+    assert content["detail"] == "whoops"
+
+
+@pytest.mark.django_db
 def test_create_action(api_request):
     request = RequestFactory()
     url = reverse("request-action-list", args=(request.id,))

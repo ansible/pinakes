@@ -3,7 +3,7 @@ import logging
 
 from decimal import Decimal
 from rest_framework.decorators import action
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, exceptions
 from rest_framework.response import Response
 from rest_framework.filters import (
     BaseFilterBackend,
@@ -12,7 +12,6 @@ from rest_framework.filters import (
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
-from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
@@ -33,7 +32,7 @@ from ansible_catalog.main.approval.serializers import (
     ResourceObjectSerializer,
 )
 from ansible_catalog.main.approval.services.link_workflow import LinkWorkflow
-
+from ansible_catalog.main.approval.exceptions import InsufficientParamsException
 from ansible_catalog.common.queryset_mixin import QuerySetMixin
 
 logger = logging.getLogger("approval")
@@ -80,7 +79,7 @@ class WorkflowFilterBackend(BaseFilterBackend):
         logger.error(
             "Insufficient resource object params: %s", resource_params
         )
-        raise RuntimeError(
+        raise InsufficientParamsException(
             "Insufficient resource object params: {}".format(resource_params)
         )
 
@@ -187,7 +186,7 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
                 )
             )
         except Exception as error:
-            raise ValidationError({"detail": error}) from error
+            raise exceptions.APIException(error) from error # 500 internal error
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 
     @extend_schema(
