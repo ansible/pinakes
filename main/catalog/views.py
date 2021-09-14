@@ -18,6 +18,7 @@ from common.queryset_mixin import QuerySetMixin
 from main.models import Tenant
 from main.catalog.models import (
     ApprovalRequest,
+    CatalogServicePlan,
     Order,
     OrderItem,
     Portfolio,
@@ -26,6 +27,7 @@ from main.catalog.models import (
 )
 from main.catalog.serializers import (
     ApprovalRequestSerializer,
+    CatalogServicePlanSerializer,
     OrderItemSerializer,
     OrderSerializer,
     PortfolioItemSerializer,
@@ -231,3 +233,26 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
             messageable_type=messageable_type,
             messageable_id=messageable_id,
         )
+
+
+class CatalogServicePlanViewSet(
+    NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
+):
+    """API endpoint for listing and creating catalog service plans"""
+
+    queryset = CatalogServicePlan.objects.all()
+    serializer_class = CatalogServicePlanSerializer
+    http_method_names = ["get", "patch", "post", "head"]
+    permission_classes = (IsAuthenticated,)
+    ordering = ("-id",)
+    filter_fields = (
+        "name",
+        "description",
+        "portfolio_item",
+    )
+    search_fields = (
+        "name",
+        "description",
+    )
+    parent_field_name = "portfolio_item"
+    parent_lookup_key = "parent_lookup_portfolio_item"
