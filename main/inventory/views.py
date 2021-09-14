@@ -19,6 +19,7 @@ from main.inventory.models import (
     ServicePlan,
 )
 from main.inventory.serializers import (
+    ServiceInstanceSerializer,
     ServiceInventorySerializer,
     ServicePlanSerializer,
     ServiceOfferingSerializer,
@@ -119,3 +120,22 @@ class ServiceInventoryViewSet(
 
     # For tagging purpose, enable POST action here
     http_method_names = ["get", "post", "head"]
+
+
+class ServiceInstanceViewSet(QuerySetMixin, ModelViewSet):
+    """API endpoint for listing service instances."""
+
+    serializer_class = ServiceInstanceSerializer
+    permission_classes = (IsAuthenticated,)
+    ordering = ("-id",)
+    filter_fields = (
+        "name",
+        "source_ref",
+        "source_created_at",
+        "source_updated_at",
+        "created_at",
+        "updated_at",
+    )
+    search_fields = ("name",)
+
+    http_method_names = ["get", "head"]
