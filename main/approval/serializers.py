@@ -7,6 +7,7 @@ from main.approval.models import (
     Request,
     RequestContext,
     Action,
+    TagLink,
 )
 from main.approval.services.create_request import CreateRequest
 
@@ -114,4 +115,20 @@ class RequestCompleteSerializer(serializers.ModelSerializer):
 
 RequestCompleteSerializer._declared_fields[
     "sub_requests"
-] = RequestCompleteSerializer(many=True)
+] = RequestCompleteSerializer(many=True, read_only=True)
+
+
+class ResourceObjectSerializer(serializers.ModelSerializer):
+    """Serializer for Linking Workflow"""
+
+    app_name = serializers.CharField(required=True, write_only=True)
+    object_type = serializers.CharField(required=True, write_only=True)
+    object_id = serializers.CharField(required=True, write_only=True)
+
+    class Meta:
+        model = TagLink
+        fields = (
+            "object_type",
+            "object_id",
+            "app_name",
+        )
