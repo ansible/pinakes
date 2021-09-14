@@ -269,11 +269,11 @@ class OrderItemManager(models.Manager):
     """Override default manager with create method"""
 
     def create(self, *args, **kwargs):
-        from main.catalog.services.sanitize_parameters import SanitizeParameters
-
-        order_item = super(OrderItemManager, self).create(
-            *args, **kwargs
+        from main.catalog.services.sanitize_parameters import (
+            SanitizeParameters,
         )
+
+        order_item = super(OrderItemManager, self).create(*args, **kwargs)
 
         sanitized_parameters = (
             SanitizeParameters(order_item).process().sanitized_parameters

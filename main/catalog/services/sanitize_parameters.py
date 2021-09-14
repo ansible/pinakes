@@ -61,16 +61,18 @@ class SanitizeParameters:
         ).first()
 
         if service_plan is None:
-            service_plan_schema = GetServicePlan(
-                self.order_item.service_plan_ref
-            ).proces().service_plan.create_json_schema
+            service_plan_schema = (
+                GetServicePlan(self.order_item.service_plan_ref)
+                .proces()
+                .service_plan.create_json_schema
+            )
         else:
             service_plan_schema = (
                 service_plan.modified
                 or service_plan.base
-                or GetServicePlan(
-                    self.order_item.service_plan_ref
-                ).proces().service_plan.create_json_schema
+                or GetServicePlan(self.order_item.service_plan_ref)
+                .proces()
+                .service_plan.create_json_schema
             )
 
         return service_plan_schema["schema"]["fields"]

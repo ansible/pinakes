@@ -24,7 +24,9 @@ def launch_tower_task(slug, body):
         logger.info("Starting job %s", job.id)
         obj = LaunchJob(slug, body).process()
         logger.info(obj)
-        FinishOrderItem(inventory_task_ref=job.id, artifacts=obj["artifacts"]).process()
+        FinishOrderItem(
+            inventory_task_ref=job.id, artifacts=obj["artifacts"]
+        ).process()
 
         logger.info("Job successfully finished %s", job.id)
     except Exception as exc:

@@ -169,7 +169,7 @@ def test_sanitized_params():
         order=order,
         portfolio_item=portfolio_item,
         tenant=tenant,
-        user=user
+        user=user,
     )
 
     assert order_item.service_parameters == {

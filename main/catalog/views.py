@@ -226,7 +226,9 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         )
 
 
-class CatalogServicePlanViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
+class CatalogServicePlanViewSet(
+    NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
+):
     """API endpoint for listing and creating catalog service plans"""
 
     queryset = CatalogServicePlan.objects.all()

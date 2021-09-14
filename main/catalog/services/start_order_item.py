@@ -50,9 +50,7 @@ class StartOrderItem:
         except Exception as error:
             logger.error("Error Submitting Order Item: %s", str(error))
 
-            FinishOrderItem(
-                order_item=item, error_msg=str(error)
-            ).process()
+            FinishOrderItem(order_item=item, error_msg=str(error)).process()
 
         # TODO: compute runtime parameters later
 
