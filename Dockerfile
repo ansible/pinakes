@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM docker.io/python:3.9
 
 RUN mkdir /tmp/app
 WORKDIR /tmp/app
