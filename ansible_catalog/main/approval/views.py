@@ -195,7 +195,7 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     )
     @action(methods=["get"], detail=True)
     def full(self, request, pk):
-        """Details of a request with its sub_requests and actions"""
+        """Details of a request with its subrequests and actions"""
         instance = self.get_object()
         serializer = RequestCompleteSerializer(instance)
         return Response(serializer.data)

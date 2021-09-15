@@ -99,8 +99,8 @@ class ActionSerializer(serializers.ModelSerializer):
         read_only_fields = ("created_at", "request")
 
 
-class RequestCompleteSerializer(serializers.ModelSerializer):
-    """Serializer for Request with nested actions and children"""
+class SubrequestSerializer(serializers.ModelSerializer):
+    """Serializer for sub request with actions"""
 
     actions = ActionSerializer(many=True, read_only=True)
 
@@ -109,13 +109,22 @@ class RequestCompleteSerializer(serializers.ModelSerializer):
         fields = (
             *RequestFields.FIELDS,
             "actions",
-            "sub_requests",
         )
 
 
-RequestCompleteSerializer._declared_fields[
-    "sub_requests"
-] = RequestCompleteSerializer(many=True, read_only=True)
+class RequestCompleteSerializer(serializers.ModelSerializer):
+    """Serializer for Request with actions and subrequests"""
+
+    actions = ActionSerializer(many=True, read_only=True)
+    subrequests = SubrequestSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Request
+        fields = (
+            *RequestFields.FIELDS,
+            "actions",
+            "subrequests",
+        )
 
 
 class ResourceObjectSerializer(serializers.ModelSerializer):
