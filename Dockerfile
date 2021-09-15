@@ -1,12 +1,11 @@
 FROM python:3.9
 
-RUN mkdir /tmp/app
 WORKDIR /tmp/app
 
-COPY . /tmp/app
+COPY . ${WORKDIR}
 
 RUN pip install -r requirements.txt
 
-ENTRYPOINT ["/tmp/app/docker/entrypoint.sh"]
+ENTRYPOINT ["docker/entrypoint.sh"]
 
-CMD ["/tmp/app/docker/server.sh"]
+CMD ["docker/server.sh"]
