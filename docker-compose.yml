@@ -9,22 +9,22 @@ services:
     ports:
       - '8000:8000'
     volumes:
-      - "./:/app:z"
+      - "./:/tmp/app:z"
     environment:
       - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
-      - CATALOG_LOG_ROOT=/app
+      - CATALOG_LOG_ROOT=/tmp/app
       - CONTROLLER_VERIFY_SSL=False
 
   worker:
     image: ansible-catalog:dev
     environment:
       - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
-      - CATALOG_LOG_ROOT=/app
+      - CATALOG_LOG_ROOT=/tmp/app
       - OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
       - ANSIBLE_CATALOG_REDIS_HOST=redis
       - CONTROLLER_VERIFY_SSL=False
     volumes:
-      - "./:/app:z"
+      - "./:/tmp/app:z"
     depends_on:
       - app
       - redis
