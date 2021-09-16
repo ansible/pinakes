@@ -144,3 +144,60 @@ and execute a patch with empty body. (this may take a while)
 ```
 docker-compose exec app python manage.py spectacular --format openapi-json --file apispec.json
 ```
+## Using minikube for development
+###  Setup minikube
+[Install minikube](https://minikube.sigs.k8s.io/docs/start/)
+Start minikube
+Since the catalog, keycloak, postgres, redis all run inside the minikube cluster we need to expose the catalog and keycloak services from the cluster to your local dev machine using ingress. We need to enable ingress on the minikube cluster
+
+```
+minikube addons enable ingress
+```
+
+ [More on that here](https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/)
+
+Get the IP address of the minikube cluster
+```
+minikube ip
+```
+
+The ingress uses 2 hardcoded hosts **catalog.test** and **keycloak.test** to route the traffic to the appropriate services so we need to add the the IP address from the above command into /etc/hosts. The /etc/hosts should have this line 
+```
+<<ip_from_minikube_ip>> catalog.test keycloak.test
+```
+## Building the image
+
+```
+eval $(minikube -p minikube docker-env)
+docker build -t localhost/ansible-catalog .
+```
+## Starting the app
+Once this has been setup you can start the deployments, services and ingress service in the directory minikube_files
+
+```
+cd minikube_files
+kubectl apply -f .
+```
+
+To access the keycloak server running inside the cluster use the following URL
+http://keycloak.test/auth  (Default userid is admin password is admin)
+To access the catalog app use
+http://catalog.test/api/v1/
+
+When the catalog-app starts up it creates the required roles, policies, scopes, permissions (optionally groups and users) by using an ansible collection. The roles, policies, scopes and permissions are defined in the collection. The optional group and user data is stored in keycloak_setup/dev.yml
+ 
+As part of the keycloak setup we create the following groups
+
+ - **catalog-admin**
+ - **catalog-user**
+ - **approval-admin**
+ - **approval-user**
+ - **approval-approver**
+
+The following users are also created
+
+ - **fred** (member of catalog-admin, approval-admin)
+ - **barney** (member of catalog-user, approval-user)
+ - **wilma** (member of approval-approver)
+
+The default password is the same as the user name, they can be changed by modifying the file **keycloak_setup/dev.yml**

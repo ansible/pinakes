@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
+from django.conf.urls import url
 from django.urls import include, path
 from rest_framework import routers
 from django.conf import settings
@@ -69,4 +69,5 @@ urlpatterns = [
         name="redoc",
     ),
     path(r"api/v1/", include(urls_patterns)),
+    url("", include("social_django.urls", namespace="social")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

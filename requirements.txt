@@ -11,3 +11,4 @@ psycopg2
 python-dateutil
 requests
 django-environ
+social-auth-app-django

@@ -147,3 +147,9 @@ ansible_catalog/settings/local_*.py
 # IDE's
 .vscode
 .idea
+
+# pyenv local file
+.python-version
+
+# sqlite db
+ansible_catalog/catalog.db
