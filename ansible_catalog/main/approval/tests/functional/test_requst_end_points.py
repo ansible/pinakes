@@ -79,7 +79,7 @@ def test_create_request(api_request, mocker):
 
 @pytest.mark.django_db
 def test_create_request_bad(api_request, mocker):
-    mocker.patch("django_rq.enqueue", side_effect=Exception('whoops'))
+    mocker.patch("django_rq.enqueue", side_effect=Exception("whoops"))
     default_tenant()
     url = reverse("request-list")
     response = api_request(
@@ -90,7 +90,7 @@ def test_create_request_bad(api_request, mocker):
 
     assert response.status_code == 500
     content = json.loads(response.content)
-    assert content["detail"] == "whoops"
+    assert content["detail"] == "Internal Error"
 
 
 @pytest.mark.django_db

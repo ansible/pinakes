@@ -7,6 +7,7 @@ from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 models.CharField.register_lookup(Length)
 
+
 class Tenant(models.Model):
     """Tenant"""
 
