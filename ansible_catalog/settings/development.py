@@ -29,5 +29,5 @@ if "pytest" in sys.modules:
         },
     }
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 CONTROLLER_VERIFY_SSL = "False"

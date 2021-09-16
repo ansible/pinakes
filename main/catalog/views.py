@@ -101,7 +101,12 @@ class PortfolioItemViewSet(
     parent_lookup_key = "parent_lookup_portfolio"
 
 
-class OrderViewSet(LoginRequiredMixin, NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
+class OrderViewSet(
+    LoginRequiredMixin,
+    NestedViewSetMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
+):
     """API endpoint for listing and creating orders."""
 
     serializer_class = OrderSerializer
@@ -149,7 +154,10 @@ class OrderViewSet(LoginRequiredMixin, NestedViewSetMixin, QuerySetMixin, viewse
 
 
 class OrderItemViewSet(
-    LoginRequiredMixin, NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
+    LoginRequiredMixin,
+    NestedViewSetMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
 ):
     """API endpoint for listing and creating order items."""
 
@@ -175,7 +183,10 @@ class OrderItemViewSet(
 
 
 class ApprovalRequestViewSet(
-    LoginRequiredMixin, NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
+    LoginRequiredMixin,
+    NestedViewSetMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
 ):
     """API endpoint for listing approval requests."""
 
@@ -208,7 +219,9 @@ class ApprovalRequestViewSet(
         return Response(serializer.data)
 
 
-class ProgressMessageViewSet(LoginRequiredMixin, NestedViewSetMixin, viewsets.ModelViewSet):
+class ProgressMessageViewSet(
+    LoginRequiredMixin, NestedViewSetMixin, viewsets.ModelViewSet
+):
     """API endpoint for listing progress messages."""
 
     serializer_class = ProgressMessageSerializer
@@ -240,7 +253,10 @@ class ProgressMessageViewSet(LoginRequiredMixin, NestedViewSetMixin, viewsets.Mo
 
 
 class CatalogServicePlanViewSet(
-    LoginRequiredMixin, NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
+    LoginRequiredMixin,
+    NestedViewSetMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
 ):
     """API endpoint for listing and creating catalog service plans"""
 
