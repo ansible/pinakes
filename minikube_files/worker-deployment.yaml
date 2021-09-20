@@ -37,6 +37,14 @@ spec:
           env:
             - name: ANSIBLE_CATALOG_REDIS_HOST
               value: redis
+            - name: KEYCLOAK_URL
+              value: http://keycloak:8080/auth
+            - name: KEYCLOAK_USER
+              value: admin
+            - name: KEYCLOAK_PASSWORD
+              value: admin
+            - name: REDIRECT_URIS_STR
+              value: http://app:8000,http://app:8000/*,*
             - name: CATALOG_LOG_ROOT
               value: /tmp
             - name: CONTROLLER_VERIFY_SSL
