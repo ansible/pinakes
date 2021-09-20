@@ -24,12 +24,16 @@ spec:
       labels:
         io.kompose.service: worker
     spec:
+      initContainers:
+        - name: init-catalog-app
+          image: busybox
+          command:
+          - sh
+          - -c
+          - 'while true; do echo "Waiting for catalog app service to come up..."; wget http://app:8000/api/v1/ -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break; sleep 1; done; echo "Service is up! Starting main container."'
       containers:
         - args:
-            - python
-            - manage.py
-            - rqworker
-            - default
+            - "/home/appuser/app/docker/worker.sh"
           env:
             - name: ANSIBLE_CATALOG_REDIS_HOST
               value: redis

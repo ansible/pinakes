@@ -3,6 +3,7 @@
   vars:
     settings_dir: "/home/appuser/app/ansible_catalog/settings/"
     keycloak_external_url: "http://keycloak.test/auth"
+    seed_keycloak: true
     seed_groups:
       - name: Development
         clientRoles:
