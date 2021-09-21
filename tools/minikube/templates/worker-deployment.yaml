@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../docker-compose.yml
+    kompose.version: 1.24.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: worker
+  name: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: worker
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ../docker-compose.yml
+        kompose.version: 1.24.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: worker
+    spec:
+      initContainers:
+        - name: init-catalog-app
+          image: busybox
+          command:
+          - sh
+          - -c
+          - 'while true; do echo "Waiting for catalog app service to come up..."; wget http://app:8000/api/v1/ -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break; sleep 1; done; echo "Service is up! Starting main container."'
+      containers:
+        - args:
+            - "/home/appuser/catalog/docker/worker.sh"
+          env:
+            - name: ANSIBLE_CATALOG_REDIS_HOST
+              value: redis
+            - name: KEYCLOAK_URL
+              value: http://keycloak:8080/auth
+            - name: KEYCLOAK_USER
+              value: admin
+            - name: KEYCLOAK_PASSWORD
+              value: admin
+            - name: REDIRECT_URIS_STR
+              value: http://app:8000,http://app:8000/*,*
+            - name: CATALOG_LOG_ROOT
+              value: /tmp
+            - name: CONTROLLER_VERIFY_SSL
+              value: "False"
+            - name: DJANGO_SETTINGS_MODULE
+              value: ansible_catalog.settings.development
+            - name: OBJC_DISABLE_INITIALIZE_FORK_SAFETY
+              value: "YES"
+          image: localhost/ansible-catalog
+          imagePullPolicy: Never
+          name: worker
+          resources: {}
+          volumeMounts:
+            - mountPath: /app
+              name: worker-claim0
+      restartPolicy: Always
+      volumes:
+        - name: worker-claim0
+          persistentVolumeClaim:
+            claimName: worker-claim0
+status: {}
