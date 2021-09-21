@@ -99,7 +99,7 @@ class WorkflowViewSet(
         OrderingFilter,
         SearchFilter,
     )
-    filter_fields = (
+    filterset_fields = (
         "name",
         "description",
         "template",
@@ -163,7 +163,7 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     http_method_names = ["get", "post"]
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = "__all__"
+    filterset_fields = "__all__"
     search_fields = ("name", "description", "state", "decision", "reason")
     parent_field_name = "parent"
     parent_lookup_key = "parent_lookup_parent"
@@ -208,7 +208,7 @@ class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
     http_method_names = ["get", "post"]
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = "__all__"
+    filterset_fields = "__all__"
     search_fields = ("operation", "comments")
     parent_field_name = "request"
     parent_lookup_key = "parent_lookup_request"

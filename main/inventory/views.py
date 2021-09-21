@@ -37,7 +37,7 @@ class SourceViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     serializer_class = SourceSerializer
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = ("name",)
+    filterset_fields = ("name",)
     search_fields = ("name",)
 
     # Enable PATCH for refresh API
@@ -58,7 +58,7 @@ class ServicePlanViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     serializer_class = ServicePlanSerializer
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = (
+    filterset_fields = (
         "name",
         "service_offering",
     )
@@ -75,7 +75,7 @@ class ServiceOfferingViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     serializer_class = ServiceOfferingSerializer
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = (
+    filterset_fields = (
         "name",
         "description",
         "survey_enabled",
@@ -106,7 +106,7 @@ class ServiceInventoryViewSet(
     serializer_class = ServiceInventorySerializer
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = (
+    filterset_fields = (
         "description",
         "source_ref",
         "source_created_at",
@@ -128,7 +128,7 @@ class ServiceInstanceViewSet(QuerySetMixin, ModelViewSet):
     serializer_class = ServiceInstanceSerializer
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = (
+    filterset_fields = (
         "name",
         "source_ref",
         "source_created_at",
