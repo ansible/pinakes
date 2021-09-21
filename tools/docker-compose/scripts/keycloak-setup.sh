@@ -8,4 +8,4 @@ done;
 echo "Service is up!"
 
 echo -e "\e[34m >>> Installing keycloak setup collections \e[97m"
-ansible-playbook -vvv tools/docker-compose/keycloak_setup/dev.yml
+ansible-playbook -vvv tools/keycloak_setup/dev.yml

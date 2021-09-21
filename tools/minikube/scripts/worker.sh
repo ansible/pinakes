@@ -9,7 +9,7 @@ export ANSIBLE_LOCAL_TEMP=/tmp
 
 ansible-galaxy collection install community.general
 ansible-galaxy collection install mkanoor.catalog_keycloak
-ansible-playbook -vvv tools/minikube/keycloak_setup/dev_worker.yml
+ansible-playbook -vvv tools/keycloak_setup/dev_worker.yml
 
 echo -e "\e[34m >>> Starting worker \e[97m"
 python manage.py rqworker default
