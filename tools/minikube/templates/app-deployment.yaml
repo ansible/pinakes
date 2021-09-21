@@ -32,7 +32,9 @@ spec:
           - -c
           - 'while true; do echo "Waiting for keycloak service to come up..."; wget http://keycloak:8080 -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break; sleep 1; done; echo "Service is up! Starting main container."'
       containers:
-        - env:
+        - args:
+            - "/home/appuser/catalog/tools/minikube/scripts/server.sh"
+          env:
             - name: CATALOG_LOG_ROOT
               value: /tmp
             - name: KEYCLOAK_URL
