@@ -2,13 +2,6 @@
 
 import logging
 
-from django.utils.translation import gettext_lazy as _
-from main.catalog.models import (
-    ApprovalRequest,
-    Order,
-    OrderItem,
-    ProgressMessage,
-)
 from main.catalog.services.start_order_item import StartOrderItem
 
 logger = logging.getLogger("catalog")

@@ -1,8 +1,7 @@
 """Test sanitize order item's parameters"""
 import pytest
-from main.catalog.models import OrderItem, CatalogServicePlan
-from main.catalog.services.sanitize_parameters import SanitizeParameters
 
+from main.catalog.services.sanitize_parameters import SanitizeParameters
 from main.catalog.tests.factories import (
     OrderItemFactory,
     PortfolioItemFactory,

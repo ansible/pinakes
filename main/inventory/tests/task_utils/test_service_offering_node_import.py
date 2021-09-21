@@ -2,11 +2,11 @@
 from unittest.mock import Mock
 import pytest
 
+from main.tests.factories import TenantFactory
 from main.inventory.task_utils.service_offering_node_import import (
     ServiceOfferingNodeImport,
 )
 from main.inventory.tests.factories import (
-    TenantFactory,
     SourceFactory,
     ServiceInventoryFactory,
     ServiceOfferingFactory,

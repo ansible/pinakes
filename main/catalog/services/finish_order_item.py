@@ -1,9 +1,8 @@
 """ Module to Finish Processing an OrderItem """
 import logging
 
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from main.catalog.models import OrderItem, ProgressMessage
+from main.catalog.models import OrderItem
 
 logger = logging.getLogger("catalog")
 

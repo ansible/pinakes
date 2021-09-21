@@ -1,5 +1,4 @@
 """ Test order end points """
-import json
 import pytest
 from django.urls import reverse
 

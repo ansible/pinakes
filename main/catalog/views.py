@@ -20,9 +20,6 @@ from main.catalog.models import (
     ApprovalRequest,
     CatalogServicePlan,
     Order,
-    OrderItem,
-    Portfolio,
-    PortfolioItem,
     ProgressMessage,
 )
 from main.catalog.serializers import (
@@ -37,7 +34,6 @@ from main.catalog.serializers import (
 )
 from main.catalog.services.collect_tag_resources import CollectTagResources
 from main.catalog.services.submit_approval_request import SubmitApprovalRequest
-from main.catalog.services.start_order import StartOrder
 
 # Create your views here.
 

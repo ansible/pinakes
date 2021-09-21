@@ -1,6 +1,5 @@
 """ Create a request to Approval """
 import logging
-from django.utils.translation import gettext_lazy as _
 
 from main.approval.services.create_request import (
     CreateRequest,

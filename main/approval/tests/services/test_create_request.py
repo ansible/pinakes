@@ -1,12 +1,7 @@
 """ Module to test creating requests """
 import pytest
-import django_rq
 from main.tests.factories import default_tenant
-from main.approval.tests.factories import RequestFactory
 from main.approval.services.create_request import CreateRequest
-from main.approval.models import Request
-from main.models import Tenant
-from main.approval.services.send_event import SendEvent
 
 
 @pytest.mark.django_db
