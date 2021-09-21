@@ -14,6 +14,6 @@ COPY . ${WORKDIR}
 RUN chown -R 9002:0 ./
 USER appuser
 
-ENTRYPOINT ["/tmp/app/tools/minikube/scripts/entrypoint.sh"]
+ENTRYPOINT ["/home/appuser/app/tools/minikube/scripts/entrypoint.sh"]
 
-CMD ["/tmp/app/tools/minikube/scripts/server.sh"]
+CMD ["/home/appuser/app/tools/minikube/scripts/server.sh"]
