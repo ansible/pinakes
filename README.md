@@ -107,6 +107,10 @@ export DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock
 
 ### Build and Run
 
+```
+cd tools/docker-compose
+```
+
 Build the containers
 ```
 docker-compose build
@@ -168,14 +172,14 @@ The ingress uses 2 hardcoded hosts **catalog.test** and **keycloak.test** to rou
 ## Building the image
 
 ```
-eval $(minikube -p minikube docker-env)
-docker build -t localhost/ansible-catalog .
+minikube image build -t localhost/ansible-catalog -f tools/minikube/Dockerfile .
 ```
+
 ## Starting the app
 Once this has been setup you can start the deployments, services and ingress service in the directory minikube_files
 
 ```
-cd minikube_files
+cd tools/minikube/minikube_files
 kubectl apply -f .
 ```
 
