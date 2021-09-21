@@ -28,12 +28,12 @@ spec:
         - name: init-catalog-app
           image: busybox
           command:
-          - sh
-          - -c
-          - 'while true; do echo "Waiting for catalog app service to come up..."; wget http://app:8000/api/v1/ -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break; sleep 1; done; echo "Service is up! Starting main container."'
+            - sh
+            - -c
+            - 'while true; do echo "Waiting for catalog app service to come up..."; wget http://app:8000/api/v1/ -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break; sleep 1; done; echo "Service is up! Starting main container."'
       containers:
         - args:
-            - "/home/appuser/app/docker/worker.sh"
+            - "/home/appuser/app/utils/minikube/scripts/worker.sh"
           env:
             - name: ANSIBLE_CATALOG_REDIS_HOST
               value: redis
@@ -58,7 +58,7 @@ spec:
           name: worker
           resources: {}
           volumeMounts:
-            - mountPath: /app
+            - mountPath: /home/appuser/app
               name: worker-claim0
       restartPolicy: Always
       volumes:

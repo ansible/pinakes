@@ -1,0 +1,51 @@
+---
+- hosts: localhost
+  vars:
+    settings_dir: "/tmp/app/ansible_catalog/settings/"
+    keycloak_external_url: "http://keycloak:8080/auth"
+    seed_keycloak: true
+    seed_groups:
+      - name: Development
+        clientRoles:
+          - catalog-admin
+          - approval-admin
+      - name: QE
+        clientRoles:
+          - catalog-user
+          - approval-user
+      - name: Finance
+        clientRoles:
+          - approval-approver
+    seed_users:
+      - username: fred
+        firstName: Fred
+        lastName: Flintstone
+        email: fred@slaterock.com
+        enabled: true
+        credentials:
+          - type: "password"
+            value: "fred"
+        groups:
+          - Development
+      - username: barney
+        firstName: Barney
+        lastName: Rubble
+        email: barney@slaterock.com
+        enabled: true
+        credentials:
+          - type: "password"
+            value: "barney"
+        groups:
+          - QE
+      - username: wilma
+        firstName: Wilma
+        lastName: Flintstone
+        email: wilma@bedrock.com
+        enabled: true
+        credentials:
+          - type: "password"
+            value: "wilma"
+        groups:
+          - Finance
+  roles:
+    - mkanoor.catalog_keycloak.setup

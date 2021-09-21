@@ -28,9 +28,9 @@ spec:
         - name: init-keycloak
           image: busybox
           command:
-          - sh
-          - -c
-          - 'while true; do echo "Waiting for keycloak service to come up..."; wget http://keycloak:8080 -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break; sleep 1; done; echo "Service is up! Starting main container."'
+            - sh
+            - -c
+            - 'while true; do echo "Waiting for keycloak service to come up..."; wget http://keycloak:8080 -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break; sleep 1; done; echo "Service is up! Starting main container."'
       containers:
         - env:
             - name: CATALOG_LOG_ROOT
@@ -54,7 +54,7 @@ spec:
             - containerPort: 8000
           resources: {}
           volumeMounts:
-            - mountPath: /app
+            - mountPath: /home/appuser/app
               name: app-claim0
       volumes:
         - name: app-claim0
