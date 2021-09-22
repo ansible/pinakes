@@ -119,7 +119,7 @@ class Request(BaseModel):
         "self",
         on_delete=models.CASCADE,
         null=True,
-        related_name="sub_requests",
+        related_name="subrequests",
     )
     request_context = models.ForeignKey(
         RequestContext, null=True, on_delete=models.SET_NULL

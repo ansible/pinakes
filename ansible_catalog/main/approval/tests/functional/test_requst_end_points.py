@@ -118,7 +118,7 @@ def test_request_request_not_create(api_request):
         url,
         {
             "name": "child",
-            "description": "child request cannot be explictly created",
+            "description": "child request cannot be explicitly created",
             "parent": request.id,
         },
     )
@@ -137,12 +137,13 @@ def test_request_full_action(api_request):
     response = api_request("get", url)
     content = json.loads(response.content)
     assert response.status_code == 200
-    assert content["sub_requests"][0]["name"] == child.name
-    assert content["sub_requests"][0]["id"] == child.id
+    print(content)
+    assert content["subrequests"][0]["name"] == child.name
+    assert content["subrequests"][0]["id"] == child.id
     assert content["actions"][0]["operation"] == parent_action.operation
     assert content["actions"][0]["id"] == parent_action.id
     assert (
-        content["sub_requests"][0]["actions"][0]["operation"]
+        content["subrequests"][0]["actions"][0]["operation"]
         == child_action.operation
     )
-    assert content["sub_requests"][0]["actions"][0]["id"] == child_action.id
+    assert content["subrequests"][0]["actions"][0]["id"] == child_action.id
