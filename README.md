@@ -144,3 +144,69 @@ and execute a patch with empty body. (this may take a while)
 ```
 docker-compose exec app python manage.py spectacular --format openapi-json --file apispec.json
 ```
+## Using minikube for development
+###  Setup minikube
+[Install minikube](https://minikube.sigs.k8s.io/docs/start/)
+Start minikube
+Since the catalog, keycloak, postgres, redis all run inside the minikube cluster we need to expose the catalog and keycloak services from the cluster to your local dev machine using ingress. We need to enable ingress on the minikube cluster
+
+```
+minikube addons enable ingress
+```
+
+ [More on that here](https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/)
+
+Get the IP address of the minikube cluster
+```
+minikube ip
+```
+
+The ingress uses 2 hardcoded hosts **catalog** and **keycloak** to route the traffic to the appropriate services so we need to add the the IP address from the above command into /etc/hosts. The /etc/hosts should have this line 
+```
+<<ip_from_minikube_ip>> catalog keycloak
+```
+## Building the image
+
+```
+eval $(minikube -p minikube docker-env)
+minikube image build -t localhost/ansible-catalog .
+# for podman users
+podman --remote build -t localhost/ansible-catalog .
+```
+## Starting the app
+Once this has been setup you can start the deployments, services and ingress service in the directory tools/minikube/templates
+
+```
+cd tools/minikube/templates
+kubectl apply -f .
+```
+
+To access the keycloak server running inside the cluster use the following URL
+http://keycloak/auth  (Default userid is admin password is admin)
+To login to the catalog app 
+http://catalog/login/keycloak/
+When prompted enter the userid/password (barney/barney)
+This would lead to a page (http://catalog/accounts/profile/) that has a 404 not found that's ok.
+
+To access the catalog app use
+
+http://catalog/api/v1/
+http://catalog/api/v1/portfolios/ (You wont be able to get to this link without logging in first)
+
+When the catalog-app starts up it creates the required roles, policies, scopes, permissions (optionally groups and users) by using an ansible collection. The roles, policies, scopes and permissions are defined in the collection. The optional group and user data is stored in tools/keycloak_setup/dev.yml
+ 
+For ease of development as part of the keycloak setup we create the following groups
+
+ - **catalog-admin**
+ - **catalog-user**
+ - **approval-admin**
+ - **approval-user**
+ - **approval-approver**
+
+The following users are also created
+
+ - **fred** (member of catalog-admin, approval-admin)
+ - **barney** (member of catalog-user, approval-user)
+ - **wilma** (member of approval-approver)
+
+The default password is the same as the user name, they can be changed by modifying the file **tools/keycloak_setup/dev.yml**

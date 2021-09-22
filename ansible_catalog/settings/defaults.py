@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "django_rq",
     "drf_spectacular",
     "ansible_catalog.main",
+    "social_django",
 ]
 
 MIDDLEWARE = [
@@ -76,6 +77,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -129,6 +132,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
+    "social_core.backends.keycloak.KeycloakOAuth2",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -270,7 +274,7 @@ LOGGING = {
     },
 }
 
-LOGIN_URL = "/api/login/"
+LOGIN_URL = "/login/keycloak/"
 
 # Django Redis Queue Information
 RQ_QUEUES = {
@@ -309,3 +313,25 @@ SPECTACULAR_SETTINGS = {
         },
     ],
 }
+
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+SOCIAL_AUTH_JSONFIELD_CUSTOM = "django.contrib.postgres.fields.JSONField"
+SOCIAL_AUTH_URL_NAMESPACE = "social"
+
+SOCIAL_AUTH_PIPELINE = (
+    "social_core.pipeline.social_auth.social_details",
+    "social_core.pipeline.social_auth.social_uid",
+    "social_core.pipeline.social_auth.social_user",
+    "social_core.pipeline.user.get_username",
+    "social_core.pipeline.social_auth.associate_by_email",
+    "social_core.pipeline.user.create_user",
+    "social_core.pipeline.social_auth.associate_user",
+    "social_core.pipeline.social_auth.load_extra_data",
+    "social_core.pipeline.user.user_details",
+)
+
+SOCIAL_AUTH_KEYCLOAK_KEY = "catalog"
+SOCIAL_AUTH_KEYCLOAK_SECRET = "<<YourSecret>>"
+SOCIAL_AUTH_KEYCLOAK_PUBLIC_KEY = "<<YourPublicKey>>"
+SOCIAL_AUTH_KEYCLOAK_AUTHORIZATION_URL = "<<auth_url>>"
+SOCIAL_AUTH_KEYCLOAK_ACCESS_TOKEN_URL = "<<token_url>>"
