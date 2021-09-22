@@ -2,7 +2,6 @@
 
 import pytest
 
-from main.approval.models import Request
 from main.approval.tests.factories import RequestFactory
 
 from main.catalog.models import ApprovalRequest, Order, ProgressMessage

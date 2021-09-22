@@ -6,11 +6,11 @@ from main.inventory.task_utils.service_inventory_import import (
     ServiceInventoryImport,
 )
 from main.inventory.tests.factories import (
-    TenantFactory,
     SourceFactory,
     ServiceInventoryFactory,
 )
 from main.inventory.models import ServiceInventory
+from main.tests.factories import TenantFactory
 
 
 class TestServiceInventoryImport:

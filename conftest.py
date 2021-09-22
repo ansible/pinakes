@@ -2,7 +2,6 @@
 import urllib.parse
 import pytest
 import os
-from django.core.files import File
 
 from django.urls import resolve
 from django.contrib.auth.models import User

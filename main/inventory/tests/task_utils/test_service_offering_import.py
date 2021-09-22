@@ -1,12 +1,13 @@
 """ Test module for ServiceOfferingImport  """
 from unittest.mock import Mock
+
 import pytest
+
 from main.inventory.task_utils.service_offering_import import (
     ServiceOfferingImport,
     OfferingKind,
 )
 from main.inventory.tests.factories import (
-    TenantFactory,
     SourceFactory,
     ServiceInventoryFactory,
     ServiceOfferingFactory,
@@ -16,6 +17,7 @@ from main.inventory.models import (
     ServiceOffering,
     ServicePlan,
 )
+from main.tests.factories import TenantFactory
 
 
 class TestServiceOfferingImport:

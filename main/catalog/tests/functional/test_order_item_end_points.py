@@ -2,11 +2,7 @@
 import json
 import pytest
 from django.urls import reverse
-from main.catalog.tests.factories import (
-    OrderFactory,
-    OrderItemFactory,
-    PortfolioItemFactory,
-)
+from main.catalog.tests.factories import OrderItemFactory
 
 
 @pytest.mark.django_db

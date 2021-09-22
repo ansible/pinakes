@@ -2,20 +2,16 @@
 
 import pytest
 
-from main.approval.models import Request
 from main.approval.tests.factories import RequestFactory
 
 from main.catalog.models import (
     ApprovalRequest,
-    Order,
-    OrderItem,
     ProgressMessage,
 )
 from main.catalog.services.start_order import StartOrder
 from main.catalog.tests.factories import (
     ApprovalRequestFactory,
     OrderFactory,
-    OrderItemFactory,
 )
 
 

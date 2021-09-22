@@ -7,7 +7,6 @@ from main.approval.tests.factories import RequestFactory
 from main.catalog.models import (
     ApprovalRequest,
     Order,
-    OrderItem,
     ProgressMessage,
 )
 from main.catalog.services.finish_order import FinishOrder

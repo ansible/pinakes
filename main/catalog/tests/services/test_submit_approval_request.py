@@ -11,11 +11,7 @@ from main.catalog.tests.factories import (
     OrderFactory,
     OrderItemFactory,
 )
-from main.inventory.tests.factories import (
-    ServiceInventoryFactory,
-    ServiceOfferingFactory,
-    SourceFactory,
-)
+from main.inventory.tests.factories import SourceFactory
 
 
 @pytest.mark.django_db

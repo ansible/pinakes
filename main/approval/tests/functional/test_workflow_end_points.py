@@ -4,7 +4,6 @@ import pytest
 from django.urls import reverse
 from main.approval.tests.factories import TemplateFactory
 from main.approval.tests.factories import WorkflowFactory
-from main.approval.services.link_workflow import LinkWorkflow
 from main.catalog.tests.factories import PortfolioFactory
 from main.approval.tests.services.test_link_workflow import create_and_link
 

@@ -10,7 +10,7 @@ from main.catalog.models import (
     PortfolioItem,
     ProgressMessage,
 )
-from main.tests.factories import TenantFactory, UserFactory, default_tenant
+from main.tests.factories import UserFactory, default_tenant
 
 
 class PortfolioFactory(factory.django.DjangoModelFactory):

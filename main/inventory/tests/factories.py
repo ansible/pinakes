@@ -2,7 +2,7 @@
 import factory
 from django.utils import timezone
 from main.models import Source
-from main.tests.factories import TenantFactory, default_tenant
+from main.tests.factories import default_tenant
 from main.inventory.models import ServiceInstance, ServiceInventory
 from main.inventory.models import ServiceOffering, OfferingKind
 from main.inventory.models import ServicePlan
