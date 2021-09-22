@@ -8,7 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: "keycloak.test"
+    - host: "keycloak"
       http:
         paths:
           - path: "/"
@@ -29,7 +29,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: "catalog.test"
+    - host: "catalog"
       http:
         paths:
           - path: "/"
