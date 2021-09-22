@@ -11,3 +11,5 @@ psycopg2
 python-dateutil
 requests
 django-environ
+social-auth-core[openidconnect]
+social-auth-app-django

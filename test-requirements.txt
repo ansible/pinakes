@@ -5,3 +5,4 @@ pytest-django
 pytest-factoryboy
 pytest-mock
 responses
+httpretty
