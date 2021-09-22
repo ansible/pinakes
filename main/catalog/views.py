@@ -47,7 +47,7 @@ class TenantViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TenantSerializer
     permission_classes = (IsAuthenticated,)
     ordering = ("id",)
-    filter_fields = "__all__"
+    filterset_fields = "__all__"
 
 
 class PortfolioViewSet(
@@ -63,7 +63,7 @@ class PortfolioViewSet(
     http_method_names = ["get", "post", "head", "patch", "delete"]
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = ("name", "description", "created_at", "updated_at")
+    filterset_fields = ("name", "description", "created_at", "updated_at")
     search_fields = ("name", "description")
 
 
@@ -80,7 +80,7 @@ class PortfolioItemViewSet(
     http_method_names = ["get", "post", "head", "patch", "delete"]
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = (
+    filterset_fields = (
         "name",
         "description",
         "service_offering_ref",
@@ -100,7 +100,7 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     http_method_names = ["get", "post", "head", "delete"]
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = (
+    filterset_fields = (
         "state",
         "order_request_sent_at",
         "created_at",
@@ -149,7 +149,7 @@ class OrderItemViewSet(
     http_method_names = ["get", "post", "head", "delete"]
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = (
+    filterset_fields = (
         "name",
         "count",
         "state",
@@ -176,7 +176,7 @@ class ApprovalRequestViewSet(
     http_method_names = ["get"]
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = (
+    filterset_fields = (
         "order",
         "approval_request_ref",
         "state",
@@ -207,7 +207,7 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     http_method_names = ["get"]
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = (
+    filterset_fields = (
         "received_at",
         "messageable_id",
         "messageable_type",
@@ -241,7 +241,7 @@ class CatalogServicePlanViewSet(
     http_method_names = ["get", "patch", "post", "head"]
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filter_fields = (
+    filterset_fields = (
         "name",
         "description",
         "portfolio_item",
