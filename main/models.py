@@ -1,9 +1,11 @@
 """ This module stores the base models needed for Catalog. """
 from django.db import models
 from django.db.utils import OperationalError
+from django.db.models.functions import Length
 from django.contrib.auth.models import User
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
+models.CharField.register_lookup(Length)
 
 class Tenant(models.Model):
     """Tenant"""
