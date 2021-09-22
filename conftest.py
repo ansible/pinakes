@@ -55,7 +55,7 @@ def media_dir():
 def small_image():
     base_dir = os.path.dirname(__file__)
     image_path = os.path.join(
-        base_dir, "main/catalog/tests/data/redhat_icon.png"
+        base_dir, "ansible_catalog/main/catalog/tests/data/redhat_icon.png"
     )
 
     with open(image_path, "rb") as f:
