@@ -5,17 +5,14 @@ RUN groupadd --gid 1000 appgroup \
 
 RUN pip install wheel ansible
 
-RUN mkdir /home/appuser/catalog
-
 WORKDIR /home/appuser/catalog
-COPY . /home/appuser/catalog
+COPY . $WORKDIR
 
 RUN chown -R appuser:appgroup ./
 USER appuser
 
 RUN pip install -r requirements.txt
-RUN ansible-galaxy collection install community.general \
-    && ansible-galaxy collection install mkanoor.catalog_keycloak
+RUN ansible-galaxy collection install community.general mkanoor.catalog_keycloak
 
 ENTRYPOINT ["/home/appuser/catalog/docker/entrypoint.sh"]
 
