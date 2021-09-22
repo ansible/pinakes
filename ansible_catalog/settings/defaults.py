@@ -48,9 +48,9 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework.authtoken",
     "taggit",
-    "main",
     "django_rq",
     "drf_spectacular",
+    "ansible_catalog.main",
 ]
 
 MIDDLEWARE = [

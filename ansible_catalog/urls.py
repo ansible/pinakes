@@ -24,15 +24,15 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
-from main.catalog.urls import (
+from ansible_catalog.main.catalog.urls import (
     router as catalog_router,
     urls_views as catalog_views,
 )
-from main.approval.urls import (
+from ansible_catalog.main.approval.urls import (
     router as approval_router,
     urls_views as approval_views,
 )
-from main.inventory.urls import (
+from ansible_catalog.main.inventory.urls import (
     router as inventory_router,
     urls_views as inventory_views,
 )
