@@ -8,7 +8,7 @@ class TestKeycloakOpenIdConnect(OpenIdConnectTestMixin, OAuth2Test):
     _base_url = (
         "https://keycloak.example.com/auth/realms/test/protocol/openid-connect"
     )
-    backend_path = "common.auth.keycloak_oidc.KeycloakOpenIdConnect"
+    backend_path = "ansible_catalog.common.auth.keycloak_oidc.KeycloakOpenIdConnect"
     issuer = "https://keycloak.example.com/auth/realms/test"
     openid_config_body = json.dumps(
         {
