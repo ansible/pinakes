@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "taggit",
     "django_rq",
     "drf_spectacular",
+    "social_django",
     "ansible_catalog.main",
 ]
 
@@ -76,6 +77,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -130,6 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
+    "social_core.backends.keycloak.KeycloakOAuth2",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -271,7 +275,7 @@ LOGGING = {
     },
 }
 
-LOGIN_URL = "/api/login/"
+LOGIN_URL = "/login/keycloak/"
 
 # Django Redis Queue Information
 RQ_QUEUES = {
@@ -310,3 +314,5 @@ SPECTACULAR_SETTINGS = {
         },
     ],
 }
+
+SOCIAL_AUTH_JSONFIELD_ENABLED = True

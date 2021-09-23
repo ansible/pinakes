@@ -69,4 +69,5 @@ urlpatterns = [
         name="redoc",
     ),
     path(r"api/v1/", include(urls_patterns)),
+    path("", include("social_django.urls", namespace="social")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
