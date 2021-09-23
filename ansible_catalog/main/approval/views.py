@@ -215,7 +215,7 @@ class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(
-            request=Request(id=self.kwargs[self.parent_lookup_key]),
+            request=self.kwargs[self.parent_lookup_key],
             user=self.request.user,
             tenant=Tenant.current(),
         )

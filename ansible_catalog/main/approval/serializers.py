@@ -10,6 +10,7 @@ from ansible_catalog.main.approval.models import (
     TagLink,
 )
 from ansible_catalog.main.approval.services.create_request import CreateRequest
+from ansible_catalog.main.approval.services.create_action import CreateAction
 
 
 class TemplateSerializer(serializers.ModelSerializer):
@@ -97,6 +98,10 @@ class ActionSerializer(serializers.ModelSerializer):
             "comments",
         )
         read_only_fields = ("created_at", "request")
+
+    def create(self, validate_data):
+        request = validate_data.pop("request")
+        return CreateAction(request, validate_data).process().action
 
 
 class SubrequestSerializer(serializers.ModelSerializer):
