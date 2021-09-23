@@ -39,6 +39,8 @@ spec:
               value: redis
             - name: KEYCLOAK_URL
               value: http://keycloak:8080/auth
+            - name: KEYCLOAK_SECRET
+              value: SOMESECRETVALUE
             - name: KEYCLOAK_USER
               value: admin
             - name: KEYCLOAK_PASSWORD
