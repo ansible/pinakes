@@ -24,5 +24,5 @@ def test_portfolio_item_service_plan_get(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
 
-    assert content["count"] == 1
-    assert content["results"][0]["id"] == portfolio_item.id
+    assert len(content) == 1
+    assert content[0]["id"] == portfolio_item.id

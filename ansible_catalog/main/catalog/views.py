@@ -32,11 +32,15 @@ from ansible_catalog.main.catalog.serializers import (
     ProgressMessageSerializer,
     TenantSerializer,
 )
+
 from ansible_catalog.main.catalog.services.collect_tag_resources import (
     CollectTagResources,
 )
 from ansible_catalog.main.catalog.services.submit_approval_request import (
     SubmitApprovalRequest,
+)
+from ansible_catalog.main.catalog.services.fetch_service_plans import (
+    FetchServicePlans,
 )
 
 # Create your views here.
@@ -256,3 +260,12 @@ class CatalogServicePlanViewSet(
     )
     parent_field_name = "portfolio_item"
     parent_lookup_key = "parent_lookup_portfolio_item"
+
+    def list(self, request, *args, **kwargs):
+        portfolio_item_id = kwargs.pop(self.parent_lookup_key)
+        portfolio_item = PortfolioItem.objects.get(id=portfolio_item_id)
+
+        service_plans = (
+            FetchServicePlans(portfolio_item).process().service_plans
+        )
+        return Response(service_plans)
