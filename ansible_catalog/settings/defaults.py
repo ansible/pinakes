@@ -250,7 +250,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "propagate": True,
+            "propagate": False,
         },
         "django.request": {
             "handlers": ["console", "file"],
