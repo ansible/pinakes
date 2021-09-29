@@ -45,6 +45,9 @@ def test_request_multiple():
     assert child3.is_child() is True
     assert child3.has_finished() is False
 
+    assert parent.root() == parent
+    assert child1.root() == parent
+
     assert parent.name == child2.name
     assert parent.description == child2.description
 

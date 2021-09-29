@@ -230,7 +230,13 @@ class Action(BaseModel):
     @extend_schema_field(OpenApiTypes.STR)
     def processed_by(self):
         """virtual column processed_by"""
-        return f"{self.user.first_name} {self.user.last_name}"
+        if not self.user:
+            return "system"
+        return (
+            f"{self.user.first_name} {self.user.last_name}"
+            if self.user.first_name
+            else self.user.username
+        )
 
     def __str__(self):
         return self.operation
