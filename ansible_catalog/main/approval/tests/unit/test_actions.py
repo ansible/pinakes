@@ -8,7 +8,7 @@ class TestAction:
     @pytest.mark.django_db
     def test_action(self):
         action = ActionFactory()
-        assert action.operation == Action.Operation.Memo
+        assert action.operation == Action.Operation.MEMO
 
     @pytest.mark.django_db
     def test_action_operation(self):

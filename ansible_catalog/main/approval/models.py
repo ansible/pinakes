@@ -138,6 +138,68 @@ class Request(BaseModel):
         """virtual column owner"""
         return f"{self.user.username}"
 
+    @property
+    def requests(self):
+        """get child requests"""
+        return self.__class__.objects.filter(parent=self)
+
+    def invalidate_number_of_children(self):
+        """update number of children"""
+        self.number_of_children = self.requests.count()
+        self.save()
+
+    def invalidate_number_of_finished_children(self):
+        """update number of finished children"""
+        if self.number_of_children > 0:
+            count = 0
+            for child in self.requests:
+                if child.has_finished():
+                    count += 1
+            self.number_of_finished_children = count
+            self.save()
+
+    def create_child(self):
+        """create a child request"""
+        child = self.__class__.objects.create(
+            tenant=self.tenant,
+            name=self.name,
+            description=self.description,
+            user=self.user,
+            parent=self,
+            request_context=self.request_context,
+        )
+        self.invalidate_number_of_children()
+        return child
+
+    def is_root(self):
+        """Is the request a root node"""
+        return False if self.parent else True
+
+    def is_leaf(self):
+        """Is the request a leaf node"""
+        return self.number_of_children == 0
+
+    def is_child(self):
+        """Is the request a child of a parent request"""
+        return not self.is_root()
+
+    def is_parent(self):
+        """Is the request a parent request that has child requests"""
+        return self.number_of_children > 0
+
+    def root(self):
+        """Return the root request of current request"""
+        return self if self.is_root() else self.parent
+
+    def has_finished(self):
+        """Is the request in finished state?"""
+        return self.state in (
+            self.State.COMPLETED,
+            self.State.SKIPPED,
+            self.State.CANCELED,
+            self.State.FAILED,
+        )
+
     def __str__(self):
         return self.name
 
@@ -149,14 +211,14 @@ class Action(BaseModel):
         NOTIFY = "Notify"
         START = "Start"
         SKIP = "Skip"
-        Memo = "Memo"
+        MEMO = "Memo"
         APPROVE = "Approve"
         DENY = "Deny"
         CANCEL = "Cancel"
         ERROR = "Error"
 
     operation = models.CharField(
-        max_length=10, choices=Operation.choices, default=Operation.Memo
+        max_length=10, choices=Operation.choices, default=Operation.MEMO
     )
     comments = models.TextField(blank=True)
     request = models.ForeignKey(

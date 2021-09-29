@@ -95,7 +95,7 @@ def test_create_request_bad(api_request, mocker):
 
 @pytest.mark.django_db
 def test_create_action(api_request):
-    request = RequestFactory()
+    request = RequestFactory(state="Notified")
     url = reverse("request-action-list", args=(request.id,))
     response = api_request(
         "post",
