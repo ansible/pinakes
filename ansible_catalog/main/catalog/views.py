@@ -1,4 +1,5 @@
 """ Default views for Catalog."""
+
 import logging
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404
@@ -37,12 +38,14 @@ from ansible_catalog.main.catalog.serializers import (
 from ansible_catalog.main.catalog.services.collect_tag_resources import (
     CollectTagResources,
 )
-
 from ansible_catalog.main.catalog.services.copy_portfolio_item import (
     CopyPortfolioItem,
 )
 from ansible_catalog.main.catalog.services.fetch_service_plans import (
     FetchServicePlans,
+)
+from ansible_catalog.main.catalog.services.jsonify_service_plan import (
+    JsonifyServicePlan,
 )
 from ansible_catalog.main.catalog.services.submit_approval_request import (
     SubmitApprovalRequest,
@@ -299,3 +302,44 @@ class CatalogServicePlanViewSet(
         else:
             serializer = CatalogServicePlanSerializer(service_plans, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=["get"], detail=True)
+    def base(self, request, pk):
+        """Retrieve the base schema of specified pk service plan."""
+        service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
+        options = {"schema": "base", "service_plan_id": service_plan.id}
+
+        svc = JsonifyServicePlan(options).process()
+        return Response(svc.json)
+
+    @action(methods=["get", "patch"], detail=True)
+    def modified(self, request, pk):
+        """Retrieve or update the schema of the specified pk service plan."""
+        service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
+
+        if self.request.method == "GET":
+            options = {"schema": "modified", "service_plan_id": service_plan.id}
+
+            svc = JsonifyServicePlan(options).process()
+            if svc.json[0]["create_json_schema"] is not None:
+                return Response(svc.json)
+            else:
+                return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            modified = request.data["modified"]
+            service_plan.modified = modified
+            service_plan.save()
+
+            return Response(service_plan.modified)
+
+#     @action(methods=["post"], detail=True)
+#     def reset(self, request, pk):
+#         """Reset the specified pk service plan."""
+#         service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
+# 
+#         svc = ResetServicePlan(service_plan).process()
+# 
+#         if svc.status == "ok":
+#             return Response(svc.reimported_service_plans)
+#         else:
+#             return Response(status=status.HTTP_204_NO_CONTENT)
