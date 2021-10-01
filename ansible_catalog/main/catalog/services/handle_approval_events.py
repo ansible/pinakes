@@ -39,7 +39,7 @@ class HandleApprovalEvents:
                 return self
 
             if self.event not in self.COMPLETED_EVENTS:
-                logger.warn("Event %s is skipped", self.event)
+                logger.warning("Event %s is skipped", self.event)
                 return self
 
             request_id = self.payload.pop("request_id")

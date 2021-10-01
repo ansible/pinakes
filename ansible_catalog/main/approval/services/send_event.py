@@ -23,14 +23,14 @@ class SendEvent:
         self.event = event
 
     def process(self):
-        getattr(self, f"_SendEvent__{self.event}")()
+        getattr(self, f"_{self.event}")()
         return self
 
-    def __request_started(self):
-        return self.__send_event({"request_id": self.subject.id})
+    def _request_started(self):
+        return self._send_event({"request_id": self.subject.id})
 
-    def __request_finished(self):
-        return self.__send_event(
+    def _request_finished(self):
+        return self._send_event(
             {
                 "request_id": self.subject.id,
                 "decision": self.subject.decision,
@@ -38,16 +38,16 @@ class SendEvent:
             }
         )
 
-    def __request_canceled(self):
-        return self.__send_event(
+    def _request_canceled(self):
+        return self._send_event(
             {"request_id": self.subject.id, "reason": self.subject.reason}
         )
 
-    def __workflow_deleted(self):
+    def _workflow_deleted(self):
         # subject is workflow_id
-        return self.__send_event({"workflow_id": self.subject})
+        return self._send_event({"workflow_id": self.subject})
 
-    def __send_event(self, payload):
+    def _send_event(self, payload):
         logger.info("Sending event %s with payload(%s)", self.event, payload)
         HandleApprovalEvents(
             event=self.event,

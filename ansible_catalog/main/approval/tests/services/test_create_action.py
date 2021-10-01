@@ -96,6 +96,7 @@ def test_create_action_normal(mocker):
         update_service = mocker.patch.object(
             UpdateRequest, "__init__", return_value=None
         )
+        mocker.patch.object(UpdateRequest, "process")
         CreateAction(
             request, {"operation": suite[1], "comments": suite[2]}
         ).process()
@@ -109,7 +110,7 @@ def test_create_action_normal(mocker):
 def test_create_action_abnormal():
     """Test actions with exception"""
     testing_suites = (
-        # (request_init_state, operation, comments, updates)
+        # (request_init_state, operation, comments, exception)
         (
             Request.State.STARTED,
             Action.Operation.MEMO,

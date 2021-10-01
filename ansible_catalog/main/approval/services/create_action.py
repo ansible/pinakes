@@ -6,7 +6,6 @@ from ansible_catalog.main.approval.models import (
     Action,
     Request,
 )
-from ansible_catalog.main.approval.services.update_request import UpdateRequest
 from ansible_catalog.main.approval.exceptions import (
     InvalidStateTransitionException,
     BlankParameterException,
@@ -26,6 +25,10 @@ class CreateAction:
         self.action = None
 
     def process(self):
+        from ansible_catalog.main.approval.services.update_request import (
+            UpdateRequest,
+        )
+
         operation = self.options["operation"].lower()
         request_options = getattr(self, f"_{operation}")(
             self.options.get("comments")
