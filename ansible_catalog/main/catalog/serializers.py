@@ -209,7 +209,7 @@ class CatalogServicePlanSerializer(serializers.ModelSerializer):
             "create_json_schema",
             "imported",
             "modified",
-            "portfolio_item",
+            "portfolio_item_id",
             "created_at",
             "updated_at",
         )

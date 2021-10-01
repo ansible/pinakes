@@ -20,6 +20,7 @@ from ansible_catalog.main.catalog.models import (
     ApprovalRequest,
     CatalogServicePlan,
     Order,
+    PortfolioItem,
     ProgressMessage,
 )
 from ansible_catalog.main.catalog.serializers import (
@@ -261,6 +262,9 @@ class CatalogServicePlanViewSet(
     parent_field_name = "portfolio_item"
     parent_lookup_key = "parent_lookup_portfolio_item"
 
+    @extend_schema(
+        responses={200: CatalogServicePlanSerializer},
+    )
     def list(self, request, *args, **kwargs):
         portfolio_item_id = kwargs.pop(self.parent_lookup_key)
         portfolio_item = PortfolioItem.objects.get(id=portfolio_item_id)
@@ -268,4 +272,10 @@ class CatalogServicePlanViewSet(
         service_plans = (
             FetchServicePlans(portfolio_item).process().service_plans
         )
-        return Response(service_plans)
+        page = self.paginate_queryset(service_plans)
+        if page is not None:
+            serializer = CatalogServicePlanSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        else:
+            serializer = CatalogServicePlanSerializer(service_plans, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)

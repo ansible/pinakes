@@ -84,7 +84,7 @@ def test_fetch_service_plans_from_remote_with_disabled_survey():
 
 @pytest.mark.django_db
 def test_fetch_service_plans_from_local():
-    from main.catalog.tests.factories import ServicePlanFactory
+    from ansible_catalog.main.catalog.tests.factories import ServicePlanFactory
 
     service_offering = ServiceOfferingFactory()
     portfolio_item = PortfolioItemFactory(
