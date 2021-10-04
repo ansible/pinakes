@@ -76,16 +76,16 @@ def test_handle_approval_events_raise_error(mocker):
     payload = {"request_id": request.id, "reason": "Bad request"}
     event = "request_finished"
 
-    with mocker.patch(
+    mocker.patch(
         "ansible_catalog.main.catalog.services.start_order",
         side_effect=Exception("mocker error"),
-    ):
-        with pytest.raises(Exception):
-            svc = HandleApprovalEvents(payload, event)
-            svc.process()
-        order.refresh_from_db()
-        assert order.state == Order.State.FAILED
-        assert (
-            str(ProgressMessage.objects.last())
-            == "Internal Error. Please contact our support team."
-        )
+    )
+    with pytest.raises(Exception):
+        svc = HandleApprovalEvents(payload, event)
+        svc.process()
+    order.refresh_from_db()
+    assert order.state == Order.State.FAILED
+    assert (
+        str(ProgressMessage.objects.last())
+        == "Internal Error. Please contact our support team."
+    )

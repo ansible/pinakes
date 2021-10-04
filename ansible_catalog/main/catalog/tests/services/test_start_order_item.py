@@ -40,12 +40,12 @@ def test_place_order_item_raise_error(mocker):
     order = OrderFactory()
     order_item = OrderItemFactory(state=OrderItem.State.PENDING, order=order)
 
-    with mocker.patch(
+    mocker.patch(
         "ansible_catalog.main.catalog.services.provision_order_item",
         side_effect=Exception("mocker error"),
-    ):
-        svc = StartOrderItem(order)
-        svc.process()
-        order_item.refresh_from_db()
+    )
+    svc = StartOrderItem(order)
+    svc.process()
+    order_item.refresh_from_db()
 
-        assert order_item.state == Order.State.FAILED
+    assert order_item.state == Order.State.FAILED
