@@ -286,6 +286,7 @@ class CatalogServicePlanViewSet(
     parent_lookup_key = "parent_lookup_portfolio_item"
 
     @extend_schema(
+        request=None,
         responses={200: CatalogServicePlanSerializer},
     )
     def list(self, request, *args, **kwargs):
@@ -309,8 +310,9 @@ class CatalogServicePlanViewSet(
         service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
         options = {"schema": "base", "service_plan_id": service_plan.id}
 
-        svc = JsonifyServicePlan(options).process()
-        return Response(svc.json)
+        svc = JsonifyServicePlan(service_plan, options).process()
+        serializer = CatalogServicePlanSerializer(svc.json, many=False)
+        return Response(serializer.data)
 
     @action(methods=["get", "patch"], detail=True)
     def modified(self, request, pk):
@@ -320,9 +322,10 @@ class CatalogServicePlanViewSet(
         if self.request.method == "GET":
             options = {"schema": "modified", "service_plan_id": service_plan.id}
 
-            svc = JsonifyServicePlan(options).process()
-            if svc.json[0]["create_json_schema"] is not None:
-                return Response(svc.json)
+            svc = JsonifyServicePlan(service_plan, options).process()
+            if svc.json["create_json_schema"] is not None:
+                serializer = CatalogServicePlanSerializer(svc.json, many=False)
+                return Response(serializer.data)
             else:
                 return Response(status=status.HTTP_204_NO_CONTENT)
         else:
