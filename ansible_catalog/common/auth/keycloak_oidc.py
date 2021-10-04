@@ -43,7 +43,7 @@ class KeycloakOpenIdConnect(OpenIdConnectAuth):
     name = "keycloak-oidc"
     EXTRA_DATA = [
         *OpenIdConnectAuth.EXTRA_DATA,
-        ('expires_in', 'expires'),
+        ("expires_in", "expires"),
     ]
 
     @property
