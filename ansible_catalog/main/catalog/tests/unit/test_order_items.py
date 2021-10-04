@@ -154,7 +154,9 @@ def test_sanitized_params():
     user = UserFactory()
     order = OrderFactory(tenant=tenant, user=user)
     portfolio_item = PortfolioItemFactory()
-    service_plan = ServicePlanFactory(portfolio_item=portfolio_item, base=base)
+    service_plan = ServicePlanFactory(
+        portfolio_item=portfolio_item, base_schema=base
+    )
 
     service_parameters = {
         "name": "Joe",

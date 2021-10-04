@@ -252,13 +252,9 @@ class CatalogServicePlanViewSet(
     ordering = ("-id",)
     filterset_fields = (
         "name",
-        "description",
         "portfolio_item",
     )
-    search_fields = (
-        "name",
-        "description",
-    )
+    search_fields = ("name",)
     parent_field_name = "portfolio_item"
     parent_lookup_key = "parent_lookup_portfolio_item"
 

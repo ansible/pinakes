@@ -205,13 +205,12 @@ class CatalogServicePlanSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
-            "description",
             "create_json_schema",
             "imported",
             "modified",
-            "portfolio_item_id",
-            "created_at",
-            "updated_at",
+            "service_offering_ref",
+            "service_plan_ref",
+            "portfolio_item",
         )
 
     def create(self, validated_data):

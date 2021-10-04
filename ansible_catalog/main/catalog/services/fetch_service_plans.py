@@ -1,7 +1,6 @@
 """ Fetch latest service plans from inventory. """
 
 import logging
-import json
 
 from ansible_catalog.main.catalog.models import CatalogServicePlan
 from ansible_catalog.main.inventory.services.get_service_offering import (
@@ -9,30 +8,6 @@ from ansible_catalog.main.inventory.services.get_service_offering import (
 )
 
 logger = logging.getLogger("catalog")
-
-
-class ServicePlanTemplate:
-    """Template for service plans"""
-
-    def __init__(
-        self,
-        portfolio_item_id,
-        service_offering_id,
-        create_json_schema,
-        id=None,
-        name="",
-        description="",
-        imported=False,
-        modified=False,
-    ):
-        self.portfolio_item_id = portfolio_item_id
-        self.service_offering_id = service_offering_id
-        self.create_json_schema = create_json_schema
-        self.id = id
-        self.name = name
-        self.description = description
-        self.imported = imported
-        self.modified = modified
 
 
 class FetchServicePlans:
@@ -60,18 +35,17 @@ class FetchServicePlans:
 
     def _get_local_service_plans(self, service_plans):
         for service_plan in service_plans:
-            service_plan_template = ServicePlanTemplate(
-                portfolio_item_id=self.portfolio_item.id,
-                service_offering_id=self.portfolio_item.service_offering_ref,
-                create_json_schema=json.loads(
-                    json.loads(
-                        service_plan.modified or service_plan.base or '"{}"'
-                    )
-                ),
-                id=service_plan.id,
-                name=service_plan.name,
+            service_plan.name = service_plan.name
+            service_plan.portfolio_item = self.portfolio_item
+            service_plan.service_offering_ref = (
+                self.portfolio_item.service_offering_ref
             )
-            self.service_plans.append(service_plan_template.__dict__)
+            service_plan.create_json_schema = (
+                service_plan.modified_schema or service_plan.base_schema or {}
+            )
+            service_plan.service_plan_ref = service_plan.id
+
+            self.service_plans.append(service_plan)
 
     def _get_remote_service_plans(self):
         service_offering_ref = self.portfolio_item.service_offering_ref
@@ -82,19 +56,17 @@ class FetchServicePlans:
         if service_offering.survey_enabled:
             service_plan = svc.service_plans.first()  # only choose the 1st one
 
-            service_plan_template = ServicePlanTemplate(
-                portfolio_item_id=self.portfolio_item.id,
-                service_offering_id=service_offering.id,
-                create_json_schema=json.loads(
-                    service_plan.create_json_schema or "{}"
-                ),
-                id=service_plan.id,
+            catalog_service_plan = CatalogServicePlan(
                 name=service_plan.name,
+                portfolio_item=self.portfolio_item,
+                service_offering_ref=service_offering.id,
+                service_plan_ref=service_plan.id,
+                create_json_schema=service_plan.create_json_schema or {},
             )
         else:
-            service_plan_template = ServicePlanTemplate(
-                portfolio_item_id=self.portfolio_item.id,
-                service_offering_id=service_offering.id,
+            catalog_service_plan = CatalogServicePlan(
+                portfolio_item=self.portfolio_item,
+                service_offering_ref=service_offering.id,
                 create_json_schema={
                     "schemaType": "emptySchema",
                     "schema": {
@@ -109,4 +81,4 @@ class FetchServicePlans:
                 },
             )
 
-        self.service_plans = [service_plan_template.__dict__]
+        self.service_plans = [catalog_service_plan]

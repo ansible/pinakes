@@ -93,6 +93,3 @@ class ServicePlanFactory(factory.django.DjangoModelFactory):
     portfolio_item = factory.SubFactory(PortfolioItemFactory)
 
     name = factory.Sequence(lambda n: f"catalog service_plan_{n}")
-    description = factory.Sequence(
-        lambda n: f"catalog_service_plan_{n}_description"
-    )

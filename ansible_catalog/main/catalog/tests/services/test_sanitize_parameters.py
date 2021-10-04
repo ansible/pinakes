@@ -55,7 +55,9 @@ def test_sanitize_parameters_from_service_plan_base():
     }
 
     portfolio_item = PortfolioItemFactory()
-    service_plan = ServicePlanFactory(portfolio_item=portfolio_item, base=base)
+    service_plan = ServicePlanFactory(
+        portfolio_item=portfolio_item, base_schema=base
+    )
     order_item = OrderItemFactory(
         portfolio_item=portfolio_item,
         service_parameters=service_parameters,
