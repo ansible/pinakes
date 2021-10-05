@@ -1,0 +1,97 @@
+version: '3'
+
+services:
+  app:
+    image: ansible-catalog:dev
+    build:
+      context: ../../
+      dockerfile: tools/docker/Dockerfile
+    ports:
+      - '8000:8000'
+    volumes:
+      - "../../:/home/appuser/catalog:z"
+    environment:
+      - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
+      - CATALOG_LOG_ROOT=/home/appuser/catalog
+      - CONTROLLER_VERIFY_SSL=False
+      - KEYCLOAK_URL=http://keycloak-app:8080/auth
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_SECRET=SOMESECRETVALUE
+      - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
+    depends_on: 
+      - keycloak-setup
+      - postgres
+
+  keycloak-setup:
+    image: ansible-catalog:dev
+    volumes:
+      - "../../:/home/appuser/catalog:z"
+    environment:
+      - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
+      - CATALOG_LOG_ROOT=/home/appuser/catalog
+      - CONTROLLER_VERIFY_SSL=False
+      - KEYCLOAK_URL=http://keycloak-app:8080/auth
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_SECRET=SOMESECRETVALUE
+      - KEYCLOAK_EXTERNAL_URL=http://localhost:8080/auth
+      - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
+    depends_on: 
+      - keycloak-app
+    command: /home/appuser/catalog/tools/docker/scripts/keycloak-setup.sh
+
+  worker:
+    image: ansible-catalog:dev
+    environment:
+      - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
+      - CATALOG_LOG_ROOT=/home/appuser/catalog
+      - OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+      - ANSIBLE_CATALOG_REDIS_HOST=redis
+      - CONTROLLER_VERIFY_SSL=False
+      - KEYCLOAK_URL=http://keycloak-app:8080/auth
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_SECRET=SOMESECRETVALUE
+      - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
+    volumes:
+      - "../../:/home/appuser/catalog:z"
+    depends_on:
+      - app
+      - redis
+      - keycloak-setup
+    command: /home/appuser/catalog/tools/docker/scripts/worker.sh
+
+  keycloak-app:
+    image: 'quay.io/keycloak/keycloak:15.0.2'
+    environment:
+      - 'DB_VENDOR=postgres'
+      - 'DB_ADDR=postgres'
+      - 'DB_DATABASE=keycloak'
+      - 'DB_USER=keycloak'
+      - 'DB_PASSWORD=password'
+      - 'KEYCLOAK_USER=admin'
+      - 'KEYCLOAK_PASSWORD=admin'
+    ports:
+      - '8080:8080'
+    depends_on:
+      - 'postgres'
+
+  redis:
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+
+  postgres:
+    image: 'postgres:13-alpine'
+    environment:
+      - 'POSTGRES_USER=keycloak'
+      - 'POSTGRES_PASSWORD=password'
+      - 'POSTGRES_DB=keycloak'
+    volumes:
+      - 'pg_data:/var/lib/postgresql/data'
+    ports:
+      - '5432:5432'
+
+volumes:
+  pg_data: {}

@@ -86,7 +86,7 @@ DATABASES = {
   export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
   python3 manage.py rqworker default
   ```
-## Local Container ##
+## Using docker-compose for development
 ### Requirements
 You will need to install docker/podman and docker-compose. 
 
@@ -107,17 +107,25 @@ export DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock
 
 ### Build and Run
 
-Build the containers
+Build the containers (docker)
 ```
+cd tools/docker/
 docker-compose build
 ```
-
-Run the application
+Build the containers (rootless podman)
 ```
-docker-compose up
+cd tools/docker/
+docker-compose build --build-arg USER_ID=0
+```
+
+
+Run the application (this may take a while until the keycloak setup process has finished)
+```
+docker-compose up -d
 ```
 
 Now you can try to open http://localhost:8000/api/v1/
+You can do log in with http://localhost:8000/login/keycloak/
 The project path is mounted in the pod and you can edit it in real time from outside the container. 
 
 You can get an interactive shell inside the application pod with the command:
@@ -168,17 +176,13 @@ The ingress uses 2 hardcoded hosts **catalog** and **keycloak** to route the tra
 ## Building the image
 
 ```
-eval $(minikube -p minikube docker-env)
-minikube image build -t localhost/ansible-catalog .
-# for podman users
-podman --remote build -t localhost/ansible-catalog .
+minikube image build -t localhost/ansible-catalog -f tools/docker/Dockerfile .
 ```
 ## Starting the app
 Once this has been setup you can start the deployments, services and ingress service in the directory tools/minikube/templates
 
 ```
-cd tools/minikube/templates
-kubectl apply -f .
+kubectl apply -f tools/minikube/templates
 ```
 
 To access the keycloak server running inside the cluster use the following URL
@@ -192,6 +196,8 @@ To access the catalog app use
 
 http://catalog/api/v1/
 http://catalog/api/v1/portfolios/ (You wont be able to get to this link without logging in first)
+
+## About credentials
 
 When the catalog-app starts up it creates the required roles, policies, scopes, permissions (optionally groups and users) by using an ansible collection. The roles, policies, scopes and permissions are defined in the collection. The optional group and user data is stored in tools/keycloak_setup/dev.yml
  
