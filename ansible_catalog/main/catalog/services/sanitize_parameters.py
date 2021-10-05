@@ -70,8 +70,8 @@ class SanitizeParameters:
             )
         else:
             service_plan_schema = (
-                service_plan.modified
-                or service_plan.base
+                service_plan.modified_schema
+                or service_plan.base_schema
                 or GetServicePlan(self.order_item.service_plan_ref)
                 .proces()
                 .service_plan.create_json_schema
