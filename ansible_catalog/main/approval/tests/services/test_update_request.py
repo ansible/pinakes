@@ -18,8 +18,8 @@ def test_update_single_request(mocker):
         (
             {"state": Request.State.STARTED},
             SendEvent.EVENT_REQUEST_STARTED,
-            Request.State.NOTIFIED,
-            "notified_at",
+            Request.State.STARTED,
+            None,
         ),
         (
             {"state": Request.State.NOTIFIED},
@@ -57,7 +57,8 @@ def test_update_single_request(mocker):
             SendEvent, "__init__", return_value=None
         )
         mocker.patch.object(SendEvent, "process")
-        request = RequestFactory()
+        workflow = WorkflowFactory(group_refs=[{"group_name":"g", "group_ref":"r"}])
+        request = RequestFactory(workflow=workflow)
         request = UpdateRequest(request, suite[0]).process().request
 
         assert request.state == suite[2]
@@ -76,8 +77,8 @@ def test_update_child1(mocker):
             Request.State.PENDING,
             {"state": Request.State.STARTED},
             (
-                Request.State.NOTIFIED,
-                Request.State.NOTIFIED,
+                Request.State.STARTED,
+                Request.State.STARTED,
                 Request.State.PENDING,
             ),
         ),
@@ -99,7 +100,7 @@ def test_update_child1(mocker):
             (
                 Request.State.NOTIFIED,
                 Request.State.COMPLETED,
-                Request.State.NOTIFIED,
+                Request.State.STARTED,
             ),
         ),
         (
@@ -130,8 +131,10 @@ def test_update_child1(mocker):
     for suite in testing_suites:
         mocker.patch.object(SendEvent, "process")
         root = RequestFactory(state=suite[0], number_of_children=2)
-        child1 = RequestFactory(parent=root, state=suite[0])
-        child2 = RequestFactory(parent=root)
+        workflow1 = WorkflowFactory(group_refs=[{"group_name":"g1", "group_ref":"r1"}])
+        child1 = RequestFactory(parent=root, state=suite[0], workflow=workflow1)
+        workflow2 = WorkflowFactory(group_refs=[{"group_name":"g2", "group_ref":"r2"}])
+        child2 = RequestFactory(parent=root, workflow=workflow2)
         UpdateRequest(child1, suite[1]).process()
 
         root.refresh_from_db()
@@ -153,7 +156,7 @@ def test_update_child2(mocker):
             (
                 Request.State.NOTIFIED,
                 Request.State.COMPLETED,
-                Request.State.NOTIFIED,
+                Request.State.STARTED,
             ),
         ),
         (
@@ -207,12 +210,15 @@ def test_update_child2(mocker):
         root = RequestFactory(
             state=Request.State.NOTIFIED, number_of_children=2
         )
+        workflow1 = WorkflowFactory(group_refs=[{"group_name":"g1", "group_ref":"r1"}])
         child1 = RequestFactory(
             parent=root,
             state=Request.State.COMPLETED,
             decision=Request.Decision.APPROVED,
+            workflow=workflow1,
         )
-        child2 = RequestFactory(parent=root, state=suite[0])
+        workflow2 = WorkflowFactory(group_refs=[{"group_name":"g1", "group_ref":"r1"}])
+        child2 = RequestFactory(parent=root, state=suite[0], workflow=workflow2)
         UpdateRequest(child2, suite[1]).process()
 
         root.refresh_from_db()
@@ -291,8 +297,8 @@ def test_update_parallel():
             (
                 Request.State.COMPLETED,
                 Request.State.COMPLETED,
-                Request.State.NOTIFIED,
-                Request.State.NOTIFIED,
+                Request.State.STARTED,
+                Request.State.STARTED,
             ),
         ),
     )
@@ -300,7 +306,7 @@ def test_update_parallel():
         root = RequestFactory(
             state=Request.State.NOTIFIED, number_of_children=4
         )
-        workflow1 = WorkflowFactory()
+        workflow1 = WorkflowFactory(group_refs=[{"group_name":"g1", "group_ref":"r1"}])
         child1 = RequestFactory(
             parent=root, state=Request.State.NOTIFIED, workflow=workflow1
         )
@@ -308,7 +314,7 @@ def test_update_parallel():
             parent=root, state=suite[0], decision=suite[1], workflow=workflow1
         )
 
-        workflow2 = WorkflowFactory()
+        workflow2 = WorkflowFactory(group_refs=[{"group_name":"g2", "group_ref":"r2"}])
         child3 = RequestFactory(parent=root, workflow=workflow2)
         child4 = RequestFactory(parent=root, workflow=workflow2)
 
