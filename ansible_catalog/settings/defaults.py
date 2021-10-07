@@ -62,6 +62,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "ansible_catalog.common.auth.middleware.KeycloakAuthMiddleware",
 ]
 
 ROOT_URLCONF = "ansible_catalog.urls"
@@ -133,7 +134,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    "social_core.backends.keycloak.KeycloakOAuth2",
+    "ansible_catalog.common.auth.keycloak_oidc.KeycloakOpenIdConnect",
     "django.contrib.auth.backends.ModelBackend",
 ]
 

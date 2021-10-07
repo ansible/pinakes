@@ -14,6 +14,7 @@ from drf_spectacular.utils import extend_schema
 from ansible_catalog.common.tag_mixin import TagMixin
 from ansible_catalog.common.image_mixin import ImageMixin
 from ansible_catalog.common.queryset_mixin import QuerySetMixin
+from ansible_catalog.main.catalog.permissions import PortfolioAccess
 
 from ansible_catalog.main.models import Tenant
 from ansible_catalog.main.catalog.models import (
@@ -70,10 +71,14 @@ class PortfolioViewSet(
 
     serializer_class = PortfolioSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, PortfolioAccess)
     ordering = ("-id",)
     filterset_fields = ("name", "description", "created_at", "updated_at")
     search_fields = ("name", "description")
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return PortfolioAccess.scope_queryset(self.request, self.action, qs)
 
 
 class PortfolioItemViewSet(
