@@ -1,13 +1,14 @@
 """ Create an approval request """
 import django_rq
 import logging
+from django.utils.translation import gettext_lazy as _
 from ansible_catalog.main.approval.models import Request, RequestContext
 from ansible_catalog.main.approval.tasks import start_request_task
-from ansible_catalog.main.approval.services.link_workflow import LinkWorkflow
+from ansible_catalog.main.approval.services.link_workflow import FindWorkflows
 
 logger = logging.getLogger("approval")
 
-SYSTEM_APPROVAL = "System approval"
+SYSTEM_APPROVAL = _("System approval")
 
 class CreateRequest:
     """Create an approval request"""
@@ -19,8 +20,8 @@ class CreateRequest:
         self.workflows = ()
 
     def process(self):
-        tag_resources = self.data.pop("tag_resources", None)
-        self.workflows = LinkWorkflow().find_workflows_by_tag_resources(tag_resources)
+        tag_resources = self.data.pop("tag_resources", list())
+        self.workflows = FindWorkflows(tag_resources).process().workflows
 
         content = self.data.pop("content")
         request_context = RequestContext.objects.create(
@@ -59,12 +60,12 @@ class CreateRequest:
 
     def _start_leaves(self):
         first_leaves = (self.request,)
-        if self.request.is_parent:
+        if self.request.is_parent():
             first_child = self.request.subrequests.order_by("id").first()
             first_leaves = Request.objects.filter(workflow=first_child.workflow)
 
         for leaf in first_leaves:
-            django_rq.enqueue(start_request_task, leaf.id)
+            self.job = django_rq.enqueue(start_request_task, leaf.id)
             logger.info(
                 "Enqueued job %s for request %d", self.job.id, leaf.id
             )

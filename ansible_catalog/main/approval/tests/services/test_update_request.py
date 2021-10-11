@@ -6,7 +6,7 @@ from ansible_catalog.main.approval.tests.factories import (
     RequestFactory,
     WorkflowFactory,
 )
-from ansible_catalog.main.approval.services.update_request import UpdateRequest
+from ansible_catalog.main.approval.services.update_request import UpdateRequest, AUTO_APPROVED_REASON
 from ansible_catalog.main.approval.services.send_event import SendEvent
 
 
@@ -66,6 +66,22 @@ def test_update_single_request(mocker):
             event_service.assert_called_once_with(request, suite[1])
         if suite[3]:
             assert getattr(request, suite[3]) is not None
+
+
+@pytest.mark.django_db
+def test_auto_approve(mocker):
+    """Test auto approve a request"""
+    testing_suites = (
+        RequestFactory(),
+        RequestFactory(workflow=WorkflowFactory()),
+    )
+    for suite in testing_suites:
+        mocker.patch.object(SendEvent, "process")
+        request = UpdateRequest(suite, {"state": Request.State.STARTED}).process().request
+
+        assert request.state == Request.State.COMPLETED
+        assert request.reason == AUTO_APPROVED_REASON
+        assert request.decision == Request.Decision.APPROVED
 
 
 @pytest.mark.django_db
