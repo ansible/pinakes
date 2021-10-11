@@ -419,4 +419,4 @@ class CatalogServicePlan(BaseModel):
         indexes = [models.Index(fields=["tenant", "portfolio_item"])]
 
     def __str__(self):
-        return self.name
+        return self.name or ""

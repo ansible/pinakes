@@ -27,6 +27,7 @@ from ansible_catalog.main.catalog.models import (
 from ansible_catalog.main.catalog.serializers import (
     ApprovalRequestSerializer,
     CatalogServicePlanSerializer,
+    CatalogServicePlanInSerializer,
     OrderItemSerializer,
     OrderSerializer,
     PortfolioItemSerializer,
@@ -44,8 +45,14 @@ from ansible_catalog.main.catalog.services.copy_portfolio_item import (
 from ansible_catalog.main.catalog.services.fetch_service_plans import (
     FetchServicePlans,
 )
+from ansible_catalog.main.catalog.services.import_service_plan import (
+    ImportServicePlan,
+)
 from ansible_catalog.main.catalog.services.jsonify_service_plan import (
     JsonifyServicePlan,
+)
+from ansible_catalog.main.catalog.services.reset_service_plan import (
+    ResetServicePlan,
 )
 from ansible_catalog.main.catalog.services.submit_approval_request import (
     SubmitApprovalRequest,
@@ -304,6 +311,32 @@ class CatalogServicePlanViewSet(
             serializer = CatalogServicePlanSerializer(service_plans, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        request=CatalogServicePlanInSerializer,
+        responses={201: CatalogServicePlanSerializer},
+    )
+    def create(self, request, *args, **kwargs):
+        serializer = CatalogServicePlanInSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                {"errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        portfolio_item_id = request.data.pop("portfolio_item_id")
+        portfolio_item = PortfolioItem.objects.get(id=portfolio_item_id)
+
+        svc = ImportServicePlan(portfolio_item).process()
+        output_serializer = CatalogServicePlanSerializer(
+            svc.reimported_service_plan, many=False
+        )
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        request=None,
+        responses={200: CatalogServicePlanSerializer},
+    )
     @action(methods=["get"], detail=True)
     def base(self, request, pk):
         """Retrieve the base schema of specified pk service plan."""
@@ -320,29 +353,36 @@ class CatalogServicePlanViewSet(
         service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
 
         if self.request.method == "GET":
-            options = {"schema": "modified", "service_plan_id": service_plan.id}
+            options = {
+                "schema": "modified",
+                "service_plan_id": service_plan.id,
+            }
 
             svc = JsonifyServicePlan(service_plan, options).process()
-            if svc.json["create_json_schema"] is not None:
+            if svc.json.create_json_schema is not None:
                 serializer = CatalogServicePlanSerializer(svc.json, many=False)
                 return Response(serializer.data)
             else:
                 return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             modified = request.data["modified"]
-            service_plan.modified = modified
+            service_plan.modified_schema = modified
             service_plan.save()
 
-            return Response(service_plan.modified)
+            # Keep the same response with cloud version
+            return Response(service_plan.modified_schema)
 
-#     @action(methods=["post"], detail=True)
-#     def reset(self, request, pk):
-#         """Reset the specified pk service plan."""
-#         service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
-# 
-#         svc = ResetServicePlan(service_plan).process()
-# 
-#         if svc.status == "ok":
-#             return Response(svc.reimported_service_plans)
-#         else:
-#             return Response(status=status.HTTP_204_NO_CONTENT)
+    @action(methods=["post"], detail=True)
+    def reset(self, request, pk):
+        """Reset the specified pk service plan."""
+        service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
+
+        svc = ResetServicePlan(service_plan).process()
+
+        if svc.status == ResetServicePlan.OK_STATUS:
+            serializer = CatalogServicePlanSerializer(
+                svc.reimported_service_plan, many=False
+            )
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_204_NO_CONTENT)

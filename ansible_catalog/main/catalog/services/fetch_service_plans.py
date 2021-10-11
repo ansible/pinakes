@@ -56,6 +56,14 @@ class FetchServicePlans:
         if service_offering and service_offering.survey_enabled:
             service_plan = svc.service_plans.first()  # only choose the 1st one
 
+            if service_plan is None:
+                logger.error(
+                    "Service offering: %d has no service plans",
+                    service_offering.id,
+                )
+                self.service_plans = []
+                return
+
             catalog_service_plan = CatalogServicePlan(
                 name=service_plan.name,
                 portfolio_item=self.portfolio_item,

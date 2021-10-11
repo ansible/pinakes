@@ -48,7 +48,7 @@ def test_jsonify_service_plan_for_base():
     )
     service_plan = ServicePlanFactory(
         portfolio_item=portfolio_item,
-        base=schema,
+        base_schema=schema,
     )
 
     # Test base
@@ -57,13 +57,12 @@ def test_jsonify_service_plan_for_base():
     svc = JsonifyServicePlan(service_plan, options)
     svc.process()
 
-    assert svc.json["name"] == service_plan.name
-    assert svc.json["description"] == service_plan.description
-    assert svc.json["portfolio_item_id"] == portfolio_item.id
-    assert svc.json["service_offering_id"] == str(service_offering.id)
-    assert svc.json["create_json_schema"] == schema
-    assert svc.json["modified"] is False
-    assert svc.json["imported"] is True
+    assert svc.json.name == service_plan.name
+    assert svc.json.portfolio_item_id == portfolio_item.id
+    assert svc.json.service_offering_ref == str(service_offering.id)
+    assert svc.json.create_json_schema == schema
+    assert svc.json.modified is False
+    assert svc.json.imported is True
 
     # Test empty modified
     options = {"schema": "modified", "service_plan_id": service_plan.id}
@@ -71,18 +70,17 @@ def test_jsonify_service_plan_for_base():
     svc = JsonifyServicePlan(service_plan, options)
     svc.process()
 
-    assert svc.json["name"] == service_plan.name
-    assert svc.json["description"] == service_plan.description
-    assert svc.json["portfolio_item_id"] == portfolio_item.id
-    assert svc.json["service_offering_id"] == str(service_offering.id)
-    assert svc.json["create_json_schema"] is None
-    assert svc.json["modified"] is False
-    assert svc.json["imported"] is True
+    assert svc.json.name == service_plan.name
+    assert svc.json.portfolio_item_id == portfolio_item.id
+    assert svc.json.service_offering_ref == str(service_offering.id)
+    assert svc.json.create_json_schema is None
+    assert svc.json.modified is False
+    assert svc.json.imported is True
 
     # Test modified
     service_plan = ServicePlanFactory(
         portfolio_item=portfolio_item,
-        modified=schema,
+        modified_schema=schema,
     )
 
     options = {"schema": "modified", "service_plan_id": service_plan.id}
@@ -90,10 +88,9 @@ def test_jsonify_service_plan_for_base():
     svc = JsonifyServicePlan(service_plan, options)
     svc.process()
 
-    assert svc.json["name"] == service_plan.name
-    assert svc.json["description"] == service_plan.description
-    assert svc.json["portfolio_item_id"] == portfolio_item.id
-    assert svc.json["service_offering_id"] == str(service_offering.id)
-    assert svc.json["create_json_schema"] == schema
-    assert svc.json["modified"] is True
-    assert svc.json["imported"] is True
+    assert svc.json.name == service_plan.name
+    assert svc.json.portfolio_item_id == portfolio_item.id
+    assert svc.json.service_offering_ref == str(service_offering.id)
+    assert svc.json.create_json_schema == schema
+    assert svc.json.modified is True
+    assert svc.json.imported is True
