@@ -3,7 +3,10 @@
 import pytest
 
 from ansible_catalog.main.approval.models import TagLink
-from ansible_catalog.main.approval.services.link_workflow import LinkWorkflow
+from ansible_catalog.main.approval.services.link_workflow import (
+    LinkWorkflow,
+    FindWorkflows,
+)
 from ansible_catalog.main.approval.tests.factories import WorkflowFactory
 
 from ansible_catalog.main.catalog.tests.factories import PortfolioFactory
@@ -16,7 +19,7 @@ def test_taglink_workflow_add_remove():
 
     assert TagLink.objects.count() == 1
     assert portfolio.tags.count() == 1
-    assert portfolio.tags.first().name == "approval/workflows/{}".format(
+    assert portfolio.tags.first().name == "/approval/workflows={}".format(
         portfolio.id
     )
 
@@ -31,10 +34,22 @@ def test_find_workflow_by_taglink():
     """Test FIND workflows by taglinks"""
     workflow, _portfolio, resource_obj = create_and_link()
 
-    svc = LinkWorkflow(workflow, resource_obj)
+    svc = LinkWorkflow(None, resource_obj)
     workflow_ids = svc.process(LinkWorkflow.Operation.FIND).workflow_ids
 
     assert workflow_ids == [workflow.id]
+
+
+@pytest.mark.django_db
+def test_find_workflow_by_tags():
+    """Test finding workflows by remote tags"""
+    workflow, _portfolio, resource_obj = create_and_link()
+    resource_obj.pop("object_id")
+    resource_obj["tags"] = (f"/approval/workflows={workflow.id}",)
+
+    found_workflows = FindWorkflows((resource_obj,)).process().workflows
+    # assert len(found_workflows) == 1
+    assert workflow.id == found_workflows[0].id
 
 
 def create_and_link():

@@ -1,12 +1,14 @@
 """Update a request"""
 
 import logging
+from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from ansible_catalog.main.approval.models import Request, Action
 from ansible_catalog.main.approval.services.send_event import SendEvent
 from ansible_catalog.main.approval.services.create_action import CreateAction
 
 logger = logging.getLogger("approval")
+AUTO_APPROVED_REASON = _("Auto-approved")
 
 
 class UpdateRequest:
@@ -40,11 +42,11 @@ class UpdateRequest:
 
         if (
             self.request.is_child()
-            and self.request.parent.state != self.options["state"]
+            and self.request.parent.state == Request.State.PENDING
         ):
             self._update_parent()
 
-        if self.request.is_leaf():
+        if self._should_auto_approve():
             self._notify_request()
 
     def _notified(self):
@@ -53,8 +55,11 @@ class UpdateRequest:
         # if self.request.is_leaf():
         #    SendEvent(self.request, SendEvent.EVENT_GROUP_NOTIFIED) # Event not yet exist
 
-        if self.request.is_child():
+        if self.request.is_child() and not self.request.parent.has_finished():
             self._update_parent()
+
+        if self._should_auto_approve():
+            self._approve_request()
 
     # Called directly when it is a leaf node, or indirectly from its child node
     def _completed(self):
@@ -166,11 +171,20 @@ class UpdateRequest:
         pass
 
     def _notify_request(self):
-        # TODO: return if workflow is for external_processing
-
         # notify if this is an internal processing
         CreateAction(
             self.request, {"operation": Action.Operation.NOTIFY, "user": None}
+        ).process()
+
+    def _approve_request(self):
+        # auto approve the request
+        CreateAction(
+            self.request,
+            {
+                "operation": Action.Operation.APPROVE,
+                "user": None,
+                "comments": AUTO_APPROVED_REASON,
+            },
         ).process()
 
     # complete the external approval process if configured
@@ -182,3 +196,13 @@ class UpdateRequest:
             self.options[time_field] = timezone.now()
         Request.objects.filter(id=self.request.id).update(**self.options)
         self.request.refresh_from_db()
+
+    def _should_auto_approve(self):
+        if self.request.is_parent():
+            return False
+        if (
+            self.request.workflow is None
+            or len(self.request.workflow.group_refs) == 0
+        ):
+            return True
+        return False

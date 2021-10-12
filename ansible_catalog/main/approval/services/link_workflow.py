@@ -1,4 +1,4 @@
-"""Unlink workflow service"""
+"""services for linking/unliking/finding workflows"""
 import logging
 from django.apps import apps
 from enum import Enum
@@ -29,46 +29,25 @@ class LinkWorkflow:
 
         if operation == self.Operation.ADD:
             OperateTag(instance).process(
-                OperateTag.Operation.ADD, self._tag_name()["name"]
+                OperateTag.Operation.ADD, self._tag_name()
             )
             obj, created = TagLink.objects.get_or_create(**self.params)
             if not created:
                 logger.info("Tag '%s' is found", obj)
         elif operation == self.Operation.REMOVE:
             OperateTag(instance).process(
-                OperateTag.Operation.REMOVE, self._tag_name()["name"]
+                OperateTag.Operation.REMOVE, self._tag_name()
             )
         elif operation == self.Operation.FIND:
-            tag_names = [{"name": tag.name} for tag in instance.tags.all()]
+            tag_names = [tag.name for tag in instance.tags.all()]
             self.workflow_ids = [
                 tag_link.workflow.id
                 for tag_link in TagLink.objects.filter(
                     object_type=self.params["object_type"]
-                ).filter(tag_name__in=tag_names)[::1]
+                ).filter(tag_name__in=tag_names)
             ]
 
         return self
-
-    def find_workflows_by_tag_resources(self, tag_resources):
-        if tag_resources is None:
-            return []
-
-        workflow_ids = []
-
-        for resource in tag_resources:
-            params = {
-                "app_name": resource["app_name"],
-                "object_type": resource["object_type"],
-            }
-
-            workflow_ids += [
-                tag_link.workflow.id
-                for tag_link in TagLink.objects.filter(**params).filter(
-                    tag_name__in=resource["tags"]
-                )[::1]
-            ]
-
-        return Workflow.objects.filter(id__in=list(set(workflow_ids)))
 
     def _tag_params(self, data):
         params = data.copy()
@@ -80,4 +59,29 @@ class LinkWorkflow:
         return params
 
     def _tag_name(self):
-        return {"name": "approval/workflows/{}".format(self.workflow.id)}
+        return "/approval/workflows={}".format(self.workflow.id)
+
+
+class FindWorkflows:
+    """Find workflows by remote tags"""
+
+    def __init__(self, tag_resources):
+        self.tag_resources = tag_resources
+        self.workflows = ()
+
+    def process(self):
+        workflows = set()
+        for resource in self.tag_resources:
+            params = {
+                "app_name": resource["app_name"],
+                "object_type": resource["object_type"],
+            }
+
+            workflows |= set(
+                TagLink.objects.filter(**params).filter(
+                    tag_name__in=resource["tags"]
+                )
+            )
+        self.workflows = list(workflows)
+
+        return self
