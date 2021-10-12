@@ -21,7 +21,9 @@ def test_create_request_one_workflow(mocker):
     """Test to create a new request with one workflow but no group"""
 
     workflow = WorkflowFactory()
-    mocker.patch.object(FindWorkflows, "process", return_value=Mock(workflows=(workflow,)))
+    mocker.patch.object(
+        FindWorkflows, "process", return_value=Mock(workflows=(workflow,))
+    )
     service = _prepare_service(mocker)
     request = service.process().request
     _assert_request(request)
@@ -31,8 +33,12 @@ def test_create_request_one_workflow(mocker):
 def test_create_request_one_workflow_groups(mocker):
     """Test to create a new request with one workflow multiple groups"""
 
-    workflow = WorkflowFactory(group_refs=({"name":"n1", "uuid":"u1"},{"name":"n2", "uuid":"u2"}))
-    mocker.patch.object(FindWorkflows, "process", return_value=Mock(workflows=(workflow,)))
+    workflow = WorkflowFactory(
+        group_refs=({"name": "n1", "uuid": "u1"}, {"name": "n2", "uuid": "u2"})
+    )
+    mocker.patch.object(
+        FindWorkflows, "process", return_value=Mock(workflows=(workflow,))
+    )
     service = _prepare_service(mocker)
     request = service.process().request
     _assert_request(request, num_children=2, group_name="n1,n2")
@@ -44,9 +50,13 @@ def test_create_request_one_workflow_groups(mocker):
 def test_create_request_workflows_groups(mocker):
     """Test to create a new request with workflows and groups"""
 
-    workflow1 = WorkflowFactory(group_refs=({"name":"n1", "uuid":"u1"},))
-    workflow2 = WorkflowFactory(group_refs=({"name":"n2", "uuid":"u2"},))
-    mocker.patch.object(FindWorkflows, "process", return_value=Mock(workflows=(workflow1,workflow2)))
+    workflow1 = WorkflowFactory(group_refs=({"name": "n1", "uuid": "u1"},))
+    workflow2 = WorkflowFactory(group_refs=({"name": "n2", "uuid": "u2"},))
+    mocker.patch.object(
+        FindWorkflows,
+        "process",
+        return_value=Mock(workflows=(workflow1, workflow2)),
+    )
     service = _prepare_service(mocker)
     request = service.process().request
     _assert_request(request, num_children=2, group_name="n1,n2")
@@ -66,6 +76,7 @@ def _prepare_service(mocker):
         }
     )
     return service
+
 
 def _assert_request(request, num_children=0, group_name="", workflow=None):
     assert request.name == "test"

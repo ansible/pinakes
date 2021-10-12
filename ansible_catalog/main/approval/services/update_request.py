@@ -10,6 +10,7 @@ from ansible_catalog.main.approval.services.create_action import CreateAction
 logger = logging.getLogger("approval")
 AUTO_APPROVED_REASON = _("Auto-approved")
 
+
 class UpdateRequest:
     """Service class to update a request"""
 
@@ -178,7 +179,12 @@ class UpdateRequest:
     def _approve_request(self):
         # auto approve the request
         CreateAction(
-            self.request, {"operation": Action.Operation.APPROVE, "user": None, "comments": AUTO_APPROVED_REASON}
+            self.request,
+            {
+                "operation": Action.Operation.APPROVE,
+                "user": None,
+                "comments": AUTO_APPROVED_REASON,
+            },
         ).process()
 
     # complete the external approval process if configured
@@ -194,6 +200,9 @@ class UpdateRequest:
     def _should_auto_approve(self):
         if self.request.is_parent():
             return False
-        if self.request.workflow is None or len(self.request.workflow.group_refs) == 0:
+        if (
+            self.request.workflow is None
+            or len(self.request.workflow.group_refs) == 0
+        ):
             return True
         return False

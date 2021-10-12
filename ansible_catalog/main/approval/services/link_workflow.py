@@ -42,7 +42,9 @@ class LinkWorkflow:
             tag_names = [tag.name for tag in instance.tags.all()]
             self.workflow_ids = [
                 tag_link.workflow.id
-                for tag_link in TagLink.objects.filter(object_type=self.params["object_type"]).filter(tag_name__in=tag_names)
+                for tag_link in TagLink.objects.filter(
+                    object_type=self.params["object_type"]
+                ).filter(tag_name__in=tag_names)
             ]
 
         return self
@@ -75,9 +77,11 @@ class FindWorkflows:
                 "object_type": resource["object_type"],
             }
 
-            workflows |= set(TagLink.objects.filter(**params).filter(
-                tag_name__in=resource["tags"]
-            ))
+            workflows |= set(
+                TagLink.objects.filter(**params).filter(
+                    tag_name__in=resource["tags"]
+                )
+            )
         self.workflows = list(workflows)
 
         return self

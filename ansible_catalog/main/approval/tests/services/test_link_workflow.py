@@ -3,7 +3,10 @@
 import pytest
 
 from ansible_catalog.main.approval.models import TagLink
-from ansible_catalog.main.approval.services.link_workflow import LinkWorkflow, FindWorkflows
+from ansible_catalog.main.approval.services.link_workflow import (
+    LinkWorkflow,
+    FindWorkflows,
+)
 from ansible_catalog.main.approval.tests.factories import WorkflowFactory
 
 from ansible_catalog.main.catalog.tests.factories import PortfolioFactory
@@ -45,7 +48,7 @@ def test_find_workflow_by_tags():
     resource_obj["tags"] = (f"/approval/workflows={workflow.id}",)
 
     found_workflows = FindWorkflows((resource_obj,)).process().workflows
-    #assert len(found_workflows) == 1
+    # assert len(found_workflows) == 1
     assert workflow.id == found_workflows[0].id
 
 

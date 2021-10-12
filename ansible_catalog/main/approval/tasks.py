@@ -12,7 +12,9 @@ def start_request_task(request_id):
     job = get_current_job()
     try:
         logger.info("Starting approval request %s", job.id)
-        CreateAction(request_id,{"operation":Action.Operation.START}).process()
+        CreateAction(
+            request_id, {"operation": Action.Operation.START}
+        ).process()
     except Exception as exc:
         logger.error("Job failed %s exception %s", job.id, str(exc))
         raise
