@@ -3,7 +3,6 @@
     format and saves it in the DB
 """
 
-import json
 from django.utils import timezone
 from ansible_catalog.main.inventory.models import ServicePlan
 
@@ -29,7 +28,7 @@ class ServicePlanImport:
         now = timezone.now()
         ServicePlan.objects.create(
             source_ref=source_ref,
-            create_json_schema=json.dumps(ddf_data),
+            create_json_schema=ddf_data,
             source=self.source,
             tenant=self.tenant,
             service_offering_id=service_offering_id,
