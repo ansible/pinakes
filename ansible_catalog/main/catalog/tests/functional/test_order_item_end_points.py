@@ -1,7 +1,6 @@
 """ Module to test OrderItem end points """
 import json
 import pytest
-from django.urls import reverse
 from ansible_catalog.main.catalog.tests.factories import OrderItemFactory
 
 
@@ -9,9 +8,7 @@ from ansible_catalog.main.catalog.tests.factories import OrderItemFactory
 def test_order_item_retrieve(api_request):
     """Retrieve a single order item by id"""
     order_item = OrderItemFactory()
-    response = api_request(
-        "get", reverse("orderitem-detail", args=(order_item.id,))
-    )
+    response = api_request("get", "orderitem-detail", order_item.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -23,9 +20,7 @@ def test_order_item_retrieve(api_request):
 def test_order_item_delete(api_request):
     """Delete a OrderItem by id"""
     order_item = OrderItemFactory()
-    response = api_request(
-        "delete", reverse("orderitem-detail", args=(order_item.id,))
-    )
+    response = api_request("delete", "orderitem-detail", order_item.id)
 
     assert response.status_code == 204
 
@@ -37,7 +32,8 @@ def test_order_item_patch(api_request):
     data = {"name": "update"}
     response = api_request(
         "patch",
-        reverse("orderitem-detail", args=(order_item.id,)),
+        "orderitem-detail",
+        order_item.id,
         data,
     )
 
@@ -49,8 +45,6 @@ def test_order_item_put(api_request):
     """PUT on order item is not supported"""
     order_item = OrderItemFactory()
     data = {"name": "update"}
-    response = api_request(
-        "put", reverse("orderitem-detail", args=(order_item.id,)), data
-    )
+    response = api_request("put", "orderitem-detail", order_item.id, data)
 
     assert response.status_code == 405

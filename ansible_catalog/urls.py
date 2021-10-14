@@ -22,6 +22,7 @@ from drf_spectacular.views import (
     SpectacularJSONAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView,
+    get_relative_url,
 )
 
 from ansible_catalog.main.catalog.urls import (
@@ -52,22 +53,33 @@ router.registry.extend(catalog_router.registry)
 router.registry.extend(approval_router.registry)
 router.registry.extend(inventory_router.registry)
 
-urls_patterns = router.urls
+api_urls = router.urls
 urls_views = {**catalog_views, **approval_views, **inventory_views}
-urls_patterns = [p for p in urls_patterns if __filter_by_view(p)]
+api_urls = [p for p in api_urls if __filter_by_view(p)]
+
+API_PATH_PREFIX = settings.CATALOG_API_PATH_PREFIX.strip("/")
+API_VER = "v1"
+
+api_urls = [
+    path(f"{API_PATH_PREFIX}/{API_VER}/", include(api_urls)),
+]
 
 urlpatterns = [
-    path(r"api/v1/schema/", SpectacularJSONAPIView.as_view(), name="schema"),
     path(
-        r"api/v1/schema/swagger-ui/",
+        f"{API_PATH_PREFIX}/{API_VER}/schema/openapi.json",
+        SpectacularJSONAPIView.as_view(),
+        name="schema",
+    ),
+    path(
+        f"{API_PATH_PREFIX}/{API_VER}/schema/swagger-ui/",
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
     path(
-        r"api/v1/schema/redoc/",
+        f"{API_PATH_PREFIX}/{API_VER}/schema/redoc/",
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
-    path(r"api/v1/", include(urls_patterns)),
+    path("", include((api_urls, "api"), "catalog")),
     path("", include("social_django.urls", namespace="social")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

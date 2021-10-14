@@ -1,7 +1,6 @@
 """ Module to test ServicePlan end points """
 import json
 import pytest
-from django.urls import reverse
 from ansible_catalog.main.inventory.tests.factories import ServicePlanFactory
 
 
@@ -10,7 +9,7 @@ def test_service_plan_list(api_request):
     """Test to list ServicePlan endpoint"""
 
     ServicePlanFactory()
-    response = api_request("get", reverse("serviceplan-list"))
+    response = api_request("get", "serviceplan-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -23,10 +22,7 @@ def test_service_plan_retrieve(api_request):
     """Test to retrieve ServicePlan endpoint"""
 
     service_plan = ServicePlanFactory()
-    response = api_request(
-        "get",
-        reverse("serviceplan-detail", args=(service_plan.id,)),
-    )
+    response = api_request("get", "serviceplan-detail", service_plan.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -40,7 +36,8 @@ def test_service_plan_patch_not_supported(api_request):
     service_plan = ServicePlanFactory()
     response = api_request(
         "patch",
-        reverse("serviceplan-detail", args=(service_plan.id,)),
+        "serviceplan-detail",
+        service_plan.id,
         {"name": "update"},
     )
 
@@ -52,10 +49,7 @@ def test_service_plan_delete_not_supported(api_request):
     """Test to delete ServicePlan endpoint"""
 
     service_plan = ServicePlanFactory()
-    response = api_request(
-        "delete",
-        reverse("serviceplan-detail", args=(service_plan.id,)),
-    )
+    response = api_request("delete", "serviceplan-detail", service_plan.id)
 
     assert response.status_code == 405
 
@@ -67,7 +61,8 @@ def test_service_plan_put_not_supported(api_request):
     service_plan = ServicePlanFactory()
     response = api_request(
         "put",
-        reverse("serviceplan-detail", args=(service_plan.id,)),
+        "serviceplan-detail",
+        service_plan.id,
         {"name": "update"},
     )
 

@@ -36,6 +36,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CATALOG_API_PATH_PREFIX = "/api/ansible-catalog"
 
 # Application definition
 
@@ -308,7 +309,7 @@ SPECTACULAR_SETTINGS = {
                     "default": "8000",
                 },
                 "basePath": {
-                    "default": "/api/v1",
+                    "default": "",
                 },
             },
         },

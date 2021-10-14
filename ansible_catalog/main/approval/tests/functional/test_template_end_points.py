@@ -1,7 +1,6 @@
 """ Module for testing Approval Templates """
 import json
 import pytest
-from django.urls import reverse
 from ansible_catalog.main.tests.factories import TenantFactory
 from ansible_catalog.main.approval.tests.factories import (
     TemplateFactory,
@@ -13,8 +12,7 @@ from ansible_catalog.main.approval.tests.factories import (
 def test_template_list(api_request):
     """Get a list of templates"""
     TemplateFactory()
-    url = reverse("template-list")
-    response = api_request("get", url)
+    response = api_request("get", "template-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -25,8 +23,7 @@ def test_template_list(api_request):
 def test_template_retrieve(api_request):
     """RETRIEVE a template by its id"""
     template = TemplateFactory()
-    url = reverse("template-detail", args=(template.id,))
-    response = api_request("get", url)
+    response = api_request("get", "template-detail", template.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -36,8 +33,7 @@ def test_template_retrieve(api_request):
 @pytest.mark.django_db
 def test_template_delete_not_supported(api_request):
     template = TemplateFactory()
-    url = reverse("template-detail", args=(template.id,))
-    response = api_request("delete", url)
+    response = api_request("delete", "template-detail", template.id)
 
     assert response.status_code == 405
 
@@ -45,8 +41,9 @@ def test_template_delete_not_supported(api_request):
 @pytest.mark.django_db
 def test_template_patch_not_supported(api_request):
     template = TemplateFactory()
-    url = reverse("template-detail", args=(template.id,))
-    response = api_request("patch", url, {"title": "update"})
+    response = api_request(
+        "patch", "template-detail", template.id, {"title": "update"}
+    )
 
     assert response.status_code == 405
 
@@ -55,8 +52,9 @@ def test_template_patch_not_supported(api_request):
 def test_portfolio_put_not_supported(api_request):
     """PUT on a template should fail"""
     template = TemplateFactory()
-    url = reverse("template-detail", args=(template.id,))
-    response = api_request("put", url, {"title": "update"})
+    response = api_request(
+        "put", "template-detail", template.id, {"title": "update"}
+    )
 
     assert response.status_code == 405
 
@@ -66,8 +64,7 @@ def test_template_workflows_get(api_request):
     """Fetch workflows for a template"""
     template = TemplateFactory()
     workflow = WorkflowFactory(template=template)
-    url = reverse("template-workflow-list", args=(template.id,))
-    response = api_request("get", url)
+    response = api_request("get", "template-workflow-list", template.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -79,9 +76,8 @@ def test_template_workflows_get(api_request):
 @pytest.mark.django_db
 def test_template_post_not_supported(api_request):
     TenantFactory()
-    url = reverse("template-list")
     response = api_request(
-        "post", url, {"title": "abcdef", "description": "abc"}
+        "post", "template-list", data={"title": "abcdef", "description": "abc"}
     )
 
     assert response.status_code == 405

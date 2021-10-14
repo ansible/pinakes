@@ -3,7 +3,7 @@ import urllib.parse
 import pytest
 import os
 
-from django.urls import resolve
+from django.urls import resolve, reverse
 from django.contrib.auth.models import User
 
 from rest_framework.test import APIRequestFactory, force_authenticate
@@ -31,7 +31,8 @@ def admin():
 
 @pytest.fixture
 def api_request(admin):
-    def rf(verb, url, data=None, user=admin, format="json"):
+    def rf(verb, pattern, id=None, data=None, user=admin, format="json"):
+        url = reverse(f"catalog:{pattern}", args=((id,) if id else None))
         view, view_args, view_kwargs = resolve(urllib.parse.urlparse(url)[2])
         request = getattr(APIRequestFactory(), verb)(
             url, data=data, format=format

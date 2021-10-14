@@ -5,7 +5,6 @@ import glob
 import json
 import pytest
 
-from django.urls import reverse
 from ansible_catalog.main.catalog.tests.factories import PortfolioFactory
 from ansible_catalog.main.catalog.tests.factories import PortfolioItemFactory
 
@@ -14,7 +13,7 @@ from ansible_catalog.main.catalog.tests.factories import PortfolioItemFactory
 def test_portfolio_item_list(api_request):
     """Get list of Portfolio Items"""
     PortfolioItemFactory()
-    response = api_request("get", reverse("portfolioitem-list"))
+    response = api_request("get", "portfolioitem-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -26,9 +25,7 @@ def test_portfolio_item_list(api_request):
 def test_portfolio_item_retrieve(api_request):
     """Retrieve a single portfolio item by id"""
     portfolio_item = PortfolioItemFactory()
-    response = api_request(
-        "get", reverse("portfolioitem-detail", args=(portfolio_item.id,))
-    )
+    response = api_request("get", "portfolioitem-detail", portfolio_item.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -39,9 +36,7 @@ def test_portfolio_item_retrieve(api_request):
 def test_portfolio_item_delete(api_request):
     """Delete a PortfolioItem by id"""
     portfolio_item = PortfolioItemFactory()
-    response = api_request(
-        "delete", reverse("portfolioitem-detail", args=(portfolio_item.id,))
-    )
+    response = api_request("delete", "portfolioitem-detail", portfolio_item.id)
 
     assert response.status_code == 204
 
@@ -53,7 +48,8 @@ def test_portfolio_item_patch(api_request):
     data = {"name": "update"}
     response = api_request(
         "patch",
-        reverse("portfolioitem-detail", args=(portfolio_item.id,)),
+        "portfolioitem-detail",
+        portfolio_item.id,
         data,
     )
 
@@ -66,7 +62,7 @@ def test_portfolio_item_put(api_request):
     portfolio_item = PortfolioItemFactory()
     data = {"name": "update"}
     response = api_request(
-        "put", reverse("portfolioitem-detail", args=(portfolio_item.id,)), data
+        "put", "portfolioitem-detail", portfolio_item.id, data
     )
 
     assert response.status_code == 405
@@ -82,7 +78,7 @@ def test_portfolio_item_post(api_request):
         "name": "abcdef",
         "description": "abc",
     }
-    response = api_request("post", reverse("portfolioitem-list"), data)
+    response = api_request("post", "portfolioitem-list", data=data)
     assert response.status_code == 201
 
 
@@ -99,7 +95,8 @@ def test_portfolio_item_icon_post(api_request, small_image, media_dir):
 
     response = api_request(
         "post",
-        reverse("portfolioitem-icon", args=(portfolio_item.id,)),
+        "portfolioitem-icon",
+        portfolio_item.id,
         data,
         format="multipart",
     )
@@ -125,7 +122,8 @@ def test_portfolio_item_icon_patch(api_request, small_image, media_dir):
 
     api_request(
         "post",
-        reverse("portfolioitem-icon", args=(portfolio_item.id,)),
+        "portfolioitem-icon",
+        portfolio_item.id,
         data,
         format="multipart",
     )
@@ -133,7 +131,8 @@ def test_portfolio_item_icon_patch(api_request, small_image, media_dir):
 
     response = api_request(
         "patch",
-        reverse("portfolioitem-icon", args=(portfolio_item.id,)),
+        "portfolioitem-icon",
+        portfolio_item.id,
         data,
         format="multipart",
     )
@@ -159,14 +158,16 @@ def test_portfolio_item_icon_delete(api_request, small_image, media_dir):
 
     api_request(
         "post",
-        reverse("portfolioitem-icon", args=(portfolio_item.id,)),
+        "portfolioitem-icon",
+        portfolio_item.id,
         data,
         format="multipart",
     )
 
     response = api_request(
         "delete",
-        reverse("portfolioitem-icon", args=(portfolio_item.id,)),
+        "portfolioitem-icon",
+        portfolio_item.id,
         format="multipart",
     )
 
