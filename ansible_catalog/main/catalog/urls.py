@@ -1,7 +1,5 @@
-from rest_framework import routers
-
-from rest_framework_extensions.routers import NestedRouterMixin
-
+"""URLs for catalog"""
+from ansible_catalog.common.nested_router import NestedDefaultRouter
 from ansible_catalog.main.catalog.views import (
     ApprovalRequestViewSet,
     CatalogServicePlanViewSet,
@@ -15,13 +13,7 @@ from ansible_catalog.main.catalog.views import (
 
 urls_views = {}
 
-
-class NestedDefaultRouter(NestedRouterMixin, routers.DefaultRouter):
-    pass
-
-
 router = NestedDefaultRouter()
-
 router.register("tenants", TenantViewSet)
 portfolios = router.register(
     r"portfolios", PortfolioViewSet, basename="portfolio"
@@ -30,7 +22,7 @@ portfolios.register(
     r"portfolio_items",
     PortfolioItemViewSet,
     basename="portfolio-portfolioitem",
-    parents_query_lookups=["portfolio"],
+    parents_query_lookups=PortfolioItemViewSet.parent_field_names,
 )
 portfolio_items = router.register(
     r"portfolio_items", PortfolioItemViewSet, basename="portfolioitem"
@@ -48,7 +40,7 @@ portfolio_items.register(
     r"service_plans",
     CatalogServicePlanViewSet,
     basename="portfolioitem-serviceplan",
-    parents_query_lookups=["portfolio_item"],
+    parents_query_lookups=CatalogServicePlanViewSet.parent_field_names,
 )
 
 urls_views["portfolioitem-serviceplan-detail"] = None  # disable
@@ -61,19 +53,19 @@ orders.register(
     r"order_items",
     OrderItemViewSet,
     basename="order-orderitem",
-    parents_query_lookups=["order"],
+    parents_query_lookups=OrderItemViewSet.parent_field_names,
 )
 orders.register(
     r"approval_request",
     ApprovalRequestViewSet,
     basename="order-approvalrequest",
-    parents_query_lookups=["order"],
+    parents_query_lookups=ApprovalRequestViewSet.parent_field_names,
 )
 orders.register(
     r"progress_messages",
     ProgressMessageViewSet,
     basename="order-progressmessage",
-    parents_query_lookups=["messageable_id"],
+    parents_query_lookups=["messageable"],
 )
 urls_views["order-orderitem-detail"] = OrderItemViewSet.as_view(
     {"get": "retrieve"}
@@ -88,7 +80,7 @@ order_items.register(
     r"progress_messages",
     ProgressMessageViewSet,
     basename="orderitem-progressmessage",
-    parents_query_lookups=["messageable_id"],
+    parents_query_lookups=["messageable"],
 )
 urls_views["orderitem-list"] = None
 urls_views["orderitem-progressmessage-detail"] = None

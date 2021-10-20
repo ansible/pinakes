@@ -63,9 +63,7 @@ class ServicePlanViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
         "service_offering",
     )
     search_fields = ("name",)
-    # TODO: service plan has another parent called service. This endpoint may no longer be needed
-    parent_field_name = "service_offering"
-    parent_lookup_key = "parent_lookup_service_offering"
+    parent_field_names = ("service_offering", "source") # do not modify the sequence
     http_method_names = ["get", "head"]
 
 
@@ -83,8 +81,7 @@ class ServiceOfferingViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
         "service_inventory",
     )
     search_fields = ("name", "description")
-    parent_field_name = "source"
-    parent_lookup_key = "parent_lookup_source"
+    parent_field_names = ("source",)
     http_method_names = ["get", "head"]
 
     # TODO:
@@ -115,8 +112,7 @@ class ServiceInventoryViewSet(
         "updated_at",
     )
     search_fields = ("description",)
-    parent_field_name = "source"
-    parent_lookup_key = "parent_lookup_source"
+    parent_field_names = ("source",)
 
     # For tagging purpose, enable POST action here
     http_method_names = ["get", "post", "head"]

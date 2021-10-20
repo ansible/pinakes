@@ -1,7 +1,5 @@
 """URLs for Inventory"""
-from rest_framework import routers
-
-from rest_framework_extensions.routers import NestedRouterMixin
+from ansible_catalog.common.nested_router import NestedDefaultRouter
 from ansible_catalog.main.inventory.views import (
     ServiceInstanceViewSet,
     ServiceInventoryViewSet,
@@ -12,18 +10,13 @@ from ansible_catalog.main.inventory.views import (
 
 urls_views = {}
 
-
-class NestedDefaultRouter(NestedRouterMixin, routers.DefaultRouter):
-    pass
-
-
 router = NestedDefaultRouter()
 sources = router.register(r"sources", SourceViewSet, basename="source")
 sources.register(
     r"service_inventories",
     ServiceInventoryViewSet,
     basename="source-service_inventory",
-    parents_query_lookups=["source"],
+    parents_query_lookups=ServiceInventoryViewSet.parent_field_names,
 )
 urls_views["source-service_inventory-detail"] = None  # disable
 urls_views["source-service_inventory-tag"] = None
@@ -34,7 +27,7 @@ sources.register(
     r"service_plans",
     ServicePlanViewSet,
     basename="source-service_plan",
-    parents_query_lookups=["source"],
+    parents_query_lookups=(ServicePlanViewSet.parent_field_names[1],),
 )
 urls_views["source-service_plan-detail"] = None
 
@@ -42,7 +35,7 @@ sources.register(
     r"service_offerings",
     ServiceOfferingViewSet,
     basename="source-service_offering",
-    parents_query_lookups=["source"],
+    parents_query_lookups=ServiceOfferingViewSet.parent_field_names,
 )
 urls_views["source-service_offering-detail"] = None
 urls_views["source-service_offering-order"] = None
@@ -55,7 +48,7 @@ offerings.register(
     r"service_plans",
     ServicePlanViewSet,
     basename="offering-service_plans",
-    parents_query_lookups=["service_offering"],
+    parents_query_lookups=(ServicePlanViewSet.parent_field_names[0],),
 )
 urls_views["offering-service_plans-detail"] = None
 

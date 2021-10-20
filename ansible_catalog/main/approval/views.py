@@ -111,8 +111,7 @@ class WorkflowViewSet(
         "updated_at",
     )
     search_fields = ("name", "description")
-    parent_field_name = "template"
-    parent_lookup_key = "parent_lookup_template"
+    parent_field_names = ("template",)
     queryset_order_by = "internal_sequence"
 
     @extend_schema(
@@ -154,7 +153,7 @@ class WorkflowViewSet(
                 max_obj.internal_sequence.to_integral_value() + 1
             )
         serializer.save(
-            template=Template(id=self.kwargs[self.parent_lookup_key]),
+            template=Template(id=self.kwargs["template_id"]),
             internal_sequence=next_seq,
             tenant=Tenant.current(),
         )
@@ -169,8 +168,7 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     ordering = ("-id",)
     filterset_fields = "__all__"
     search_fields = ("name", "description", "state", "decision", "reason")
-    parent_field_name = "parent"
-    parent_lookup_key = "parent_lookup_parent"
+    parent_field_names = ("parent",)
 
     @extend_schema(
         request=RequestInSerializer,
@@ -210,12 +208,11 @@ class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
     ordering = ("-id",)
     filterset_fields = "__all__"
     search_fields = ("operation", "comments")
-    parent_field_name = "request"
-    parent_lookup_key = "parent_lookup_request"
+    parent_field_names = ("request",)
 
     def perform_create(self, serializer):
         serializer.save(
-            request=self.kwargs[self.parent_lookup_key],
+            request=self.kwargs["request_id"],
             user=self.request.user,
             tenant=Tenant.current(),
         )
