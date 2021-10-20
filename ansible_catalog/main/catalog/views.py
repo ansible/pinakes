@@ -37,11 +37,15 @@ from ansible_catalog.main.catalog.serializers import (
 from ansible_catalog.main.catalog.services.collect_tag_resources import (
     CollectTagResources,
 )
-from ansible_catalog.main.catalog.services.submit_approval_request import (
-    SubmitApprovalRequest,
+
+from ansible_catalog.main.catalog.services.copy_portfolio_item import (
+    CopyPortfolioItem,
 )
 from ansible_catalog.main.catalog.services.fetch_service_plans import (
     FetchServicePlans,
+)
+from ansible_catalog.main.catalog.services.submit_approval_request import (
+    SubmitApprovalRequest,
 )
 
 # Create your views here.
@@ -100,6 +104,25 @@ class PortfolioItemViewSet(
     search_fields = ("name", "description")
     parent_field_name = "portfolio"
     parent_lookup_key = "parent_lookup_portfolio"
+
+    @extend_schema(
+        responses={200: PortfolioItemSerializer},
+    )
+    @action(methods=["post"], detail=True)
+    def copy(self, request, pk):
+        """Copy the specified pk portfolio item."""
+        portfolio_item = get_object_or_404(PortfolioItem, pk=pk)
+        options = {
+            "portfolio_item_id": portfolio_item.id,
+            "portfolio": portfolio_item.portfolio.id,
+            "portfolio_item_name": request.data.get(
+                "portfolio_item_name", portfolio_item.name
+            ),
+        }
+        svc = CopyPortfolioItem(portfolio_item, options).process()
+        serializer = self.get_serializer(svc.new_portfolio_item)
+
+        return Response(serializer.data)
 
 
 class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
