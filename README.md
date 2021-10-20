@@ -142,7 +142,7 @@ docker-compose exec app python manage.py createsuperuser
 - create the source: (Ensure before you have configured the tower connection, see above)
 ```
 docker-compose exec app python manage.py shell
->>> from main.models import Source, Tenant
+>>> from ansible_catalog.main.models import Source, Tenant
 >>> Source.objects.create(name="source_1", tenant=Tenant.current())
 ```
 open in your browser: http://localhost:8000/api/v1/sources/1/refresh/
