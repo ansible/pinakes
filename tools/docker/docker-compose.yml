@@ -19,6 +19,7 @@ services:
       - KEYCLOAK_PASSWORD=admin
       - KEYCLOAK_SECRET=SOMESECRETVALUE
       - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
+      - ANSIBLE_CATALOG_REDIS_HOST=redis
     depends_on: 
       - keycloak-setup
       - postgres
