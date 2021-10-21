@@ -39,7 +39,7 @@ from ansible_catalog.main.inventory.urls import (
 )
 
 
-def __filter_by_view(pattern):
+def __filter_by_view(urls_views, pattern):
     name = pattern.name
     if name in urls_views:
         if urls_views[name] == None:
@@ -48,38 +48,33 @@ def __filter_by_view(pattern):
     return True
 
 
-router = routers.DefaultRouter()
-router.registry.extend(catalog_router.registry)
-router.registry.extend(approval_router.registry)
-router.registry.extend(inventory_router.registry)
-
-api_urls = router.urls
-urls_views = {**catalog_views, **approval_views, **inventory_views}
-api_urls = [p for p in api_urls if __filter_by_view(p)]
-
 API_PATH_PREFIX = settings.CATALOG_API_PATH_PREFIX.strip("/")
 API_VER = "v1"
+api_prefix = f"{API_PATH_PREFIX}/{API_VER}/"
 
-api_urls = [
-    path(f"{API_PATH_PREFIX}/{API_VER}/", include(api_urls)),
-]
+approval_urls = [p for p in approval_router.urls if __filter_by_view(approval_views, p)]
+catalog_urls = [p for p in catalog_router.urls if __filter_by_view(catalog_views, p)]
+inventory_urls = [p for p in inventory_router.urls if __filter_by_view(inventory_views, p)]
 
 urlpatterns = [
     path(
-        f"{API_PATH_PREFIX}/{API_VER}/schema/openapi.json",
+        f"{api_prefix}schema/openapi.json",
         SpectacularJSONAPIView.as_view(),
         name="schema",
     ),
     path(
-        f"{API_PATH_PREFIX}/{API_VER}/schema/swagger-ui/",
+        f"{api_prefix}schema/swagger-ui/",
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
     path(
-        f"{API_PATH_PREFIX}/{API_VER}/schema/redoc/",
+        f"{api_prefix}schema/redoc/",
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
-    path("", include((api_urls, "api"), "catalog")),
+    # path("", include((api_urls, "api"), "catalog")),
+    path(api_prefix, include((approval_urls, "api"), namespace="approval")),
+    path(api_prefix, include((catalog_urls, "api"), namespace="catalog")),
+    path(api_prefix, include((inventory_urls, "api"), namespace="inventory")),
     path("", include("social_django.urls", namespace="social")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
