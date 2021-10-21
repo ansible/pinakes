@@ -54,7 +54,7 @@ def test_portfolio_item_is_orderable_with_empty_service_plans():
     svc = CopyPortfolioItem(portfolio_item, options)
     orderable = svc._is_orderable()
 
-    assert orderable is False
+    assert orderable is True
 
 
 @pytest.mark.django_db
@@ -102,7 +102,7 @@ def test_portfolio_item_is_orderable_with_service_plans():
     svc = CopyPortfolioItem(portfolio_item, options)
     orderable = svc._is_orderable()
 
-    assert orderable is True
+    assert orderable is False
 
 
 @pytest.mark.django_db
@@ -142,7 +142,7 @@ def test_process():
         service_offering_ref=str(service_offering.id),
         portfolio=portfolio,
     )
-    CatalogServicePlanFactory(base_schema={}, portfolio_item=portfolio_item)
+    CatalogServicePlanFactory(portfolio_item=portfolio_item)
 
     options = {
         "portfolio_item_name": portfolio_item.name,

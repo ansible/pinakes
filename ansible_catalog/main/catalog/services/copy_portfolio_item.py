@@ -14,8 +14,8 @@ from ansible_catalog.main.catalog.models import (
     Portfolio,
     PortfolioItem,
 )
-from ansible_catalog.main.catalog.services.copy_name import (
-    CopyName,
+from ansible_catalog.main.catalog.services import (
+    name,
 )
 from ansible_catalog.main.inventory.services.get_service_offering import (
     GetServiceOffering,
@@ -90,12 +90,12 @@ class CopyPortfolioItem:
         )
         for service_plan in service_plans:
             if service_plan.base_schema is None:
-                return False
-
-            if original_schema != service_plan.base_schema:
                 return True
 
-        return False
+            if original_schema != service_plan.base_schema:
+                return False
+
+        return True
 
     def _copy_image(self):
         names = os.path.splitext(self.portfolio_item.icon.file.name)
@@ -123,7 +123,7 @@ class CopyPortfolioItem:
         ]
 
         return (
-            CopyName.create_copy_name(self.name, portfolio_item_names)
+            name.create_copy_name(self.name, portfolio_item_names)
             if self.name in portfolio_item_names
             else self.name
         )
