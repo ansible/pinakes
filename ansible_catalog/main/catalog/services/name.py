@@ -4,9 +4,10 @@ import re
 
 
 NAME_PATTERN = "^Copy \((\d+)\) of"  # pattern of "Copy (2) of original_name"
+MAX_LENGTH = 64
 
 
-def create_copy_name(original_name, existing_names, max_length=64):
+def create_copy_name(original_name, existing_names, max_length=MAX_LENGTH):
     copied_name = copy(original_name, existing_names)
 
     return copied_name[:max_length] if max_length else copied_name

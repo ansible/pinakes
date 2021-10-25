@@ -89,7 +89,7 @@ class CopyPortfolioItem:
             portfolio_item=self.portfolio_item
         )
         for service_plan in service_plans:
-            if service_plan.base_schema is None:
+            if not service_plan.base_schema:
                 return True
 
             if original_schema != service_plan.base_schema:
@@ -98,11 +98,16 @@ class CopyPortfolioItem:
         return True
 
     def _copy_image(self):
+        existing_image_names = [image.file.name for image in Image.objects.all()]
         names = os.path.splitext(self.portfolio_item.icon.file.name)
-        rad_sfx = "".join(
-            random.choices(string.ascii_letters + string.digits, k=6)
-        )
-        new_name = "{}{}{}".format(names[0], rad_sfx, names[-1])
+
+        while True:
+            rad_sfx = "".join(
+                random.choices(string.ascii_letters + string.digits, k=6)
+            )
+            new_name = "{}{}{}".format(names[0], rad_sfx, names[-1])
+            if new_name not in existing_image_names:
+                break
 
         with open(self.portfolio_item.icon.file.path, "rb") as icon:
             data = icon.read()
