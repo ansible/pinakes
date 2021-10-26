@@ -65,6 +65,9 @@ db.sqlite3-journal
 *.db
 apispec.json
 
+# Media default path
+ansible_catalog/media/
+
 # Flask stuff:
 instance/
 .webassets-cache
