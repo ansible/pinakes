@@ -27,7 +27,7 @@ class ImportServicePlan:
 
     def process(self):
         svc = FetchServicePlans(self.portfolio_item)
-        svc._get_remote_service_plans()
+        svc.get_remote_service_plans()
 
         if len(svc.service_plans) == 0:
             logger.info(
@@ -40,9 +40,7 @@ class ImportServicePlan:
         CatalogServicePlan.objects.create(
             name=service_plan.name,
             portfolio_item=self.portfolio_item,
-            base_schema=service_plan.base_schema,
-            modified_schema=service_plan.modified_schema,
-            create_json_schema=service_plan.create_json_schema,
+            base_schema=service_plan.create_json_schema,
             service_offering_ref=service_plan.service_offering_ref,
             service_plan_ref=service_plan.service_plan_ref,
             tenant=self.portfolio_item.tenant,
@@ -64,7 +62,7 @@ class ImportServicePlan:
             portfolio_item=self.portfolio_item
         )
 
-        if len(service_plans) > 0:
+        if service_plans.count() > 0:
             raise RuntimeError(
                 _("Service Plan already exists for PortfolioItem: {}").format(
                     self.portfolio_item.id

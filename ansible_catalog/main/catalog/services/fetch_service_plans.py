@@ -24,7 +24,7 @@ class FetchServicePlans:
             )
 
             if len(service_plans) == 0:
-                self._get_remote_service_plans()
+                self.get_remote_service_plans()
             else:
                 self._get_local_service_plans(service_plans)
 
@@ -47,7 +47,7 @@ class FetchServicePlans:
 
             self.service_plans.append(service_plan)
 
-    def _get_remote_service_plans(self):
+    def get_remote_service_plans(self):
         service_offering_ref = self.portfolio_item.service_offering_ref
         svc = GetServiceOffering(service_offering_ref, True).process()
 
