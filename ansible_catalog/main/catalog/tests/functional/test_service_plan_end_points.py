@@ -2,7 +2,6 @@
 import json
 import pytest
 
-from django.urls import reverse
 from ansible_catalog.main.catalog.tests.factories import (
     PortfolioItemFactory,
     ServicePlanFactory,
@@ -17,8 +16,7 @@ def test_portfolio_item_service_plan_get(api_request):
     ServicePlanFactory(portfolio_item=portfolio_item)
 
     response = api_request(
-        "get",
-        reverse("portfolioitem-serviceplan-list", args=(portfolio_item.id,)),
+        "get", "portfolioitem-serviceplan-list", portfolio_item.id
     )
 
     assert response.status_code == 200

@@ -1,7 +1,6 @@
 """ Module to test ServiceInstance end points """
 import json
 import pytest
-from django.urls import reverse
 from ansible_catalog.main.inventory.tests.factories import (
     ServiceInstanceFactory,
 )
@@ -12,7 +11,7 @@ def test_service_instance_list(api_request):
     """Test to list ServiceInstance endpoint"""
 
     ServiceInstanceFactory()
-    response = api_request("get", reverse("serviceplan-list"))
+    response = api_request("get", "serviceplan-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -27,7 +26,8 @@ def test_service_instance_retrieve(api_request):
     service_instance = ServiceInstanceFactory()
     response = api_request(
         "get",
-        reverse("serviceplan-detail", args=(service_instance.id,)),
+        "serviceplan-detail",
+        service_instance.id,
     )
 
     assert response.status_code == 200
@@ -42,7 +42,8 @@ def test_service_instance_patch_not_supported(api_request):
     service_instance = ServiceInstanceFactory()
     response = api_request(
         "patch",
-        reverse("serviceplan-detail", args=(service_instance.id,)),
+        "serviceplan-detail",
+        service_instance.id,
         {"name": "update"},
     )
 
@@ -56,7 +57,8 @@ def test_service_instance_delete_not_supported(api_request):
     service_instance = ServiceInstanceFactory()
     response = api_request(
         "delete",
-        reverse("serviceplan-detail", args=(service_instance.id,)),
+        "serviceplan-detail",
+        service_instance.id,
     )
 
     assert response.status_code == 405
@@ -69,7 +71,8 @@ def test_service_instance_put_not_supported(api_request):
     service_instance = ServiceInstanceFactory()
     response = api_request(
         "put",
-        reverse("serviceplan-detail", args=(service_instance.id,)),
+        "serviceplan-detail",
+        service_instance.id,
         {"name": "update"},
     )
 

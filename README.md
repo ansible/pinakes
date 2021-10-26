@@ -124,7 +124,7 @@ Run the application (this may take a while until the keycloak setup process has 
 docker-compose up -d
 ```
 
-Now you can try to open http://localhost:8000/api/v1/
+Now you can try to open http://localhost:8000/api/ansible-catalog/v1/
 You can do log in with http://localhost:8000/login/keycloak/
 The project path is mounted in the pod and you can edit it in real time from outside the container. 
 
@@ -145,13 +145,17 @@ docker-compose exec app python manage.py shell
 >>> from ansible_catalog.main.models import Source, Tenant
 >>> Source.objects.create(name="source_1", tenant=Tenant.current())
 ```
-open in your browser: http://localhost:8000/api/v1/sources/1/refresh/
+open in your browser: http://localhost:8000/api/ansible-catalog/v1/sources/1/refresh/
 and execute a patch with empty body. (this may take a while)
 
-### Generate the open api specfile
-```
-docker-compose exec app python manage.py spectacular --format openapi-json --file apispec.json
-```
+### Download the open api schema
+http://localhost:8000/api/ansible-catalog/v1/schema/openapi.json
+
+
+### Try with swagger UI
+http://localhost:8000/api/ansible-catalog/v1/schema/swagger-ui/
+
+
 ## Using minikube for development
 ###  Setup minikube
 [Install minikube](https://minikube.sigs.k8s.io/docs/start/)
@@ -194,8 +198,8 @@ This would lead to a page (http://catalog/accounts/profile/) that has a 404 not 
 
 To access the catalog app use
 
-http://catalog/api/v1/
-http://catalog/api/v1/portfolios/ (You wont be able to get to this link without logging in first)
+http://catalog/api/ansible-catalog/v1/schema/openapi.json
+http://catalog/api/ansible-catalog/v1/portfolios/ (You wont be able to get to this link without logging in first)
 
 ## About credentials
 

@@ -1,7 +1,6 @@
 """ Test order end points """
 import json
 import pytest
-from django.urls import reverse
 
 from ansible_catalog.main.catalog.tests.factories import (
     OrderFactory,
@@ -14,7 +13,7 @@ from ansible_catalog.main.catalog.tests.factories import (
 def test_order_list(api_request):
     """Get List of Orders"""
     OrderFactory()
-    response = api_request("get", reverse("order-list"))
+    response = api_request("get", "order-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -26,7 +25,7 @@ def test_order_list(api_request):
 def test_order_retrieve(api_request):
     """Retrieve a single order by id"""
     order = OrderFactory()
-    response = api_request("get", reverse("order-detail", args=(order.id,)))
+    response = api_request("get", "order-detail", order.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -38,7 +37,7 @@ def test_order_retrieve(api_request):
 def test_order_delete(api_request):
     """Delete a single order by id"""
     order = OrderFactory()
-    response = api_request("delete", reverse("order-detail", args=(order.id,)))
+    response = api_request("delete", "order-detail", order.id)
 
     assert response.status_code == 204
 
@@ -48,9 +47,7 @@ def test_order_patch_not_supported(api_request):
     """Patch a single order by id"""
     order = OrderFactory()
     data = {"name": "update"}
-    response = api_request(
-        "patch", reverse("order-detail", args=(order.id,)), data
-    )
+    response = api_request("patch", "order-detail", order.id, data)
 
     assert response.status_code == 405
 
@@ -60,9 +57,7 @@ def test_order_put_not_supported(api_request):
     """PUT is not supported"""
     order = OrderFactory()
     data = {"name": "update"}
-    response = api_request(
-        "put", reverse("order-detail", args=(order.id,)), data
-    )
+    response = api_request("put", "order-detail", order.id, data)
 
     assert response.status_code == 405
 
@@ -71,7 +66,7 @@ def test_order_put_not_supported(api_request):
 def test_order_post(api_request):
     """Create a Order"""
     data = {"name": "abcdef", "description": "abc"}
-    response = api_request("post", reverse("order-list"), data)
+    response = api_request("post", "order-list", data=data)
     content = json.loads(response.content)
 
     assert response.status_code == 201
@@ -87,9 +82,7 @@ def test_order_order_items_get(api_request):
     OrderItemFactory(order=order1)
     order_item = OrderItemFactory(order=order2)
 
-    response = api_request(
-        "get", reverse("order-orderitem-list", args=(order2.id,))
-    )
+    response = api_request("get", "order-orderitem-list", order2.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -108,7 +101,5 @@ def test_order_order_item_post(api_request):
         "portfolio_item": portfolio_item.id,
         "name": "abcdef",
     }
-    response = api_request(
-        "post", reverse("order-orderitem-list", args=(order.id,)), data
-    )
+    response = api_request("post", "order-orderitem-list", order.id, data)
     assert response.status_code == 201

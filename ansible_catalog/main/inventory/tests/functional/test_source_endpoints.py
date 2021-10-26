@@ -2,7 +2,6 @@
 from unittest.mock import patch
 import json
 import pytest
-from django.urls import reverse
 from ansible_catalog.main.inventory.tests.factories import (
     SourceFactory,
     ServiceInventoryFactory,
@@ -16,7 +15,7 @@ def test_source_list(api_request):
     """Test to list Source endpoint"""
 
     SourceFactory()
-    response = api_request("get", reverse("source-list"))
+    response = api_request("get", "source-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -29,10 +28,7 @@ def test_source_retrieve(api_request):
     """Test to retrieve Source endpoint"""
 
     source = SourceFactory()
-    response = api_request(
-        "get",
-        reverse("source-detail", args=(source.id,)),
-    )
+    response = api_request("get", "source-detail", source.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -44,10 +40,7 @@ def test_source_retrieve(api_request):
 def test_source_refresh(mock1, api_request):
     """Test to refresh Source endpoint"""
     source = SourceFactory()
-    response = api_request(
-        "patch",
-        reverse("source-refresh", args=(source.id,)),
-    )
+    response = api_request("patch", "source-refresh", source.id)
 
     assert response.status_code == 204
     assert (mock1.enqueue.call_count) == 1
@@ -60,7 +53,8 @@ def test_source_patch(api_request):
     source = SourceFactory()
     response = api_request(
         "patch",
-        reverse("source-detail", args=(source.id,)),
+        "source-detail",
+        source.id,
         {"name": "update"},
     )
 
@@ -72,10 +66,7 @@ def test_source_delete_not_supported(api_request):
     """Test to delete Source endpoint"""
 
     source = SourceFactory()
-    response = api_request(
-        "delete",
-        reverse("source-detail", args=(source.id,)),
-    )
+    response = api_request("delete", "source-detail", source.id)
 
     assert response.status_code == 405
 
@@ -87,7 +78,8 @@ def test_source_put_not_supported(api_request):
     source = SourceFactory()
     response = api_request(
         "put",
-        reverse("source-detail", args=(source.id,)),
+        "source-detail",
+        source.id,
         {"name": "update"},
     )
 
@@ -104,10 +96,7 @@ def test_source_service_inventory_list(api_request):
     ServiceInventoryFactory(source=source1)
     service_inventory = ServiceInventoryFactory(source=source2)
 
-    response = api_request(
-        "get",
-        reverse("source-service_inventory-list", args=(source2.id,)),
-    )
+    response = api_request("get", "source-service_inventory-list", source2.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -126,10 +115,7 @@ def test_source_service_plan_list(api_request):
     ServicePlanFactory(source=source1)
     ServicePlanFactory(source=source2)
 
-    response = api_request(
-        "get",
-        reverse("source-service_plan-list", args=(source1.id,)),
-    )
+    response = api_request("get", "source-service_plan-list", source1.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -146,10 +132,7 @@ def test_source_service_offering_list(api_request):
     ServiceOfferingFactory(source=source1)
     ServiceOfferingFactory(source=source1)
     ServiceOfferingFactory(source=source2)
-    response = api_request(
-        "get",
-        reverse("source-service_offering-list", args=(source2.id,)),
-    )
+    response = api_request("get", "source-service_offering-list", source2.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)

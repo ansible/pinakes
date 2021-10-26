@@ -228,7 +228,8 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         """return queryset based on messageable_type"""
 
-        parent_type = self.request.path.split("/")[3]
+        path_splits = self.request.path.split("/")
+        parent_type = path_splits[path_splits.index("progress_messages") - 2]
         messageable_id = self.kwargs.get("parent_lookup_messageable_id")
 
         messageable_type = "Order" if parent_type == "orders" else "OrderItem"

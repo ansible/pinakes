@@ -2,7 +2,6 @@
 import json
 import pytest
 
-from django.urls import reverse
 from ansible_catalog.main.catalog.tests.factories import PortfolioFactory
 
 
@@ -10,8 +9,9 @@ from ansible_catalog.main.catalog.tests.factories import PortfolioFactory
 def test_portfolio_tag_add(api_request):
     """Test adding a tag on portfolio"""
     portfolio = PortfolioFactory()
-    url = reverse("portfolio-tag", args=(portfolio.id,))
-    response = api_request("post", url, {"name": "test_tag"})
+    response = api_request(
+        "post", "portfolio-tag", portfolio.id, {"name": "test_tag"}
+    )
 
     assert response.status_code == 201
     content = json.loads(response.content)
@@ -25,12 +25,10 @@ def test_portfolio_tags_list(api_request):
     portfolio = PortfolioFactory()
 
     # Add tag first
-    url = reverse("portfolio-tag", args=(portfolio.id,))
-    api_request("post", url, {"name": "test_tag"})
+    api_request("post", "portfolio-tag", portfolio.id, {"name": "test_tag"})
 
     # List tags
-    url = reverse("portfolio-tags", args=(portfolio.id,))
-    response = api_request("get", url)
+    response = api_request("get", "portfolio-tags", portfolio.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -45,11 +43,11 @@ def test_portfolio_tags_remove(api_request):
     portfolio = PortfolioFactory()
 
     # Add tag first
-    url = reverse("portfolio-tag", args=(portfolio.id,))
-    api_request("post", url, {"name": "test_tag"})
+    api_request("post", "portfolio-tag", portfolio.id, {"name": "test_tag"})
 
     # Remove tag
-    url = reverse("portfolio-untag", args=(portfolio.id,))
-    response = api_request("post", url, {"name": "test_tag"})
+    response = api_request(
+        "post", "portfolio-untag", portfolio.id, {"name": "test_tag"}
+    )
 
     assert response.status_code == 204
