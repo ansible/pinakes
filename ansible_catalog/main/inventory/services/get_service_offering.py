@@ -7,9 +7,9 @@ class GetServiceOffering:
     """Get service plan for a given service plan id"""
 
     def __init__(self, service_offering_id, get_service_plans=False):
-        self.service_offering = ServiceOffering.objects.get(
+        self.service_offering = ServiceOffering.objects.filter(
             id=int(service_offering_id)
-        )
+        ).first()
         if get_service_plans:
             self.service_plans = ServicePlan.objects.filter(
                 service_offering=self.service_offering

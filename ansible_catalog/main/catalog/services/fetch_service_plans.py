@@ -53,7 +53,7 @@ class FetchServicePlans:
 
         service_offering = svc.service_offering
 
-        if service_offering.survey_enabled:
+        if service_offering and service_offering.survey_enabled:
             service_plan = svc.service_plans.first()  # only choose the 1st one
 
             catalog_service_plan = CatalogServicePlan(

@@ -5,6 +5,11 @@ import glob
 import json
 import pytest
 
+from django.urls import reverse
+from ansible_catalog.main.catalog.models import PortfolioItem
+from ansible_catalog.main.catalog.services.copy_portfolio_item import (
+    CopyPortfolioItem,
+)
 from ansible_catalog.main.catalog.tests.factories import PortfolioFactory
 from ansible_catalog.main.catalog.tests.factories import PortfolioItemFactory
 
@@ -177,3 +182,23 @@ def test_portfolio_item_icon_delete(api_request, small_image, media_dir):
     assert len(images) == len(orignal_images)
     portfolio_item.refresh_from_db()
     assert portfolio_item.icon is None
+
+
+@pytest.mark.django_db
+def test_portfolio_item_copy(api_request, mocker):
+    """Copy a PortfolioItem by id"""
+    portfolio_item = PortfolioItemFactory()
+    mocker.patch.object(CopyPortfolioItem, "_is_orderable", return_value=True)
+
+    assert PortfolioItem.objects.count() == 1
+    response = api_request(
+        "post",
+        "portfolioitem-copy",
+        portfolio_item.id,
+    )
+
+    assert response.status_code == 200
+    assert PortfolioItem.objects.count() == 2
+    assert (
+        PortfolioItem.objects.last().name == "Copy of %s" % portfolio_item.name
+    )

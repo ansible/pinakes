@@ -404,7 +404,7 @@ class ApprovalRequest(BaseModel):
 class CatalogServicePlan(BaseModel):
     """Catalog Service Plan Model"""
 
-    name = models.CharField(max_length=255, blank=True, null=True)
+    name = models.CharField(max_length=255, blank=True, default="")
     base_schema = models.JSONField(blank=True, null=True)
     modified_schema = models.JSONField(blank=True, null=True)
     create_json_schema = models.JSONField(blank=True, null=True)
