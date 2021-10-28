@@ -92,3 +92,12 @@ order_items.register(
 )
 urls_views["orderitem-list"] = None
 urls_views["orderitem-progressmessage-detail"] = None
+
+service_plans = router.register(
+    r"catalog_service_plans",
+    CatalogServicePlanViewSet,
+    basename="catalogserviceplan",
+)
+urls_views["catalogserviceplan-list"] = CatalogServicePlanViewSet.as_view(
+    {"post": "create"}
+)

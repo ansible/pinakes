@@ -52,9 +52,15 @@ API_PATH_PREFIX = settings.CATALOG_API_PATH_PREFIX.strip("/")
 API_VER = "v1"
 api_prefix = f"{API_PATH_PREFIX}/{API_VER}/"
 
-approval_urls = [p for p in approval_router.urls if __filter_by_view(approval_views, p)]
-catalog_urls = [p for p in catalog_router.urls if __filter_by_view(catalog_views, p)]
-inventory_urls = [p for p in inventory_router.urls if __filter_by_view(inventory_views, p)]
+approval_urls = [
+    p for p in approval_router.urls if __filter_by_view(approval_views, p)
+]
+catalog_urls = [
+    p for p in catalog_router.urls if __filter_by_view(catalog_views, p)
+]
+inventory_urls = [
+    p for p in inventory_router.urls if __filter_by_view(inventory_views, p)
+]
 
 urlpatterns = [
     path(

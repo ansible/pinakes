@@ -98,7 +98,9 @@ class CopyPortfolioItem:
         return True
 
     def _copy_image(self):
-        existing_image_names = [image.file.name for image in Image.objects.all()]
+        existing_image_names = [
+            image.file.name for image in Image.objects.all()
+        ]
         names = os.path.splitext(self.portfolio_item.icon.file.name)
 
         while True:

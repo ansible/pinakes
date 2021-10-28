@@ -203,7 +203,6 @@ class CatalogServicePlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = CatalogServicePlan
         fields = (
-            "id",
             "name",
             "create_json_schema",
             "imported",
@@ -217,3 +216,13 @@ class CatalogServicePlanSerializer(serializers.ModelSerializer):
         return CatalogServicePlan.objects.create(
             tenant=Tenant.current(), **validated_data
         )
+
+
+class CatalogServicePlanInSerializer(serializers.ModelSerializer):
+    """Serializer for creating CatalogServicePlan"""
+
+    portfolio_item_id = serializers.IntegerField(required=True)
+
+    class Meta:
+        model = CatalogServicePlan
+        fields = ("portfolio_item_id",)
