@@ -1,8 +1,13 @@
 """ Create a request to Approval """
 import logging
 
+from django.utils.translation import gettext_lazy as _
+
 from ansible_catalog.main.approval.services.create_request import (
     CreateRequest,
+)
+from ansible_catalog.main.catalog.exceptions import (
+    BadParamsException,
 )
 from ansible_catalog.main.catalog.models import ApprovalRequest
 from ansible_catalog.main.models import Source
@@ -20,13 +25,13 @@ class SubmitApprovalRequest:
 
     def process(self):
         self.order.mark_approval_pending()
-        self.submit_approval_request()
+        self._submit_approval_request()
 
         return self
 
-    def submit_approval_request(self):
+    def _submit_approval_request(self):
         try:
-            request_body = self.__create_approval_request_body()
+            request_body = self._create_approval_request_body()
             svc = CreateRequest(request_body).process()
 
             ApprovalRequest.objects.create(
@@ -46,24 +51,40 @@ class SubmitApprovalRequest:
                 self.order.id,
                 error,
             )
-            raise error
+            raise BadParamsException(
+                _("Failed to submit request to approval for Order {}, error: {}").format(
+                    self.order.id,
+                    str(error),
+                )
+            )
 
-    def __create_approval_request_body(self):
+    def _create_approval_request_body(self):
         return {
             "name": self.order_item.portfolio_item.name,
             "content": {
                 "product": self.order_item.portfolio_item.name,
                 "portfolio": self.order_item.portfolio_item.portfolio.name,
                 "order_id": str(self.order.id),
-                "platform": self.__platform(),
+                "platform": self._platform(),
                 "params": self.order_item.service_parameters,
             },
             "tag_resources": self.tag_resources,
             "tenant_id": self.order.tenant_id,
         }
 
-    def __platform(self):
+    def _platform(self):
         source_ref = self.order_item.portfolio_item.service_offering_source_ref
-        obj = Source.objects.get(id=int(source_ref))
+        if not source_ref:
+            logger.warning(
+                "Portfolio item %d has no related platform information",
+                self.order_item.portfolio_item.id
+            )
+            return ""
 
-        return obj.name if obj is not None else ""
+        obj = Source.objects.filter(id=int(source_ref)).first()
+
+        if obj:
+            return obj.name
+        else:
+            logger.warning("Source %s is not available", source_ref)
+            return ""

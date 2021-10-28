@@ -77,11 +77,11 @@ class FindWorkflows:
                 "object_type": resource["object_type"],
             }
 
-            workflows |= set(
+            workflows = [link.workflow for link in set(
                 TagLink.objects.filter(**params).filter(
                     tag_name__in=resource["tags"]
                 )
-            )
+            )]
         self.workflows = list(workflows)
 
         return self

@@ -149,7 +149,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "updated_at",
             "completed_at",
         )
-        read_only_fields = ("created_at", "updated_at")
+        read_only_fields = ("created_at", "updated_at", "order")
         extra_kwargs = {
             "completed_at": {"allow_null": True},
             "order_request_sent_at": {"allow_null": True},

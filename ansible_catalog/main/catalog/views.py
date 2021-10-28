@@ -17,6 +17,9 @@ from ansible_catalog.common.image_mixin import ImageMixin
 from ansible_catalog.common.queryset_mixin import QuerySetMixin
 
 from ansible_catalog.main.models import Tenant
+from ansible_catalog.main.catalog.exceptions import (
+    BadParamsException,
+)
 from ansible_catalog.main.catalog.models import (
     ApprovalRequest,
     CatalogServicePlan,
@@ -159,6 +162,11 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
         """Orders the specified pk order."""
         order = get_object_or_404(Order, pk=pk)
 
+        if not order.product:
+            raise BadParamsException(
+                _("Order {} does not have order items").format(order.id)
+            )
+
         tag_resources = CollectTagResources(order).process().tag_resources
         message = _("Computed tags for order {}: {}").format(
             order.id, tag_resources
@@ -205,6 +213,10 @@ class OrderItemViewSet(
     search_fields = ("name", "state")
     parent_field_names = ("order",)
 
+    def perform_create(self, serializer):
+        serializer.save(
+            order_id=self.kwargs[self.parent_lookup_key],
+        )
 
 class ApprovalRequestViewSet(
     NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
