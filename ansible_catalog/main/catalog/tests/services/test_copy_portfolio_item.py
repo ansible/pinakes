@@ -102,7 +102,7 @@ def test_portfolio_item_is_orderable_with_service_plans():
     svc = CopyPortfolioItem(portfolio_item, options)
     orderable = svc._is_orderable()
 
-    assert orderable is False
+    assert orderable is True
 
 
 @pytest.mark.django_db
