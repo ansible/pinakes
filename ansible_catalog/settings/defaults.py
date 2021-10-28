@@ -314,6 +314,7 @@ SPECTACULAR_SETTINGS = {
             },
         },
     ],
+    "COMPONENT_SPLIT_REQUEST": True,
 }
 
 SOCIAL_AUTH_JSONFIELD_ENABLED = True

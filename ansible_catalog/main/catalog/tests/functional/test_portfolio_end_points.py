@@ -97,7 +97,7 @@ def test_portfolio_icon_post(api_request, small_image, media_dir):
     orignal_images = glob.glob(image_path)
 
     portfolio = PortfolioFactory()
-    data = {"icon": small_image, "source_ref": "abc"}
+    data = {"file": small_image, "source_ref": "abc"}
 
     assert portfolio.icon is None
 
@@ -109,7 +109,9 @@ def test_portfolio_icon_post(api_request, small_image, media_dir):
         format="multipart",
     )
 
-    assert response.status_code == 201
+    assert response.status_code == 200
+    assert response.data["icon_url"]
+
     portfolio.refresh_from_db()
     assert portfolio.icon is not None
 
@@ -120,22 +122,27 @@ def test_portfolio_icon_post(api_request, small_image, media_dir):
 
 
 @pytest.mark.django_db
-def test_portfolio_icon_patch(api_request, small_image, media_dir):
+def test_portfolio_icon_patch(
+    api_request, small_image, another_image, media_dir
+):
     """Update a icon image for a portfolio"""
     image_path = os.path.join(media_dir, "*.png")
 
     portfolio = PortfolioFactory()
 
-    data = {"icon": small_image, "source_ref": "abc"}
+    data = {"file": small_image, "source_ref": "abc"}
 
-    api_request(
+    response = api_request(
         "post",
         "portfolio-icon",
         portfolio.id,
         data,
         format="multipart",
     )
+    original_url = response.data["icon_url"]
     orignal_images = glob.glob(image_path)
+
+    data = {"file": another_image}
 
     response = api_request(
         "patch",
@@ -146,6 +153,7 @@ def test_portfolio_icon_patch(api_request, small_image, media_dir):
     )
 
     assert response.status_code == 200
+    assert response.data["icon_url"] != original_url
 
     images = glob.glob(image_path)
     assert len(images) == len(orignal_images)
@@ -158,11 +166,10 @@ def test_portfolio_icon_patch(api_request, small_image, media_dir):
 def test_portfolio_icon_delete(api_request, small_image, media_dir):
     """Update a icon image for a portfolio"""
     image_path = os.path.join(media_dir, "*.png")
-    orignal_images = glob.glob(image_path)
 
     portfolio = PortfolioFactory()
 
-    data = {"icon": small_image, "source_ref": "abc"}
+    data = {"file": small_image, "source_ref": "abc"}
 
     api_request(
         "post",
@@ -171,18 +178,17 @@ def test_portfolio_icon_delete(api_request, small_image, media_dir):
         data,
         format="multipart",
     )
+    orignal_images = glob.glob(image_path)
 
     response = api_request(
         "delete",
         "portfolio-icon",
         portfolio.id,
-        data,
-        format="multipart",
     )
 
     assert response.status_code == 204
 
     images = glob.glob(image_path)
-    assert len(images) == len(orignal_images)
+    assert len(images) == len(orignal_images) - 1
     portfolio.refresh_from_db()
     assert portfolio.icon is None

@@ -40,7 +40,9 @@ def test_service_plan_base_retrieve(api_request):
 
     service_plan = ServicePlanFactory(portfolio_item=portfolio_item)
     response = api_request(
-        "get", reverse("catalogserviceplan-base", args=(service_plan.id,))
+        "get",
+        "catalogserviceplan-base",
+        service_plan.id,
     )
 
     assert response.status_code == 200
@@ -57,7 +59,9 @@ def test_service_plan_modified_retrieve_without_schema(api_request):
 
     service_plan = ServicePlanFactory(portfolio_item=portfolio_item)
     response = api_request(
-        "get", reverse("catalogserviceplan-modified", args=(service_plan.id,))
+        "get",
+        "catalogserviceplan-modified",
+        service_plan.id,
     )
 
     assert response.status_code == 204
@@ -98,7 +102,9 @@ def test_service_plan_modified_retrieve_with_schema(api_request):
         portfolio_item=portfolio_item, modified_schema=schema
     )
     response = api_request(
-        "get", reverse("catalogserviceplan-modified", args=(service_plan.id,))
+        "get",
+        "catalogserviceplan-modified",
+        service_plan.id,
     )
 
     assert response.status_code == 200
@@ -143,10 +149,8 @@ def test_service_plan_modified_patch(api_request):
     data = {"modified": schema}
     response = api_request(
         "patch",
-        reverse(
-            "catalogserviceplan-modified",
-            args=(service_plan.id,),
-        ),
+        "catalogserviceplan-modified",
+        service_plan.id,
         data,
     )
 
@@ -170,7 +174,8 @@ def test_service_plan_reset_post_with_ok_status(api_request):
 
     response = api_request(
         "post",
-        reverse("catalogserviceplan-reset", args=(catalog_service_plan.id,)),
+        "catalogserviceplan-reset",
+        catalog_service_plan.id,
     )
 
     assert response.status_code == 200
@@ -222,7 +227,8 @@ def test_service_plan_reset_post_without_content_status(api_request):
 
     response = api_request(
         "post",
-        reverse("catalogserviceplan-reset", args=(catalog_service_plan.id,)),
+        "catalogserviceplan-reset",
+        catalog_service_plan.id,
     )
 
     assert response.status_code == 204
@@ -235,7 +241,9 @@ def test_service_plan_retrieve(api_request):
 
     service_plan = ServicePlanFactory(portfolio_item=portfolio_item)
     response = api_request(
-        "get", reverse("catalogserviceplan-detail", args=(service_plan.id,))
+        "get",
+        "catalogserviceplan-detail",
+        service_plan.id,
     )
 
     assert response.status_code == 200
@@ -254,6 +262,10 @@ def test_service_plan_post(api_request):
         service_offering_ref=str(service_offering.id)
     )
     data = {"portfolio_item_id": portfolio_item.id}
-    response = api_request("post", reverse("catalogserviceplan-list"), data)
+    response = api_request(
+        "post",
+        "catalogserviceplan-list",
+        data=data,
+    )
 
     assert response.status_code == 201

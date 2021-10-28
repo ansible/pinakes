@@ -68,3 +68,15 @@ def small_image():
     with open(image_path, "rb") as f:
         yield f
         f.close()
+
+
+@pytest.fixture
+def another_image():
+    base_dir = os.path.dirname(__file__)
+    image_path = os.path.join(
+        base_dir, "ansible_catalog/main/catalog/tests/data/ansible_icon.png"
+    )
+
+    with open(image_path, "rb") as f:
+        yield f
+        f.close()
