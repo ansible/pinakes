@@ -14,13 +14,11 @@ services:
       - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
       - CATALOG_LOG_ROOT=/home/appuser/catalog
       - CONTROLLER_VERIFY_SSL=False
-      - KEYCLOAK_URL=http://keycloak-app:8080/auth
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
-      - KEYCLOAK_SECRET=SOMESECRETVALUE
+      - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
+      - ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
       - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
       - ANSIBLE_CATALOG_REDIS_HOST=redis
-    depends_on: 
+    depends_on:
       - keycloak-setup
       - postgres
 
@@ -38,7 +36,7 @@ services:
       - KEYCLOAK_SECRET=SOMESECRETVALUE
       - KEYCLOAK_EXTERNAL_URL=http://localhost:8080/auth
       - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
-    depends_on: 
+    depends_on:
       - keycloak-app
     command: /home/appuser/catalog/tools/docker/scripts/keycloak-setup.sh
 
@@ -50,10 +48,8 @@ services:
       - OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
       - ANSIBLE_CATALOG_REDIS_HOST=redis
       - CONTROLLER_VERIFY_SSL=False
-      - KEYCLOAK_URL=http://keycloak-app:8080/auth
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
-      - KEYCLOAK_SECRET=SOMESECRETVALUE
+      - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
+      - ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
       - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
     volumes:
       - "../../:/home/appuser/catalog:z"
