@@ -5,7 +5,11 @@ import pytest
 from ansible_catalog.main.catalog.tests.factories import (
     OrderFactory,
     OrderItemFactory,
+    PortfolioFactory,
     PortfolioItemFactory,
+)
+from ansible_catalog.main.inventory.tests.factories import (
+    ServiceOfferingFactory,
 )
 
 
@@ -40,6 +44,58 @@ def test_order_delete(api_request):
     response = api_request("delete", "order-detail", order.id)
 
     assert response.status_code == 204
+
+
+@pytest.mark.django_db
+def test_order_submit(api_request):
+    """Submit a single order by id"""
+    service_offering = ServiceOfferingFactory()
+    portfolio = PortfolioFactory()
+    portfolio_item = PortfolioItemFactory(
+        portfolio=portfolio, service_offering_ref=service_offering.id
+    )
+    order = OrderFactory()
+    OrderItemFactory(order=order, portfolio_item=portfolio_item)
+
+    response = api_request("post", "order-submit", order.id)
+
+    assert response.status_code == 204
+
+
+@pytest.mark.django_db
+def test_order_submit_without_service_offering(api_request):
+    """Submit a single order by id"""
+    portfolio = PortfolioFactory()
+    portfolio_item = PortfolioItemFactory(portfolio=portfolio)
+    order = OrderFactory()
+    OrderItemFactory(order=order, portfolio_item=portfolio_item)
+
+    response = api_request("post", "order-submit", order.id)
+
+    assert response.status_code == 400
+    content = json.loads(response.content)
+    assert (
+        content["detail"]
+        == "Portfolio item %d does not have related service offering"
+        % portfolio_item.id
+    )
+
+
+@pytest.mark.django_db
+def test_order_submit_without_order_item(api_request):
+    """Submit a single order by id"""
+    portfolio = PortfolioFactory()
+    PortfolioItemFactory(portfolio=portfolio)
+    order = OrderFactory()
+
+    response = api_request("post", "order-submit", order.id)
+
+    assert response.status_code == 400
+    content = json.loads(response.content)
+    assert (
+        content["detail"]
+        == "Order %d does not have related order items" % order.id
+    )
 
 
 @pytest.mark.django_db

@@ -164,7 +164,9 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
 
         if not order.product:
             raise BadParamsException(
-                _("Order {} does not have order items").format(order.id)
+                _("Order {} does not have related order items").format(
+                    order.id
+                )
             )
 
         tag_resources = CollectTagResources(order).process().tag_resources
@@ -217,6 +219,7 @@ class OrderItemViewSet(
         serializer.save(
             order_id=self.kwargs[self.parent_lookup_key],
         )
+
 
 class ApprovalRequestViewSet(
     NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet

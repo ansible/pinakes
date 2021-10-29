@@ -49,3 +49,25 @@ def test_submit_approval_request(mocker):
     assert ApprovalRequest.objects.first().approval_request_ref == str(
         Request.objects.first().id
     )
+
+
+@pytest.mark.django_db
+def test_submit_approval_request_without_service_offering(mocker):
+    portfolio = PortfolioFactory()
+    portfolio_item = PortfolioItemFactory(portfolio=portfolio)
+    order = OrderFactory()
+    OrderItemFactory(order=order, portfolio_item=portfolio_item)
+    tag_resources = [
+        {
+            "app_name": "catalog",
+            "object_type": "Portfolio",
+            "tags": [{"name": "/abc"}],
+        }
+    ]
+
+    mocker.patch("django_rq.enqueue")
+    svc = SubmitApprovalRequest(tag_resources, order)
+    svc.process()
+
+    assert svc.order == order
+    assert ApprovalRequest.objects.all().count() == 1

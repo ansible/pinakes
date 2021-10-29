@@ -2,6 +2,9 @@
 import logging
 from django.utils.translation import gettext_lazy as _
 
+from ansible_catalog.main.catalog.exceptions import (
+    BadParamsException,
+)
 from ansible_catalog.main.inventory.services.collect_inventory_tags import (
     CollectInventoryTags,
 )
@@ -53,16 +56,16 @@ class CollectTagResources:
             self.__collect_remote_order_item_tags(item)
 
     def __collect_remote_order_item_tags(self, order_item):
-        service_offering_id = str(
+        if not order_item.portfolio_item.service_offering_ref:
+            raise BadParamsException(
+                _(
+                    "Portfolio item {} does not have related service offering"
+                ).format(order_item.portfolio_item.id)
+            )
+
+        service_offering_id = int(
             order_item.portfolio_item.service_offering_ref
         )
-
-        if service_offering_id is None:
-            raise RuntimeError(
-                _("ServiceOffering object {} not found").format(
-                    service_offering_id
-                )
-            )
 
         tags = CollectInventoryTags(service_offering_id).process().tags()
         if tags:

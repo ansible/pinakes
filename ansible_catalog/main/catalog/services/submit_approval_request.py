@@ -52,7 +52,9 @@ class SubmitApprovalRequest:
                 error,
             )
             raise BadParamsException(
-                _("Failed to submit request to approval for Order {}, error: {}").format(
+                _(
+                    "Failed to submit request to approval for Order {}, error: {}"
+                ).format(
                     self.order.id,
                     str(error),
                 )
@@ -77,7 +79,7 @@ class SubmitApprovalRequest:
         if not source_ref:
             logger.warning(
                 "Portfolio item %d has no related platform information",
-                self.order_item.portfolio_item.id
+                self.order_item.portfolio_item.id,
             )
             return ""
 
