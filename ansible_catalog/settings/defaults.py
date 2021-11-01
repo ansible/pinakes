@@ -14,6 +14,7 @@ import os
 import sys
 from pathlib import Path
 
+
 env = environ.Env()
 
 
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "ansible_catalog.common.auth.middleware.KeycloakAuthMiddleware",
 ]
 
 ROOT_URLCONF = "ansible_catalog.urls"
