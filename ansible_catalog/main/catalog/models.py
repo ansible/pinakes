@@ -411,7 +411,7 @@ class CatalogServicePlan(BaseModel):
     service_plan_ref = models.CharField(max_length=64, null=True)
     service_offering_ref = models.CharField(max_length=64, null=True)
     modified = models.BooleanField(default=False)
-    imported = models.BooleanField(default=False)
+    imported = models.BooleanField(default=True)
 
     portfolio_item = models.ForeignKey(PortfolioItem, on_delete=models.CASCADE)
 

@@ -23,7 +23,7 @@ class FetchServicePlans:
                 portfolio_item=self.portfolio_item
             )
 
-            if len(service_plans) == 0:
+            if service_plans.count() == 0:
                 self.get_remote_service_plans()
             else:
                 self._get_local_service_plans(service_plans)
@@ -43,7 +43,7 @@ class FetchServicePlans:
             service_plan.create_json_schema = (
                 service_plan.modified_schema or service_plan.base_schema or {}
             )
-            service_plan.service_plan_ref = service_plan.id
+            service_plan.service_plan_ref = service_plan.service_plan_ref
 
             self.service_plans.append(service_plan)
 
@@ -65,11 +65,13 @@ class FetchServicePlans:
                 return
 
             catalog_service_plan = CatalogServicePlan(
+                id=service_plan.id,
                 name=service_plan.name,
                 portfolio_item=self.portfolio_item,
                 service_offering_ref=service_offering.id,
-                service_plan_ref=service_plan.id,
+                service_plan_ref=str(service_plan.id),
                 create_json_schema=service_plan.create_json_schema or {},
+                imported=False,
             )
         else:
             catalog_service_plan = CatalogServicePlan(
@@ -87,6 +89,7 @@ class FetchServicePlans:
                         ]
                     },
                 },
+                imported=False,
             )
 
         self.service_plans = [catalog_service_plan]

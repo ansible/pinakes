@@ -13,10 +13,11 @@ class JsonifyServicePlan:
 
     def process(self):
         catalog_service_plan = CatalogServicePlan(
+            id=self.service_plan.id,
             name=self.service_plan.name,
             portfolio_item=self.service_plan.portfolio_item,
             service_offering_ref=self.service_plan.portfolio_item.service_offering_ref,
-            service_plan_ref=self.service_plan.id,
+            service_plan_ref=self.service_plan.service_plan_ref,
             imported=True,
             modified=True if self.service_plan.modified_schema else False,
             create_json_schema=self._relevant_schema(),

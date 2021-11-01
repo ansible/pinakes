@@ -37,16 +37,16 @@ class ImportServicePlan:
             return self
 
         service_plan = svc.service_plans[0]
-        CatalogServicePlan.objects.create(
+        local_service_plan = CatalogServicePlan.objects.create(
             name=service_plan.name,
             portfolio_item=self.portfolio_item,
             base_schema=service_plan.create_json_schema,
             service_offering_ref=service_plan.service_offering_ref,
-            service_plan_ref=service_plan.service_plan_ref,
+            service_plan_ref=str(service_plan.id) if service_plan.id else None,
             tenant=self.portfolio_item.tenant,
         )
 
-        svc = JsonifyServicePlan(service_plan, {}).process()
+        svc = JsonifyServicePlan(local_service_plan, {}).process()
         self.reimported_service_plan = svc.json
 
         return self

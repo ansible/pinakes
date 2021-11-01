@@ -15,11 +15,13 @@ from ansible_catalog.main.inventory.tests.factories import (
 
 
 @pytest.mark.django_db
-def test_portfolio_item_service_plan_get(api_request):
+def test_portfolio_item_service_plan_get_local(api_request):
     """List CatalogServicePlan by PortfolioItem id"""
     portfolio_item = PortfolioItemFactory()
 
-    service_plan = ServicePlanFactory(portfolio_item=portfolio_item)
+    service_plan = ServicePlanFactory(
+        portfolio_item=portfolio_item, service_plan_ref="abc"
+    )
 
     response = api_request(
         "get", "portfolioitem-serviceplan-list", portfolio_item.id
@@ -29,7 +31,36 @@ def test_portfolio_item_service_plan_get(api_request):
     content = json.loads(response.content)
 
     assert content["count"] == 1
-    assert content["results"][0]["service_plan_ref"] == str(service_plan.id)
+    assert (
+        content["results"][0]["service_plan_ref"]
+        == service_plan.service_plan_ref
+    )
+    assert content["results"][0]["portfolio_item"] == portfolio_item.id
+
+
+@pytest.mark.django_db
+def test_portfolio_item_service_plan_get_remote(api_request):
+    """List CatalogServicePlan by PortfolioItem id"""
+    service_offering = ServiceOfferingFactory(survey_enabled=True)
+    inventory_service_plan = InventoryServicePlanFactory(
+        service_offering=service_offering
+    )
+
+    portfolio_item = PortfolioItemFactory(
+        service_offering_ref=str(service_offering.id)
+    )
+
+    response = api_request(
+        "get", "portfolioitem-serviceplan-list", portfolio_item.id
+    )
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+
+    assert content["count"] == 1
+    assert content["results"][0]["service_plan_ref"] == str(
+        inventory_service_plan.id
+    )
     assert content["results"][0]["portfolio_item"] == portfolio_item.id
 
 
@@ -38,7 +69,9 @@ def test_service_plan_base_retrieve(api_request):
     """Retrieve the base schema for a service plan by id"""
     portfolio_item = PortfolioItemFactory()
 
-    service_plan = ServicePlanFactory(portfolio_item=portfolio_item)
+    service_plan = ServicePlanFactory(
+        portfolio_item=portfolio_item, service_plan_ref="abc"
+    )
     response = api_request(
         "get",
         "catalogserviceplan-base",
@@ -48,7 +81,7 @@ def test_service_plan_base_retrieve(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["name"] == service_plan.name
-    assert content["service_plan_ref"] == str(service_plan.id)
+    assert content["service_plan_ref"] == service_plan.service_plan_ref
     assert content["portfolio_item"] == portfolio_item.id
 
 
@@ -99,7 +132,9 @@ def test_service_plan_modified_retrieve_with_schema(api_request):
     }
 
     service_plan = ServicePlanFactory(
-        portfolio_item=portfolio_item, modified_schema=schema
+        portfolio_item=portfolio_item,
+        modified_schema=schema,
+        service_plan_ref="abc",
     )
     response = api_request(
         "get",
@@ -111,7 +146,7 @@ def test_service_plan_modified_retrieve_with_schema(api_request):
     content = json.loads(response.content)
     assert content["name"] == service_plan.name
     assert content["create_json_schema"] == schema
-    assert content["service_plan_ref"] == str(service_plan.id)
+    assert content["service_plan_ref"] == service_plan.service_plan_ref
     assert content["portfolio_item"] == portfolio_item.id
 
 

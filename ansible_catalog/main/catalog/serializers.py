@@ -203,6 +203,7 @@ class CatalogServicePlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = CatalogServicePlan
         fields = (
+            "id",
             "name",
             "create_json_schema",
             "imported",

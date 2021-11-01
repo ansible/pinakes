@@ -100,5 +100,5 @@ def test_fetch_service_plans_from_local():
     assert svc.service_plans[0].portfolio_item_id == portfolio_item.id
     assert svc.service_plans[0].name == service_plan.name
     assert svc.service_plans[0].create_json_schema == {}
-    assert svc.service_plans[0].imported is False
+    assert svc.service_plans[0].imported is True
     assert svc.service_plans[0].modified is False
