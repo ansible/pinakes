@@ -20,8 +20,8 @@ models.CharField.register_lookup(Length)
 class TowerModel(SourceOwnedModel):
     """The common properties across Tower object"""
 
-    source_created_at = models.DateTimeField(null=True)
-    source_updated_at = models.DateTimeField(null=True)
+    source_created_at = models.DateTimeField(editable=False, null=True)
+    source_updated_at = models.DateTimeField(editable=False, null=True)
     source_ref = models.CharField(max_length=32)
 
     class Meta:
