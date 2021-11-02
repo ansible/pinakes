@@ -14,7 +14,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import (
+    extend_schema,
+    extend_schema_view,
+    OpenApiResponse,
+)
 from django.utils.translation import gettext_lazy as _
 
 from ansible_catalog.main.models import Tenant
@@ -41,6 +45,14 @@ from ansible_catalog.common.queryset_mixin import QuerySetMixin
 logger = logging.getLogger("approval")
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get a template by its id, available to admin only",
+    ),
+    list=extend_schema(
+        description="List all templates, available to admin only",
+    ),
+)
 class TemplateViewSet(
     NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
 ):
@@ -89,6 +101,27 @@ class WorkflowFilterBackend(BaseFilterBackend):
         )
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get an approval workflow by its id, available to admin only"
+    ),
+    list=extend_schema(
+        description="List workflows, available to admin only",
+    ),
+    create=extend_schema(
+        tags=(
+            "workflows",
+            "templates",
+        ),
+        description="Create a workflow from a template identified by its id, available to admin only",
+    ),
+    partial_update=extend_schema(
+        description="Find an approval workflow by its id and update its attributes, available to admin only",
+    ),
+    destroy=extend_schema(
+        description="Delete an approval workflow by its id, available to admin only",
+    ),
+)
 class WorkflowViewSet(
     NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
 ):
@@ -120,6 +153,11 @@ class WorkflowViewSet(
     )
     @action(methods=["post"], detail=True)
     def link(self, request, pk):
+        """
+        Link a resource object to a workflow identified by its id,
+        available to admin only.
+        """
+
         workflow = get_object_or_404(Workflow, pk=pk)
 
         LinkWorkflow(workflow, request.data).process(
@@ -133,6 +171,11 @@ class WorkflowViewSet(
     )
     @action(methods=["post"], detail=True)
     def unlink(self, request, pk):
+        """
+        Break the link between a resource object selected by the body
+        and a workflow by its id, available to admin only
+        """
+
         workflow = get_object_or_404(Workflow, pk=pk)
 
         LinkWorkflow(workflow, request.data).process(
@@ -159,6 +202,17 @@ class WorkflowViewSet(
         )
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get an approval request by its id, available to anyone who can access the request"
+    ),
+    list=extend_schema(
+        description="List requests, available to everyone",
+    ),
+    create=extend_schema(
+        description="Create an approval request using given parameters, available to everyone"
+    ),
+)
 class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating requests"""
 
@@ -193,14 +247,36 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     )
     @action(methods=["get"], detail=True)
     def full(self, request, pk):
-        """Details of a request with its subrequests and actions"""
+        """Get details of a request with its subrequests and actions"""
         instance = self.get_object()
         serializer = RequestCompleteSerializer(instance)
         return Response(serializer.data)
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get an action by its id, available to everyone"
+    ),
+    list=extend_schema(
+        tags=(
+            "actions",
+            "requests",
+        ),
+        description="List actions of a request identified by its id, available to everyone",
+    ),
+    create=extend_schema(
+        tags=(
+            "actions",
+            "requests",
+        ),
+        description="Create an action under a request identified by its id. "
+        "Admin can create approve, deny, memo, and cancel operations; "
+        "approver can create approve, deny, and memo operations; "
+        "while requester can create only cancel operation.",
+    ),
+)
 class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
-    """API endpoint for listing and creating actions"""
+    """API endpoints for listing and creating actions"""
 
     serializer_class = ActionSerializer
     http_method_names = ["get", "post"]

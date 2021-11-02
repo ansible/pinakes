@@ -2,7 +2,7 @@
 from django.db import models
 from django.db.models.functions import Length
 from django.contrib.auth.models import User
-from drf_spectacular.utils import extend_schema_field, OpenApiTypes
+from drf_spectacular.utils import OpenApiTypes
 
 from ansible_catalog.main.models import BaseModel
 
@@ -12,8 +12,12 @@ models.CharField.register_lookup(Length)
 class Template(BaseModel):
     """Template model"""
 
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True, default="")
+    title = models.CharField(max_length=255, help_text="Name of the template")
+    description = models.TextField(
+        blank=True,
+        default="",
+        help_text="Describe the template with more details",
+    )
     process_setting = models.JSONField(blank=True, null=True)
     signal_setting = models.JSONField(blank=True, null=True)
 
@@ -36,13 +40,24 @@ class Template(BaseModel):
 class Workflow(BaseModel):
     """Workflow model"""
 
-    name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, default="")
-    group_refs = models.JSONField(default=list)
+    name = models.CharField(max_length=255, help_text="Name of the workflow")
+    description = models.TextField(
+        blank=True,
+        default="",
+        help_text="Describe the workflow in more details",
+    )
+    group_refs = models.JSONField(
+        default=list,
+        help_text="Array of RBAC groups associated with workflow. The groups need to have approval permission",
+    )
     internal_sequence = models.DecimalField(
         max_digits=16, decimal_places=6, db_index=True
     )
-    template = models.ForeignKey(Template, on_delete=models.CASCADE)
+    template = models.ForeignKey(
+        Template,
+        on_delete=models.CASCADE,
+        help_text="ID of the template that the workflow belongs to",
+    )
 
     class Meta:
         constraints = [
@@ -88,38 +103,72 @@ class Request(BaseModel):
         CANCELED = "Canceled"
         ERROR = "Error"
 
-    name = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
+    name = models.CharField(
+        max_length=255,
+        help_text="Name of the request to be created",
+    )
+    description = models.TextField(
+        blank=True,
+        help_text="Describe the request in more details",
+    )
     state = models.CharField(
         max_length=10,
         choices=State.choices,
         default=State.PENDING,
         editable=False,
+        help_text="The state of the request, must be one of the predefined values",
     )
     decision = models.CharField(
         max_length=10,
         choices=Decision.choices,
         default=Decision.UNDECIDED,
         editable=False,
+        help_text="Approval decision, must be one of the predefined values",
     )
-    reason = models.TextField(blank=True, editable=False)
+    reason = models.TextField(
+        blank=True,
+        editable=False,
+        help_text="Optional reason for the decision, present normally when the decision is denied",
+    )
     process_ref = models.CharField(max_length=128, editable=False)
-    group_name = models.CharField(max_length=128, editable=False)
+    group_name = models.CharField(
+        max_length=128,
+        editable=False,
+        help_text="Name of approver group(s) assigned to approve this request",
+    )
     group_ref = models.CharField(max_length=128, editable=False, db_index=True)
-    notified_at = models.DateTimeField(editable=False, null=True)
-    finished_at = models.DateTimeField(editable=False, null=True)
-    number_of_children = models.SmallIntegerField(editable=False, default=0)
+    notified_at = models.DateTimeField(
+        editable=False,
+        null=True,
+        help_text="Time when a notification was sent to approvers",
+    )
+    finished_at = models.DateTimeField(
+        editable=False,
+        null=True,
+        help_text="Time when the request was finished (skipped, canceled, or completed)",
+    )
+    number_of_children = models.SmallIntegerField(
+        editable=False,
+        default=0,
+        help_text="Number of child requests",
+    )
     number_of_finished_children = models.SmallIntegerField(
-        editable=False, default=0
+        editable=False,
+        default=0,
+        help_text="Number of finished child requests",
     )
     workflow = models.ForeignKey(
-        Workflow, null=True, on_delete=models.SET_NULL
+        Workflow,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text="ID of the workflow that the request belongs to. Present only if the request is a leaf node",
     )
     parent = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,
         null=True,
         related_name="subrequests",
+        help_text="ID of the parent group if present",
     )
     request_context = models.ForeignKey(
         RequestContext, null=True, on_delete=models.SET_NULL
@@ -127,15 +176,13 @@ class Request(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     @property
-    @extend_schema_field(OpenApiTypes.STR)
     def requester_name(self):
-        """virtual column requester_name"""
+        """Full name of the requester"""
         return f"{self.user.first_name} {self.user.last_name}"
 
     @property
-    @extend_schema_field(OpenApiTypes.STR)
     def owner(self):
-        """virtual column owner"""
+        """Identification of whom made the request"""
         return f"{self.user.username}"
 
     @property
@@ -218,16 +265,23 @@ class Action(BaseModel):
         ERROR = "Error"
 
     operation = models.CharField(
-        max_length=10, choices=Operation.choices, default=Operation.MEMO
+        max_length=10,
+        choices=Operation.choices,
+        default=Operation.MEMO,
+        help_text="Action type, must be one of the predefined values. The request state will be updated according to the operation.",
     )
-    comments = models.TextField(blank=True)
+    comments = models.TextField(
+        blank=True, help_text="Comments for the action"
+    )
     request = models.ForeignKey(
-        Request, on_delete=models.CASCADE, related_name="actions"
+        Request,
+        on_delete=models.CASCADE,
+        related_name="actions",
+        help_text="ID of the request that the action belongs to",
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     @property
-    @extend_schema_field(OpenApiTypes.STR)
     def processed_by(self):
         """virtual column processed_by"""
         if not self.user:
