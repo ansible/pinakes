@@ -1,7 +1,5 @@
 """URLs for approval"""
-from rest_framework.routers import DefaultRouter
-from rest_framework_extensions.routers import NestedRouterMixin
-
+from ansible_catalog.common.nested_router import NestedDefaultRouter
 from ansible_catalog.main.approval.views import (
     TemplateViewSet,
     WorkflowViewSet,
@@ -11,19 +9,13 @@ from ansible_catalog.main.approval.views import (
 
 urls_views = {}
 
-
-class NestedDefaultRouter(NestedRouterMixin, DefaultRouter):
-    pass
-
-
 router = NestedDefaultRouter()
-
 templates = router.register("templates", TemplateViewSet, basename="template")
 templates.register(
     "workflows",
     WorkflowViewSet,
     basename="template-workflow",
-    parents_query_lookups=["template"],
+    parents_query_lookups=WorkflowViewSet.parent_field_names,
 )
 urls_views["template-workflow-detail"] = None  # disable
 urls_views["template-workflow-link"] = None
@@ -39,13 +31,13 @@ requests.register(
     "actions",
     ActionViewSet,
     basename="request-action",
-    parents_query_lookups=["request"],
+    parents_query_lookups=ActionViewSet.parent_field_names,
 )
 requests.register(
     "requests",
     RequestViewSet,
     basename="request-request",
-    parents_query_lookups=["parent"],
+    parents_query_lookups=RequestViewSet.parent_field_names,
 )
 urls_views["request-action-detail"] = None  # disable
 urls_views["request-request-detail"] = None

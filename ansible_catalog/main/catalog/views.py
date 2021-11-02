@@ -112,8 +112,7 @@ class PortfolioItemViewSet(
         "updated_at",
     )
     search_fields = ("name", "description")
-    parent_field_name = "portfolio"
-    parent_lookup_key = "parent_lookup_portfolio"
+    parent_field_names = ("portfolio",)
 
     @extend_schema(
         responses={200: PortfolioItemSerializer},
@@ -204,8 +203,7 @@ class OrderItemViewSet(
         "completed_at",
     )
     search_fields = ("name", "state")
-    parent_field_name = "order"
-    parent_lookup_key = "parent_lookup_order"
+    parent_field_names = ("order",)
 
 
 class ApprovalRequestViewSet(
@@ -231,11 +229,10 @@ class ApprovalRequestViewSet(
         "state",
         "reason",
     )
-    parent_field_name = "order"
-    parent_lookup_key = "parent_lookup_order"
+    parent_field_names = ("order",)
 
     def list(self, request, *args, **kwargs):
-        order_id = kwargs.pop(self.parent_lookup_key)
+        order_id = kwargs.pop("order_id")
         approval_request = ApprovalRequest.objects.get(order_id=order_id)
 
         serializer = self.get_serializer(approval_request)
@@ -251,8 +248,6 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     ordering = ("-id",)
     filterset_fields = (
         "received_at",
-        "messageable_id",
-        "messageable_type",
         "level",
         "created_at",
         "updated_at",
@@ -263,8 +258,7 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
         path_splits = self.request.path.split("/")
         parent_type = path_splits[path_splits.index("progress_messages") - 2]
-        messageable_id = self.kwargs.get("parent_lookup_messageable_id")
-
+        messageable_id = self.kwargs.get("messageable_id")
         messageable_type = "Order" if parent_type == "orders" else "OrderItem"
 
         return ProgressMessage.objects.filter(
@@ -289,15 +283,14 @@ class CatalogServicePlanViewSet(
         "portfolio_item",
     )
     search_fields = ("name",)
-    parent_field_name = "portfolio_item"
-    parent_lookup_key = "parent_lookup_portfolio_item"
+    parent_field_names = ("portfolio_item",)
 
     @extend_schema(
         request=None,
         responses={200: CatalogServicePlanSerializer},
     )
     def list(self, request, *args, **kwargs):
-        portfolio_item_id = kwargs.pop(self.parent_lookup_key)
+        portfolio_item_id = kwargs.pop("portfolio_item_id")
         portfolio_item = PortfolioItem.objects.get(id=portfolio_item_id)
 
         service_plans = (
