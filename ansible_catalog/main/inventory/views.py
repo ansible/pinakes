@@ -63,7 +63,10 @@ class ServicePlanViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
         "service_offering",
     )
     search_fields = ("name",)
-    parent_field_names = ("service_offering", "source") # do not modify the sequence
+    parent_field_names = (
+        "service_offering",
+        "source",
+    )  # do not modify the sequence
     http_method_names = ["get", "head"]
 
 
