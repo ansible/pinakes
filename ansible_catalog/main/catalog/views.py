@@ -155,7 +155,7 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
 
     @extend_schema(
         request=None,
-        responses={204: None},
+        responses={200: OrderSerializer},
     )
     @action(methods=["post"], detail=True)
     def submit(self, request, pk):
@@ -178,7 +178,8 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
         logger.info("Creating approval request for order id %d", order.id)
         SubmitApprovalRequest(tag_resources, order).process()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        serializer = self.get_serializer(order)
+        return Response(serializer.data)
 
     # TODO:
     @extend_schema(

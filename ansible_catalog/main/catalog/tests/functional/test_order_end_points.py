@@ -57,9 +57,15 @@ def test_order_submit(api_request):
     order = OrderFactory()
     OrderItemFactory(order=order, portfolio_item=portfolio_item)
 
-    response = api_request("post", "order-submit", order.id)
+    assert(order.state) == "Created"
 
-    assert response.status_code == 204
+    response = api_request("post", "order-submit", order.id)
+    order.refresh_from_db()
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["state"] == "Pending"
+    assert content["state"] == order.state
 
 
 @pytest.mark.django_db
