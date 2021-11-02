@@ -39,7 +39,7 @@ from ansible_catalog.main.inventory.urls import (
 )
 
 
-def __filter_by_view(urls_views, pattern):
+def _filter_by_view(urls_views, pattern):
     name = pattern.name
     if name in urls_views:
         if urls_views[name] == None:
@@ -53,13 +53,13 @@ API_VER = "v1"
 api_prefix = f"{API_PATH_PREFIX}/{API_VER}/"
 
 approval_urls = [
-    p for p in approval_router.urls if __filter_by_view(approval_views, p)
+    p for p in approval_router.urls if _filter_by_view(approval_views, p)
 ]
 catalog_urls = [
-    p for p in catalog_router.urls if __filter_by_view(catalog_views, p)
+    p for p in catalog_router.urls if _filter_by_view(catalog_views, p)
 ]
 inventory_urls = [
-    p for p in inventory_router.urls if __filter_by_view(inventory_views, p)
+    p for p in inventory_router.urls if _filter_by_view(inventory_views, p)
 ]
 
 urlpatterns = [

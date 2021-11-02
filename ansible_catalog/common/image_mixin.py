@@ -16,12 +16,18 @@ class ImageMixin:
     """
 
     @extend_schema(
-        request=ImageSerializer, responses=ImageSerializer, methods=("PATCH",)
+        request={"multipart/form-data": ImageSerializer},
+        methods=("POST",),
+        description="Create an icon",
     )
     @extend_schema(
-        request=ImageSerializer,
-        responses={201: ImageSerializer},
-        methods=("POST",),
+        request={"multipart/form-data": ImageSerializer},
+        methods=("PATCH",),
+        description="Replace the existing icon",
+    )
+    @extend_schema(
+        methods=("DELETE",),
+        description="Delete the icon",
     )
     @action(methods=["post", "patch", "delete"], detail=True)
     def icon(self, request, pk):
@@ -39,22 +45,22 @@ class ImageMixin:
             )
 
         instance = get_object_or_404(model, pk=pk)
+
+        if self.request.method == "DELETE":
+            return self._delete_image(model=model, instance=instance, pk=pk)
+
         serializer = ImageSerializer(data=request.data)
 
         if self.request.method == "POST":
-            return self.__post_image(
-                model=model, instance=instance, serializer=serializer, pk=pk
-            )
-        elif self.request.method == "PATCH":
-            return self.__patch_image(
+            return self._post_image(
                 model=model, instance=instance, serializer=serializer, pk=pk
             )
         else:
-            return self.__delete_image(
+            return self._patch_image(
                 model=model, instance=instance, serializer=serializer, pk=pk
             )
 
-    def __post_image(self, model, instance, serializer, pk):
+    def _post_image(self, model, instance, serializer, pk):
         """Create a new image"""
 
         # Not allow to update existing icon
@@ -67,26 +73,19 @@ class ImageMixin:
             )
 
         if serializer.is_valid():
-            # create image
-            obj = Image.objects.create(
-                file=self.request.data["icon"],
-                source_ref=self.request.data["source_ref"],
-            )
-            obj.save()
+            obj = serializer.save()
 
-            # update instance when icon is None
+            # update instance when icon was None
             instance.icon = obj
             instance.save()
 
-            return Response(
-                ImageSerializer(obj).data, status=status.HTTP_201_CREATED
-            )
+            return Response(self.get_serializer(instance).data)
         else:
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
 
-    def __patch_image(self, model, instance, serializer, pk):
+    def _patch_image(self, model, instance, serializer, pk):
         """Update the image"""
 
         # Not allow to update null icon
@@ -100,27 +99,22 @@ class ImageMixin:
 
         if serializer.is_valid():
             # remove existing image
-            old = Image.objects.get(id=instance.icon.id)
-            old.delete()
+            instance.icon.delete()
 
             # create a new image
-            obj = Image.objects.create(
-                file=self.request.data["icon"],
-                source_ref=self.request.data["source_ref"],
-            )
-            obj.save()
+            obj = serializer.save()
 
-            # update instance when icon is None
+            # update instance when icon was None
             instance.icon = obj
             instance.save()
 
-            return Response(ImageSerializer(obj).data)
+            return Response(self.get_serializer(instance).data)
         else:
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
 
-    def __delete_image(self, model, instance, serializer, pk):
+    def _delete_image(self, model, instance, pk):
         """Delete the image"""
 
         if instance.icon is None:
@@ -131,13 +125,5 @@ class ImageMixin:
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if serializer.is_valid():
-            # remove existing image
-            old = Image.objects.get(id=instance.icon.id)
-            old.delete()
-
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+        instance.icon.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
