@@ -71,6 +71,10 @@ class RequestSerializer(serializers.ModelSerializer):
             "requester_name",
             "owner",
         )
+        extra_kwargs = {
+            "notified_at": {"allow_null": True},
+            "finished_at": {"allow_null": True},
+        }
 
 
 class RequestInSerializer(serializers.Serializer):

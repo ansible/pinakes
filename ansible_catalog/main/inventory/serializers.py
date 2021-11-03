@@ -29,8 +29,6 @@ class ServiceInventorySerializer(serializers.ModelSerializer):
             "description",
             "extra",
             "source_ref",
-            "source_created_at",
-            "source_updated_at",
             "created_at",
             "updated_at",
         )

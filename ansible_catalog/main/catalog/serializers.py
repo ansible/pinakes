@@ -28,7 +28,9 @@ class TenantSerializer(serializers.ModelSerializer):
 class PortfolioSerializer(serializers.ModelSerializer):
     """Serializer for Portfolio, which is a wrapper for PortfolioItems."""
 
-    icon_url = serializers.SerializerMethodField("get_icon_url")
+    icon_url = serializers.SerializerMethodField(
+        "get_icon_url", allow_null=True
+    )
 
     class Meta:
         model = Portfolio
@@ -111,6 +113,10 @@ class OrderSerializer(serializers.ModelSerializer):
             "completed_at",
         )
         read_only_fields = ("created_at", "updated_at")
+        extra_kwargs = {
+            "completed_at": {"allow_null": True},
+            "order_request_sent_at": {"allow_null": True},
+        }
 
     def create(self, validated_data):
         user = self.context["request"].user
@@ -144,6 +150,10 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "completed_at",
         )
         read_only_fields = ("created_at", "updated_at")
+        extra_kwargs = {
+            "completed_at": {"allow_null": True},
+            "order_request_sent_at": {"allow_null": True},
+        }
 
     def create(self, validated_data):
         user = self.context["request"].user
