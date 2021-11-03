@@ -29,16 +29,10 @@ class ServiceInventorySerializer(serializers.ModelSerializer):
             "description",
             "extra",
             "source_ref",
-            "source_created_at",
-            "source_updated_at",
             "created_at",
             "updated_at",
         )
         read_only_fields = ("created_at", "updated_at")
-        extra_kwargs = {
-            "source_created_at": {"allow_null": True},
-            "source_updated_at": {"allow_null": True},
-        }
 
 
 class ServiceOfferingSerializer(serializers.ModelSerializer):
@@ -56,10 +50,6 @@ class ServiceOfferingSerializer(serializers.ModelSerializer):
             "service_inventory",
         )
         read_only_fields = ("created_at", "updated_at")
-        extra_kwargs = {
-            "source_created_at": {"allow_null": True},
-            "source_updated_at": {"allow_null": True},
-        }
 
 
 class ServiceOfferingNodeSerializer(serializers.ModelSerializer):
@@ -75,10 +65,6 @@ class ServiceOfferingNodeSerializer(serializers.ModelSerializer):
             "extra",
         )
         read_only_fields = ("created_at", "updated_at")
-        extra_kwargs = {
-            "source_created_at": {"allow_null": True},
-            "source_updated_at": {"allow_null": True},
-        }
 
 
 class ServicePlanSerializer(serializers.ModelSerializer):
@@ -95,10 +81,6 @@ class ServicePlanSerializer(serializers.ModelSerializer):
             "service_offering",
         )
         read_only_fields = ("created_at", "updated_at")
-        extra_kwargs = {
-            "source_created_at": {"allow_null": True},
-            "source_updated_at": {"allow_null": True},
-        }
 
 
 class ServiceInstanceSerializer(serializers.ModelSerializer):
@@ -115,7 +97,3 @@ class ServiceInstanceSerializer(serializers.ModelSerializer):
             "service_inventory",
             "service_plan",
         )
-        extra_kwargs = {
-            "source_created_at": {"allow_null": True},
-            "source_updated_at": {"allow_null": True},
-        }
