@@ -21,6 +21,7 @@ from ansible_catalog.main.catalog.models import (
     ApprovalRequest,
     CatalogServicePlan,
     Order,
+    Portfolio,
     PortfolioItem,
     ProgressMessage,
 )
@@ -38,6 +39,9 @@ from ansible_catalog.main.catalog.serializers import (
 
 from ansible_catalog.main.catalog.services.collect_tag_resources import (
     CollectTagResources,
+)
+from ansible_catalog.main.catalog.services.copy_portfolio import (
+    CopyPortfolio,
 )
 from ansible_catalog.main.catalog.services.copy_portfolio_item import (
     CopyPortfolioItem,
@@ -88,6 +92,25 @@ class PortfolioViewSet(
     ordering = ("-id",)
     filterset_fields = ("name", "description", "created_at", "updated_at")
     search_fields = ("name", "description")
+
+    @extend_schema(
+        responses={200: PortfolioSerializer},
+    )
+    @action(methods=["post"], detail=True)
+    def copy(self, request, pk):
+        """Copy the specified pk portfolio."""
+        portfolio = get_object_or_404(Portfolio, pk=pk)
+        options = {
+            "portfolio": portfolio,
+            "portfolio_name": request.data.get(
+                "portfolio_name", portfolio.name
+            ),
+        }
+
+        svc = CopyPortfolio(portfolio, options).process()
+        serializer = self.get_serializer(svc.new_portfolio)
+
+        return Response(serializer.data)
 
 
 class PortfolioItemViewSet(
