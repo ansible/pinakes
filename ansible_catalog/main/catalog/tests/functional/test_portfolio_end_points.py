@@ -91,6 +91,25 @@ def test_portfolio_portfolio_items_get(api_request):
 
 
 @pytest.mark.django_db
+def test_portfolio_portfolio_items_get_bad_id(api_request):
+    """List PortfolioItems by non-existing id"""
+    response = api_request("get", "portfolio-portfolioitem-list", -1)
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+
+    assert content["count"] == 0
+
+
+@pytest.mark.django_db
+def test_portfolio_portfolio_items_get_string_id(api_request):
+    """List PortfolioItems by fake string id"""
+    response = api_request("get", "portfolio-portfolioitem-list", "abc")
+
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
 def test_portfolio_icon_post(api_request, small_image, media_dir):
     """Create a icon image for a portfolio"""
     image_path = os.path.join(media_dir, "*.png")

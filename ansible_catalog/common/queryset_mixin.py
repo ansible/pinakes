@@ -1,5 +1,7 @@
 """provides a common implementation of get_queryset method in viewset"""
 
+from django.http import Http404
+
 from ansible_catalog.main.models import Tenant
 
 
@@ -20,9 +22,12 @@ class QuerySetMixin:
         for parent_field_name in parent_field_names:
             parent_lookup_key = f"{parent_field_name}_id"
             if parent_lookup_key in self.kwargs:
-                queryset = queryset.filter(
-                    **{parent_field_name: self.kwargs[parent_lookup_key]}
-                )
+                try:
+                    queryset = queryset.filter(
+                        **{parent_field_name: self.kwargs[parent_lookup_key]}
+                    )
+                except ValueError:
+                    raise Http404
         if queryset_order_by is not None:
             queryset = queryset.order_by(queryset_order_by)
         return queryset
