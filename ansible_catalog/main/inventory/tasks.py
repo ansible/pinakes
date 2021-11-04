@@ -26,13 +26,19 @@ def launch_tower_task(slug, body):
     job = get_current_job()
     try:
         logger.info("Starting job %s", job.id)
-        obj = LaunchJob(slug, body).process()
-        logger.info(obj)
+        svc = LaunchJob(slug, body).process()
+        obj = svc.output
+
+        logger.info("Job %s output: %s", job.id, obj)
+
         FinishOrderItem(
-            inventory_task_ref=job.id, artifacts=obj["artifacts"]
+            inventory_task_ref=job.id,
+            artifacts=obj["artifacts"],
+            external_url=obj["url"],
+            service_instance_ref=svc.service_instance_ref,
         ).process()
 
-        logger.info("Job successfully finished %s", job.id)
+        logger.info("Job %s successfully finished", job.id)
     except Exception as exc:
         logger.error("Job failed %s exception %s", job.id, str(exc))
         FinishOrderItem(

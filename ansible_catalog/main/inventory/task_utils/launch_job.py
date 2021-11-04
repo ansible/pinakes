@@ -23,6 +23,8 @@ class LaunchJob:
         self.tower = TowerAPI()
         self.slug = slug
         self.body = body
+        self.output = None
+        self.service_instance_ref = None
 
     # start processing
     def process(self):
@@ -41,23 +43,28 @@ class LaunchJob:
             "status",
             "unified_job_template",
         )
+
         obj = self.tower.post(self.slug, self.body, attrs)
+
         while obj["status"] not in self.JOB_COMPLETION_STATUSES:
             time.sleep(self.REFRESH_INTERVAL)
             for obj in self.tower.get(obj["url"], attrs):
                 pass
 
+        self.output = obj
+
         if obj["status"] == "successful":
             instance = ServiceInstance.objects.create(
-                **self._service_instance_options(obj)
+                **self._service_instance_options()
             )
-            logging.info("Service instance %d created", instance.id)
+            self.service_instance_ref = str(instance.id)
+            logger.info("Service instance %d created", instance.id)
 
-        return obj
+        return self
 
-    def _service_instance_options(self, output):
+    def _service_instance_options(self):
         service_offering = ServiceOffering.objects.get(
-            source_ref=output["unified_job_template"]
+            source_ref=self.output["unified_job_template"]
         )
         service_plan = ServicePlan.objects.filter(
             service_offering=service_offering
@@ -70,17 +77,17 @@ class LaunchJob:
         options["service_plan_id"] = (
             None if service_plan is None else str(service_plan.id)
         )
-        options["external_url"] = output["url"]
-        options["source_ref"] = output["id"]
-        options["name"] = output["name"]
-        options["source_created_at"] = output["created"]
+        options["external_url"] = self.output.get("url", None)
+        options["source_ref"] = self.output.get("id", None)
+        options["name"] = self.output.get("name", None)
+        options["source_created_at"] = self.output.get("created", None)
         options["extra"] = {
-            "status": output["status"],
-            "started": output["started"],
-            "finished": output["finished"],
-            "extra_vars": output["extra_vars"],
+            "status": self.output.get("status", None),
+            "started": self.output.get("started", None),
+            "finished": self.output.get("finished", None),
+            "extra_vars": self.output.get("extra_vars", None),
             # TODO: need to add filtering with prefix: expose_to_cloud_redhat_come
-            "artifacts": output["artifacts"],
+            "artifacts": self.output.get("artifacts", None),
         }
 
         return options
