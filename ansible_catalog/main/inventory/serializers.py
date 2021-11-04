@@ -48,6 +48,7 @@ class ServiceOfferingSerializer(serializers.ModelSerializer):
             "kind",
             "extra",
             "service_inventory",
+            "source",
         )
         read_only_fields = ("created_at", "updated_at")
 
