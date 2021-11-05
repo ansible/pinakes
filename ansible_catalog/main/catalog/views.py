@@ -17,6 +17,9 @@ from ansible_catalog.common.image_mixin import ImageMixin
 from ansible_catalog.common.queryset_mixin import QuerySetMixin
 
 from ansible_catalog.main.models import Tenant
+from ansible_catalog.main.catalog.exceptions import (
+    BadParamsException,
+)
 from ansible_catalog.main.catalog.models import (
     ApprovalRequest,
     CatalogServicePlan,
@@ -175,12 +178,19 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
 
     @extend_schema(
         request=None,
-        responses={204: None},
+        responses={200: OrderSerializer},
     )
     @action(methods=["post"], detail=True)
     def submit(self, request, pk):
         """Orders the specified pk order."""
         order = get_object_or_404(Order, pk=pk)
+
+        if not order.product:
+            raise BadParamsException(
+                _("Order {} does not have related order items").format(
+                    order.id
+                )
+            )
 
         tag_resources = CollectTagResources(order).process().tag_resources
         message = _("Computed tags for order {}: {}").format(
@@ -191,7 +201,8 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
         logger.info("Creating approval request for order id %d", order.id)
         SubmitApprovalRequest(tag_resources, order).process()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        serializer = self.get_serializer(order)
+        return Response(serializer.data)
 
     # TODO:
     @extend_schema(
@@ -227,6 +238,11 @@ class OrderItemViewSet(
     )
     search_fields = ("name", "state")
     parent_field_names = ("order",)
+
+    def perform_create(self, serializer):
+        serializer.save(
+            order_id=self.kwargs[self.parent_lookup_key],
+        )
 
 
 class ApprovalRequestViewSet(
