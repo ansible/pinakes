@@ -1,9 +1,6 @@
 """Test copy portfolio item service"""
 import pytest
 
-from ansible_catalog.main.models import (
-    Image,
-)
 from ansible_catalog.main.catalog.models import (
     CatalogServicePlan,
     PortfolioItem,

@@ -1,6 +1,9 @@
 """ Factory for catalog objects """
+from django.db.models.fields.files import ImageFieldFile, FileField
+import os
 import factory
 
+from ansible_catalog.main.models import Image
 from ansible_catalog.main.catalog.models import (
     ApprovalRequest,
     CatalogServicePlan,
@@ -93,3 +96,17 @@ class ServicePlanFactory(factory.django.DjangoModelFactory):
     portfolio_item = factory.SubFactory(PortfolioItemFactory)
 
     name = factory.Sequence(lambda n: f"catalog service_plan_{n}")
+
+
+class ImageFactory(factory.django.DjangoModelFactory):
+    """Image Factory"""
+
+    class Meta:
+        model = Image
+
+    source_ref = factory.Sequence(lambda n: f"image_{n}")
+    file = ImageFieldFile(
+        instance=None,
+        field=FileField(),
+        name=os.path.basename("redhat_icon.png"),
+    )

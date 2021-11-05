@@ -17,6 +17,9 @@ from ansible_catalog.main.catalog.models import (
 from ansible_catalog.main.catalog.services import (
     name,
 )
+from ansible_catalog.main.catalog.services.copy_image import (
+    CopyImage,
+)
 from ansible_catalog.main.inventory.services.get_service_offering import (
     GetServiceOffering,
 )
@@ -53,12 +56,16 @@ class CopyPortfolioItem:
                 )
             )
 
-        new_image = self._copy_image() if self.portfolio_item.icon else None
+        new_icon = (
+            CopyImage(self.portfolio_item.icon).process().new_icon
+            if self.portfolio_item.icon
+            else None
+        )
 
         self.new_portfolio_item = copy.copy(self.portfolio_item)
         self.new_portfolio_item.id = None
         self.new_portfolio_item.name = self._new_portfolio_item_name()
-        self.new_portfolio_item.icon = new_image
+        self.new_portfolio_item.icon = new_icon
         self.new_portfolio_item.portfolio = self.portfolio
         self.new_portfolio_item.save()
 
@@ -96,30 +103,6 @@ class CopyPortfolioItem:
                 return False
 
         return True
-
-    def _copy_image(self):
-        existing_image_names = [
-            image.file.name for image in Image.objects.all()
-        ]
-        names = os.path.splitext(self.portfolio_item.icon.file.name)
-
-        while True:
-            rad_sfx = "".join(
-                random.choices(string.ascii_letters + string.digits, k=6)
-            )
-            new_name = "{}{}{}".format(names[0], rad_sfx, names[-1])
-            if new_name not in existing_image_names:
-                break
-
-        with open(self.portfolio_item.icon.file.path, "rb") as icon:
-            data = icon.read()
-
-        copied_image = Image()
-        copied_image.file.save(new_name, ContentFile(data))
-        copied_image.source_ref = self.portfolio_item.icon.source_ref
-        copied_image.save()
-
-        return copied_image
 
     def _new_portfolio_item_name(self):
         portfolio_items = PortfolioItem.objects.filter(

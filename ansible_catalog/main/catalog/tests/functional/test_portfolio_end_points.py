@@ -1,12 +1,21 @@
 """ Test portfolio end points """
 import json
-import pytest
-
 import os
 import glob
 
-from ansible_catalog.main.catalog.tests.factories import PortfolioFactory
-from ansible_catalog.main.catalog.tests.factories import PortfolioItemFactory
+from unittest.mock import patch
+import pytest
+
+from ansible_catalog.main.models import Image
+from ansible_catalog.main.catalog.models import (
+    Portfolio,
+    PortfolioItem,
+)
+from ansible_catalog.main.catalog.tests.factories import (
+    ImageFactory,
+    PortfolioFactory,
+    PortfolioItemFactory,
+)
 
 
 @pytest.mark.django_db
@@ -49,6 +58,59 @@ def test_portfolio_patch(api_request):
     response = api_request("patch", "portfolio-detail", portfolio.id, data)
 
     assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_portfolio_copy(api_request):
+    """Copy a portfolio by id"""
+    portfolio = PortfolioFactory()
+    data = {"portfolio_name": "new_copied_name"}
+
+    response = api_request("post", "portfolio-copy", portfolio.id, data)
+
+    assert response.status_code == 200
+    assert Portfolio.objects.count() == 2
+    assert Portfolio.objects.last().name == "new_copied_name"
+
+
+@pytest.mark.django_db
+def test_portfolio_copy_with_portfolio_items(api_request):
+    """Copy a portfolio by id"""
+    portfolio = PortfolioFactory()
+    PortfolioItemFactory(portfolio=portfolio)
+    item = PortfolioItemFactory(portfolio=portfolio)
+
+    assert Portfolio.objects.count() == 1
+    assert PortfolioItem.objects.count() == 2
+
+    with patch(
+        "ansible_catalog.main.catalog.services.copy_portfolio_item.CopyPortfolioItem._is_orderable"
+    ) as mock:
+        mock.return_value = True
+
+        response = api_request("post", "portfolio-copy", portfolio.id, {})
+
+    assert response.status_code == 200
+    assert Portfolio.objects.count() == 2
+    assert Portfolio.objects.last().name == "Copy of %s" % portfolio.name
+    assert PortfolioItem.objects.count() == 4
+    assert PortfolioItem.objects.last().name == "Copy of %s" % item.name
+
+
+@pytest.mark.django_db
+def test_portfolio_copy_with_icon(api_request):
+    """Copy a portfolio by id"""
+    image = ImageFactory()
+    portfolio = PortfolioFactory(icon=image)
+
+    assert Portfolio.objects.count() == 1
+    assert Image.objects.count() == 1
+
+    response = api_request("post", "portfolio-copy", portfolio.id, {})
+
+    assert response.status_code == 200
+    assert Portfolio.objects.count() == 2
+    assert Image.objects.count() == 2
 
 
 @pytest.mark.django_db
