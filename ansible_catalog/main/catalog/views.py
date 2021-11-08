@@ -241,7 +241,7 @@ class OrderItemViewSet(
 
     def perform_create(self, serializer):
         serializer.save(
-            order_id=self.kwargs[self.parent_lookup_key],
+            order_id=self.kwargs["order_id"],
         )
 
 
