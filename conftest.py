@@ -55,7 +55,7 @@ def api_request(admin):
 @pytest.fixture
 def media_dir():
     base_dir = os.path.dirname(__file__)
-    return os.path.join(base_dir, "ansible_catalog/media")
+    return os.path.join(base_dir, "ansible_catalog/main/catalog/tests/data")
 
 
 @pytest.fixture

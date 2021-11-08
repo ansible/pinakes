@@ -112,6 +112,8 @@ def test_portfolio_copy_with_icon(api_request):
     assert Portfolio.objects.count() == 2
     assert Image.objects.count() == 2
 
+    Portfolio.objects.last().delete()
+
 
 @pytest.mark.django_db
 def test_portfolio_put_not_supported(api_request):

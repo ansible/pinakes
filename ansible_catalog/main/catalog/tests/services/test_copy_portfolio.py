@@ -68,3 +68,5 @@ def test_portfolio_copy_with_icon():
     assert Image.objects.count() == 2
     assert Portfolio.objects.first().icon == Image.objects.first()
     assert Portfolio.objects.last().icon == Image.objects.last()
+    new_portfolio = svc.new_portfolio
+    new_portfolio.delete()
