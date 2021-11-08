@@ -47,8 +47,8 @@ def test_request_child_list(api_request):
 @pytest.mark.django_db
 def test_request_action_list(api_request):
     request = RequestFactory()
-    ActionFactory(request=request, operation="Start")
-    ActionFactory(request=request, operation="Complete")
+    ActionFactory(request=request, operation="start")
+    ActionFactory(request=request, operation="complete")
     response = api_request("get", "request-action-list", request.id)
 
     assert response.status_code == 200
@@ -73,7 +73,7 @@ def test_create_request(api_request, mocker):
 
     assert response.status_code == 201
     content = json.loads(response.content)
-    assert content["state"] == "Pending"
+    assert content["state"] == "pending"
 
 
 @pytest.mark.django_db
@@ -98,13 +98,13 @@ def test_create_request_bad(api_request, mocker):
 @pytest.mark.django_db
 def test_create_action(api_request, mocker):
     mocker.patch.object(SendEvent, "process")
-    request = RequestFactory(state="Notified")
+    request = RequestFactory(state="notified")
     response = api_request(
         "post",
         "request-action-list",
         request.id,
         {
-            "operation": "Deny",
+            "operation": "deny",
             "comments": "not good",
             "request": request.id,
         },
