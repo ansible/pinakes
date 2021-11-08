@@ -1,5 +1,7 @@
 """ Factory for catalog objects """
 from django.db.models.fields.files import ImageFieldFile, FileField
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 import factory
 
 from ansible_catalog.main.models import Image
@@ -106,6 +108,10 @@ class ImageFactory(factory.django.DjangoModelFactory):
     source_ref = factory.Sequence(lambda n: f"image_{n}")
     file = ImageFieldFile(
         instance=None,
-        field=FileField(),
-        name="redhat_icon.png",
+        field=FileField(
+            storage=FileSystemStorage(
+                location=settings.BASE_DIR,
+            )
+        ),
+        name="main/catalog/tests/data/redhat_icon.png",
     )
