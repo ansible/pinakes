@@ -186,6 +186,7 @@ BACKUP_COUNT = 5
 
 if "pytest" in sys.modules:
     LOG_ROOT = env.str("CATALOG_LOG_ROOT", default="/tmp/ansible_catalog/")
+    MEDIA_ROOT = os.path.join(BASE_DIR, "main/catalog/tests/data/")
     Path(LOG_ROOT).mkdir(parents=True, exist_ok=True)
 
 LOGGING = {

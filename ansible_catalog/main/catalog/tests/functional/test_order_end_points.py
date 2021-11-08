@@ -47,7 +47,7 @@ def test_order_delete(api_request):
 
 
 @pytest.mark.django_db
-def test_order_submit(api_request):
+def test_order_submit(api_request, mocker):
     """Submit a single order by id"""
     service_offering = ServiceOfferingFactory()
     portfolio = PortfolioFactory()
@@ -56,6 +56,8 @@ def test_order_submit(api_request):
     )
     order = OrderFactory()
     OrderItemFactory(order=order, portfolio_item=portfolio_item)
+
+    mocker.patch("django_rq.enqueue")
 
     assert (order.state) == "Created"
 

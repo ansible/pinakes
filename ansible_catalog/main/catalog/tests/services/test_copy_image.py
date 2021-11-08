@@ -23,3 +23,6 @@ def test_copy_image(small_image):
 
     assert Image.objects.count() == 2
     assert Image.objects.first().file.name != Image.objects.last().file.name
+
+    new_image = svc.new_icon
+    new_image.delete()
