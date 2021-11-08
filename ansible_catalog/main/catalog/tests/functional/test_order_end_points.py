@@ -57,7 +57,7 @@ def test_order_submit(api_request):
     order = OrderFactory()
     OrderItemFactory(order=order, portfolio_item=portfolio_item)
 
-    assert(order.state) == "Created"
+    assert (order.state) == "Created"
 
     response = api_request("post", "order-submit", order.id)
     order.refresh_from_db()
