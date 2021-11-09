@@ -399,6 +399,7 @@ class CatalogServicePlanViewSet(
         else:
             modified = request.data["modified"]
             service_plan.modified_schema = modified
+            service_plan.modified = True
             service_plan.save()
 
             # Keep the same response with cloud version

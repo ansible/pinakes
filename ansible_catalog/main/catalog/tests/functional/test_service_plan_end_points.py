@@ -181,6 +181,9 @@ def test_service_plan_modified_patch(api_request):
         },
     }
 
+    assert service_plan.modified_schema is None
+    assert service_plan.modified is False
+
     data = {"modified": schema}
     response = api_request(
         "patch",
@@ -192,6 +195,10 @@ def test_service_plan_modified_patch(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content == schema
+
+    service_plan.refresh_from_db()
+    assert service_plan.modified_schema == schema
+    assert service_plan.modified is True
 
 
 @pytest.mark.django_db
