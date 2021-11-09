@@ -103,3 +103,16 @@ def test_service_inventory_put_not_supported(api_request):
     )
 
     assert response.status_code == 405
+
+
+@pytest.mark.django_db
+def test_service_inventory_post_not_supported(api_request):
+    """Test to post ServiceInventory endpoint"""
+
+    response = api_request(
+        "post",
+        "serviceinventory-list",
+        data={"name": "update"},
+    )
+
+    assert response.status_code == 405
