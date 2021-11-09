@@ -36,7 +36,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-CATALOG_API_PATH_PREFIX = "/api/ansible-catalog"
+CATALOG_API_PATH_PREFIX = env.str(
+    "ANSIBLE_CATALOG_API_PATH_PREFIX", default="/api/ansible-catalog"
+)
 
 # Application definition
 
