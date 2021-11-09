@@ -20,7 +20,7 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
 
 
 **Developer Setup**
-* Pre Requisites 
+* Pre Requisites
    Python 3.8 needs to be installed in your dev box
 * Create a Virtual Environment
    ```python3 -m venv venv```
@@ -39,25 +39,25 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
       python3 manage.py createsuperuser
 ```
 * Check for the existence of the log directory, by default we log to /var/log/ansible_catalog/ if you don't have access to this directory. You can use an environment variable CATALOG_LOG_ROOT and set it to the the directory that exists and you have access to e.g.
-  ```export CATALOG_LOG_ROOT=/tmp```    
+  ```export CATALOG_LOG_ROOT=/tmp```
 * Setup the development settings file
 ```
 export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
 ```
    You can override the Database and Tower information in your local development settings file.
    This settings file should not be checked into github, local settings file name should have a prefix of  **local_** e.g.   **ansible_catalog/settings/local_info.py**
-   
+
    To store tower info use the following keys
-   
+
   * CONTROLLER_TOKEN="Your Token"
   * CONTROLLER_URL="Your Controller URL"
   * CONTROLLER_VERIFY_SSL="False"
-  
+
 * Start the Server using development settings
       ```python3 manage.py runserver```
-      
+
       Open your browser and open http://127.0.0.1:8000/catalog/api/v1/portfolios/
-      
+
       When prompted provide the userid/password from the createsuperuser step
 
 * After you have tested in the dev environment you can deactivate the virtual env by using
@@ -88,20 +88,20 @@ DATABASES = {
   ```
 ## Using docker-compose for development
 ### Requirements
-You will need to install docker/podman and docker-compose. 
+You will need to install docker/podman and docker-compose.
 
 
 #### previous steps for podman
 You must first init the api socket for podman:
 ```
-# only linux 
+# only linux
 systemctl --user enable --now podman.socket
 ```
 
 And also export the socket:
 
 ```
-# only linux 
+# only linux
 export DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock
 ```
 
@@ -126,7 +126,7 @@ docker-compose up -d
 
 Now you can try to open http://localhost:8000/api/ansible-catalog/v1/
 You can do log in with http://localhost:8000/login/keycloak/
-The project path is mounted in the pod and you can edit it in real time from outside the container. 
+The project path is mounted in the pod and you can edit it in real time from outside the container.
 
 You can get an interactive shell inside the application pod with the command:
 ```
@@ -173,9 +173,9 @@ Get the IP address of the minikube cluster
 minikube ip
 ```
 
-The ingress uses 2 hardcoded hosts **catalog** and **keycloak** to route the traffic to the appropriate services so we need to add the the IP address from the above command into /etc/hosts. The /etc/hosts should have this line 
+The ingress uses 2 hardcoded hosts **catalog** and **keycloak** to route the traffic to the appropriate services so we need to add the the IP address from the above command into /etc/hosts. The /etc/hosts should have this line
 ```
-<<ip_from_minikube_ip>> catalog keycloak
+<<ip_from_minikube_ip>> catalog.k8s.local keycloak.k8s.local
 ```
 ## Building the image
 
@@ -190,21 +190,21 @@ kubectl apply -f tools/minikube/templates
 ```
 
 To access the keycloak server running inside the cluster use the following URL
-http://keycloak/auth  (Default userid is admin password is admin)
-To login to the catalog app 
-http://catalog/login/keycloak/
+http://keycloak.k8s.local/auth  (Default userid is admin password is admin)
+To login to the catalog app
+http://catalog.k8s.local/login/keycloak-oidc/
 When prompted enter the userid/password (barney/barney)
-This would lead to a page (http://catalog/accounts/profile/) that has a 404 not found that's ok.
+This would lead to a page (http://catalog.k8s.local/accounts/profile/) that has a 404 not found that's ok.
 
 To access the catalog app use
 
-http://catalog/api/ansible-catalog/v1/schema/openapi.json
-http://catalog/api/ansible-catalog/v1/portfolios/ (You wont be able to get to this link without logging in first)
+http://catalog.k8s.local/api/ansible-catalog/v1/schema/openapi.json
+http://catalog.k8s.local/api/ansible-catalog/v1/portfolios/ (You wont be able to get to this link without logging in first)
 
 ## About credentials
 
 When the catalog-app starts up it creates the required roles, policies, scopes, permissions (optionally groups and users) by using an ansible collection. The roles, policies, scopes and permissions are defined in the collection. The optional group and user data is stored in tools/keycloak_setup/dev.yml
- 
+
 For ease of development as part of the keycloak setup we create the following groups
 
  - **catalog-admin**

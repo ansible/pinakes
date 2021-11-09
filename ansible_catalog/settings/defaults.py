@@ -136,7 +136,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    "social_core.backends.keycloak.KeycloakOAuth2",
+    "ansible_catalog.common.auth.keycloak_oidc.KeycloakOpenIdConnect",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -321,3 +321,18 @@ SPECTACULAR_SETTINGS = {
 }
 
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
+
+KEYCLOAK_URL = env.str(
+    "ANSIBLE_CATALOG_KEYCLOAK_URL", default="http://localhost:8080/auth"
+).rstrip("/")
+KEYCLOAK_REALM = env.str("ANSIBLE_CATALOG_KEYCLOAK_REALM", default="aap")
+KEYCLOAK_CLIENT_ID = env.str(
+    "ANSIBLE_CATALOG_KEYCLOAK_CLIENT_ID", default="catalog"
+)
+KEYCLOAK_CLIENT_SECRET = env.str(
+    "ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET", default=""
+)
+
+SOCIAL_AUTH_KEYCLOAK_OIDC_KEY = KEYCLOAK_CLIENT_ID
+SOCIAL_AUTH_KEYCLOAK_OIDC_API_URL = f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}"
+SOCIAL_AUTH_KEYCLOAK_OIDC_SECRET = KEYCLOAK_CLIENT_SECRET
