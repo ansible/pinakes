@@ -1,8 +1,6 @@
 """ Module to test ServiceOffering end points """
 import json
 import pytest
-
-from ansible_catalog.main.models import Source
 from ansible_catalog.main.inventory.tests.factories import (
     ServicePlanFactory,
     ServiceOfferingFactory,
@@ -13,14 +11,13 @@ from ansible_catalog.main.inventory.tests.factories import (
 def test_service_offering_list(api_request):
     """Test to list ServiceOffering endpoint"""
 
-    service_offering = ServiceOfferingFactory()
+    ServiceOfferingFactory()
     response = api_request("get", "serviceoffering-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
 
     assert content["count"] == 1
-    assert content["results"][0]["source"] == service_offering.source.id
 
 
 @pytest.mark.django_db
