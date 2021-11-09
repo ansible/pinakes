@@ -30,11 +30,11 @@ services:
       - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
       - CATALOG_LOG_ROOT=/home/appuser/catalog
       - CONTROLLER_VERIFY_SSL=False
-      - KEYCLOAK_URL=http://keycloak-app:8080/auth
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
-      - KEYCLOAK_SECRET=SOMESECRETVALUE
-      - KEYCLOAK_EXTERNAL_URL=http://localhost:8080/auth
+      - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
+      - ANSIBLE_CATALOG_KEYCLOAK_USER=admin
+      - ANSIBLE_CATALOG_KEYCLOAK_PASSWORD=admin
+      - ANSIBLE_CATALOG_KEYCLOAK_SECRET=SOMESECRETVALUE
+      - ANSIBLE_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://localhost:8080/auth
       - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
     depends_on:
       - keycloak-app
