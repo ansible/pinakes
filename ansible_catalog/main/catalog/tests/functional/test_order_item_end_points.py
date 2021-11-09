@@ -18,7 +18,7 @@ def test_order_item_retrieve(api_request):
 
 @pytest.mark.django_db
 def test_order_item_list(api_request):
-    """Get list of Order Items"""""
+    """Get list of Order Items"""
     OrderItemFactory()
     response = api_request("get", "orderitem-list")
 
