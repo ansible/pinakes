@@ -2,6 +2,5 @@
 - hosts: localhost
   vars:
     settings_dir: "/home/appuser/catalog/ansible_catalog/settings/"
-    keycloak_external_url: "http://keycloak/auth"
   roles:
     - mkanoor.catalog_keycloak.setup
