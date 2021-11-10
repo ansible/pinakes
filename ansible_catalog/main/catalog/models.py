@@ -158,7 +158,7 @@ class MessageableMixin:
         if self.state == self.__class__.State.PENDING:
             return
 
-        self.__mark_item(
+        self._mark_item(
             message=message,
             completed_at=timezone.now(),
             state=self.__class__.State.PENDING,
@@ -168,7 +168,7 @@ class MessageableMixin:
         if self.state == self.__class__.State.ORDERED:
             return
 
-        self.__mark_item(
+        self._mark_item(
             message=message,
             order_request_sent_at=timezone.now(),
             state=self.__class__.State.ORDERED,
@@ -179,7 +179,7 @@ class MessageableMixin:
         if self.state == self.__class__.State.FAILED:
             return
 
-        self.__mark_item(
+        self._mark_item(
             message=message,
             level=ProgressMessage.Level.ERROR,
             completed_at=timezone.now(),
@@ -191,7 +191,7 @@ class MessageableMixin:
         if self.state == self.__class__.State.COMPLETED:
             return
 
-        self.__mark_item(
+        self._mark_item(
             message=message,
             completed_at=timezone.now(),
             state=self.__class__.State.COMPLETED,
@@ -202,13 +202,13 @@ class MessageableMixin:
         if self.state == self.__class__.State.CANCELED:
             return
 
-        self.__mark_item(
+        self._mark_item(
             message=message,
             completed_at=timezone.now(),
             state=self.__class__.State.CANCELED,
         )
 
-    def __mark_item(
+    def _mark_item(
         self, message, level=ProgressMessage.Level.INFO, **options
     ):
         if message is not None:

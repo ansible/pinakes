@@ -20,9 +20,9 @@ class ServicePlanImport:
     def process(self, slug, service_offering_id, source_ref):
         """Fetch the Service Plan"""
         for new_obj in self.tower.get(slug, ["name", "description", "spec"]):
-            self.__handle(new_obj, service_offering_id, source_ref)
+            self._handle(new_obj, service_offering_id, source_ref)
 
-    def __handle(self, data, service_offering_id, source_ref):
+    def _handle(self, data, service_offering_id, source_ref):
         """Convert the survey spec to DDF format and save it"""
         ddf_data = self.spec_converter.process(data)
         now = timezone.now()

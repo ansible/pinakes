@@ -35,37 +35,37 @@ class ServiceOfferingNodeImport:
     def process(self):
         """Start the import process"""
         print("Loading existing objects")
-        self.__get_old_ids()
+        self._get_old_ids()
         print("Fetching Workflow Job Template Nodes")
-        self.__process_workflow_job_template_nodes()
-        self.__deletes()
+        self._process_workflow_job_template_nodes()
+        self._deletes()
 
-    def __deletes(self):
+    def _deletes(self):
         """Delete any left over objects in the old_objects."""
         for key, value in self.old_objects.items():
             print(f"Deleting source_ref {key}, object {value[0]}")
             self.stats["deletes"] += 1
             ServiceOfferingNode.objects.get(pk=value[0]).delete()
 
-    def __handle_obj(self, new_obj):
+    def _handle_obj(self, new_obj):
         """Handle an incoming object from Tower."""
         source_ref = str(new_obj["id"])
-        inventory = self.__get_inventory(new_obj["inventory"])
+        inventory = self._get_inventory(new_obj["inventory"])
         if source_ref in self.old_objects.keys():
             info = self.old_objects[source_ref]
-            self.__update_db_obj(info, new_obj, inventory)
+            self._update_db_obj(info, new_obj, inventory)
             del self.old_objects[source_ref]
         else:
-            self.__create_db_obj(new_obj, source_ref, inventory)
+            self._create_db_obj(new_obj, source_ref, inventory)
 
-    def __get_inventory(self, value):
+    def _get_inventory(self, value):
         """Get the inventory object id"""
         if value:
             return self.inventory.source_ref_to_id(value)
 
         return None
 
-    def __process_workflow_job_template_nodes(self):
+    def _process_workflow_job_template_nodes(self):
         """Process workflow Job Template Nodes."""
         for new_obj in self.tower.get(
             "/api/v2/workflow_job_template_nodes?order=id", self.attrs
@@ -74,13 +74,13 @@ class ServiceOfferingNodeImport:
                 "summary_fields.unified_job_template.unified_job_type"
             ]
             if obj_type in ("job", "workflow_job"):
-                self.__handle_obj(new_obj)
+                self._handle_obj(new_obj)
 
-    def __get_service_offering(self, source_ref):
+    def _get_service_offering(self, source_ref):
         """Using the source ref locate the ID of the database object."""
         return self.service_offerings.source_ref_to_id(source_ref)
 
-    def __create_db_obj(self, new_obj, source_ref, inventory):
+    def _create_db_obj(self, new_obj, source_ref, inventory):
         """Create a service_offering_node object"""
         self.stats["adds"] += 1
         return ServiceOfferingNode.objects.create(
@@ -88,10 +88,10 @@ class ServiceOfferingNodeImport:
             tenant=self.tenant,
             source=self.source,
             service_inventory_id=inventory,
-            service_offering_id=self.__get_service_offering(
+            service_offering_id=self._get_service_offering(
                 str(new_obj["unified_job_template"])
             ),
-            root_service_offering_id=self.__get_service_offering(
+            root_service_offering_id=self._get_service_offering(
                 str(new_obj["workflow_job_template"])
             ),
             source_created_at=new_obj["created"],
@@ -99,7 +99,7 @@ class ServiceOfferingNodeImport:
             extra={},
         )
 
-    def __update_db_obj(self, info, new_obj, inventory):
+    def _update_db_obj(self, info, new_obj, inventory):
         modified = dateutil.parser.parse(new_obj["modified"])
         if info[1] != modified:
             self.stats["updates"] += 1
@@ -109,7 +109,7 @@ class ServiceOfferingNodeImport:
             db_obj.source_updated_at = modified
             db_obj.save()
 
-    def __get_old_ids(self):
+    def _get_old_ids(self):
         for info in ServiceOfferingNode.objects.filter(
             tenant=self.tenant, source=self.source
         ).values("id", "source_ref", "source_updated_at"):

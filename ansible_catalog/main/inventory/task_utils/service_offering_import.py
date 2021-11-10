@@ -49,39 +49,39 @@ class ServiceOfferingImport:
 
     def process(self):
         """Start processing."""
-        self.__get_old_ids()
-        self.__process_job_templates()
-        self.__process_workflow_job_templates()
-        self.__deletes()
-        self.__fetch_survey_specs()
+        self._get_old_ids()
+        self._process_job_templates()
+        self._process_workflow_job_templates()
+        self._deletes()
+        self._fetch_survey_specs()
 
-    def __deletes(self):
+    def _deletes(self):
         """Delete any left over objects in the old_objects."""
         for key, value in self.old_objects.items():
             print(f"Deleting source_ref {key}, object {value[0]}")
             self.stats["deletes"] += 1
             ServiceOffering.objects.get(pk=value[0]).delete()
 
-    def __fetch_survey_specs(self):
+    def _fetch_survey_specs(self):
         """Fetch the Survey Spec from tower"""
         for info in self.survey_objects:
             print(f"Importing {info[0]}")
             self.plan_importer.process(info[0], info[1], info[2])
 
-    def __handle_obj(self, new_obj, kind):
+    def _handle_obj(self, new_obj, kind):
         """Handle an object based on kind of object job template or workflow"""
         source_ref = str(new_obj["id"])
-        inventory = self.__get_inventory(new_obj["related.inventory"])
+        inventory = self._get_inventory(new_obj["related.inventory"])
         if source_ref in self.old_objects.keys():
             info = self.old_objects[source_ref]
-            self.__update_db_obj(info, new_obj, source_ref, inventory)
+            self._update_db_obj(info, new_obj, source_ref, inventory)
             self.service_offering_objects[source_ref] = info[0]
             del self.old_objects[source_ref]
         else:
-            db_obj = self.__create_db_obj(new_obj, source_ref, kind, inventory)
+            db_obj = self._create_db_obj(new_obj, source_ref, kind, inventory)
             self.service_offering_objects[source_ref] = db_obj.id
 
-    def __get_inventory(self, url):
+    def _get_inventory(self, url):
         """Get the inventory id for this object."""
         result = re.search(r"\/api\/v2\/inventories\/(\w*)\/", url)
         if result:
@@ -89,21 +89,21 @@ class ServiceOfferingImport:
 
         return None
 
-    def __process_job_templates(self):
+    def _process_job_templates(self):
         """Process Job Templates."""
         for new_obj in self.tower.get(
             "/api/v2/job_templates?order=id", self.attrs
         ):
-            self.__handle_obj(new_obj, OfferingKind.JOB_TEMPLATE)
+            self._handle_obj(new_obj, OfferingKind.JOB_TEMPLATE)
 
-    def __process_workflow_job_templates(self):
+    def _process_workflow_job_templates(self):
         """Process Workflows."""
         for new_obj in self.tower.get(
             "/api/v2/workflow_job_templates?order=id", self.attrs
         ):
-            self.__handle_obj(new_obj, OfferingKind.WORKFLOW)
+            self._handle_obj(new_obj, OfferingKind.WORKFLOW)
 
-    def __create_db_obj(self, new_obj, source_ref, kind, inventory):
+    def _create_db_obj(self, new_obj, source_ref, kind, inventory):
         """Create a new object in the local DB."""
         print(new_obj["url"])
         print(new_obj["survey_enabled"])
@@ -128,7 +128,7 @@ class ServiceOfferingImport:
             )
         return obj
 
-    def __update_db_obj(self, info, new_obj, source_ref, inventory):
+    def _update_db_obj(self, info, new_obj, source_ref, inventory):
         """Updated the local object in our db if the modified is  different."""
         modified = dateutil.parser.parse(new_obj["modified"])
         if info[1] != modified:
@@ -156,7 +156,7 @@ class ServiceOfferingImport:
                     (new_obj["related.survey_spec"], db_obj.id, source_ref)
                 )
 
-    def __get_old_ids(self):
+    def _get_old_ids(self):
         """Get old objects in the database."""
         for info in ServiceOffering.objects.filter(
             tenant=self.tenant, source=self.source

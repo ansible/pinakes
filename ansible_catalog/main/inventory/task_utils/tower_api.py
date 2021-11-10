@@ -50,9 +50,9 @@ class TowerAPI:
                     next_url = data.get("next", None)
                     if "results" in data:
                         for payload in data["results"]:
-                            yield self.__filtered(payload, attrs)
+                            yield self._filtered(payload, attrs)
                     else:
-                        yield self.__filtered(data, attrs)
+                        yield self._filtered(data, attrs)
                 else:
                     raise RuntimeError(
                         "GET failed %s status %s body %s"
@@ -75,7 +75,7 @@ class TowerAPI:
             )
             if response.status_code in self.VALID_POST_CODES:
                 data = response.json()
-                return self.__filtered(data, attrs)
+                return self._filtered(data, attrs)
 
             raise RuntimeError(
                 "POST failed %s status %s body %s"
@@ -84,7 +84,7 @@ class TowerAPI:
         except requests.exceptions.RequestException as exc:
             raise exc
 
-    def __filtered(self, payload, attrs):
+    def _filtered(self, payload, attrs):
         """Build an object by filtering out unwanted variables"""
         obj = {}
         for attr in attrs:

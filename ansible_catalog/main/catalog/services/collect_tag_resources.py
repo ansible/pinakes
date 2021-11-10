@@ -26,26 +26,26 @@ class CollectTagResources:
         return self
 
     def consolidate_inventory_tags(self):
-        self.__collect_local_tags()
-        self.__collect_remote_tags()
+        self._collect_local_tags()
+        self._collect_remote_tags()
 
-    def __collect_local_tags(self):
+    def _collect_local_tags(self):
         visited = set()
 
         for item in self.order.order_items:
             if item.portfolio_item.portfolio.id in visited:
                 return
 
-            self.tag_resources += self.__tag_resources(
+            self.tag_resources += self._tag_resources(
                 item.portfolio_item.portfolio
             )
             visited.add(item.portfolio_item.portfolio.id)
 
-            self.tag_resources += self.__tag_resources(item.portfolio_item)
+            self.tag_resources += self._tag_resources(item.portfolio_item)
 
         logger.info(" Applied Local Tags: %s", self.tag_resources)
 
-    def __collect_remote_tags(self):
+    def _collect_remote_tags(self):
         visited = set()
 
         for item in self.order.order_items:
@@ -53,9 +53,9 @@ class CollectTagResources:
                 return
 
             visited.add(item.portfolio_item.service_offering_ref)
-            self.__collect_remote_order_item_tags(item)
+            self._collect_remote_order_item_tags(item)
 
-    def __collect_remote_order_item_tags(self, order_item):
+    def _collect_remote_order_item_tags(self, order_item):
         if not order_item.portfolio_item.service_offering_ref:
             raise BadParamsException(
                 _(
@@ -79,7 +79,7 @@ class CollectTagResources:
 
             self.tag_resources += [tag_resource]
 
-    def __tag_resources(self, obj):
+    def _tag_resources(self, obj):
         tags = [tag.name for tag in obj.tag_resources]
 
         if tags:

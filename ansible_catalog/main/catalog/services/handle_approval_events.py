@@ -48,8 +48,8 @@ class HandleApprovalEvents:
             )
 
             try:
-                self.__update_approval_request()
-                self.__update_progress_message()
+                self._update_approval_request()
+                self._update_progress_message()
 
                 if (
                     self.approval_request.state
@@ -81,7 +81,7 @@ class HandleApprovalEvents:
 
         return self
 
-    def __update_approval_request(self):
+    def _update_approval_request(self):
         if self.event == self.EVENT_REQUEST_FINISHED:
             state = self.payload["decision"]
         elif self.event == self.EVENT_REQUEST_CANCELED:
@@ -92,7 +92,7 @@ class HandleApprovalEvents:
         self.approval_request.request_completed_at = timezone.now()
         self.approval_request.save()
 
-    def __update_progress_message(self):
+    def _update_progress_message(self):
         approval_reason = self.approval_request.reason
         state = self.approval_request.state
 
