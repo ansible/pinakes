@@ -26,7 +26,7 @@ class ServiceInventoryImport:
 
     def process(self):
         """Process, the import handle add, update and deletes"""
-        old_ids = self.__get_old_ids()
+        old_ids = self._get_old_ids()
         attrs = [
             "id",
             "type",
@@ -40,20 +40,20 @@ class ServiceInventoryImport:
         for new_obj in self.tower.get("/api/v2/inventories?order=id", attrs):
             source_ref = str(new_obj["id"])
             if source_ref in old_ids.keys():
-                self.__update_db_obj(old_ids[source_ref], new_obj)
+                self._update_db_obj(old_ids[source_ref], new_obj)
                 self.service_inventory_objects[source_ref] = old_ids[
                     source_ref
                 ][0]
                 del old_ids[source_ref]
             else:
-                db_obj = self.__create_db_obj(new_obj)
+                db_obj = self._create_db_obj(new_obj)
                 self.service_inventory_objects[source_ref] = db_obj.id
 
         for _, value in old_ids.items():
             self.stats["deletes"] += 1
             ServiceInventory.objects.get(pk=value[0]).delete()
 
-    def __create_db_obj(self, new_obj):
+    def _create_db_obj(self, new_obj):
         """Private method to create a new object."""
         self.stats["adds"] += 1
         return ServiceInventory.objects.create(
@@ -67,7 +67,7 @@ class ServiceInventoryImport:
             extra={},
         )
 
-    def __update_db_obj(self, info, new_obj):
+    def _update_db_obj(self, info, new_obj):
         """Private method to update an existing object."""
         modified = dateutil.parser.parse(new_obj["modified"])
         if info[1] != modified:
@@ -79,7 +79,7 @@ class ServiceInventoryImport:
             db_obj.source_updated_at = modified
             db_obj.save()
 
-    def __get_old_ids(self):
+    def _get_old_ids(self):
         """Private method to collect existing inventory objects for a quick lookup.
         The updates are compared by looking at the modified attribute from tower
         with the source_updated_at in the local db.

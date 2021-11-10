@@ -26,7 +26,7 @@ class SpecToDDF:
         """Convert to DDF"""
         ddf_fields = []
         for field in data["spec"]:
-            ddf_fields.append(self.__convertField(field))
+            ddf_fields.append(self._convertField(field))
 
         schema = {}
         schema["fields"] = ddf_fields
@@ -36,7 +36,7 @@ class SpecToDDF:
         result = {"schema_type": "default", "schema": schema}
         return result
 
-    def __convertField(self, field):
+    def _convertField(self, field):
         result = {
             "label": field["question_name"],
             "name": field["variable"],
@@ -46,17 +46,17 @@ class SpecToDDF:
         }
         result = {**result, **self.DDF_FIELD_TYPES[field["type"]]}
 
-        value = self.__getOptions(field)
+        value = self._getOptions(field)
         if len(value) > 0:
             result["options"] = value
 
-        value = self.__getValidateArray(field)
+        value = self._getValidateArray(field)
         if len(value) > 0:
             result["validate"] = value
 
         return result
 
-    def __getOptions(self, field):
+    def _getOptions(self, field):
         values = None
         if isinstance(field["choices"], list):
             values = field["choices"]
@@ -70,7 +70,7 @@ class SpecToDDF:
             result.append({"label": v, "value": v})
         return result
 
-    def __getValidateArray(self, field):
+    def _getValidateArray(self, field):
         result = []
         if field["required"]:
             result.append({"type": "required-validator"})
