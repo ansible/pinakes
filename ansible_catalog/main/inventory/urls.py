@@ -55,6 +55,9 @@ urls_views["offering-service_plans-detail"] = None
 router.register(
     "service_inventories", ServiceInventoryViewSet, basename="serviceinventory"
 )
+urls_views["serviceinventory-list"] = ServiceInventoryViewSet.as_view(
+    {"get": "list"}
+)  # list only
 router.register("service_plans", ServicePlanViewSet, basename="serviceplan")
 router.register(
     "service_instances", ServiceInstanceViewSet, basename="serviceinstance"
