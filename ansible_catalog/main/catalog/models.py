@@ -208,9 +208,7 @@ class MessageableMixin:
             state=self.__class__.State.CANCELED,
         )
 
-    def _mark_item(
-        self, message, level=ProgressMessage.Level.INFO, **options
-    ):
+    def _mark_item(self, message, level=ProgressMessage.Level.INFO, **options):
         if message is not None:
             self.update_message(level, message)
 
