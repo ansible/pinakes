@@ -9,6 +9,7 @@ from ansible_catalog.main.catalog.views import (
     PortfolioItemViewSet,
     ProgressMessageViewSet,
     TenantViewSet,
+    GroupViewSet,
 )
 
 urls_views = {}
@@ -93,3 +94,5 @@ service_plans = router.register(
 urls_views["catalogserviceplan-list"] = CatalogServicePlanViewSet.as_view(
     {"post": "create"}
 )
+
+router.register("groups", GroupViewSet, basename="groups")
