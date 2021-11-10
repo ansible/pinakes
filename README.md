@@ -56,7 +56,7 @@ export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
 * Start the Server using development settings
       ```python3 manage.py runserver```
 
-      Open your browser and open http://127.0.0.1:8000/catalog/api/v1/portfolios/
+      Open your browser and open http://127.0.0.1:8000/api/ansible-catalog/v1/portfolios/
 
       When prompted provide the userid/password from the createsuperuser step
 
