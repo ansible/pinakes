@@ -9,6 +9,7 @@ drf-spectacular
 Pillow
 psycopg2
 python-dateutil
+pydantic
 requests
 django-environ
 social-auth-core[openidconnect]
