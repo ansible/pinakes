@@ -73,20 +73,20 @@ class Request(BaseModel):
     """Request model"""
 
     class State(models.TextChoices):
-        PENDING = "Pending"
-        SKIPPED = "Skipped"
-        STARTED = "Started"
-        NOTIFIED = "Notified"
-        COMPLETED = "Completed"
-        CANCELED = "Canceled"
-        FAILED = "Failed"
+        PENDING = "pending"
+        SKIPPED = "skipped"
+        STARTED = "started"
+        NOTIFIED = "notified"
+        COMPLETED = "completed"
+        CANCELED = "canceled"
+        FAILED = "failed"
 
     class Decision(models.TextChoices):
-        UNDECIDED = "Undecided"
-        APPROVED = "Approved"
-        DENIED = "Denied"
-        CANCELED = "Canceled"
-        ERROR = "Error"
+        UNDECIDED = "undecided"
+        APPROVED = "approved"
+        DENIED = "denied"
+        CANCELED = "canceled"
+        ERROR = "error"
 
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -208,14 +208,14 @@ class Action(BaseModel):
     """Action model"""
 
     class Operation(models.TextChoices):
-        NOTIFY = "Notify"
-        START = "Start"
-        SKIP = "Skip"
-        MEMO = "Memo"
-        APPROVE = "Approve"
-        DENY = "Deny"
-        CANCEL = "Cancel"
-        ERROR = "Error"
+        NOTIFY = "notify"
+        START = "start"
+        SKIP = "skip"
+        MEMO = "memo"
+        APPROVE = "approve"
+        DENY = "deny"
+        CANCEL = "cancel"
+        ERROR = "error"
 
     operation = models.CharField(
         max_length=10, choices=Operation.choices, default=Operation.MEMO

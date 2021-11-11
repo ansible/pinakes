@@ -81,8 +81,8 @@ def _prepare_service(mocker):
 def _assert_request(request, num_children=0, group_name="", workflow=None):
     assert request.name == "test"
     assert request.description == "description"
-    assert request.state == "Pending"
-    assert request.decision == "Undecided"
+    assert request.state == "pending"
+    assert request.decision == "undecided"
     assert request.number_of_children == num_children
     assert request.workflow == workflow
     assert request.group_name == group_name
