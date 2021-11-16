@@ -31,3 +31,7 @@ if "pytest" in sys.modules:
 
 ALLOWED_HOSTS = ["*"]
 CONTROLLER_VERIFY_SSL = "False"
+
+# Allow CORS for UI development
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True

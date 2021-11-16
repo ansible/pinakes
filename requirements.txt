@@ -13,3 +13,4 @@ requests
 django-environ
 social-auth-core[openidconnect]
 social-auth-app-django
+django-cors-headers

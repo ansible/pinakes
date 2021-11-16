@@ -55,10 +55,12 @@ INSTALLED_APPS = [
     "django_rq",
     "drf_spectacular",
     "social_django",
+    "corsheaders",
     "ansible_catalog.main",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -338,3 +340,11 @@ KEYCLOAK_CLIENT_SECRET = env.str(
 SOCIAL_AUTH_KEYCLOAK_OIDC_KEY = KEYCLOAK_CLIENT_ID
 SOCIAL_AUTH_KEYCLOAK_OIDC_API_URL = f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}"
 SOCIAL_AUTH_KEYCLOAK_OIDC_SECRET = KEYCLOAK_CLIENT_SECRET
+
+# CORS
+# Comma separated values list of :"SCHEME+HOST+[PORT]"
+# e.g.: ANSIBLE_CATALOG_UI_ALLOWED_ORIGINS="https://example.com,catalog.example.com"
+CORS_ALLOWED_ORIGINS = env.list(
+    "ANSIBLE_CATALOG_UI_ALLOWED_ORIGINS", default=[]
+)
+CORS_ALLOW_CREDENTIALS = True
