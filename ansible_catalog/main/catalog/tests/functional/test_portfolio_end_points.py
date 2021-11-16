@@ -94,7 +94,8 @@ def test_portfolio_copy_with_portfolio_items(api_request):
     assert Portfolio.objects.count() == 2
     assert Portfolio.objects.last().name == "Copy of %s" % portfolio.name
     assert PortfolioItem.objects.count() == 4
-    assert PortfolioItem.objects.last().name == "Copy of %s" % item.name
+    assert PortfolioItem.objects.filter(portfolio=portfolio).count() == 2
+    assert PortfolioItem.objects.last().name == item.name
 
 
 @pytest.mark.django_db

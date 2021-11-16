@@ -47,10 +47,11 @@ def test_portfolio_copy_with_portfolio_items():
 
     assert Portfolio.objects.count() == 2
     assert PortfolioItem.objects.count() == 2
+    assert PortfolioItem.objects.first().portfolio == portfolio
+    assert PortfolioItem.objects.last().portfolio == svc.new_portfolio
     assert svc.new_portfolio.name == "Copy of %s" % portfolio.name
     assert (
-        PortfolioItem.objects.last().name
-        == "Copy of %s" % PortfolioItem.objects.first().name
+        PortfolioItem.objects.first().name == PortfolioItem.objects.last().name
     )
 
 
