@@ -98,39 +98,17 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
         )
 
 
-class OrderSerializer(serializers.ModelSerializer):
-    """Serializer for Order"""
-
-    owner = serializers.ReadOnlyField()
-
-    class Meta:
-        model = Order
-        fields = (
-            "id",
-            "state",
-            "owner",
-            "order_request_sent_at",
-            "created_at",
-            "updated_at",
-            "completed_at",
-        )
-        read_only_fields = ("created_at", "updated_at")
-        extra_kwargs = {
-            "completed_at": {"allow_null": True},
-            "order_request_sent_at": {"allow_null": True},
-        }
-
-    def create(self, validated_data):
-        user = self.context["request"].user
-        return Order.objects.create(
-            tenant=Tenant.current(), user=user, **validated_data
-        )
-
-
 class OrderItemSerializer(serializers.ModelSerializer):
     """Serializer for OrderItem"""
 
     owner = serializers.ReadOnlyField()
+    portfolio_item_detail = serializers.SerializerMethodField(
+        "get_portfolio_item",
+        required=False,
+        read_only=True,
+        allow_null=True,
+        help_text="Content of portfolio item, available only when query parameter full=true",
+    )
 
     class Meta:
         model = OrderItem
@@ -142,6 +120,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "provider_control_parameters",
             "state",
             "portfolio_item",
+            "portfolio_item_detail",
             "order",
             "service_instance_ref",
             "service_plan_ref",
@@ -154,15 +133,74 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "updated_at",
             "completed_at",
         )
-        read_only_fields = ("created_at", "updated_at", "order", "name")
+        read_only_fields = ("created_at", "updated_at", "order")
         extra_kwargs = {
             "completed_at": {"allow_null": True},
             "order_request_sent_at": {"allow_null": True},
         }
 
+    @extend_schema_field(PortfolioItemSerializer(many=False))
+    def get_portfolio_item(self, order_item):
+        full = self.context.get("request").GET.get("full")
+        if full and full.lower() == "true":
+            serializer = PortfolioItemSerializer(
+                instance=order_item.portfolio_item,
+                many=False,
+                context=self.context,
+            )
+            return serializer.data
+        return None
+
     def create(self, validated_data):
         user = self.context["request"].user
         return OrderItem.objects.create(
+            tenant=Tenant.current(), user=user, **validated_data
+        )
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    """Serializer for Order"""
+
+    owner = serializers.ReadOnlyField()
+    order_items = serializers.SerializerMethodField(
+        "get_order_items",
+        required=False,
+        read_only=True,
+        allow_null=True,
+        help_text="List of order items contained in the order, available only when query parameter full=true",
+    )
+
+    class Meta:
+        model = Order
+        fields = (
+            "id",
+            "state",
+            "owner",
+            "order_request_sent_at",
+            "created_at",
+            "updated_at",
+            "completed_at",
+            "order_items",
+        )
+        read_only_fields = ("created_at", "updated_at")
+        extra_kwargs = {
+            "completed_at": {"allow_null": True},
+            "order_request_sent_at": {"allow_null": True},
+        }
+
+    @extend_schema_field(OrderItemSerializer(many=True))
+    def get_order_items(self, order):
+        full = self.context.get("request").GET.get("full")
+        if full and full.lower() == "true":
+            serializer = OrderItemSerializer(
+                instance=order.order_items, many=True, context=self.context
+            )
+            return serializer.data
+        return None
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        return Order.objects.create(
             tenant=Tenant.current(), user=user, **validated_data
         )
 
