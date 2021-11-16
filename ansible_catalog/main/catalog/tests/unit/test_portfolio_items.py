@@ -28,19 +28,3 @@ class TestPortfolioItems:
             f"CHECK constraint failed: {portfolio._meta.app_label}_portfolioitem_name_empty"
             in str(excinfo.value)
         )
-
-    @pytest.mark.django_db
-    def test_duplicate_portfolioitem_name(self):
-        from django.db import IntegrityError
-
-        tenant = TenantFactory()
-        portfolio = PortfolioFactory(tenant=tenant)
-        name = "fred"
-        PortfolioItemFactory(tenant=tenant, portfolio=portfolio, name=name)
-        with pytest.raises(IntegrityError) as excinfo:
-            PortfolioItemFactory(tenant=tenant, portfolio=portfolio, name=name)
-
-        assert (
-            f"UNIQUE constraint failed: {portfolio._meta.app_label}_portfolioitem.name"
-            in str(excinfo.value)
-        )

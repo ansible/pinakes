@@ -87,10 +87,6 @@ class PortfolioItem(ImageableModel):
                 name="%(app_label)s_%(class)s_service_offering_empty",
                 check=models.Q(service_offering_ref__length__gt=0),
             ),
-            models.UniqueConstraint(
-                name="%(app_label)s_%(class)s_name_unique",
-                fields=["name", "tenant", "portfolio"],
-            ),
         ]
 
     def delete(self):
