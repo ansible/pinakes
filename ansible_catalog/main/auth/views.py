@@ -3,6 +3,7 @@ import django_rq
 from django.http import Http404
 
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -19,7 +20,7 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
 class GroupSyncViewSet(viewsets.ViewSet):
     def create(self, request: Request):
         job = django_rq.enqueue(tasks.sync_external_groups)
-        return Response({"id": job.id})
+        return Response({"id": job.id}, status=status.HTTP_202_ACCEPTED)
 
     def retrieve(self, request: Request, pk: str):
         try:
