@@ -55,6 +55,8 @@ spec:
               value: ansible_catalog.settings.development
             - name: OBJC_DISABLE_INITIALIZE_FORK_SAFETY
               value: "YES"
+            - name: ANSIBLE_CATALOG_REDIS_HOST
+              value: redis
           image: localhost/ansible-catalog
           imagePullPolicy: Never
           name: worker
