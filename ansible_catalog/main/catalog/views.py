@@ -1,6 +1,7 @@
 """ Default views for Catalog."""
 
 import logging
+
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404
 
@@ -12,7 +13,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
 
-from ansible_catalog.common.auth import keycloak_django
 from ansible_catalog.common.tag_mixin import TagMixin
 from ansible_catalog.common.image_mixin import ImageMixin
 from ansible_catalog.common.queryset_mixin import QuerySetMixin
@@ -419,10 +419,3 @@ class CatalogServicePlanViewSet(
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class GroupViewSet(viewsets.ViewSet):
-    def list(self, request):
-        client = keycloak_django.get_admin_client()
-        groups = client.list_groups()
-        return Response([g.dict(exclude_unset=True) for g in groups])
