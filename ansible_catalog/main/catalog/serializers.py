@@ -64,7 +64,9 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
     """Serializer for PortfolioItem, which maps to a Tower Job Template
     via the service_offering_ref."""
 
-    icon_url = serializers.SerializerMethodField("get_icon_url")
+    icon_url = serializers.SerializerMethodField(
+        "get_icon_url", allow_null=True
+    )
 
     class Meta:
         model = PortfolioItem
