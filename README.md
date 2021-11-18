@@ -62,19 +62,13 @@ export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
 
 * After you have tested in the dev environment you can deactivate the virtual env by using
 ```deactivate```
-* (Optional) The default database for development is SQLite but you can change it to use PostgreSQL by configuring your database information in the **ansible_catalog/settings/local_info.py** settings file.
-```
-DATABASES = {
-  "default": {
-    "ENGINE": "django.db.backends.postgresql_psycopg2",
-    "NAME":"<<your_db_name>>",
-    "USER":"<<your_db_user>>",
-    "PASSWORD":"<<your_db_password>>",
-    "HOST":"<<your_db_host>>",
-    "PORT":"5432",
-  }
-}
-```
+* The default database for development is Postgres, you can configure the following environment variables to setup your Postgres DB information
+
+	* ANSIBLE_CATALOG_POSTGRES_USER
+	* ANSIBLE_CATALOG_POSTGRES_PASSWORD
+	* ANSIBLE_CATALOG_POSTGRES_HOST
+	* ANSIBLE_CATALOG_POSTGRES_PORT
+
 * To run background tasks we use Django RQ, which has a dependency on Redis. You would have to install Redis locally on your dev box. To start the redis worker locally use the following command
 ```redis-server /usr/local/etc/redis.conf```
 * To run a worker to handle the background tasks we need to run the worker separate from the server.
@@ -183,10 +177,10 @@ The ingress uses 2 hardcoded hosts **catalog** and **keycloak** to route the tra
 minikube image build -t localhost/ansible-catalog -f tools/docker/Dockerfile .
 ```
 ## Starting the app
-Once this has been setup you can start the deployments, services and ingress service in the directory tools/minikube/templates
+Once this has been setup you can start the deployments, services and ingress service in the directory tools/minikube/templates. A helper script creates a Kubernetes namespace called **catalog** and runs all the deployments in that namespace.
 
 ```
-kubectl apply -f tools/minikube/templates
+./tools/minikube/scripts/start_pods.sh
 ```
 
 To access the keycloak server running inside the cluster use the following URL
@@ -200,6 +194,12 @@ To access the catalog app use
 
 http://catalog.k8s.local/api/ansible-catalog/v1/schema/openapi.json
 http://catalog.k8s.local/api/ansible-catalog/v1/portfolios/ (You wont be able to get to this link without logging in first)
+
+To delete all the pods and reset the application, run the helper_script delete_pods.sh
+
+```
+./tools/minikube/scripts/delete_pods.sh
+```
 
 ## About credentials
 
@@ -220,3 +220,4 @@ The following users are also created
  - **wilma** (member of approval-approver)
 
 The default password is the same as the user name, they can be changed by modifying the file **tools/keycloak_setup/dev.yml**
+

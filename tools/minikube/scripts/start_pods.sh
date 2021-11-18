@@ -1,10 +1,10 @@
 #!/bin/sh
-kubectl get namespace catalog
+kubectl get namespace catalog 2>> /dev/null
 if [ $? -ne 0 ]; then
 	kubectl create namespace catalog
 fi
 
-kubectl get configmap --namespace=catalog dbscripts
+kubectl get configmap --namespace=catalog dbscripts 2>> /dev/null
 if [ $? -ne 0 ]; then
 	kubectl create --namespace=catalog configmap dbscripts --from-file=./tools/minikube/templates/scripts
 fi
