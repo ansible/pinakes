@@ -39,7 +39,7 @@ spec:
               value: redis
             - name: ANSIBLE_CATALOG_KEYCLOAK_URL
               value: http://keycloak:8080/auth
-            - name: ANSIBLE_CATALOG_KEYCLOAK_SECRET
+            - name: ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET
               value: SOMESECRETVALUE
             - name: ANSIBLE_CATALOG_KEYCLOAK_USER
               value: admin
@@ -57,8 +57,8 @@ spec:
               value: ansible_catalog.settings.development
             - name: OBJC_DISABLE_INITIALIZE_FORK_SAFETY
               value: "YES"
-            - name: ANSIBLE_CATALOG_REDIS_HOST
-              value: redis
+            - name: ANSIBLE_CATALOG_POSTGRES_HOST
+              value: postgres-catalog
           image: localhost/ansible-catalog
           imagePullPolicy: Never
           name: worker

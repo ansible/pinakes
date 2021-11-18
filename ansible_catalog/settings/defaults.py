@@ -99,8 +99,12 @@ WSGI_APPLICATION = "ansible_catalog.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "catalog.db",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "catalog",
+        "USER": env.str("ANSIBLE_CATALOG_POSTGRES_USER", default="catalog"),
+        "PASSWORD": env.str("ANSIBLE_CATALOG_POSTGRES_PASSWORD", default="password"),
+        "HOST": env.str("ANSIBLE_CATALOG_POSTGRES_HOST", default="postgres"),
+        "PORT": env.str("ANSIBLE_CATALOG_POSTGRES_PORT", default="5432"),
     }
 }
 
