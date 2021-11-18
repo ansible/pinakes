@@ -170,12 +170,11 @@ class PortfolioItemViewSet(
     retrieve=extend_schema(
         description="Get a specific order based on the order ID",
         parameters=[
-            OrderSerializer,
             OpenApiParameter(
-                "full",
+                "extra",
                 required=False,
                 enum=["true", "false"],
-                description="Include order items",
+                description="Include extra data such as order items",
             ),
         ],
     ),
@@ -184,10 +183,10 @@ class PortfolioItemViewSet(
         parameters=[
             OrderSerializer,
             OpenApiParameter(
-                "full",
+                "extra",
                 required=False,
                 enum=["true", "false"],
-                description="Include order items",
+                description="Include extra data such as order items",
             ),
         ],
     ),
@@ -251,12 +250,11 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     retrieve=extend_schema(
         description="Get a specific order item based on the order item ID",
         parameters=[
-            OrderItemSerializer,
             OpenApiParameter(
-                "full",
+                "extra",
                 required=False,
                 enum=["true", "false"],
-                description="Include portfolio item details",
+                description="Include extra data such as portfolio item details",
             ),
         ],
     ),
@@ -265,10 +263,10 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
         parameters=[
             OrderItemSerializer,
             OpenApiParameter(
-                "full",
+                "extra",
                 required=False,
                 enum=["true", "false"],
-                description="Include order item details",
+                description="Include extra data such as portfolio item details",
             ),
         ],
     ),
