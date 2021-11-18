@@ -102,7 +102,9 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "catalog",
         "USER": env.str("ANSIBLE_CATALOG_POSTGRES_USER", default="catalog"),
-        "PASSWORD": env.str("ANSIBLE_CATALOG_POSTGRES_PASSWORD", default="password"),
+        "PASSWORD": env.str(
+            "ANSIBLE_CATALOG_POSTGRES_PASSWORD", default="password"
+        ),
         "HOST": env.str("ANSIBLE_CATALOG_POSTGRES_HOST", default="postgres"),
         "PORT": env.str("ANSIBLE_CATALOG_POSTGRES_PORT", default="5432"),
     }
