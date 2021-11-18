@@ -56,7 +56,11 @@ spec:
             - name: ANSIBLE_CATALOG_REDIS_HOST
               value: redis
             - name: ANSIBLE_CATALOG_POSTGRES_HOST
-              value: postgres-catalog
+              value: postgres
+            - name: ANSIBLE_CATALOG_POSTGRES_USER
+              value: keycloak
+            - name: ANSIBLE_CATALOG_POSTGRES_PASSWORD
+              value: password
           image: localhost/ansible-catalog
           imagePullPolicy: Never
           name: app

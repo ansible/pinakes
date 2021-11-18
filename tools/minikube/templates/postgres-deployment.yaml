@@ -38,6 +38,8 @@ spec:
             - containerPort: 5432
           resources: {}
           volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d
+              name: createdb
             - mountPath: /var/lib/postgresql/data
               name: pg-data
       restartPolicy: Always
@@ -45,4 +47,11 @@ spec:
         - name: pg-data
           persistentVolumeClaim:
             claimName: pg-data
+        - name: createdb
+          configMap:
+            name: dbscripts
+            items:
+              - key: "create_db.sh"
+                path: "create_db.sh"
+                mode: 0777
 status: {}
