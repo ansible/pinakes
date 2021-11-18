@@ -18,6 +18,8 @@ services:
       - ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
       - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
       - ANSIBLE_CATALOG_REDIS_HOST=redis
+      - ANSIBLE_CATALOG_POSTGRES_USER=admin
+      - ANSIBLE_CATALOG_POSTGRES_PASSWORD=admin
     depends_on:
       - keycloak-setup
       - postgres
@@ -33,7 +35,7 @@ services:
       - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
       - ANSIBLE_CATALOG_KEYCLOAK_USER=admin
       - ANSIBLE_CATALOG_KEYCLOAK_PASSWORD=admin
-      - ANSIBLE_CATALOG_KEYCLOAK_SECRET=SOMESECRETVALUE
+      - ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
       - ANSIBLE_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://localhost:8080/auth
       - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
     depends_on:
@@ -51,6 +53,8 @@ services:
       - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
       - ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
       - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
+      - ANSIBLE_CATALOG_POSTGRES_USER=admin
+      - ANSIBLE_CATALOG_POSTGRES_PASSWORD=admin
     volumes:
       - "../../:/home/appuser/catalog:z"
     depends_on:
@@ -65,8 +69,8 @@ services:
       - 'DB_VENDOR=postgres'
       - 'DB_ADDR=postgres'
       - 'DB_DATABASE=keycloak'
-      - 'DB_USER=keycloak'
-      - 'DB_PASSWORD=password'
+      - 'DB_USER=admin'
+      - 'DB_PASSWORD=admin'
       - 'KEYCLOAK_USER=admin'
       - 'KEYCLOAK_PASSWORD=admin'
     ports:
@@ -82,11 +86,12 @@ services:
   postgres:
     image: 'postgres:13-alpine'
     environment:
-      - 'POSTGRES_USER=keycloak'
-      - 'POSTGRES_PASSWORD=password'
-      - 'POSTGRES_DB=keycloak'
+      - 'POSTGRES_USER=admin'
+      - 'POSTGRES_PASSWORD=admin'
+      - 'POSTGRES_MULTIPLE_DATABASES=keycloak,catalog'
     volumes:
       - 'pg_data:/var/lib/postgresql/data'
+      - "../docker/initdb:/docker-entrypoint-initdb.d:z"
     ports:
       - '5432:5432'
 
