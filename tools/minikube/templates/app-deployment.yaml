@@ -53,6 +53,8 @@ spec:
               value: "False"
             - name: DJANGO_SETTINGS_MODULE
               value: ansible_catalog.settings.development
+            - name: ANSIBLE_CATALOG_REDIS_HOST
+              value: redis
           image: localhost/ansible-catalog
           imagePullPolicy: Never
           name: app

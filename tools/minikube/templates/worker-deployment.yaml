@@ -45,6 +45,8 @@ spec:
               value: admin
             - name: ANSIBLE_CATALOG_KEYCLOAK_PASSWORD
               value: admin
+            - name: ANSIBLE_CATALOG_KEYCLOAK_REALM_FRONTEND_URL
+              value: http://keycloak.k8s.local/auth
             - name: REDIRECT_URIS_STR
               value: http://app:8000,http://app:8000/*,*
             - name: CATALOG_LOG_ROOT
@@ -55,6 +57,8 @@ spec:
               value: ansible_catalog.settings.development
             - name: OBJC_DISABLE_INITIALIZE_FORK_SAFETY
               value: "YES"
+            - name: ANSIBLE_CATALOG_REDIS_HOST
+              value: redis
           image: localhost/ansible-catalog
           imagePullPolicy: Never
           name: worker
