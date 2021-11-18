@@ -171,6 +171,24 @@ class TestSpecToDDF:
     }
     """
 
+    testdata9 = """
+    {
+        "name": "",
+        "description": "",
+        "spec": [
+           {
+                "question_name": "CPU",
+                "question_description": "Select a CPU",
+                "required": true,
+                "type": "multiplechoice",
+                "variable": "cpu",
+                "min": null,
+                "max": null,
+                "choices": "3"
+            }
+           ]
+    }
+    """
     result1 = {"component": "select-field"}
     result2 = {"data_type": "integer"}
     result3 = {"data_type": "float"}
@@ -179,6 +197,7 @@ class TestSpecToDDF:
     result6 = {"component": "text-field"}
     result7 = {"component": "select-field"}
     result8 = {"component": "select-field"}
+    result9 = {"component": "select-field"}
 
     @pytest.mark.parametrize(
         "test_input,expected",
@@ -191,6 +210,7 @@ class TestSpecToDDF:
             (testdata6, result6),
             (testdata7, result7),
             (testdata8, result8),
+            (testdata9, result9),
         ],
     )
     def test_conversion(self, test_input, expected):

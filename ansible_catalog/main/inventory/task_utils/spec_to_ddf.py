@@ -40,7 +40,7 @@ class SpecToDDF:
         result = {
             "label": field["question_name"],
             "name": field["variable"],
-            "initial_value": field["default"],
+            "initial_value": field.get("default", ""),
             "helper_text": field["question_description"],
             "is_required": field["required"],
         }
