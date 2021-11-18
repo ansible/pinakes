@@ -39,6 +39,7 @@ from ansible_catalog.main.catalog.serializers import (
     CatalogServicePlanSerializer,
     CatalogServicePlanInSerializer,
     OrderItemSerializer,
+    OrderItemDocSerializer,
     OrderSerializer,
     PortfolioItemSerializer,
     PortfolioSerializer,
@@ -261,7 +262,7 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     list=extend_schema(
         description="Get a list of order items associated with the logged in user.",
         parameters=[
-            OrderItemSerializer,
+            OrderItemDocSerializer,
             OpenApiParameter(
                 "extra",
                 required=False,

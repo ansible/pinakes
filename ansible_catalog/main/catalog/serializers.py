@@ -98,6 +98,28 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
         )
 
 
+class OrderItemFields:
+    FIELDS = (
+        "id",
+        "name",
+        "count",
+        "service_parameters",
+        "provider_control_parameters",
+        "state",
+        "portfolio_item",
+        "order",
+        "service_instance_ref",
+        "service_plan_ref",
+        "inventory_task_ref",
+        "external_url",
+        "owner",
+        "order_request_sent_at",
+        "created_at",
+        "updated_at",
+        "completed_at",
+    )
+
+
 class OrderItemExtraSerializer(serializers.Serializer):
     """
     Extra data for an order item including its portfolio item details,
@@ -118,27 +140,11 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = (
-            "id",
-            "name",
-            "count",
-            "service_parameters",
-            "provider_control_parameters",
-            "state",
-            "portfolio_item",
-            "order",
-            "service_instance_ref",
-            "service_plan_ref",
-            "inventory_task_ref",
-            "external_url",
+            *OrderItemFields.FIELDS,
             "artifacts",
-            "owner",
-            "order_request_sent_at",
-            "created_at",
-            "updated_at",
-            "completed_at",
             "extra_data",
         )
-        read_only_fields = ("created_at", "updated_at", "order")
+        read_only_fields = ("created_at", "updated_at", "order", "name")
         extra_kwargs = {
             "completed_at": {"allow_null": True},
             "order_request_sent_at": {"allow_null": True},
@@ -160,6 +166,21 @@ class OrderItemSerializer(serializers.ModelSerializer):
         user = self.context["request"].user
         return OrderItem.objects.create(
             tenant=Tenant.current(), user=user, **validated_data
+        )
+
+
+class OrderItemDocSerializer(serializers.ModelSerializer):
+    """Workaround for OrderItem list params in openapi spec"""
+
+    class Meta:
+        model = OrderItem
+        fields = (*OrderItemFields.FIELDS,)
+        read_only_fields = (
+            "created_at",
+            "updated_at",
+            "order",
+            "portfolio_item",
+            "name",
         )
 
 
