@@ -83,6 +83,7 @@ order_items.register(
     basename="orderitem-progressmessage",
     parents_query_lookups=["messageable"],
 )
+urls_views["orderitem-list"] = None
 urls_views["orderitem-progressmessage-detail"] = None
 
 service_plans = router.register(

@@ -17,18 +17,6 @@ def test_order_item_retrieve(api_request):
 
 
 @pytest.mark.django_db
-def test_order_item_list(api_request):
-    """Get list of Order Items"""
-    OrderItemFactory()
-    response = api_request("get", "orderitem-list")
-
-    assert response.status_code == 200
-    content = json.loads(response.content)
-
-    assert content["count"] == 1
-
-
-@pytest.mark.django_db
 def test_order_item_delete(api_request):
     """Delete a OrderItem by id"""
     order_item = OrderItemFactory()
