@@ -63,6 +63,23 @@ spec:
               value: keycloak
             - name: ANSIBLE_CATALOG_POSTGRES_PASSWORD
               value: password
+            - name: ANSIBLE_CATALOG_CONTROLLER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: ansible-controller-env
+                  key: ANSIBLE_CATALOG_CONTROLLER_URL
+            - name: ANSIBLE_CATALOG_CONTROLLER_TOKEN
+              valueFrom:
+                configMapKeyRef:
+                  name: ansible-controller-env
+                  key: ANSIBLE_CATALOG_CONTROLLER_TOKEN
+            - name: ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL
+              valueFrom:
+                configMapKeyRef:
+                  name: ansible-controller-env
+                  key: ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL
+          image: localhost/ansible-catalog
+          image: localhost/ansible-catalog
           image: localhost/ansible-catalog
           imagePullPolicy: Never
           name: app
