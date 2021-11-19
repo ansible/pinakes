@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("main", "0013_auto_20211108_1729"),
+        ("main", "0014_remove_portfolioitem_main_portfolioitem_name_unique"),
     ]
 
     operations = [
