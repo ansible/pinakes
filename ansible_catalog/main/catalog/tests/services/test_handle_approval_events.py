@@ -25,7 +25,7 @@ def test_handle_approval_events_approved_completed():
     ApprovalRequestFactory(approval_request_ref=request.id, order=order)
     payload = {
         "request_id": request.id,
-        "decision": "Approved",
+        "decision": "approved",
         "reason": "Good work",
     }
     event = "request_finished"
@@ -43,7 +43,7 @@ def test_handle_approval_events_denied_completed():
     ApprovalRequestFactory(approval_request_ref=request.id, order=order)
     payload = {
         "request_id": request.id,
-        "decision": "Denied",
+        "decision": "denied",
         "reason": "Good work",
     }
     event = "request_finished"

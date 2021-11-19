@@ -370,11 +370,11 @@ class ApprovalRequest(BaseModel):
     class State(models.TextChoices):
         """Available states for approval request"""
 
-        UNDECIDED = "Undecided"
-        APPROVED = "Approved"
-        CANCELED = "Canceled"
-        DENIED = "Denied"
-        FAILED = "Failed"
+        UNDECIDED = "undecided"
+        APPROVED = "approved"
+        CANCELED = "canceled"
+        DENIED = "denied"
+        FAILED = "failed"
 
     objects = ApprovalRequestManager()
     approval_request_ref = models.CharField(max_length=64, default="")
