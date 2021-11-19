@@ -15,16 +15,15 @@ Including another URLconf
 """
 
 from django.urls import include, path
-from rest_framework import routers
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import (
     SpectacularJSONAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView,
-    get_relative_url,
 )
 
+from ansible_catalog.main.auth import urls as auth_urls
 from ansible_catalog.main.catalog.urls import (
     router as catalog_router,
     urls_views as catalog_views,
@@ -78,9 +77,9 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
-    # path("", include((api_urls, "api"), "catalog")),
     path(api_prefix, include((approval_urls, "api"), namespace="approval")),
     path(api_prefix, include((catalog_urls, "api"), namespace="catalog")),
     path(api_prefix, include((inventory_urls, "api"), namespace="inventory")),
+    path(api_prefix, include((auth_urls, "api"), namespace="auth")),
     path("", include("social_django.urls", namespace="social")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
