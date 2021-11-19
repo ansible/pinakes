@@ -11,7 +11,8 @@ on:
 
 jobs:
   build:
-
+    env:
+      DJANGO_SETTINGS_MODULE: ansible_catalog.settings.development
     runs-on: ubuntu-latest
     strategy:
       matrix:
