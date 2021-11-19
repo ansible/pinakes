@@ -58,7 +58,6 @@ class OrderItemFactory(factory.django.DjangoModelFactory):
     order = factory.SubFactory(OrderFactory)
     portfolio_item = factory.SubFactory(PortfolioItemFactory)
     user = factory.SubFactory(UserFactory)
-    name = factory.Sequence(lambda n: f"order_item{n}")
 
 
 class ApprovalRequestFactory(factory.django.DjangoModelFactory):
