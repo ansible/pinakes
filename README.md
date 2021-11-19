@@ -64,10 +64,11 @@ export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
 ```deactivate```
 * The default database for development is Postgres, you can configure the following environment variables to setup your Postgres DB information
 
-	* ANSIBLE_CATALOG_POSTGRES_USER
-	* ANSIBLE_CATALOG_POSTGRES_PASSWORD
-	* ANSIBLE_CATALOG_POSTGRES_HOST
-	* ANSIBLE_CATALOG_POSTGRES_PORT
+	* ANSIBLE_CATALOG_POSTGRES_USER (default: catalog)
+	* ANSIBLE_CATALOG_POSTGRES_PASSWORD (default: password)
+	* ANSIBLE_CATALOG_POSTGRES_HOST (default: postgres)
+	* ANSIBLE_CATALOG_POSTGRES_PORT (default: 5432)
+	* ANSIBLE_CATALOG_DATABASE_NAME (default: catalog)
 
 * To run background tasks we use Django RQ, which has a dependency on Redis. You would have to install Redis locally on your dev box. To start the redis worker locally use the following command
 ```redis-server /usr/local/etc/redis.conf```

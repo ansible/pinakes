@@ -100,7 +100,7 @@ WSGI_APPLICATION = "ansible_catalog.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "catalog",
+        "NAME": env.str("ANSIBLE_CATALOG_DATABASE_NAME", default="catalog"),
         "USER": env.str("ANSIBLE_CATALOG_POSTGRES_USER", default="catalog"),
         "PASSWORD": env.str(
             "ANSIBLE_CATALOG_POSTGRES_PASSWORD", default="password"

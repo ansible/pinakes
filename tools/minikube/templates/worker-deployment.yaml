@@ -41,22 +41,14 @@ spec:
               value: http://keycloak:8080/auth
             - name: ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET
               value: SOMESECRETVALUE
-            - name: ANSIBLE_CATALOG_KEYCLOAK_USER
-              value: admin
-            - name: ANSIBLE_CATALOG_KEYCLOAK_PASSWORD
-              value: admin
-            - name: ANSIBLE_CATALOG_KEYCLOAK_REALM_FRONTEND_URL
-              value: http://keycloak.k8s.local/auth
-            - name: REDIRECT_URIS_STR
-              value: http://app:8000,http://app:8000/*,*
             - name: CATALOG_LOG_ROOT
               value: /tmp
             - name: CONTROLLER_VERIFY_SSL
               value: "False"
             - name: DJANGO_SETTINGS_MODULE
               value: ansible_catalog.settings.development
-            - name: OBJC_DISABLE_INITIALIZE_FORK_SAFETY
-              value: "YES"
+            - name: ANSIBLE_CATALOG_DATABASE_NAME
+              value: dev_catalog
             - name: ANSIBLE_CATALOG_POSTGRES_HOST
               value: postgres
             - name: ANSIBLE_CATALOG_POSTGRES_USER

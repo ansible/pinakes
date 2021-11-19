@@ -55,6 +55,8 @@ spec:
               value: ansible_catalog.settings.development
             - name: ANSIBLE_CATALOG_REDIS_HOST
               value: redis
+            - name: ANSIBLE_CATALOG_DATABASE_NAME
+              value: dev_catalog
             - name: ANSIBLE_CATALOG_POSTGRES_HOST
               value: postgres
             - name: ANSIBLE_CATALOG_POSTGRES_USER

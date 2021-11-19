@@ -1,3 +1,6 @@
 #!/bin/bash
 set -e
-psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -c 'CREATE DATABASE catalog;'
+sql="CREATE DATABASE "$ANSIBLE_CATALOG_DATABASE_NAME";"
+echo $sql > /tmp/my.sql
+
+psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -f /tmp/my.sql
