@@ -267,6 +267,7 @@ class OrderItemManager(models.Manager):
             SanitizeParameters,
         )
 
+        kwargs["name"] = kwargs["portfolio_item"].name
         order_item = super(OrderItemManager, self).create(*args, **kwargs)
 
         sanitized_parameters = (

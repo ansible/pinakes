@@ -106,7 +106,6 @@ def test_create_action(api_request, mocker):
         {
             "operation": "deny",
             "comments": "not good",
-            "request": request.id,
         },
     )
 

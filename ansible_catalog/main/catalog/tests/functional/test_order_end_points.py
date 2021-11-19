@@ -49,6 +49,7 @@ def test_order_delete(api_request):
 @pytest.mark.django_db
 def test_order_submit(api_request, mocker):
     """Submit a single order by id"""
+    mocker.patch("django_rq.enqueue")
     service_offering = ServiceOfferingFactory()
     portfolio = PortfolioFactory()
     portfolio_item = PortfolioItemFactory(
@@ -161,9 +162,10 @@ def test_order_order_item_post(api_request):
     order = OrderFactory()
     portfolio_item = PortfolioItemFactory()
     data = {
-        "order": order.id,  # TODO: remove order from data
         "portfolio_item": portfolio_item.id,
-        "name": "abcdef",
     }
     response = api_request("post", "order-orderitem-list", order.id, data)
+    content = json.loads(response.content)
     assert response.status_code == 201
+    assert content["name"] == portfolio_item.name
+    assert content["order"] == str(order.id)
