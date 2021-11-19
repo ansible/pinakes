@@ -33,8 +33,8 @@ def test_portfolio_tags_list(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
 
-    assert len(content) == 1
-    assert content[0]["name"] == "test_tag"
+    assert len(content["results"]) == 1
+    assert content["results"][0]["name"] == "test_tag"
 
 
 @pytest.mark.django_db
