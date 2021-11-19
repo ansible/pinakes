@@ -178,7 +178,10 @@ The ingress uses 2 hardcoded hosts **catalog** and **keycloak** to route the tra
 minikube image build -t localhost/ansible-catalog -f tools/docker/Dockerfile .
 ```
 ## Starting the app
-Once this has been setup you can start the deployments, services and ingress service in the directory tools/minikube/templates. A helper script creates a Kubernetes namespace called **catalog** and runs all the deployments in that namespace.
+Once this has been setup you can start the deployments, services and ingress service in the directory tools/minikube/templates. A helper script creates a Kubernetes namespace called **catalog** and runs all the deployments in that namespace. The helper scripts requires 3 environment variables to locate the Automation Controller.
+  - **export ANSIBLE_CATALOG_CONTROLLER_URL="Your controller url"**
+  - **export ANSIBLE_CATALOG_CONTROLLER_TOKEN="Your Token"**
+  - **export ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL="False"**
 
 ```
 ./tools/minikube/scripts/start_pods.sh
