@@ -32,9 +32,7 @@ def test_duplicate_orderitem_name():
     tenant = TenantFactory()
     order = OrderFactory(tenant=tenant)
     portfolio_item = PortfolioItemFactory(tenant=tenant)
-    OrderItemFactory(
-        tenant=tenant, order=order, portfolio_item=portfolio_item
-    )
+    OrderItemFactory(tenant=tenant, order=order, portfolio_item=portfolio_item)
     with pytest.raises(IntegrityError) as excinfo:
         OrderItemFactory(
             tenant=tenant,
