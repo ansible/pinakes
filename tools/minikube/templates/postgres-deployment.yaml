@@ -32,12 +32,16 @@ spec:
               value: password
             - name: POSTGRES_USER
               value: keycloak
+            - name: ANSIBLE_CATALOG_DATABASE_NAME
+              value: dev_catalog
           image: postgres:13-alpine
           name: postgres
           ports:
             - containerPort: 5432
           resources: {}
           volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d
+              name: createdb
             - mountPath: /var/lib/postgresql/data
               name: pg-data
       restartPolicy: Always
@@ -45,4 +49,11 @@ spec:
         - name: pg-data
           persistentVolumeClaim:
             claimName: pg-data
+        - name: createdb
+          configMap:
+            name: dbscripts
+            items:
+              - key: "create_db.sh"
+                path: "create_db.sh"
+                mode: 0777
 status: {}
