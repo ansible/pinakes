@@ -27,7 +27,7 @@ While we wait for the UI we can do some basic testing by calling the REST API en
    We would need this when ordering
 7. Create a new order
      [http://catalog.k8s.local/api/ansible-catalog/v1/orders/](http://catalog.k8s.local/api/ansible-catalog/v1/orders/)
-     ![Alt_OrderCreated](./drf_images/order_created.png?raw=true)
+![Alt_OrderCreated](./drf_images/order_created.png?raw=true)
      Hit the Post Buttom, note the order is that will be needed in following steps. In this example it is 6
 8. Add an order item to the order
        [http://catalog.k8s.local/api/ansible-catalog/v1/orders/6/order_items/](http://catalog.k8s.local/api/ansible-catalog/v1/orders/6/order_items/) 
@@ -43,7 +43,7 @@ While we wait for the UI we can do some basic testing by calling the REST API en
     ```
     Set the Portfolio Item
     Hit the POST button to create the new order item. 
-    ![Alt_AddOrderItem](./drf_images/add_an_order_item.png?raw=true)
+![Alt_AddOrderItem](./drf_images/add_an_order_item.png?raw=true)
 9. Submit the order
 [**http://catalog.k8s.local/api/ansible-catalog/v1/orders/6/submit/**](http://catalog.k8s.local/api/ansible-catalog/v1/orders/6/submit/) 
 Hit the Post button 
