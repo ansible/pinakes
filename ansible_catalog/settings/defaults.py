@@ -296,7 +296,7 @@ RQ_QUEUES = {
     "default": {
         "HOST": env.str("ANSIBLE_CATALOG_REDIS_HOST", default="localhost"),
         "PORT": env.int("ANSIBLE_CATALOG_REDIS_PORT", default=6379),
-        "DB": 0,
+        "DB": env.int("ANSIBLE_CATALOG_REDIS_DB", default=0),
         "DEFAULT_TIMEOUT": 360,
     },
 }
