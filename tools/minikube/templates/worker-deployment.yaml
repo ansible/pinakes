@@ -37,6 +37,10 @@ spec:
           env:
             - name: ANSIBLE_CATALOG_REDIS_HOST
               value: redis
+            - name: ANSIBLE_CATALOG_REDIS_PORT
+              value: 6379
+            - name: ANSIBLE_CATALOG_REDIS_DB
+              value: 0
             - name: ANSIBLE_CATALOG_KEYCLOAK_URL
               value: http://keycloak:8080/auth
             - name: ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET

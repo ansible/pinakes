@@ -55,6 +55,10 @@ spec:
               value: ansible_catalog.settings.development
             - name: ANSIBLE_CATALOG_REDIS_HOST
               value: redis
+            - name: ANSIBLE_CATALOG_REDIS_PORT
+              value: 6379
+            - name: ANSIBLE_CATALOG_REDIS_DB
+              value: 0
             - name: ANSIBLE_CATALOG_DATABASE_NAME
               value: dev_catalog
             - name: ANSIBLE_CATALOG_POSTGRES_HOST
