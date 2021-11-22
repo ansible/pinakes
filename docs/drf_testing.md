@@ -49,5 +49,5 @@ While we wait for the UI we can do some basic testing by calling the REST API en
 Hit the Post button 
 11. Check the Order Progress
 [**http://catalog.k8s.local/api/ansible-catalog/v1/orders/6/progress_messages/**](http://catalog.k8s.local/api/ansible-catalog/v1/orders/6/progress_messages/)
-![Alt_ProgressMessages](./drf_images/progress_messages)
+![Alt_ProgressMessages](./drf_images/progress_messages.png?raw=true)
 
