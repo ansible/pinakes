@@ -68,16 +68,44 @@ def test_create_request(api_request, mocker):
             "name": "abcdef",
             "description": "abc",
             "content": {"item1": "val1"},
+            "tag_resources": [
+                {
+                    "app_name": "catalog",
+                    "object_type": "portfolio",
+                    "tags": ["tag1", "tag2"],
+                }
+            ],
         },
     )
-
     assert response.status_code == 201
     content = json.loads(response.content)
     assert content["state"] == "pending"
 
 
 @pytest.mark.django_db
-def test_create_request_bad(api_request, mocker):
+def test_create_request_user_error(api_request, mocker):
+    default_tenant()
+    response = api_request(
+        "post",
+        "request-list",
+        data={
+            "name": "abcdef",
+            "description": "abc",
+            "content": {"item1": "val1"},
+            "tag_resources": [
+                {
+                    "app_name": "catalog",
+                    "obj_type": "portfolio",
+                    "tags": ["tag1", "tag2"],
+                }
+            ],
+        },
+    )
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
+def test_create_request_internal_error(api_request, mocker):
     mocker.patch("django_rq.enqueue", side_effect=Exception("whoops"))
     default_tenant()
     response = api_request(
@@ -108,7 +136,6 @@ def test_create_action(api_request, mocker):
             "comments": "not good",
         },
     )
-
     assert response.status_code == 201
 
 
