@@ -38,7 +38,7 @@ def test_start_to_finish_order():
 
     assert (
         str(ProgressMessage.objects.last())
-        == "This order item has failed due to the entire order Canceled before it ran"
+        == "This order item has failed due to the entire order canceled before it ran"
     )
     assert order.state == Order.State.FAILED
     assert order_item.service_parameters_raw is None
