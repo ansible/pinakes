@@ -23,6 +23,20 @@ def test_order_list(api_request):
     content = json.loads(response.content)
 
     assert content["count"] == 1
+    assert content["results"][0]["extra_data"] is None
+
+
+@pytest.mark.django_db
+def test_order_list_extra(api_request):
+    """Get List of Orders with param extra=true"""
+    OrderFactory()
+    response = api_request("get", "order-list", data={"extra": "true"})
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+
+    assert content["count"] == 1
+    assert content["results"][0]["extra_data"]["order_items"] is not None
 
 
 @pytest.mark.django_db
@@ -35,6 +49,23 @@ def test_order_retrieve(api_request):
     content = json.loads(response.content)
     assert content["id"] == order.id
     assert content["owner"] == order.owner
+    assert content["extra_data"] is None
+
+
+@pytest.mark.django_db
+def test_order_retrieve_extra(api_request):
+    """Retrieve a single order by id with param extra=true"""
+    order = OrderFactory()
+    order_item = OrderItemFactory(order=order)
+    response = api_request(
+        "get", "order-detail", order.id, data={"extra": "true"}
+    )
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["id"] == order.id
+    assert content["owner"] == order.owner
+    assert content["extra_data"]["order_items"][0]["name"] == order_item.name
 
 
 @pytest.mark.django_db

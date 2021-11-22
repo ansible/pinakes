@@ -98,10 +98,108 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
         )
 
 
+class OrderItemFields:
+    FIELDS = (
+        "id",
+        "name",
+        "count",
+        "service_parameters",
+        "provider_control_parameters",
+        "state",
+        "portfolio_item",
+        "order",
+        "service_instance_ref",
+        "service_plan_ref",
+        "inventory_task_ref",
+        "external_url",
+        "owner",
+        "order_request_sent_at",
+        "created_at",
+        "updated_at",
+        "completed_at",
+    )
+
+
+class OrderItemExtraSerializer(serializers.Serializer):
+    """
+    Extra data for an order item including its portfolio item details,
+    available only when query parameter extra=true
+    """
+
+    portfolio_item = PortfolioItemSerializer(many=False)
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    """Serializer for OrderItem"""
+
+    owner = serializers.ReadOnlyField()
+    extra_data = serializers.SerializerMethodField(
+        "get_extra_data", read_only=True, allow_null=True
+    )
+
+    class Meta:
+        model = OrderItem
+        fields = (
+            *OrderItemFields.FIELDS,
+            "artifacts",
+            "extra_data",
+        )
+        read_only_fields = ("created_at", "updated_at", "order", "name")
+        extra_kwargs = {
+            "completed_at": {"allow_null": True},
+            "order_request_sent_at": {"allow_null": True},
+        }
+
+    @extend_schema_field(OrderItemExtraSerializer(many=False))
+    def get_extra_data(self, order_item):
+        extra = self.context.get("request").GET.get("extra")
+        if extra and extra.lower() == "true":
+            serializer = OrderItemExtraSerializer(
+                instance=order_item,
+                many=False,
+                context=self.context,
+            )
+            return serializer.data
+        return None
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        return OrderItem.objects.create(
+            tenant=Tenant.current(), user=user, **validated_data
+        )
+
+
+class OrderItemDocSerializer(serializers.ModelSerializer):
+    """Workaround for OrderItem list params in openapi spec"""
+
+    class Meta:
+        model = OrderItem
+        fields = (*OrderItemFields.FIELDS,)
+        read_only_fields = (
+            "created_at",
+            "updated_at",
+            "order",
+            "portfolio_item",
+            "name",
+        )
+
+
+class OrderExtraSerializer(serializers.Serializer):
+    """
+    Extra data for an order including its order items,
+    available only when query parameter extra=true
+    """
+
+    order_items = OrderItemSerializer(many=True)
+
+
 class OrderSerializer(serializers.ModelSerializer):
     """Serializer for Order"""
 
     owner = serializers.ReadOnlyField()
+    extra_data = serializers.SerializerMethodField(
+        "get_extra_data", allow_null=True, read_only=True
+    )
 
     class Meta:
         model = Order
@@ -113,6 +211,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "completed_at",
+            "extra_data",
         )
         read_only_fields = ("created_at", "updated_at")
         extra_kwargs = {
@@ -126,45 +225,15 @@ class OrderSerializer(serializers.ModelSerializer):
             tenant=Tenant.current(), user=user, **validated_data
         )
 
-
-class OrderItemSerializer(serializers.ModelSerializer):
-    """Serializer for OrderItem"""
-
-    owner = serializers.ReadOnlyField()
-
-    class Meta:
-        model = OrderItem
-        fields = (
-            "id",
-            "name",
-            "count",
-            "service_parameters",
-            "provider_control_parameters",
-            "state",
-            "portfolio_item",
-            "order",
-            "service_instance_ref",
-            "service_plan_ref",
-            "inventory_task_ref",
-            "external_url",
-            "artifacts",
-            "owner",
-            "order_request_sent_at",
-            "created_at",
-            "updated_at",
-            "completed_at",
-        )
-        read_only_fields = ("created_at", "updated_at", "order", "name")
-        extra_kwargs = {
-            "completed_at": {"allow_null": True},
-            "order_request_sent_at": {"allow_null": True},
-        }
-
-    def create(self, validated_data):
-        user = self.context["request"].user
-        return OrderItem.objects.create(
-            tenant=Tenant.current(), user=user, **validated_data
-        )
+    @extend_schema_field(OrderExtraSerializer(many=False))
+    def get_extra_data(self, order):
+        extra = self.context.get("request").GET.get("extra")
+        if extra and extra.lower() == "true":
+            serializer = OrderExtraSerializer(
+                instance=order, many=False, context=self.context
+            )
+            return serializer.data
+        return None
 
 
 class ImageSerializer(serializers.ModelSerializer):

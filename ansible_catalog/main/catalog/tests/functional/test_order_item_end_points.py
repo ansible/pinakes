@@ -1,7 +1,10 @@
 """ Module to test OrderItem end points """
 import json
 import pytest
-from ansible_catalog.main.catalog.tests.factories import OrderItemFactory
+from ansible_catalog.main.catalog.tests.factories import (
+    OrderItemFactory,
+    PortfolioItemFactory,
+)
 
 
 @pytest.mark.django_db
@@ -14,6 +17,25 @@ def test_order_item_retrieve(api_request):
     content = json.loads(response.content)
     assert content["id"] == order_item.id
     assert content["owner"] == order_item.owner
+    assert content["extra_data"] is None
+
+
+@pytest.mark.django_db
+def test_order_item_retrieve_extra(api_request):
+    """Retrieve a single order item by id with param extra=true"""
+    portfolio_item = PortfolioItemFactory()
+    order_item = OrderItemFactory(portfolio_item=portfolio_item)
+    response = api_request(
+        "get", "orderitem-detail", order_item.id, data={"extra": "true"}
+    )
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["id"] == order_item.id
+    assert content["owner"] == order_item.owner
+    assert (
+        content["extra_data"]["portfolio_item"]["name"] == portfolio_item.name
+    )
 
 
 @pytest.mark.django_db

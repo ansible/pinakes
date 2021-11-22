@@ -11,7 +11,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from rest_framework.response import Response
 from rest_framework import status
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import (
+    extend_schema,
+    extend_schema_view,
+    OpenApiParameter,
+    OpenApiTypes,
+)
 
 from ansible_catalog.common.tag_mixin import TagMixin
 from ansible_catalog.common.image_mixin import ImageMixin
@@ -34,6 +39,7 @@ from ansible_catalog.main.catalog.serializers import (
     CatalogServicePlanSerializer,
     CatalogServicePlanInSerializer,
     OrderItemSerializer,
+    OrderItemDocSerializer,
     OrderSerializer,
     PortfolioItemSerializer,
     PortfolioSerializer,
@@ -161,6 +167,31 @@ class PortfolioItemViewSet(
         return Response(serializer.data)
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get a specific order based on the order ID",
+        parameters=[
+            OpenApiParameter(
+                "extra",
+                required=False,
+                enum=["true", "false"],
+                description="Include extra data such as order items",
+            ),
+        ],
+    ),
+    list=extend_schema(
+        description="Get a list of orders associated with the logged in user.",
+        parameters=[
+            OrderSerializer,
+            OpenApiParameter(
+                "extra",
+                required=False,
+                enum=["true", "false"],
+                description="Include extra data such as order items",
+            ),
+        ],
+    ),
+)
 class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating orders."""
 
@@ -216,6 +247,31 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
         pass
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get a specific order item based on the order item ID",
+        parameters=[
+            OpenApiParameter(
+                "extra",
+                required=False,
+                enum=["true", "false"],
+                description="Include extra data such as portfolio item details",
+            ),
+        ],
+    ),
+    list=extend_schema(
+        description="Get a list of order items associated with the logged in user.",
+        parameters=[
+            OrderItemDocSerializer,
+            OpenApiParameter(
+                "extra",
+                required=False,
+                enum=["true", "false"],
+                description="Include extra data such as portfolio item details",
+            ),
+        ],
+    ),
+)
 class OrderItemViewSet(
     NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
 ):
