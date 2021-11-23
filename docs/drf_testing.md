@@ -23,7 +23,7 @@ While we wait for the UI we can do some basic testing by calling the REST API en
     * username
     * quest
     * airspeed
-    * intvalue
+    * int_value
    We would need this when ordering
 7. Create a Portfolio
 ![Alt_CreatePortfolio](./drf_images/create_portfolio.png?raw=true)
@@ -45,7 +45,7 @@ While we wait for the UI we can do some basic testing by calling the REST API en
     "username": "fred",
     "quest": "Test Catalog",
     "airspeed": 5.0,
-    "intvalue": 9
+    "int_value": 9
     }
     ```
     Set the Portfolio Item
