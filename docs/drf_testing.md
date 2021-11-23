@@ -19,17 +19,24 @@ While we wait for the UI we can do some basic testing by calling the REST API en
 [http://catalog.k8s.local/api/ansible-catalog/v1/service_offerings/2/service_plans/](http://catalog.k8s.local/api/ansible-catalog/v1/service_offerings/2/service_plans/)
 ![Alt_ServicePlans](./drf_images/service_plan.png?raw=true)
 6. Note the fields we would need to populate
-    In the example
+ In the example
     * username
     * quest
     * airspeed
     * intvalue
    We would need this when ordering
-7. Create a new order
+7. Create a Portfolio
+![Alt_CreatePortfolio](./drf_images/create_portfolio.png?raw=true)
+8. Create a Portfolio Item
+   Service Offering Ref is 2
+   Give it a name and description and hit the Post Button
+![Alt_CreatePortfolioItem](./drf_images/create_portfolio_item.png?raw=true)
+ 
+10. Create a new order
      [http://catalog.k8s.local/api/ansible-catalog/v1/orders/](http://catalog.k8s.local/api/ansible-catalog/v1/orders/)
 ![Alt_OrderCreated](./drf_images/order_created.png?raw=true)
      Hit the Post Buttom, note the order is that will be needed in following steps. In this example it is 6
-8. Add an order item to the order
+11. Add an order item to the order
        [http://catalog.k8s.local/api/ansible-catalog/v1/orders/6/order_items/](http://catalog.k8s.local/api/ansible-catalog/v1/orders/6/order_items/) 
        Set the Service Parameters based on the fields we collected
        
@@ -44,10 +51,10 @@ While we wait for the UI we can do some basic testing by calling the REST API en
     Set the Portfolio Item
     Hit the POST button to create the new order item. 
 ![Alt_AddOrderItem](./drf_images/add_an_order_item.png?raw=true)
-9. Submit the order
+12. Submit the order
 [**http://catalog.k8s.local/api/ansible-catalog/v1/orders/6/submit/**](http://catalog.k8s.local/api/ansible-catalog/v1/orders/6/submit/) 
 Hit the Post button 
-11. Check the Order Progress
+13. Check the Order Progress
 [**http://catalog.k8s.local/api/ansible-catalog/v1/orders/6/progress_messages/**](http://catalog.k8s.local/api/ansible-catalog/v1/orders/6/progress_messages/)
 ![Alt_ProgressMessages](./drf_images/progress_messages.png?raw=true)
 
