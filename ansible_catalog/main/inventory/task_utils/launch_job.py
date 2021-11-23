@@ -77,6 +77,11 @@ class LaunchJob:
         options["service_plan_id"] = (
             None if service_plan is None else str(service_plan.id)
         )
+        options["service_inventory_id"] = (
+            None
+            if service_offering.service_inventory is None
+            else str(service_offering.service_inventory.id)
+        )
         options["external_url"] = self.output.get("url", None)
         options["source_ref"] = self.output.get("id", None)
         options["name"] = self.output.get("name", None)
