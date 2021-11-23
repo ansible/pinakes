@@ -6,7 +6,7 @@ While we wait for the UI we can do some basic testing by calling the REST API en
      [http://catalog.k8s.local/login/keycloak-oidc/](http://catalog.k8s.local/login/keycloak-oidc/)
      Login as user: barney password: barney
      if the login is successful you would get a Page not found 404 on http://catalog.k8s.local/accounts/profile/
-![Alt_LoginSuccess](./docs/drf_images/successful_login.png?raw=true)
+![Alt_LoginSuccess](./drf_images/successful_login.png?raw=true)
 2. Start a Inventory Refresh
      [http://catalog.k8s.local/api/ansible-catalog/v1/sources/1/refresh/](http://catalog.k8s.local/api/ansible-catalog/v1/sources/1/refresh/)
     Please note the Source id is always 1 when running these tests since there is only 1 source.
