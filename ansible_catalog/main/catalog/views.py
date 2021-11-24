@@ -1,6 +1,7 @@
 """ Default views for Catalog."""
 
 import logging
+from typing import List
 
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404
@@ -15,14 +16,18 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
     OpenApiParameter,
-    OpenApiTypes,
 )
 
+from ansible_catalog.common.auth import keycloak_django
+from ansible_catalog.common.auth.keycloak import models as keycloak_models
+from ansible_catalog.common.auth.keycloak import exceptions as keycloak_exc
 from ansible_catalog.common.tag_mixin import TagMixin
 from ansible_catalog.common.image_mixin import ImageMixin
 from ansible_catalog.common.queryset_mixin import QuerySetMixin
+from ansible_catalog.common.utils import removeprefix
 
 from ansible_catalog.main.models import Tenant
+from ansible_catalog.main.auth.models import Group
 from ansible_catalog.main.catalog.exceptions import (
     BadParamsException,
 )
@@ -45,6 +50,7 @@ from ansible_catalog.main.catalog.serializers import (
     PortfolioSerializer,
     ProgressMessageSerializer,
     TenantSerializer,
+    SharePolicySerializer,
 )
 
 from ansible_catalog.main.catalog.services.collect_tag_resources import (
@@ -103,6 +109,8 @@ class PortfolioViewSet(
     filterset_fields = ("name", "description", "created_at", "updated_at")
     search_fields = ("name", "description")
 
+    PERMISSION_PREFIX = "portfolio-group"
+
     @extend_schema(
         responses={200: PortfolioSerializer},
     )
@@ -121,6 +129,136 @@ class PortfolioViewSet(
         serializer = self.get_serializer(svc.new_portfolio)
 
         return Response(serializer.data)
+
+    # TODO(cutwater): Consider moving to a background task
+    @action(methods=["post"], detail=True)
+    def share(self, request, pk=None):
+        portfolio = self.get_object()
+        data = self._parse_share_policy(request, portfolio)
+
+        client = keycloak_django.get_uma_client()
+        if portfolio.keycloak_id is None:
+            portfolio_resource = client.create_resource(
+                keycloak_models.Resource(
+                    name=portfolio.keycloak_name(),
+                    type=portfolio.keycloak_type(),
+                    scopes=portfolio.keycloak_scopes(fully_qualified=True),
+                    owner_managed_access=True,
+                )
+            )
+            portfolio.keycloak_id = portfolio_resource.id
+            portfolio.save()
+
+        scopes = portfolio.keycloak_scopes(
+            scopes=data["permissions"], fully_qualified=True
+        )
+        self._update_permissions(
+            client, portfolio, data["groups"], add_scopes=scopes
+        )
+
+        return Response()
+
+    # TODO(cutwater): Consider moving to a background task
+    @action(methods=["post"], detail=True)
+    def unshare(self, request, pk=None):
+        portfolio = self.get_object()
+        data = self._parse_share_policy(request, portfolio)
+
+        # TODO(cutwater): Clarify desired behaviour if nothing to do
+        if portfolio.keycloak_id is None:
+            return Response()
+
+        # Update permissions
+        scopes = portfolio.keycloak_scopes(
+            scopes=data["permissions"], fully_qualified=True
+        )
+        client = keycloak_django.get_uma_client()
+        self._update_permissions(
+            client, portfolio, data["groups"], delete_scopes=scopes
+        )
+
+        return Response()
+
+    @action(methods=["get"], detail=True)
+    def share_info(self, request, pk=None):
+        portfolio = self.get_object()
+        client = keycloak_django.get_uma_client()
+        permissions = client.find_permissions_by_resource(
+            portfolio.keycloak_id
+        )
+        permissions = [
+            p
+            for p in permissions
+            if p.name.startswith(self.PERMISSION_PREFIX + ":")
+        ]
+        groups_lookup = [permission.groups[0] for permission in permissions]
+        groups = Group.objects.filter(path__in=groups_lookup)
+        groups_by_path = {group.path: group for group in groups}
+
+        data = []
+        for permission in permissions:
+            group = groups_by_path.get(permission.groups[0])
+            scopes = [
+                removeprefix(scope, portfolio.keycloak_type() + ":")
+                for scope in permission.scopes
+            ]
+            data.append(
+                {
+                    "group": group.id if group else None,
+                    "permissions": scopes,
+                }
+            )
+        return Response(data)
+
+    def _parse_share_policy(self, request, portfolio):
+        serializer = SharePolicySerializer(
+            data=request.data,
+            context={
+                "valid_scopes": portfolio.KEYCLOAK_SCOPES,
+            },
+        )
+        serializer.is_valid(raise_exception=True)
+        return serializer.validated_data
+
+    def _update_permissions(
+        self,
+        client: keycloak_django.UmaClient,
+        portfolio: Portfolio,
+        groups: List[Group],
+        add_scopes: List[str] = None,
+        delete_scopes: List[str] = None,
+    ):
+        for group in groups:
+            name = "{prefix}:{portfolio_id}:{group_id}".format(
+                prefix=self.PERMISSION_PREFIX,
+                portfolio_id=portfolio.keycloak_id,
+                group_id=group.id,
+            )
+            try:
+                permission = client.get_permission_by_name(name)
+                new_scopes = set(permission.scopes)
+            except keycloak_exc.NoResultFound:
+                permission = None
+                new_scopes = set()
+
+            if delete_scopes:
+                new_scopes.difference_update(delete_scopes)
+            if add_scopes:
+                new_scopes.update(add_scopes)
+
+            if permission is not None:
+                if new_scopes:
+                    permission.scopes = list(new_scopes)
+                    client.update_permission(permission)
+                else:
+                    client.delete_permission(permission.id)
+            elif new_scopes:
+                client.create_permission(
+                    portfolio.keycloak_id,
+                    keycloak_models.UmaPermission(
+                        name=name, groups=[group.path], scopes=list(new_scopes)
+                    ),
+                )
 
 
 class PortfolioItemViewSet(

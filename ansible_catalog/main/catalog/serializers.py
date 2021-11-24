@@ -3,6 +3,7 @@ from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 from ansible_catalog.main.models import Tenant, Image
+from ansible_catalog.main.auth.models import Group
 from ansible_catalog.main.catalog.models import (
     ApprovalRequest,
     CatalogServicePlan,
@@ -306,3 +307,23 @@ class CatalogServicePlanInSerializer(serializers.ModelSerializer):
     class Meta:
         model = CatalogServicePlan
         fields = ("portfolio_item_id",)
+
+
+class SharePolicySerializer(serializers.Serializer):
+    """Serializer for SharePolicy"""
+
+    permissions = serializers.ListField(
+        child=serializers.CharField(), min_length=1
+    )
+    groups = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Group.objects.all()
+    )
+
+    def validate_permissions(self, value):
+        valid_scopes = self.context.get("valid_scopes", [])
+        invalid_scopes = set(value).difference(valid_scopes)
+        if invalid_scopes:
+            raise serializers.ValidationError(
+                "Unexpected permissions: {}".format(", ".join(invalid_scopes))
+            )
+        return value

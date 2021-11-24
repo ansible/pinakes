@@ -7,11 +7,11 @@ from django.db import models
 from django.db.models.functions import Length
 from taggit.managers import TaggableManager
 
+from ansible_catalog.common.auth.keycloak_django import KeycloakResourceModel
 from ansible_catalog.main.models import (
     BaseModel,
     Image,
     ImageableModel,
-    Tenant,
     UserOwnedModel,
 )
 
@@ -20,8 +20,11 @@ models.CharField.register_lookup(Length)
 logger = logging.getLogger("catalog")
 
 
-class Portfolio(ImageableModel):
+class Portfolio(KeycloakResourceModel, ImageableModel):
     """Portfolio object to wrap products."""
+
+    KEYCLOAK_TYPE = "catalog:portfolio"
+    KEYCLOAK_SCOPES = ["read", "update", "delete", "order"]
 
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, default="")
