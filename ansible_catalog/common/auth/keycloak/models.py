@@ -12,10 +12,6 @@ class OpenIDConfiguration(pydantic.BaseModel):
 
 
 class Uma2Configuration(pydantic.BaseModel):
-    authorization_endpoint: str
-    token_endpoint: str
-    introspection_endpoint: str
-    registration_endpoint: str
     resource_registration_endpoint: str
     permission_endpoint: str
     policy_endpoint: str
