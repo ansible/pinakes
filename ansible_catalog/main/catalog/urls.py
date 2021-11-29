@@ -57,9 +57,9 @@ orders.register(
     parents_query_lookups=OrderItemViewSet.parent_field_names,
 )
 orders.register(
-    r"approval_request",
+    r"approval_requests",
     ApprovalRequestViewSet,
-    basename="order-approvalrequest",
+    basename="order-approvalrequests",
     parents_query_lookups=ApprovalRequestViewSet.parent_field_names,
 )
 orders.register(
@@ -71,7 +71,7 @@ orders.register(
 urls_views["order-orderitem-detail"] = OrderItemViewSet.as_view(
     {"get": "retrieve"}
 )  # read only
-urls_views["order-approvalrequest-detail"] = None
+urls_views["order-approvalrequests-detail"] = None
 urls_views["order-progressmessage-detail"] = None
 
 order_items = router.register(
