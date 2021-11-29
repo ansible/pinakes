@@ -17,6 +17,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
+    OpenApiParameter,
     OpenApiResponse,
 )
 from django.utils.translation import gettext_lazy as _
@@ -32,7 +33,6 @@ from ansible_catalog.main.approval.serializers import (
     WorkflowSerializer,
     RequestSerializer,
     RequestInSerializer,
-    RequestCompleteSerializer,
     ActionSerializer,
     ResourceObjectSerializer,
 )
@@ -204,10 +204,26 @@ class WorkflowViewSet(
 
 @extend_schema_view(
     retrieve=extend_schema(
-        description="Get an approval request by its id, available to anyone who can access the request"
+        description="Get an approval request by its id, available to anyone who can access the request",
+        parameters=[
+            OpenApiParameter(
+                "extra",
+                required=False,
+                enum=["true", "false"],
+                description="Include extra data such as subrequests and actions",
+            ),
+        ],
     ),
     list=extend_schema(
         description="List requests, available to everyone",
+        parameters=[
+            OpenApiParameter(
+                "extra",
+                required=False,
+                enum=["true", "false"],
+                description="Include extra data such as subrequests and actions",
+            ),
+        ],
     ),
     create=extend_schema(
         description="Create an approval request using given parameters, available to everyone"
@@ -238,19 +254,10 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
             )
 
         output_serializer = RequestSerializer(
-            serializer.save(tenant=Tenant.current(), user=self.request.user)
+            serializer.save(tenant=Tenant.current(), user=self.request.user),
+            context=self.get_serializer_context(),
         )
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
-
-    @extend_schema(
-        responses={200: RequestCompleteSerializer},
-    )
-    @action(methods=["get"], detail=True)
-    def full(self, request, pk):
-        """Get details of a request with its subrequests and actions"""
-        instance = self.get_object()
-        serializer = RequestCompleteSerializer(instance)
-        return Response(serializer.data)
 
 
 @extend_schema_view(
