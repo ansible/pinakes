@@ -87,10 +87,12 @@ class RequestSerializer(serializers.ModelSerializer):
     """
 
     owner = serializers.CharField(
-        read_only=True, help_text="Identification of whom made the request"
+        read_only=True,
+        help_text="Identification of whom made the request",
+        default="",
     )
     requester_name = serializers.CharField(
-        read_only=True, help_text="Full name of the requester"
+        read_only=True, help_text="Full name of the requester", default=""
     )
 
     class Meta:
