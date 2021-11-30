@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import List
 
-from . import constants, exceptions
+from . import constants
+from . import exceptions
 from . import models
 from . import openid
 from .client import ApiClient
@@ -100,7 +101,7 @@ class UmaClient:
     def find_permissions_by_resource(
         self, resource_id: str
     ) -> List[models.UmaPermission]:
-        return self._find_permissions(resource_id=resource_id)
+        return self._find_permissions(resource=resource_id)
 
     def _find_permissions(self, **kwargs) -> List[models.UmaPermission]:
         url = self.uma2_configuration().policy_endpoint
