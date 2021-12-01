@@ -201,6 +201,12 @@ class PortfolioViewSet(
         serializer.is_valid(raise_exception=True)
         return serializer.validated_data
 
+    def perform_destroy(self, instance):
+        if instance.keycloak_id:
+            client = keycloak_django.get_uma_client()
+            client.delete_resource(instance.keycloak_id)
+        super().perform_destroy(instance)
+
 
 class PortfolioItemViewSet(
     ImageMixin,
