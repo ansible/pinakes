@@ -94,6 +94,5 @@ class ServiceInstanceSerializer(serializers.ModelSerializer):
             "extra",
             "external_url",
             "service_offering",
-            "service_inventory",
             "service_plan",
         )

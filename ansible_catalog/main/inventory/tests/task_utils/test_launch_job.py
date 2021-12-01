@@ -9,7 +9,6 @@ from ansible_catalog.main.inventory.models import (
     ServicePlan,
 )
 from ansible_catalog.main.inventory.tests.factories import (
-    ServiceInventoryFactory,
     ServiceOfferingFactory,
     ServicePlanFactory,
 )
@@ -45,10 +44,7 @@ class TestLaunchJob:
     def test_process_with_success_status(self, mock1, mock2):
         """Test the process method"""
         source_ref = "abc"
-        service_inventory = ServiceInventoryFactory()
-        service_offering = ServiceOfferingFactory(
-            source_ref=source_ref, service_inventory=service_inventory
-        )
+        service_offering = ServiceOfferingFactory(source_ref=source_ref)
         service_plan = ServicePlanFactory(service_offering=service_offering)
 
         instance = mock1.return_value
@@ -76,4 +72,3 @@ class TestLaunchJob:
         assert service_instance.service_offering == service_offering
         assert service_instance.service_plan == service_plan
         assert service_instance.external_url == "/abc/def/"
-        assert service_instance.service_inventory == service_inventory
