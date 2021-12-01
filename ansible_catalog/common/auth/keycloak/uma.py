@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional, Protocol
 
 from . import constants
 from . import exceptions
@@ -9,8 +9,61 @@ from . import openid
 from .client import ApiClient
 
 
+class Uma2ConfigurationPolicyProto:
+    def uma2_configuration(self) -> models.Uma2Configuration:
+        ...
+
+
+class DefaultUma2ConfigurationPolicy(Uma2ConfigurationPolicyProto):
+    def __init__(
+        self,
+        server_url: str,
+        realm: str,
+        api_client: ApiClient,
+    ):
+        self._server_url = server_url
+        self._realm = realm
+        self._client = api_client
+
+    def uma2_configuration(self) -> models.Uma2Configuration:
+        path = constants.UMA2_CONFIGURATION_PATH.format(realm=self._realm)
+        data = self._client.request_json("GET", f"{self._server_url}/{path}")
+        return models.Uma2Configuration.parse_obj(data)
+
+
+class ManualUma2ConfigurationPolicy(Uma2ConfigurationPolicyProto):
+    # fmt: off
+    endpoints = {
+        "resource_registration_endpoint":
+            constants.RESOURCE_REGISTRATION_ENDPOINT,
+        "permission_endpoint": constants.PERMISSION_ENDPOINT,
+        "policy_endpoint": constants.POLICY_ENDPOINT,
+    }
+    # fmt: on
+
+    def __init__(self, server_url: str, realm: str):
+        self._server_url = server_url
+        self._realm = realm
+
+    def _make_url(self, path):
+        path = path.format(realm=self._realm)
+        return f"{self._server_url}/{path}"
+
+    def uma2_configuration(self) -> models.Uma2Configuration:
+        endpoints = {
+            name: self._make_url(path) for name, path in self.endpoints.items()
+        }
+        return models.Uma2Configuration.parse_obj(endpoints)
+
+
 class UmaClient:
-    def __init__(self, server_url: str, realm: str, token: str):
+    def __init__(
+        self,
+        server_url: str,
+        realm: str,
+        token: str,
+        uma2_policy: Optional[Uma2ConfigurationPolicyProto] = None,
+    ):
         self._server_url = server_url.rstrip("/")
         self._realm = realm
 
@@ -18,15 +71,17 @@ class UmaClient:
 
         self._client = ApiClient(token=token)
 
+        if uma2_policy is None:
+            uma2_policy = DefaultUma2ConfigurationPolicy(
+                server_url, realm, self._client
+            )
+        self._uma2_policy = uma2_policy
+
     def uma2_configuration(
         self, force_reload=False
     ) -> models.Uma2Configuration:
         if self._uma2_configuration is None or force_reload:
-            path = constants.UMA2_CONFIGURATION_PATH.format(realm=self._realm)
-            data = self._client.request_json(
-                "GET", f"{self._server_url}/{path}"
-            )
-            self._uma2_configuration = models.Uma2Configuration.parse_obj(data)
+            self._uma2_configuration = self._uma2_policy.uma2_configuration()
         return self._uma2_configuration
 
     # Protection / Resource API
@@ -114,9 +169,12 @@ def create_uma_client(
     realm: str,
     client_id: str,
     client_secret: str,
+    uma2_policy: Optional[Uma2ConfigurationPolicyProto] = None,
 ) -> UmaClient:
     oidc_client = openid.OpenIdConnect(
         server_url, realm, client_id, client_secret
     )
     token_info = oidc_client.client_credentials_auth()
-    return UmaClient(server_url, realm, token_info["access_token"])
+    return UmaClient(
+        server_url, realm, token_info["access_token"], uma2_policy
+    )
