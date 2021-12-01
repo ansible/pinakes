@@ -11,15 +11,17 @@ def test_order_approval_request_get(api_request):
 
     response = api_request(
         "get",
-        "order-approvalrequest-list",
+        "order-approvalrequests-list",
         approval_request.order.id,
     )
 
     assert response.status_code == 200
 
     data = response.data
-    assert data["id"] == approval_request.id
+    assert data["count"] == 1
+    assert data["results"][0]["id"] == approval_request.id
     assert (
-        data["approval_request_ref"] == approval_request.approval_request_ref
+        data["results"][0]["approval_request_ref"]
+        == approval_request.approval_request_ref
     )
-    assert data["reason"] == approval_request.reason
+    assert data["results"][0]["reason"] == approval_request.reason

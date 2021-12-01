@@ -327,13 +327,6 @@ class ApprovalRequestViewSet(
     )
     parent_field_names = ("order",)
 
-    def list(self, request, *args, **kwargs):
-        order_id = kwargs.pop("order_id")
-        approval_request = ApprovalRequest.objects.get(order_id=order_id)
-
-        serializer = self.get_serializer(approval_request)
-        return Response(serializer.data)
-
 
 class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     """API endpoint for listing progress messages."""
