@@ -179,22 +179,29 @@ def test_request_request_not_create(api_request):
 
 
 @pytest.mark.django_db
-def test_request_full_action(api_request):
+def test_request_extra_data(api_request):
     parent = RequestFactory()
     child = RequestFactory(parent=parent)
     parent_action = ActionFactory(request=parent)
     child_action = ActionFactory(request=child)
 
-    response = api_request("get", "request-full", parent.id)
+    response = api_request(
+        "get", "request-detail", parent.id, data={"extra": "true"}
+    )
     content = json.loads(response.content)
     assert response.status_code == 200
-    print(content)
-    assert content["subrequests"][0]["name"] == child.name
-    assert content["subrequests"][0]["id"] == child.id
-    assert content["actions"][0]["operation"] == parent_action.operation
-    assert content["actions"][0]["id"] == parent_action.id
+    assert content["extra_data"]["subrequests"][0]["name"] == child.name
+    assert content["extra_data"]["subrequests"][0]["id"] == child.id
     assert (
-        content["subrequests"][0]["actions"][0]["operation"]
+        content["extra_data"]["actions"][0]["operation"]
+        == parent_action.operation
+    )
+    assert content["extra_data"]["actions"][0]["id"] == parent_action.id
+    assert (
+        content["extra_data"]["subrequests"][0]["actions"][0]["operation"]
         == child_action.operation
     )
-    assert content["subrequests"][0]["actions"][0]["id"] == child_action.id
+    assert (
+        content["extra_data"]["subrequests"][0]["actions"][0]["id"]
+        == child_action.id
+    )

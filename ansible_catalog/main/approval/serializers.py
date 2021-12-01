@@ -1,5 +1,6 @@
 """Serializers for Approval Model."""
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 from ansible_catalog.main.approval.models import (
     Template,
@@ -60,80 +61,6 @@ class TagResourceSerializer(serializers.Serializer):
     )
 
 
-class RequestFields:
-    FIELDS = (
-        "id",
-        "requester_name",
-        "owner",
-        "name",
-        "description",
-        "workflow",
-        "state",
-        "decision",
-        "reason",
-        "number_of_children",
-        "number_of_finished_children",
-        "created_at",
-        "notified_at",
-        "finished_at",
-    )
-
-
-class RequestSerializer(serializers.ModelSerializer):
-    """
-    Approval request.
-    It may have child requests.
-    Only a leaf node request can have workflow_id.
-    """
-
-    owner = serializers.CharField(
-        read_only=True,
-        help_text="Identification of whom made the request",
-        default="",
-    )
-    requester_name = serializers.CharField(
-        read_only=True, help_text="Full name of the requester", default=""
-    )
-
-    class Meta:
-        model = Request
-        fields = (
-            *RequestFields.FIELDS,
-            "parent",
-        )
-        read_only_fields = (
-            "__all__",
-            "requester_name",
-            "owner",
-        )
-        extra_kwargs = {
-            "notified_at": {"allow_null": True},
-            "finished_at": {"allow_null": True},
-        }
-
-
-class RequestInSerializer(serializers.Serializer):
-    """Input parameters for approval request object"""
-
-    name = serializers.CharField(
-        required=True, help_text="Name of the the request to be created"
-    )
-    description = serializers.CharField(
-        required=False, help_text="Describe the request in more details"
-    )
-    content = serializers.JSONField(
-        required=True, help_text="Content of the request in JSON format"
-    )
-    tag_resources = serializers.ListField(
-        child=TagResourceSerializer(many=False),
-        required=False,
-        help_text="An array of resource tags that determine the workflows for the request",
-    )
-
-    def create(self, validate_data):
-        return CreateRequest(validate_data).process().request
-
-
 class ActionSerializer(serializers.ModelSerializer):
     """An action that changes the state of a request"""
 
@@ -158,10 +85,76 @@ class ActionSerializer(serializers.ModelSerializer):
         return CreateAction(request, validate_data).process().action
 
 
+class RequestFields:
+    FIELDS = (
+        "id",
+        "requester_name",
+        "owner",
+        "name",
+        "description",
+        "parent",
+        "workflow",
+        "state",
+        "decision",
+        "reason",
+        "created_at",
+        "notified_at",
+        "finished_at",
+    )
+
+
 class SubrequestSerializer(serializers.ModelSerializer):
     """
     Subrequest that has a parent but no no child requests.
-    Actions are included in the view
+    Actions are included.
+    """
+
+    owner = serializers.CharField(
+        read_only=True,
+        help_text="Identification of whom made the request",
+        default="",
+    )
+    requester_name = serializers.CharField(
+        read_only=True, help_text="Full name of the requester", default=""
+    )
+    actions = ActionSerializer(
+        many=True,
+        read_only=True,
+        help_text="Actions that have done to the request",
+    )
+
+    class Meta:
+        model = Request
+        fields = (
+            *RequestFields.FIELDS,
+            "actions",
+        )
+        read_only_fields = (
+            "__all__",
+            "requester_name",
+            "owner",
+        )
+        extra_kwargs = {
+            "notified_at": {"allow_null": True},
+            "finished_at": {"allow_null": True},
+        }
+
+
+class RequestExtraSerializer(serializers.Serializer):
+    """
+    Extra data for a request including its subrequests and actions,
+    available only when query parameter extra=true
+    """
+
+    actions = ActionSerializer(many=True)
+    subrequests = SubrequestSerializer(many=True)
+
+
+class RequestSerializer(serializers.ModelSerializer):
+    """
+    Approval request.
+    It may have child requests.
+    Only a leaf node request can have workflow ID.
     """
 
     owner = serializers.CharField(
@@ -170,47 +163,61 @@ class SubrequestSerializer(serializers.ModelSerializer):
     requester_name = serializers.CharField(
         read_only=True, help_text="Full name of the requester"
     )
-    actions = ActionSerializer(
-        many=True,
-        read_only=True,
-        help_text="Actions that have done to the request",
+    extra_data = serializers.SerializerMethodField(
+        "get_extra_data", read_only=True, allow_null=True
     )
 
     class Meta:
         model = Request
         fields = (
             *RequestFields.FIELDS,
-            "actions",
+            "number_of_children",
+            "number_of_finished_children",
+            "extra_data",
         )
-
-
-class RequestCompleteSerializer(serializers.ModelSerializer):
-    """A complete view of request with actions and subrequests"""
-
-    owner = serializers.CharField(
-        read_only=True, help_text="Identification of whom made the request"
-    )
-    requester_name = serializers.CharField(
-        read_only=True, help_text="Full name of the requester"
-    )
-    actions = ActionSerializer(
-        many=True,
-        read_only=True,
-        help_text="Actions that have done to the request",
-    )
-    subrequests = SubrequestSerializer(
-        many=True,
-        read_only=True,
-        help_text="Sub requests created from the request",
-    )
-
-    class Meta:
-        model = Request
-        fields = (
-            *RequestFields.FIELDS,
-            "actions",
-            "subrequests",
+        read_only_fields = (
+            "__all__",
+            "requester_name",
+            "owner",
         )
+        extra_kwargs = {
+            "notified_at": {"allow_null": True},
+            "finished_at": {"allow_null": True},
+        }
+
+    @extend_schema_field(RequestExtraSerializer(many=False))
+    def get_extra_data(self, parent_request):
+        extra = self.context.get("request").GET.get("extra")
+        if extra and extra.lower() == "true":
+            serializer = RequestExtraSerializer(
+                instance=parent_request,
+                many=False,
+                context=self.context,
+            )
+            return serializer.data
+        return None
+
+
+class RequestInSerializer(serializers.Serializer):
+    """Input parameters for approval request object"""
+
+    name = serializers.CharField(
+        required=True, help_text="Name of the the request to be created"
+    )
+    description = serializers.CharField(
+        required=False, help_text="Describe the request in more details"
+    )
+    content = serializers.JSONField(
+        required=True, help_text="Content of the request in JSON format"
+    )
+    tag_resources = serializers.ListField(
+        child=TagResourceSerializer(many=False),
+        required=False,
+        help_text="An array of resource tags that determine the workflows for the request",
+    )
+
+    def create(self, validate_data):
+        return CreateRequest(validate_data).process().request
 
 
 class ResourceObjectSerializer(serializers.Serializer):
