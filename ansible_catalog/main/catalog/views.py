@@ -1,7 +1,9 @@
 """ Default views for Catalog."""
 
 import logging
+from typing import List
 
+import django_rq
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404
 
@@ -15,14 +17,16 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
     OpenApiParameter,
-    OpenApiTypes,
 )
 
+from ansible_catalog.common.auth import keycloak_django
+from ansible_catalog.common.auth.keycloak_django.utils import parse_scope
 from ansible_catalog.common.tag_mixin import TagMixin
 from ansible_catalog.common.image_mixin import ImageMixin
 from ansible_catalog.common.queryset_mixin import QuerySetMixin
 
 from ansible_catalog.main.models import Tenant
+from ansible_catalog.main.auth.models import Group
 from ansible_catalog.main.catalog.exceptions import (
     BadParamsException,
 )
@@ -45,6 +49,7 @@ from ansible_catalog.main.catalog.serializers import (
     PortfolioSerializer,
     ProgressMessageSerializer,
     TenantSerializer,
+    SharePolicySerializer,
 )
 
 from ansible_catalog.main.catalog.services.collect_tag_resources import (
@@ -71,6 +76,8 @@ from ansible_catalog.main.catalog.services.reset_service_plan import (
 from ansible_catalog.main.catalog.services.submit_approval_request import (
     SubmitApprovalRequest,
 )
+
+from ansible_catalog.main.catalog import tasks
 
 # Create your views here.
 
@@ -121,6 +128,84 @@ class PortfolioViewSet(
         serializer = self.get_serializer(svc.new_portfolio)
 
         return Response(serializer.data)
+
+    # TODO(cutwater): Consider moving to a background task
+    @action(methods=["post"], detail=True)
+    def share(self, request, pk=None):
+        portfolio = self.get_object()
+        data = self._parse_share_policy(request, portfolio)
+        group_ids = [group.id for group in data["groups"]]
+
+        job = django_rq.enqueue(
+            tasks.add_portfolio_permissions,
+            portfolio.id,
+            group_ids,
+            data["permissions"],
+        )
+        return Response({"id": job.id}, status=status.HTTP_202_ACCEPTED)
+
+    @action(methods=["post"], detail=True)
+    def unshare(self, request, pk=None):
+        portfolio = self.get_object()
+        data = self._parse_share_policy(request, portfolio)
+
+        if portfolio.keycloak_id is None:
+            return Response(status=status.HTTP_200_OK)
+
+        group_ids = [group.id for group in data["groups"]]
+        job = django_rq.enqueue(
+            tasks.remove_portfolio_permissions,
+            portfolio.id,
+            group_ids,
+            data["permissions"],
+        )
+        return Response({"id": job.id}, status=status.HTTP_202_ACCEPTED)
+
+    @action(methods=["get"], detail=True)
+    def share_info(self, request, pk=None):
+        portfolio = self.get_object()
+        client = keycloak_django.get_uma_client()
+
+        permissions = client.find_permissions_by_resource(
+            portfolio.keycloak_id
+        )
+        permissions = list(
+            filter(keycloak_django.is_group_permission, permissions)
+        )
+
+        groups_lookup = [permission.groups[0] for permission in permissions]
+        groups = Group.objects.filter(path__in=groups_lookup)
+        groups_by_path = {group.path: group for group in groups}
+
+        data = []
+        for permission in permissions:
+            group = groups_by_path.get(permission.groups[0])
+            scopes = [
+                parse_scope(portfolio, scope) for scope in permission.scopes
+            ]
+            data.append(
+                {
+                    "group": group.id if group else None,
+                    "permissions": scopes,
+                }
+            )
+        return Response(data)
+
+    def _parse_share_policy(self, request, portfolio):
+        serializer = SharePolicySerializer(
+            data=request.data,
+            context={
+                "valid_scopes": portfolio.keycloak_actions(),
+            },
+        )
+        serializer.is_valid(raise_exception=True)
+        return serializer.validated_data
+
+    def perform_destroy(self, instance):
+        if instance.keycloak_id:
+            client = keycloak_django.get_uma_client()
+            client.delete_resource(instance.keycloak_id)
+        super().perform_destroy(instance)
 
 
 class PortfolioItemViewSet(

@@ -28,7 +28,7 @@ def create_admin_client(
     realm: str,
     client_id: str = constants.ADMIN_CLI_CLIENT_ID,
     client_secret: Optional[str] = None,
-):
+) -> AdminClient:
     oidc_client = openid.OpenIdConnect(
         server_url, realm, client_id, client_secret
     )

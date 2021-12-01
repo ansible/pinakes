@@ -4,7 +4,7 @@ from django.db import models
 class Group(models.Model):
     id = models.CharField(max_length=255, primary_key=True)
     name = models.CharField(max_length=255)
-    path = models.TextField()
+    path = models.TextField(unique=True)
 
     last_sync_time = models.DateTimeField()
     parent = models.ForeignKey(
