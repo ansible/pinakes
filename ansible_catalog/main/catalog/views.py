@@ -17,6 +17,8 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
     OpenApiParameter,
+    OpenApiTypes,
+    OpenApiResponse,
 )
 
 from ansible_catalog.common.auth import keycloak_django
@@ -42,6 +44,7 @@ from ansible_catalog.main.catalog.serializers import (
     ApprovalRequestSerializer,
     CatalogServicePlanSerializer,
     CatalogServicePlanInSerializer,
+    ModifiedServicePlanInSerializer,
     OrderItemSerializer,
     OrderItemDocSerializer,
     OrderSerializer,
@@ -514,6 +517,28 @@ class CatalogServicePlanViewSet(
         serializer = CatalogServicePlanSerializer(svc.json, many=False)
         return Response(serializer.data)
 
+    @extend_schema(
+        methods=("patch",),
+        description="Patch the specified Service Plan's modified schema",
+        request=ModifiedServicePlanInSerializer,
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description="Service Plan Modified Schema",
+            )
+        },
+    )
+    @extend_schema(
+        methods=("get",),
+        description="Get the specified Service Plan's modified schema",
+        responses={
+            200: CatalogServicePlanSerializer,
+            204: OpenApiResponse(
+                response=None,
+                description="No modified schema present for service_plan",
+            ),
+        },
+    )
     @action(methods=["get", "patch"], detail=True)
     def modified(self, request, pk):
         """Retrieve or update the schema of the specified pk service plan."""
