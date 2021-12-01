@@ -24,6 +24,12 @@ class TagMixin:
         model = self.get_serializer().Meta.model
         instance = get_object_or_404(model, pk=pk)
         tags = instance.tags.all()
+
+        page = self.paginate_queryset(tags)
+        if page is not None:
+            serializer = TagSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
         data = TagSerializer(tags, many=True).data
 
         return Response(data)
