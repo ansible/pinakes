@@ -6,6 +6,7 @@ from typing import List
 import django_rq
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -50,6 +51,7 @@ from ansible_catalog.main.catalog.serializers import (
     ProgressMessageSerializer,
     TenantSerializer,
     SharePolicySerializer,
+    UserSerializer,
 )
 
 from ansible_catalog.main.catalog.services.collect_tag_resources import (
@@ -92,6 +94,20 @@ class TenantViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
     ordering = ("id",)
     filterset_fields = "__all__"
+
+
+class CurrentUserViewSet(viewsets.GenericViewSet):
+    """API endpoint for displaying current logged in user."""
+
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated,)
+    http_method_names = ["get"]
+
+    @action(methods=["get"], detail=False)
+    def me(self, request):
+        user = User.objects.filter(username=request.user.username)[0]
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
 
 
 class PortfolioViewSet(

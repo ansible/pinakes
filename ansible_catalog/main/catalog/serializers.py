@@ -1,6 +1,7 @@
 """ Serializers for Catalog Model."""
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
+from django.contrib.auth.models import User
 
 from ansible_catalog.main.models import Tenant, Image
 from ansible_catalog.main.auth.models import Group
@@ -327,3 +328,11 @@ class SharePolicySerializer(serializers.Serializer):
                 "Unexpected permissions: {}".format(", ".join(invalid_scopes))
             )
         return value
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """User Serializer"""
+
+    class Meta:
+        model = User
+        fields = ("username", "last_name", "first_name")

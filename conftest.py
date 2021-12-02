@@ -33,7 +33,15 @@ def admin():
 
 @pytest.fixture
 def api_request(admin):
-    def rf(verb, pattern, id=None, data=None, user=admin, format="json"):
+    def rf(
+        verb,
+        pattern,
+        id=None,
+        data=None,
+        user=admin,
+        format="json",
+        authenticated=True,
+    ):
         curframe = inspect.currentframe()
         call_path = inspect.getouterframes(curframe, 2)[1][1]
         regex = "[/\\\\]main[/\\\\](.+)[/\\\\]tests[/\\\\]"
@@ -43,7 +51,7 @@ def api_request(admin):
         request = getattr(APIRequestFactory(), verb)(
             url, data=data, format=format
         )
-        if user:
+        if user and authenticated:
             force_authenticate(request, user=user)
         response = view(request, *view_args, **view_kwargs)
         response.render()

@@ -9,12 +9,14 @@ from ansible_catalog.main.catalog.views import (
     PortfolioItemViewSet,
     ProgressMessageViewSet,
     TenantViewSet,
+    CurrentUserViewSet,
 )
 
 urls_views = {}
 
 router = NestedDefaultRouter()
 router.register("tenants", TenantViewSet)
+router.register("", CurrentUserViewSet, basename="current_user_viewset")
 portfolios = router.register(
     r"portfolios", PortfolioViewSet, basename="portfolio"
 )
@@ -93,4 +95,7 @@ service_plans = router.register(
 )
 urls_views["catalogserviceplan-list"] = CatalogServicePlanViewSet.as_view(
     {"post": "create"}
+)
+urls_views["current_user_viewset-me"] = CurrentUserViewSet.as_view(
+    {"get": "me"}
 )

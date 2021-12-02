@@ -354,3 +354,4 @@ CORS_ALLOWED_ORIGINS = env.list(
     "ANSIBLE_CATALOG_UI_ALLOWED_ORIGINS", default=[]
 )
 CORS_ALLOW_CREDENTIALS = True
+LOGIN_REDIRECT_URL = "/api/ansible-catalog/v1/me/"
