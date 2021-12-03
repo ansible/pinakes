@@ -65,7 +65,9 @@ class ActionSerializer(serializers.ModelSerializer):
     """An action that changes the state of a request"""
 
     processed_by = serializers.CharField(
-        read_only=True, help_text="The person who performs the action"
+        read_only=True,
+        help_text="The person who performs the action",
+        default="",
     )
 
     class Meta:
@@ -158,10 +160,12 @@ class RequestSerializer(serializers.ModelSerializer):
     """
 
     owner = serializers.CharField(
-        read_only=True, help_text="Identification of whom made the request"
+        read_only=True,
+        help_text="Identification of whom made the request",
+        default="",
     )
     requester_name = serializers.CharField(
-        read_only=True, help_text="Full name of the requester"
+        read_only=True, help_text="Full name of the requester", default=""
     )
     extra_data = serializers.SerializerMethodField(
         "get_extra_data", read_only=True, allow_null=True
