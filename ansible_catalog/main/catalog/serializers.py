@@ -309,6 +309,14 @@ class CatalogServicePlanInSerializer(serializers.ModelSerializer):
         fields = ("portfolio_item_id",)
 
 
+class ModifiedServicePlanInSerializer(serializers.Serializer):
+    """Paramters to update a modified service plan"""
+
+    modified = serializers.JSONField(
+        required=True, help_text="The new modified schema for the service plan"
+    )
+
+
 class SharePolicySerializer(serializers.Serializer):
     """Serializer for SharePolicy"""
 
