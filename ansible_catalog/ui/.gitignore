@@ -1,0 +1,5 @@
+# Empty directory place holder for UI files
+# exclude everything except the .gitignore file
+*
+*/
+!.gitignore
