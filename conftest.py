@@ -4,6 +4,7 @@ import pytest
 import os
 import re
 import inspect
+from unittest.mock import Mock
 
 from django.urls import resolve, reverse
 from django.contrib.auth.models import User
@@ -45,6 +46,10 @@ def api_request(admin):
         )
         if user:
             force_authenticate(request, user=user)
+        request.session = Mock()
+        keycloak_mock = Mock()
+        keycloak_mock.extra_data = {"id": "1"}
+        request.keycloak_user = keycloak_mock
         response = view(request, *view_args, **view_kwargs)
         response.render()
         return response

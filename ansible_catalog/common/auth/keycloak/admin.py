@@ -5,8 +5,8 @@ from . import models
 from . import openid
 from .client import ApiClient
 
-
 GROUPS_PATH = "admin/realms/{realm}/groups"
+LOGOUT_PATH = "admin/realms/{realm}/users/{id}/logout"
 
 
 class AdminClient:
@@ -21,6 +21,11 @@ class AdminClient:
         url = f"{self._server_url}/{path}"
         items = self._client.request_json("GET", url)
         return [models.Group.parse_obj(item) for item in items]
+
+    def logout_user(self, social_auth_id) -> None:
+        path = LOGOUT_PATH.format(realm=self._realm, id=social_auth_id)
+        url = f"{self._server_url}/{path}"
+        self._client.request("POST", url)
 
 
 def create_admin_client(
