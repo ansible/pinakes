@@ -28,10 +28,18 @@ class Portfolio(AbstractKeycloakResource, ImageableModel):
     KEYCLOAK_TYPE = "catalog:portfolio"
     KEYCLOAK_ACTIONS = ["read", "update", "delete", "order"]
 
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField(blank=True, default="")
-    enabled = models.BooleanField(default=False)
-    owner = models.CharField(max_length=255)
+    name = models.CharField(
+        max_length=255, unique=True, help_text="Portfolio name"
+    )
+    description = models.TextField(
+        blank=True, default="", help_text="Describe the portfolio in details"
+    )
+    enabled = models.BooleanField(
+        default=False, help_text="Whether or not this portfolio is enabled"
+    )
+    owner = models.CharField(
+        max_length=255, help_text="Name of the user who created the portfolio"
+    )
 
     tags = TaggableManager()
 
@@ -65,20 +73,54 @@ class Portfolio(AbstractKeycloakResource, ImageableModel):
 class PortfolioItem(ImageableModel):
     """Portfolio Item represent a Job Template or a Workflow."""
 
-    favorite = models.BooleanField(default=False)
-    description = models.TextField(blank=True, default="")
-    orphan = models.BooleanField(default=False)
-    state = models.CharField(max_length=64)
-    service_offering_ref = models.CharField(max_length=64, null=True)
-    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
-    service_offering_source_ref = models.CharField(
-        max_length=64, blank=True, default=""
+    favorite = models.BooleanField(
+        default=False, help_text="Definition of a favorate portfolio item"
     )
-    name = models.CharField(max_length=64)
-    long_description = models.TextField(blank=True, default="")
-    distributor = models.CharField(max_length=64)
-    documentation_url = models.URLField(blank=True)
-    support_url = models.URLField(blank=True)
+    description = models.TextField(
+        blank=True, default="", help_text="Description of the portfolio item"
+    )
+    orphan = models.BooleanField(
+        default=False,
+        help_text="Boolean if an associated service offering no longer exists",
+    )
+    state = models.CharField(
+        max_length=64, help_text="The current state of the portfolio item"
+    )
+    service_offering_ref = models.CharField(
+        max_length=64,
+        null=True,
+        help_text="The service offering this portfolio item was created from",
+    )
+    portfolio = models.ForeignKey(
+        Portfolio,
+        on_delete=models.CASCADE,
+        help_text="ID of the parent portfolio",
+    )
+    service_offering_source_ref = models.CharField(
+        max_length=64,
+        blank=True,
+        default="",
+        help_text="The source reference this portfolio item was created from",
+    )
+    name = models.CharField(
+        max_length=64, help_text="Name of the portfolio item"
+    )
+    long_description = models.TextField(
+        blank=True,
+        default="",
+        help_text="The longer description of the portfolio item",
+    )
+    distributor = models.CharField(
+        max_length=64,
+        help_text="The name of the provider for the portfolio item",
+    )
+    documentation_url = models.URLField(
+        blank=True, help_text="The URL for documentation of the portfolio item"
+    )
+    support_url = models.URLField(
+        blank=True,
+        help_text="The URL for finding support for the portfolio item",
+    )
 
     tags = TaggableManager()
 
@@ -125,12 +167,23 @@ class ProgressMessage(BaseModel):
         choices=Level.choices,
         default=Level.INFO,
         editable=False,
+        help_text="One of the predefined levels",
     )
 
-    received_at = models.DateTimeField(auto_now_add=True)
-    message = models.TextField(blank=True, default="")
-    messageable_type = models.CharField(max_length=64, null=True)
-    messageable_id = models.IntegerField(editable=False, null=True)
+    received_at = models.DateTimeField(
+        auto_now_add=True, help_text="Message received at"
+    )
+    message = models.TextField(
+        blank=True, default="", help_text="The message content"
+    )
+    messageable_type = models.CharField(
+        max_length=64,
+        null=True,
+        help_text="Identify order or order item that this message belongs to",
+    )
+    messageable_id = models.IntegerField(
+        editable=False, null=True, help_text="ID of the order or order item"
+    )
 
     class Meta:
         indexes = [
@@ -244,9 +297,18 @@ class Order(UserOwnedModel, MessageableMixin):
         choices=State.choices,
         default=State.CREATED,
         editable=False,
+        help_text="Current state of the order",
     )
-    order_request_sent_at = models.DateTimeField(editable=False, null=True)
-    completed_at = models.DateTimeField(editable=False, null=True)
+    order_request_sent_at = models.DateTimeField(
+        editable=False,
+        null=True,
+        help_text="The time at which the order request was sent to the catalog inventory service",
+    )
+    completed_at = models.DateTimeField(
+        editable=False,
+        null=True,
+        help_text="The time at which the order completed",
+    )
 
     class Meta:
         indexes = [models.Index(fields=["tenant", "user"])]
@@ -310,28 +372,78 @@ class OrderItem(UserOwnedModel, MessageableMixin):
     ]
 
     objects = OrderItemManager()
-    name = models.CharField(max_length=64)
+    name = models.CharField(
+        max_length=64, help_text="Name of the portfolio item or order process"
+    )
     state = models.CharField(
         max_length=10,
         choices=State.choices,
         default=State.CREATED,
         editable=False,
+        help_text="Current state of this order item",
     )
-    order_request_sent_at = models.DateTimeField(editable=False, null=True)
-    completed_at = models.DateTimeField(editable=False, null=True)
-    count = models.SmallIntegerField(editable=False, default=0)
-    inventory_task_ref = models.CharField(max_length=64, null=True)
-    service_plan_ref = models.CharField(max_length=64, null=True)
-    service_instance_ref = models.CharField(max_length=64, null=True)
-    service_parameters = models.JSONField(blank=True, null=True)
-    service_parameters_raw = models.JSONField(blank=True, null=True)
-    provider_control_parameters = models.JSONField(blank=True, null=True)
+    order_request_sent_at = models.DateTimeField(
+        editable=False,
+        null=True,
+        help_text="The time at which the order request was sent to the catalog inventory service",
+    )
+    completed_at = models.DateTimeField(
+        editable=False,
+        null=True,
+        help_text="The time at which the order item completed",
+    )
+    count = models.SmallIntegerField(
+        editable=False, default=0, help_text="Item count"
+    )
+    inventory_task_ref = models.CharField(
+        max_length=64, null=True, help_text="Task reference from inventory-api"
+    )
+    service_plan_ref = models.CharField(
+        max_length=64,
+        null=True,
+        help_text="Corresponding service plan from inventory-api",
+    )
+    service_instance_ref = models.CharField(
+        max_length=64,
+        null=True,
+        help_text="Corresponding service instance from inventory-api",
+    )
+    service_parameters = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="Sanitized JSON object with provisioning parameters",
+    )
+    service_parameters_raw = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="Raw JSON object with provisioning parameters",
+    )
+    provider_control_parameters = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="The provider specific parameters needed to provision this service. This might include namespaces, special keys.",
+    )
     context = models.JSONField(blank=True, null=True)
-    artifacts = models.JSONField(blank=True, null=True)
-    external_url = models.URLField(blank=True)
+    artifacts = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="Contains a prefix-stripped key/value object that contains all of the information exposed from product provisioning",
+    )
+    external_url = models.URLField(
+        blank=True,
+        help_text="The external url of the service instance used with relation to this order item",
+    )
 
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    portfolio_item = models.ForeignKey(PortfolioItem, on_delete=models.CASCADE)
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        help_text="The order that the order item belongs to",
+    )
+    portfolio_item = models.ForeignKey(
+        PortfolioItem,
+        on_delete=models.CASCADE,
+        help_text="Stores the portfolio item ID",
+    )
 
     class Meta:
         indexes = [models.Index(fields=["tenant", "user"])]
@@ -382,17 +494,34 @@ class ApprovalRequest(BaseModel):
         FAILED = "failed"
 
     objects = ApprovalRequestManager()
-    approval_request_ref = models.CharField(max_length=64, default="")
-    reason = models.TextField(blank=True, default="")
-    request_completed_at = models.DateTimeField(editable=False, null=True)
+    approval_request_ref = models.CharField(
+        max_length=64,
+        default="",
+        help_text="The ID of the approval submitted to approval-api",
+    )
+    reason = models.TextField(
+        blank=True,
+        default="",
+        help_text="The reason for the current state",
+    )
+    request_completed_at = models.DateTimeField(
+        editable=False,
+        null=True,
+        help_text="The time at which the approval request completed",
+    )
     state = models.CharField(
         max_length=10,
         choices=State.choices,
         default=State.UNDECIDED,
         editable=False,
+        help_text="The state of the approval request (approved, denied, undecided, canceled, error)",
     )
 
-    order = models.OneToOneField(Order, on_delete=models.CASCADE)
+    order = models.OneToOneField(
+        Order,
+        on_delete=models.CASCADE,
+        help_text="The Order which the approval request belongs to",
+    )
 
     class Meta:
         indexes = [models.Index(fields=["tenant", "order"])]
@@ -404,16 +533,51 @@ class ApprovalRequest(BaseModel):
 class CatalogServicePlan(BaseModel):
     """Catalog Service Plan Model"""
 
-    name = models.CharField(max_length=255, blank=True, default="")
-    base_schema = models.JSONField(blank=True, null=True)
-    modified_schema = models.JSONField(blank=True, null=True)
-    create_json_schema = models.JSONField(blank=True, null=True)
-    service_plan_ref = models.CharField(max_length=64, null=True)
-    service_offering_ref = models.CharField(max_length=64, null=True)
-    modified = models.BooleanField(default=False)
-    imported = models.BooleanField(default=True)
+    name = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text="The name of the service plan",
+    )
+    base_schema = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="JSON schema of the survey from the controller",
+    )
+    modified_schema = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="Modified JSON schema for the service plan",
+    )
+    create_json_schema = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="Current JSON schema for the service plan",
+    )
+    service_plan_ref = models.CharField(
+        max_length=64,
+        null=True,
+        help_text="Corresponding service plan from inventory-api",
+    )
+    service_offering_ref = models.CharField(
+        max_length=64,
+        null=True,
+        help_text="Corresponding service offering from inventory-api",
+    )
+    modified = models.BooleanField(
+        default=False,
+        help_text="Whether or not the service plan has a modified schema",
+    )
+    imported = models.BooleanField(
+        default=True,
+        help_text="Whether or not the service plan has been imported for editing",
+    )
 
-    portfolio_item = models.ForeignKey(PortfolioItem, on_delete=models.CASCADE)
+    portfolio_item = models.ForeignKey(
+        PortfolioItem,
+        on_delete=models.CASCADE,
+        help_text="ID of the portfolio item",
+    )
 
     class Meta:
         indexes = [models.Index(fields=["tenant", "portfolio_item"])]

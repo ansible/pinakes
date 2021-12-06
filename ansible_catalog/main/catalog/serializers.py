@@ -16,7 +16,7 @@ from ansible_catalog.main.catalog.models import (
 
 
 class TenantSerializer(serializers.ModelSerializer):
-    """Serializer for Tenant"""
+    """Tenant which groups login users"""
 
     class Meta:
         model = Tenant
@@ -27,7 +27,7 @@ class TenantSerializer(serializers.ModelSerializer):
 
 
 class PortfolioSerializer(serializers.ModelSerializer):
-    """Serializer for Portfolio, which is a wrapper for PortfolioItems."""
+    """Portfolio which groups Portfolio Items"""
 
     icon_url = serializers.SerializerMethodField(
         "get_icon_url", allow_null=True
@@ -70,9 +70,17 @@ class PortfolioItemInSerializer(serializers.Serializer):
     portfolio = serializers.IntegerField(required=True)
 
 
+class CopyPortfolioSerializer(serializers.Serializer):
+    """Parameters to copy a portfolio"""
+
+    portfolio_name = serializers.CharField(
+        help_text="New portfolio name", required=False
+    )
+
+
 class PortfolioItemSerializer(serializers.ModelSerializer):
-    """Serializer for PortfolioItem, which maps to a Tower Job Template
-    via the service_offering_ref."""
+    """PortfolioItem which maps to a Controller Job Template
+    via the service_offering_ref"""
 
     icon_url = serializers.SerializerMethodField(
         "get_icon_url", allow_null=True
@@ -102,6 +110,14 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
             if obj.icon is not None
             else None
         )
+
+
+class CopyPortfolioItemSerializer(serializers.Serializer):
+    """Parameters to copy a portfolio item"""
+
+    portfolio_item_name = serializers.CharField(
+        help_text="New portfolio item name", required=False
+    )
 
 
 class OrderItemFields:
@@ -136,7 +152,7 @@ class OrderItemExtraSerializer(serializers.Serializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    """Serializer for OrderItem"""
+    """OrderItem which keeps track of an execution of Portfolio Item"""
 
     owner = serializers.ReadOnlyField()
     extra_data = serializers.SerializerMethodField(
@@ -200,7 +216,7 @@ class OrderExtraSerializer(serializers.Serializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    """Serializer for Order"""
+    """Order which groups an order item and its before and after processes (To be added)"""
 
     owner = serializers.ReadOnlyField()
     extra_data = serializers.SerializerMethodField(
@@ -243,7 +259,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class ImageSerializer(serializers.ModelSerializer):
-    """Serializer for Image"""
+    """An image file used as an icon for portfolio or portfolio item"""
 
     class Meta:
         model = Image
@@ -254,7 +270,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class ApprovalRequestSerializer(serializers.ModelSerializer):
-    """Serializer for ApprovalRequest"""
+    """ApprovalRequest which keeps track of the approval progress of an order"""
 
     class Meta:
         model = ApprovalRequest
@@ -269,7 +285,7 @@ class ApprovalRequestSerializer(serializers.ModelSerializer):
 
 
 class ProgressMessageSerializer(serializers.ModelSerializer):
-    """Serializer for ProgressMessage"""
+    """ProgressMessage which wraps a message describing the progress of an order or order item"""
 
     class Meta:
         model = ProgressMessage
@@ -283,7 +299,7 @@ class ProgressMessageSerializer(serializers.ModelSerializer):
 
 
 class CatalogServicePlanSerializer(serializers.ModelSerializer):
-    """Serializer for CatalogServicePlan"""
+    """CatalogServicePlan which describes parameters required for a portfolio item"""
 
     class Meta:
         model = CatalogServicePlan
@@ -305,7 +321,7 @@ class CatalogServicePlanSerializer(serializers.ModelSerializer):
 
 
 class CatalogServicePlanInSerializer(serializers.ModelSerializer):
-    """Serializer for creating CatalogServicePlan"""
+    """Input parameters for creating a catalog servic plan"""
 
     portfolio_item_id = serializers.IntegerField(required=True)
 
@@ -323,7 +339,7 @@ class ModifiedServicePlanInSerializer(serializers.Serializer):
 
 
 class SharingRequestSerializer(serializers.Serializer):
-    """Serializer for share / unshare request."""
+    """SharingRequest which defines groups and permissions that the object can be shared to"""
 
     permissions = serializers.ListField(
         child=serializers.CharField(),
@@ -345,11 +361,13 @@ class SharingRequestSerializer(serializers.Serializer):
 
 
 class SharingPermissionSerializer(serializers.Serializer):
+    """Sharing permissions which were applied to a group"""
+
     permissions = serializers.ListField(
         child=serializers.CharField(),
         min_length=1,
         help_text="List of permissions (e.g. `read`, `update`, `delete`).",
     )
     group = serializers.PrimaryKeyRelatedField(
-        queryset=Group.objects.all(), help_text="List of group IDs."
+        queryset=Group.objects.all(), help_text="Group ID"
     )

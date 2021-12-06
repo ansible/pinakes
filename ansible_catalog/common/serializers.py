@@ -3,12 +3,15 @@ from rest_framework import serializers
 
 
 class TagSerializer(serializers.Serializer):
-    """serializer for tags"""
+    """Tag definition"""
 
-    name = serializers.CharField(max_length=100)
+    name = serializers.CharField(max_length=100, help_text="Tag name")
 
 
 class TaskSerializer(serializers.Serializer):
-    """Background task serializer."""
+    """Background task"""
 
-    id = serializers.CharField(max_length=64)
+    id = serializers.CharField(
+        max_length=64,
+        help_text="Task id that can be used to track the progress",
+    )
