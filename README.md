@@ -187,9 +187,14 @@ Once this has been setup you can start the deployments, services and ingress ser
 ./tools/minikube/scripts/start_pods.sh
 ```
 
+To login to the UI use
+http://catalog.k8s.local/ui/index.html
+
 To access the keycloak server running inside the cluster use the following URL
 http://keycloak.k8s.local/auth  (Default userid is admin password is admin)
-To login to the catalog app
+
+
+To login to the catalog app using API endpoint
 http://catalog.k8s.local/login/keycloak-oidc/
 When prompted enter the userid/password (barney/barney)
 This would lead to a page (http://catalog.k8s.local/accounts/profile/) that has a 404 not found that's ok.
