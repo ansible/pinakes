@@ -20,6 +20,9 @@ from ansible_catalog.main.catalog.services import (
 from ansible_catalog.main.catalog.services.copy_image import (
     CopyImage,
 )
+from ansible_catalog.main.catalog.services.compare_service_plans import (
+    CompareServicePlans,
+)
 from ansible_catalog.main.inventory.services.get_service_offering import (
     GetServiceOffering,
 )
@@ -95,6 +98,13 @@ class CopyPortfolioItem:
         service_plans = ServicePlan.objects.filter(
             portfolio_item=self.portfolio_item
         )
+
+        if CompareServicePlans.any_changed(service_plans):
+            logger.info(
+                "Survey Changed for Portfolio Item #{@portfolio_item.name}"
+            )
+            return False
+
         for service_plan in service_plans:
             if not service_plan.base_schema:
                 return True

@@ -2,10 +2,16 @@
 import logging
 from django.utils.translation import gettext_lazy as _
 
+from ansible_catalog.main.catalog.exceptions import (
+    InvalidSurveyException,
+)
 from ansible_catalog.main.catalog.models import (
     Order,
     OrderItem,
     ProgressMessage,
+)
+from ansible_catalog.main.catalog.services.compare_service_plans import (
+    CompareServicePlans,
 )
 from ansible_catalog.main.catalog.services.finish_order import FinishOrder
 from ansible_catalog.main.catalog.services.finish_order_item import (
@@ -13,6 +19,9 @@ from ansible_catalog.main.catalog.services.finish_order_item import (
 )
 from ansible_catalog.main.catalog.services.provision_order_item import (
     ProvisionOrderItem,
+)
+from ansible_catalog.main.catalog.services.validate_order_item import (
+    ValidateOrderItem,
 )
 
 logger = logging.getLogger("catalog")
@@ -47,7 +56,7 @@ class StartOrderItem:
                 _("Submitting Order Item {} for provisioning".format(item.id)),
             )
 
-            self._validate_before_provision()
+            ValidateOrderItem(item).process()
             ProvisionOrderItem(item).process()
 
             logger.info(
@@ -61,7 +70,3 @@ class StartOrderItem:
             FinishOrderItem(order_item=item, error_msg=str(error)).process()
 
         # TODO: compute runtime parameters later
-
-    def _validate_before_provision(self):
-        # TODO:
-        pass

@@ -31,6 +31,7 @@ from ansible_catalog.main.models import Tenant
 from ansible_catalog.main.auth.models import Group
 from ansible_catalog.main.catalog.exceptions import (
     BadParamsException,
+    InvalidSurveyException,
 )
 from ansible_catalog.main.catalog.models import (
     ApprovalRequest,
@@ -61,6 +62,9 @@ from ansible_catalog.main.catalog.serializers import (
 from ansible_catalog.main.catalog.services.collect_tag_resources import (
     CollectTagResources,
 )
+from ansible_catalog.main.catalog.services.compare_service_plans import (
+    CompareServicePlans,
+)
 from ansible_catalog.main.catalog.services.copy_portfolio import (
     CopyPortfolio,
 )
@@ -78,6 +82,9 @@ from ansible_catalog.main.catalog.services.refresh_service_plan import (
 )
 from ansible_catalog.main.catalog.services.submit_approval_request import (
     SubmitApprovalRequest,
+)
+from ansible_catalog.main.catalog.services.validate_order_item import (
+    ValidateOrderItem,
 )
 
 from ansible_catalog.main.catalog import tasks
@@ -424,6 +431,8 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
                 )
             )
 
+        ValidateOrderItem(order.product).process()
+
         tag_resources = CollectTagResources(order).process().tag_resources
         message = _("Computed tags for order {}: {}").format(
             order.id, tag_resources
@@ -636,6 +645,26 @@ class ServicePlanViewSet(
         ],
         request=None,
         responses={200: ServicePlanSerializer},
+    )
+    def retrieve(self, request, pk):
+        service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
+
+        if CompareServicePlans.is_changed(service_plan):
+            raise InvalidSurveyException(
+                _(
+                    "The underlying survey on {} in the {} portfolio has been changed and is no longer valid, please contact an administrator to fix it."
+                ).format(
+                    service_plan.portfolio_item.name,
+                    service_plan.portfolio_item.portfolio.name,
+                )
+            )
+
+        serializer = CatalogServicePlanSerializer(service_plan, many=False)
+        return Response(serializer.data)
+
+    @extend_schema(
+        request=None,
+        responses={200: CatalogServicePlanSerializer},
     )
     def list(self, request, *args, **kwargs):
         portfolio_item_id = kwargs.pop("portfolio_item_id")

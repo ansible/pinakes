@@ -1,5 +1,7 @@
 """ Test service_plan end points """
 import json
+
+from unittest.mock import patch
 import pytest
 import copy
 
@@ -181,3 +183,129 @@ def test_service_plan_reset_post(api_request):
     assert content["modified"] is False
     assert content["outdated"] is False
     assert content["outdated_changes"] == ""
+
+
+@pytest.mark.django_db
+def test_service_plan_retrieve(api_request, mocker):
+    """Retrieve a single service plan by id"""
+    portfolio_item = PortfolioItemFactory()
+
+    service_plan = ServicePlanFactory(portfolio_item=portfolio_item)
+
+    with patch(
+        "ansible_catalog.main.catalog.services.compare_service_plans.CompareServicePlans.is_changed"
+    ) as mock:
+        mock.return_value = False
+
+        response = api_request(
+            "get",
+            "catalogserviceplan-detail",
+            service_plan.id,
+        )
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["name"] == service_plan.name
+
+
+@pytest.mark.django_db
+def test_service_plan_retrieve_with_changed_survey(api_request):
+    """Retrieve a single service plan by id"""
+
+    schema1 = {
+        "schemaType": "default",
+        "schema": {
+            "fields": [
+                {
+                    "label": "State",
+                    "name": "state",
+                    "initial_value": "",
+                    "helper_text": "The state where you live",
+                    "is_required": True,
+                    "component": "select-field",
+                    "options": [
+                        {"label": "NJ", "value": "NJ"},
+                        {"label": "PA", "value": "PA"},
+                        {"label": "OK", "value": "OK"},
+                    ],
+                    "validate": [{"type": "required-validator"}],
+                }
+            ],
+            "title": "",
+            "description": "",
+        },
+    }
+
+    schema2 = {
+        "schemaType": "default",
+        "schema": {
+            "fields": [
+                {
+                    "label": "Number of Job templates",
+                    "name": "dev_null",
+                    "initial_value": 8,
+                    "helper_text": "Number of Job templates on this workflow",
+                    "is_required": True,
+                    "component": "text-field",
+                    "type": "number",
+                    "data_type": "integer",
+                    "options": [{"label": "", "value": ""}],
+                    "validate": [
+                        {"type": "required-validator"},
+                        {"type": "min-number-value", "value": 0},
+                        {"type": "max-number-value", "value": 100},
+                    ],
+                }
+            ],
+            "title": "",
+            "description": "",
+        },
+    }
+
+    service_offering = ServiceOfferingFactory(survey_enabled=True)
+    portfolio_item = PortfolioItemFactory(
+        service_offering_ref=str(service_offering.id)
+    )
+
+    InventoryServicePlanFactory(
+        service_offering=service_offering,
+        create_json_schema=schema2,
+    )
+    service_plan = ServicePlanFactory(
+        portfolio_item=portfolio_item, base_schema=schema1
+    )
+
+    response = api_request(
+        "get",
+        "catalogserviceplan-detail",
+        service_plan.id,
+    )
+
+    assert response.status_code == 400
+    content = json.loads(response.content)
+    assert content[
+        "detail"
+    ] == "The underlying survey on %s in the %s portfolio has been changed and is no longer valid, please contact an administrator to fix it." % (
+        portfolio_item.name,
+        portfolio_item.portfolio.name,
+    )
+
+
+@pytest.mark.django_db
+def test_service_plan_post(api_request):
+    """Create a CatalogServicePlan"""
+
+    service_offering = ServiceOfferingFactory(survey_enabled=True)
+    InventoryServicePlanFactory(service_offering=service_offering)
+
+    portfolio_item = PortfolioItemFactory(
+        service_offering_ref=str(service_offering.id)
+    )
+    data = {"portfolio_item_id": portfolio_item.id}
+    response = api_request(
+        "post",
+        "catalogserviceplan-list",
+        data=data,
+    )
+
+    assert response.status_code == 201
