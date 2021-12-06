@@ -170,9 +170,9 @@ USE_TZ = True
 STATIC_URL = "/ui/"
 STATICFILES_DIRS = [
     BASE_DIR / "ui",
-    '/ui/',
+    "/ui/",
 ]
-LOGIN_REDIRECT_URL="/ui/index.html"
+LOGIN_REDIRECT_URL = "/ui/index.html"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
