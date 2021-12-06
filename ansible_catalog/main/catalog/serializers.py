@@ -317,14 +317,16 @@ class ModifiedServicePlanInSerializer(serializers.Serializer):
     )
 
 
-class SharePolicySerializer(serializers.Serializer):
-    """Serializer for SharePolicy"""
+class SharingRequestSerializer(serializers.Serializer):
+    """Serializer for share / unshare request."""
 
     permissions = serializers.ListField(
-        child=serializers.CharField(), min_length=1
+        child=serializers.CharField(),
+        min_length=1,
+        help_text="List of permissions (e.g. `read`, `update`, `delete`).",
     )
     groups = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Group.objects.all()
+        many=True, queryset=Group.objects.all(), help_text="List of group IDs."
     )
 
     def validate_permissions(self, value):
@@ -335,3 +337,14 @@ class SharePolicySerializer(serializers.Serializer):
                 "Unexpected permissions: {}".format(", ".join(invalid_scopes))
             )
         return value
+
+
+class SharingPermissionSerializer(serializers.Serializer):
+    permissions = serializers.ListField(
+        child=serializers.CharField(),
+        min_length=1,
+        help_text="List of permissions (e.g. `read`, `update`, `delete`).",
+    )
+    group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all(), help_text="List of group IDs."
+    )
