@@ -61,6 +61,15 @@ class PortfolioSerializer(serializers.ModelSerializer):
         )
 
 
+class PortfolioItemInSerializer(serializers.Serializer):
+    """Input parameters for creating a Portfolio item"""
+
+    service_offering_ref = serializers.CharField(
+        required=False, help_text="Associated service offering id"
+    )
+    portfolio = serializers.IntegerField(required=True)
+
+
 class PortfolioItemSerializer(serializers.ModelSerializer):
     """Serializer for PortfolioItem, which maps to a Tower Job Template
     via the service_offering_ref."""
@@ -76,6 +85,7 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "service_offering_ref",
+            "service_offering_source_ref",
             "portfolio",
             "icon_url",
             "created_at",
@@ -83,11 +93,6 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
         )
 
         read_only_fields = ("created_at", "updated_at")
-
-    def create(self, validated_data):
-        return PortfolioItem.objects.create(
-            tenant=Tenant.current(), **validated_data
-        )
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_icon_url(self, obj):

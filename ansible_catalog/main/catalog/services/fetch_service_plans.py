@@ -48,6 +48,10 @@ class FetchServicePlans:
             self.service_plans.append(service_plan)
 
     def get_remote_service_plans(self):
+        logger.info(
+            "Get remote service plans for portfolio item: %d",
+            self.portfolio_item.id,
+        )
         service_offering_ref = self.portfolio_item.service_offering_ref
         svc = GetServiceOffering(service_offering_ref, True).process()
 

@@ -51,6 +51,7 @@ from ansible_catalog.main.catalog.serializers import (
     OrderItemDocSerializer,
     OrderSerializer,
     PortfolioItemSerializer,
+    PortfolioItemInSerializer,
     PortfolioSerializer,
     ProgressMessageSerializer,
     TenantSerializer,
@@ -66,6 +67,9 @@ from ansible_catalog.main.catalog.services.copy_portfolio import (
 )
 from ansible_catalog.main.catalog.services.copy_portfolio_item import (
     CopyPortfolioItem,
+)
+from ansible_catalog.main.catalog.services.create_portfolio_item import (
+    CreatePortfolioItem,
 )
 from ansible_catalog.main.catalog.services.fetch_service_plans import (
     FetchServicePlans,
@@ -264,6 +268,25 @@ class PortfolioItemViewSet(
     )
     search_fields = ("name", "description")
     parent_field_names = ("portfolio",)
+
+    @extend_schema(
+        request=PortfolioItemInSerializer,
+    )
+    def create(self, request, *args, **kwargs):
+        serializer = PortfolioItemInSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                {"errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        portfolio = request.data.get("portfolio")
+        get_object_or_404(Portfolio, pk=portfolio)
+
+        svc = CreatePortfolioItem(request.data).process()
+        output_serializer = PortfolioItemSerializer(svc.item, many=False)
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 
     @extend_schema(
         responses={200: PortfolioItemSerializer},

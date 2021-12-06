@@ -5,13 +5,16 @@ import glob
 import json
 import pytest
 
-from django.urls import reverse
 from ansible_catalog.main.catalog.models import PortfolioItem
 from ansible_catalog.main.catalog.services.copy_portfolio_item import (
     CopyPortfolioItem,
 )
 from ansible_catalog.main.catalog.tests.factories import PortfolioFactory
 from ansible_catalog.main.catalog.tests.factories import PortfolioItemFactory
+
+from ansible_catalog.main.inventory.tests.factories import (
+    ServiceOfferingFactory,
+)
 
 
 @pytest.mark.django_db
@@ -76,15 +79,28 @@ def test_portfolio_item_put(api_request):
 @pytest.mark.django_db
 def test_portfolio_item_post(api_request):
     """Create a new portfolio item for a portfolio"""
+    service_offering = ServiceOfferingFactory()
     portfolio = PortfolioFactory()
     data = {
         "portfolio": portfolio.id,
-        "service_offering_ref": "1234",
-        "name": "abcdef",
-        "description": "abc",
+        "service_offering_ref": str(service_offering.id),
     }
     response = api_request("post", "portfolioitem-list", data=data)
     assert response.status_code == 201
+
+
+@pytest.mark.django_db
+def test_portfolio_item_post_with_exception(api_request):
+    """Create a new portfolio item for a portfolio"""
+    portfolio = PortfolioFactory()
+    data = {
+        "portfolio": portfolio.id,
+    }
+
+    response = api_request("post", "portfolioitem-list", data=data)
+
+    assert response.status_code == 400
+    assert "Failed to get service offering" in response.data["detail"]
 
 
 @pytest.mark.django_db
