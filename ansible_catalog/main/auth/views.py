@@ -5,11 +5,11 @@ from django.contrib.auth.models import User
 
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.renderers import JSONRenderer
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework import mixins
 
 from ansible_catalog.main.auth import models
 from ansible_catalog.main.auth import tasks
@@ -34,15 +34,10 @@ class GroupSyncViewSet(viewsets.ViewSet):
         return Response({"id": job.id, "status": job.get_status()})
 
 
-class MeView(APIView):
+class CurrentUserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     permission_classes = (IsAuthenticated,)
-    renderer_classes = [JSONRenderer]
+    serializer_class = serializers.CurrentUserSerializer
 
-    def get(self, request):
-        user = User.objects.filter(username=request.user.username)[0]
-        data = {
-            "username": user.username,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-        }
-        return Response(data)
+    def retrieve(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)

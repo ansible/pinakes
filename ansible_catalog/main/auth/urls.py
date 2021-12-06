@@ -8,7 +8,9 @@ router.register("groups/sync", views.GroupSyncViewSet, basename="group-sync")
 router.register("groups", views.GroupViewSet)
 
 urlpatterns = [
-    path("me/", views.MeView.as_view(), name="me"),
+    path(
+        "me/", views.CurrentUserViewSet.as_view({"get": "retrieve"}), name="me"
+    ),
 ]
 
 urlpatterns += router.urls
