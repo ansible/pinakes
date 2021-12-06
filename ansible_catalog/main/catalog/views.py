@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.serializers import ListSerializer
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from rest_framework.response import Response
 from rest_framework import status
@@ -23,6 +24,7 @@ from drf_spectacular.utils import (
 
 from ansible_catalog.common.auth import keycloak_django
 from ansible_catalog.common.auth.keycloak_django.utils import parse_scope
+from ansible_catalog.common.serializers import TaskSerializer
 from ansible_catalog.common.tag_mixin import TagMixin
 from ansible_catalog.common.image_mixin import ImageMixin
 from ansible_catalog.common.queryset_mixin import QuerySetMixin
@@ -52,7 +54,8 @@ from ansible_catalog.main.catalog.serializers import (
     PortfolioSerializer,
     ProgressMessageSerializer,
     TenantSerializer,
-    SharePolicySerializer,
+    SharingRequestSerializer,
+    SharingPermissionSerializer,
 )
 
 from ansible_catalog.main.catalog.services.collect_tag_resources import (
@@ -132,7 +135,13 @@ class PortfolioViewSet(
 
         return Response(serializer.data)
 
-    # TODO(cutwater): Consider moving to a background task
+    @extend_schema(
+        description=(
+            "Share a portfolio with specified groups and permissions."
+        ),
+        request=SharingRequestSerializer,
+        responses={status.HTTP_202_ACCEPTED: TaskSerializer},
+    )
     @action(methods=["post"], detail=True)
     def share(self, request, pk=None):
         portfolio = self.get_object()
@@ -145,8 +154,19 @@ class PortfolioViewSet(
             group_ids,
             data["permissions"],
         )
-        return Response({"id": job.id}, status=status.HTTP_202_ACCEPTED)
+        serializer = TaskSerializer(job)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
+    @extend_schema(
+        description=(
+            "Remove a portfolio sharing with specified groups and permissions."
+        ),
+        request=SharingRequestSerializer,
+        responses={
+            status.HTTP_200_OK: None,
+            status.HTTP_202_ACCEPTED: TaskSerializer,
+        },
+    )
     @action(methods=["post"], detail=True)
     def unshare(self, request, pk=None):
         portfolio = self.get_object()
@@ -162,9 +182,19 @@ class PortfolioViewSet(
             group_ids,
             data["permissions"],
         )
-        return Response({"id": job.id}, status=status.HTTP_202_ACCEPTED)
+        serializer = TaskSerializer(job)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
-    @action(methods=["get"], detail=True)
+    @extend_schema(
+        description="Retrieve a portfolio sharing info.",
+        responses=SharingPermissionSerializer(many=True),
+    )
+    @action(
+        methods=["get"],
+        detail=True,
+        pagination_class=None,
+        filterset_fields=None,
+    )
     def share_info(self, request, pk=None):
         portfolio = self.get_object()
         client = keycloak_django.get_uma_client()
@@ -195,7 +225,7 @@ class PortfolioViewSet(
         return Response(data)
 
     def _parse_share_policy(self, request, portfolio):
-        serializer = SharePolicySerializer(
+        serializer = SharingRequestSerializer(
             data=request.data,
             context={
                 "valid_scopes": portfolio.keycloak_actions(),
