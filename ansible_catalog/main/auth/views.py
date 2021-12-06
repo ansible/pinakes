@@ -1,7 +1,11 @@
 import rq.job as rq_job
 import django_rq
 from django.http import Http404
+from django.contrib.auth.models import User
 
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import JSONRenderer
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.request import Request
@@ -28,3 +32,17 @@ class GroupSyncViewSet(viewsets.ViewSet):
         except rq_job.NoSuchJobError:
             raise Http404
         return Response({"id": job.id, "status": job.get_status()})
+
+
+class MeView(APIView):
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = [JSONRenderer]
+
+    def get(self, request):
+        user = User.objects.filter(username=request.user.username)[0]
+        data = {
+            "username": user.username,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+        }
+        return Response(data)
