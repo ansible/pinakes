@@ -37,7 +37,7 @@ class GroupSyncViewSet(viewsets.ViewSet):
 class CurrentUserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.CurrentUserSerializer
+    model = User
 
-    def retrieve(self, request):
-        serializer = self.get_serializer(request.user)
-        return Response(serializer.data)
+    def get_object(self):
+        return self.request.user
