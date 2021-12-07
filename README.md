@@ -1,5 +1,6 @@
 
 
+
 # Ansible Catalog
 
 Ansible Catalog allows customers to expose their Ansible Job Templates and Workflows to business users with an added layer of governance. The Job Templates and Workflows are wrapped as Products into Portfolios which can be shared with different business users. An approval workflow can be attached to Products or Portfolios which adds governance and, in the future, will be able to notify the appropriate Administrators via email. Upon approval, the Job Template or workflow will be launched on the Ansible Controller.
@@ -204,6 +205,16 @@ To access the catalog app use
 http://catalog.k8s.local/api/ansible-catalog/v1/schema/openapi.json
 http://catalog.k8s.local/api/ansible-catalog/v1/portfolios/ (You wont be able to get to this link without logging in first)
 
+### Applying local code changes for testing
+To deploy your code changes that you have made locally before creating a PR you can redeploy the app using
+```
+./tools/minikube/scripts/redeploy_app.sh
+```
+
+This will stop the app and worker pods, build the image with latest changes and
+start the app and worker pods.
+
+### Starting a fresh with a clean env 
 To delete all the pods and reset the application, run the helper_script delete_pods.sh
 
 ```
@@ -229,4 +240,5 @@ The following users are also created
  - **wilma** (member of approval-approver)
 
 The default password is the same as the user name, they can be changed by modifying the file **tools/keycloak_setup/dev.yml**
+
 
