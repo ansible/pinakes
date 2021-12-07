@@ -10,6 +10,7 @@ Pillow
 psycopg2
 python-dateutil
 pydantic
+pytz
 requests
 django-environ
 social-auth-core[openidconnect]
