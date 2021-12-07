@@ -7,7 +7,6 @@ from .client import ApiClient
 
 
 GROUPS_PATH = "admin/realms/{realm}/groups"
-SESSION_LOGOUT_PATH = "realms/{realm}/protocol/openid-connect/logout"
 
 
 class AdminClient:
@@ -22,18 +21,6 @@ class AdminClient:
         url = f"{self._server_url}/{path}"
         items = self._client.request_json("GET", url)
         return [models.Group.parse_obj(item) for item in items]
-
-    def logout_user_session(
-        self, client_id, client_secret, refresh_token
-    ) -> None:
-        path = SESSION_LOGOUT_PATH.format(realm=self._realm)
-        url = f"{self._server_url}/{path}"
-        data = {
-            "client_id": client_id,
-            "client_secret": client_secret,
-            "refresh_token": refresh_token,
-        }
-        self._client.request("POST", url, data=data)
 
 
 def create_admin_client(

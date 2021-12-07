@@ -17,7 +17,7 @@ from rest_framework.permissions import IsAuthenticated
 from ansible_catalog.main.auth import models
 from ansible_catalog.main.auth import tasks
 from ansible_catalog.main.auth import serializers
-from ansible_catalog.common.auth.keycloak.admin import AdminClient
+from ansible_catalog.common.auth.keycloak.openid import OpenIdConnect
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -52,14 +52,14 @@ class SessionLogoutView(APIView):
 
     def post(self, request):
         extra_data = request.keycloak_user.extra_data
-        client = AdminClient(
+        openid_client = OpenIdConnect(
             settings.KEYCLOAK_URL,
             settings.KEYCLOAK_REALM,
-            extra_data["access_token"],
-        )
-        client.logout_user_session(
             settings.KEYCLOAK_CLIENT_ID,
             settings.KEYCLOAK_CLIENT_SECRET,
+            extra_data["access_token"],
+        )
+        openid_client.logout_user_session(
             extra_data["refresh_token"],
         )
         logout(request)

@@ -1,7 +1,7 @@
 from unittest import mock
+
 import pytest
-from requests.models import Response
-from rest_framework import status
+
 from ansible_catalog.common.auth.keycloak import models
 from ansible_catalog.common.auth.keycloak.admin import AdminClient
 
@@ -79,13 +79,3 @@ def test_list_groups(api_client):
             ],
         ),
     ]
-
-
-def test_session_logout_user_200(api_client):
-    client = AdminClient(SERVER_URL, REALM, TOKEN)
-    response = mock.Mock(spec=Response)
-    response.status_code = 200
-
-    api_client.request.return_value = response
-    result = client.logout_user_session("cli", "secret", "ref_tok")
-    assert result == None
