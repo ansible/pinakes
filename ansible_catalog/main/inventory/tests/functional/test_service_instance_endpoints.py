@@ -11,7 +11,7 @@ def test_service_instance_list(api_request):
     """Test to list ServiceInstance endpoint"""
 
     ServiceInstanceFactory()
-    response = api_request("get", "serviceplan-list")
+    response = api_request("get", "serviceinstance-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -26,13 +26,16 @@ def test_service_instance_retrieve(api_request):
     service_instance = ServiceInstanceFactory()
     response = api_request(
         "get",
-        "serviceplan-detail",
+        "serviceinstance-detail",
         service_instance.id,
     )
 
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == service_instance.id
+    assert content["name"] == service_instance.name
+    assert content["service_offering"] == service_instance.service_offering.id
+    assert content["service_plan"] == service_instance.service_plan.id
 
 
 @pytest.mark.django_db
@@ -42,7 +45,7 @@ def test_service_instance_patch_not_supported(api_request):
     service_instance = ServiceInstanceFactory()
     response = api_request(
         "patch",
-        "serviceplan-detail",
+        "serviceinstance-detail",
         service_instance.id,
         {"name": "update"},
     )
@@ -57,7 +60,7 @@ def test_service_instance_delete_not_supported(api_request):
     service_instance = ServiceInstanceFactory()
     response = api_request(
         "delete",
-        "serviceplan-detail",
+        "serviceinstance-detail",
         service_instance.id,
     )
 
@@ -71,7 +74,7 @@ def test_service_instance_put_not_supported(api_request):
     service_instance = ServiceInstanceFactory()
     response = api_request(
         "put",
-        "serviceplan-detail",
+        "serviceinstance-detail",
         service_instance.id,
         {"name": "update"},
     )
