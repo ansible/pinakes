@@ -170,7 +170,6 @@ USE_TZ = True
 STATIC_URL = "/ui/"
 STATICFILES_DIRS = [
     BASE_DIR / "ui",
-    "/ui/",
 ]
 LOGIN_REDIRECT_URL = "/ui/index.html"
 
