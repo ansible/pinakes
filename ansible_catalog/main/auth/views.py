@@ -1,11 +1,15 @@
 import rq.job as rq_job
 import django_rq
 from django.http import Http404
+from django.contrib.auth.models import User
 
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework import mixins
 
 from ansible_catalog.main.auth import models
 from ansible_catalog.main.auth import tasks
@@ -28,3 +32,12 @@ class GroupSyncViewSet(viewsets.ViewSet):
         except rq_job.NoSuchJobError:
             raise Http404
         return Response({"id": job.id, "status": job.get_status()})
+
+
+class CurrentUserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.CurrentUserSerializer
+    model = User
+
+    def get_object(self):
+        return self.request.user
