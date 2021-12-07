@@ -21,6 +21,9 @@ from drf_spectacular.utils import (
 )
 
 from ansible_catalog.common.auth import keycloak_django
+from ansible_catalog.common.auth.keycloak_django.permissions import (
+    KeycloakPermission,
+)
 from ansible_catalog.common.auth.keycloak_django.utils import parse_scope
 from ansible_catalog.common.serializers import TaskSerializer
 from ansible_catalog.common.tag_mixin import TagMixin
@@ -139,10 +142,27 @@ class PortfolioViewSet(
 
     serializer_class = PortfolioSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, KeycloakPermission)
     ordering = ("-id",)
     filterset_fields = ("name", "description", "created_at", "updated_at")
     search_fields = ("name", "description")
+
+    keycloak_resource_type = "catalog:portfolio"
+    keycloak_access_policies = {
+        "list": {"type": "queryset", "permission": "read"},
+        "create": {"type": "wildcard", "permission": "create"},
+        "retrieve": {"type": "object", "permission": "read"},
+        "update": {"type": "object", "permission": "update"},
+        "destroy": {"type": "object", "permission": "delete"},
+        "share": {"type": "object", "permission": "update"},
+        "unshare": {"type": "object", "permission": "update"},
+        "share_info": {"type": "object", "permission": "update"},
+    }
+
+    # TODO(cutwater): Move to a helper mixin class
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return KeycloakPermission.scope_queryset(self.request, self, qs)
 
     @extend_schema(
         description="Make a copy of the portfolio",
