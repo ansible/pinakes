@@ -1,0 +1,26 @@
+# Paste this on the left pane of sequencediagram.org
+title OAuth 2.0 Authorization Code Flow
+
+entryspacing 1.0
+participantgroup #pink **front channel**
+actor User
+participant Web App #orange
+end
+
+participantgroup #lightgreen **back channel **
+participant Keycloak
+participant Catalog #orange
+end
+User->Web App: Start
+Web App->Catalog:/login/keycloak-oidc/?next=/somepage
+Web App<--Catalog: 302 Redirect to Keycloak
+note over Keycloak: http://keycloak.k8s.local/auth/realms/aap/protocol/openid-connect/auth?\nclient_id=catalog&\nredirect_uri=http://catalog.k8s.local/complete/keycloak-oidc/&\nstate=w5XJB6wxoyevGZIh2g7tNJN7j4Rp3Pon&\nresponse_type=code&\nnonce=ll41Ilk2DIaRpSNew3NIy4mniOuLe1Pa1XjyjvJ9sFQPG25LIblM1ar2bvRIfYU8&\nscope=openid+profile+email
+Web App->Keycloak: Get Login Page
+Web App<--Keycloak: Send Login Page
+Web App-> Keycloak: POST Userid & Password
+note over Keycloak: http://keycloak.k8s.local/auth/realms/aap/login-actions/authenticate?\nsession_code=gBzb2leZANavQf8QoqvblPij7t-b-2bT0yDV-jVvnIc&\nexecution=effa672b-294c-433e-a6f6-93fc4e6658a7&\nclient_id=catalog
+Web App<--Keycloak: 302 Redirect
+note over Keycloak: http://catalog.k8s.local/complete/keycloak-oidc/?\nstate=w5XJB6wxoyevGZIh2g7tNJN7j4Rp3Pon&\nsession_state=9d095d2b-c0eb-435b-86ab-fd8d8fee72ef&\ncode=46e623e7-b2f7-4f8c-9ac4-85bd3b8cdaca.\n9d095d2b-c0eb-435b-86ab-fd8d8fee72ef.\nd8b127a3-31f6-44c8-a7e4-4ab9a3e78d95
+Web App->Catalog: Send Auth Code
+Catalog->Keycloak:Exchange Code for Access Token
+Web App<--Catalog: 302 - Redirect to /ui/index.html
