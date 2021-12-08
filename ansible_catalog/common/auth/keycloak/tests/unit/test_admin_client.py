@@ -1,5 +1,5 @@
 from unittest import mock
-
+from urllib.error import HTTPError
 import pytest
 
 from ansible_catalog.common.auth.keycloak import models
@@ -108,7 +108,14 @@ def test_group_members(api_client):
 
 def test_group_members_invalid_id(api_client):
     client = AdminClient(SERVER_URL, REALM, TOKEN)
-    group_id = "ff530978-1e4f-4bb9-a1d8-2c374c9ad739"
-    api_client.request.side_effect = Exception("Some HTTP failure")
-    with pytest.raises(Exception):
-        client.get_members(group_id)
+    group_id = "does-not-exist"
+
+    api_client.request_json.side_effect = HTTPError(
+        SERVER_URL, 404, "Not Found", {}, None
+    )
+    with pytest.raises(HTTPError):
+        client.group_members(group_id)
+
+    api_client.request_json.assert_called_with(
+        "GET", f"{SERVER_URL}/admin/realms/{REALM}/groups/{group_id}/members"
+    )
