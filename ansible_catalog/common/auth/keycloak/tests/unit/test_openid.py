@@ -131,7 +131,7 @@ def test_session_logout_user_success(api_client):
 
     api_client.request.return_value = response
     result = openid_client.logout_user_session("access_tok", "ref_tok")
-    assert result == None
+    assert result is None
 
 
 def test_session_logout_raises_exception(api_client):
