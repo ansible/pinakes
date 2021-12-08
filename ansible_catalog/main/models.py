@@ -11,9 +11,16 @@ models.CharField.register_lookup(Length)
 class Tenant(models.Model):
     """Tenant"""
 
-    external_tenant = models.CharField(max_length=32, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    external_tenant = models.CharField(
+        max_length=32, unique=True, help_text="User's account number"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, help_text="The time at which the object was created"
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text="The time at which the object was last updated",
+    )
 
     def __str__(self):
         return self.external_tenant
@@ -31,9 +38,18 @@ class Tenant(models.Model):
 class BaseModel(models.Model):
     """Base Model"""
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(
+        auto_now_add=True, help_text="The time at which the object was created"
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text="The time at which the object was last updated",
+    )
+    tenant = models.ForeignKey(
+        Tenant,
+        on_delete=models.CASCADE,
+        help_text="ID of the tenant the object belongs to",
+    )
 
     class Meta:
         abstract = True
@@ -42,10 +58,21 @@ class BaseModel(models.Model):
 class Source(models.Model):
     """Source"""
 
-    name = models.CharField(max_length=255, unique=True)
-    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    name = models.CharField(
+        max_length=255, unique=True, help_text="Name of the source"
+    )
+    tenant = models.ForeignKey(
+        Tenant,
+        on_delete=models.CASCADE,
+        help_text="ID of the tenant the object belongs to",
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, help_text="The time at which the object was created"
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text="The time at which the object was last updated",
+    )
 
     def __str__(self):
         return self.name
@@ -54,7 +81,11 @@ class Source(models.Model):
 class SourceOwnedModel(BaseModel):
     """SourceOwnedModel"""
 
-    source = models.ForeignKey(Source, on_delete=models.CASCADE)
+    source = models.ForeignKey(
+        Source,
+        on_delete=models.CASCADE,
+        help_text="ID of the source that this object belongs to",
+    )
 
     class Meta:
         abstract = True
@@ -63,7 +94,11 @@ class SourceOwnedModel(BaseModel):
 class UserOwnedModel(BaseModel):
     """User Owned Model"""
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        help_text="ID of the user who created this object",
+    )
 
     class Meta:
         abstract = True
@@ -78,7 +113,7 @@ class UserOwnedModel(BaseModel):
 class Image(models.Model):
     """ImageModel"""
 
-    file = models.ImageField(blank=True, null=True)
+    file = models.ImageField(blank=True, null=True, help_text="The image file")
     source_ref = models.CharField(max_length=32, default="")
 
     # delete image file from local storage
@@ -94,7 +129,11 @@ class ImageableModel(BaseModel):
     """ImagableModel"""
 
     icon = models.ForeignKey(
-        Image, blank=True, null=True, on_delete=models.SET_NULL
+        Image,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text="ID of the icon image associated with this object",
     )
 
     class Meta:

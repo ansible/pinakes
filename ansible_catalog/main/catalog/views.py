@@ -1,7 +1,6 @@
 """ Default views for Catalog."""
 
 import logging
-from typing import List
 
 import django_rq
 from django.utils.translation import gettext_lazy as _
@@ -10,7 +9,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.serializers import ListSerializer
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,8 +16,8 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
     OpenApiParameter,
-    OpenApiTypes,
     OpenApiResponse,
+    OpenApiTypes,
 )
 
 from ansible_catalog.common.auth import keycloak_django
@@ -46,6 +44,8 @@ from ansible_catalog.main.catalog.serializers import (
     ApprovalRequestSerializer,
     CatalogServicePlanSerializer,
     CatalogServicePlanInSerializer,
+    CopyPortfolioSerializer,
+    CopyPortfolioItemSerializer,
     ModifiedServicePlanInSerializer,
     OrderItemSerializer,
     OrderItemDocSerializer,
@@ -94,8 +94,16 @@ from ansible_catalog.main.catalog import tasks
 logger = logging.getLogger("catalog")
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get a tenant by its id",
+    ),
+    list=extend_schema(
+        description="List all tenants",
+    ),
+)
 class TenantViewSet(viewsets.ReadOnlyModelViewSet):
-    """API endpoint for listing and creating tenants."""
+    """API endpoint for listing tenants."""
 
     queryset = Tenant.objects.all()
     serializer_class = TenantSerializer
@@ -104,6 +112,29 @@ class TenantViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_fields = "__all__"
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get a portfolio by its id",
+    ),
+    list=extend_schema(
+        description="List all portfolios",
+        responses={
+            200: OpenApiResponse(
+                response=PortfolioSerializer,
+                description="Return a list of portfolios. An empty list indicates either undefined portfolios in the system or inaccessibility to the caller.",
+            )
+        },
+    ),
+    create=extend_schema(
+        description="Create a new portfolio",
+    ),
+    partial_update=extend_schema(
+        description="Edit an existing portfolio",
+    ),
+    destroy=extend_schema(
+        description="Delete an existing portfolio",
+    ),
+)
 class PortfolioViewSet(
     ImageMixin,
     TagMixin,
@@ -121,7 +152,13 @@ class PortfolioViewSet(
     search_fields = ("name", "description")
 
     @extend_schema(
-        responses={200: PortfolioSerializer},
+        description="Make a copy of the portfolio",
+        request=CopyPortfolioSerializer,
+        responses={
+            200: OpenApiResponse(
+                PortfolioSerializer, description="The new portfolio"
+            )
+        },
     )
     @action(methods=["post"], detail=True)
     def copy(self, request, pk):
@@ -245,6 +282,20 @@ class PortfolioViewSet(
         super().perform_destroy(instance)
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get a portfolio item by its id",
+    ),
+    list=extend_schema(
+        description="List all portfolio items",
+    ),
+    partial_update=extend_schema(
+        description="Edit an existing portfolio item",
+    ),
+    destroy=extend_schema(
+        description="Delete an existing portfolio item",
+    ),
+)
 class PortfolioItemViewSet(
     ImageMixin,
     TagMixin,
@@ -270,6 +321,7 @@ class PortfolioItemViewSet(
     parent_field_names = ("portfolio",)
 
     @extend_schema(
+        description="Create a new portfolio item",
         request=PortfolioItemInSerializer,
     )
     def create(self, request, *args, **kwargs):
@@ -289,7 +341,14 @@ class PortfolioItemViewSet(
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 
     @extend_schema(
-        responses={200: PortfolioItemSerializer},
+        description="Make a copy of the portfolio item",
+        request=CopyPortfolioItemSerializer,
+        responses={
+            200: OpenApiResponse(
+                PortfolioItemSerializer,
+                description="The copied portfolio item",
+            )
+        },
     )
     @action(methods=["post"], detail=True)
     def copy(self, request, pk):
@@ -332,6 +391,12 @@ class PortfolioItemViewSet(
             ),
         ],
     ),
+    create=extend_schema(
+        description="Create a new order",
+    ),
+    destroy=extend_schema(
+        description="Delete an existing order",
+    ),
 )
 class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating orders."""
@@ -350,6 +415,7 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     search_fields = ("state",)
 
     @extend_schema(
+        description="Submit the given order",
         request=None,
         responses={200: OrderSerializer},
     )
@@ -379,6 +445,7 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
 
     # TODO:
     @extend_schema(
+        description="Cancel the given order",
         request=None,
         responses={204: None},
     )
@@ -390,6 +457,7 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
 
 @extend_schema_view(
     retrieve=extend_schema(
+        tags=("orders", "order_items"),
         description="Get a specific order item based on the order item ID",
         parameters=[
             OpenApiParameter(
@@ -401,6 +469,7 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
         ],
     ),
     list=extend_schema(
+        tags=("orders", "order_items"),
         description="Get a list of order items associated with the logged in user.",
         parameters=[
             OrderItemDocSerializer,
@@ -411,6 +480,20 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
                 description="Include extra data such as portfolio item details",
             ),
         ],
+        responses={
+            200,
+            OpenApiResponse(
+                OrderItemSerializer,
+                description="Return a list of order items. An empty list indicates either undefined orders in the system or inaccessibility to the caller.",
+            ),
+        },
+    ),
+    create=extend_schema(
+        tags=("orders", "order_items"),
+        description="Add an order item to an order in pending state",
+    ),
+    destroy=extend_schema(
+        description="Delete an existing order item",
     ),
 )
 class OrderItemViewSet(
@@ -443,6 +526,11 @@ class OrderItemViewSet(
         )
 
 
+@extend_schema_view(
+    list=extend_schema(
+        description="Get a list of approval requests associated with an order. As the order is being approved one can check the status of the approvals.",
+    ),
+)
 class ApprovalRequestViewSet(
     NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
 ):
@@ -469,6 +557,11 @@ class ApprovalRequestViewSet(
     parent_field_names = ("order",)
 
 
+@extend_schema_view(
+    list=extend_schema(
+        description="Get a list of progress messages associated with an order. As the order is being processed the provider can update the progress messages.",
+    ),
+)
 class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     """API endpoint for listing progress messages."""
 
@@ -498,6 +591,11 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         )
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get a specific service plan",
+    ),
+)
 class CatalogServicePlanViewSet(
     NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
 ):
@@ -516,6 +614,7 @@ class CatalogServicePlanViewSet(
     parent_field_names = ("portfolio_item",)
 
     @extend_schema(
+        description="List all service plans of the portfolio item",
         request=None,
         responses={200: CatalogServicePlanSerializer},
     )
@@ -535,6 +634,7 @@ class CatalogServicePlanViewSet(
             return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
+        description="Create a service plan for the portfolio item",
         request=CatalogServicePlanInSerializer,
         responses={201: CatalogServicePlanSerializer},
     )
@@ -562,7 +662,7 @@ class CatalogServicePlanViewSet(
     )
     @action(methods=["get"], detail=True)
     def base(self, request, pk):
-        """Retrieve the base schema of specified pk service plan."""
+        """Retrieve the base schema of specified service plan."""
         service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
         options = {"schema": "base", "service_plan_id": service_plan.id}
 
@@ -594,7 +694,7 @@ class CatalogServicePlanViewSet(
     )
     @action(methods=["get", "patch"], detail=True)
     def modified(self, request, pk):
-        """Retrieve or update the schema of the specified pk service plan."""
+        """Retrieve or update the schema of the specified service plan."""
         service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
 
         if self.request.method == "GET":
@@ -620,7 +720,7 @@ class CatalogServicePlanViewSet(
 
     @action(methods=["post"], detail=True)
     def reset(self, request, pk):
-        """Reset the specified pk service plan."""
+        """Reset the specified service plan."""
         service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
 
         svc = ResetServicePlan(service_plan).process()
