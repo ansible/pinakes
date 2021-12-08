@@ -65,3 +65,16 @@ class OpenIdConnect:
             self.openid_configuration().token_endpoint,
             data=data,
         )
+
+    def logout_user_session(self, access_token, refresh_token) -> None:
+        path = constants.SESSION_LOGOUT_PATH.format(realm=self._realm)
+        url = f"{self._server_url}/{path}"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+        }
+        data = {
+            "client_id": self._client_id,
+            "client_secret": self._client_secret,
+            "refresh_token": refresh_token,
+        }
+        self._client.request("POST", url, headers=headers, data=data)

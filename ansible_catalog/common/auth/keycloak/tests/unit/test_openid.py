@@ -1,6 +1,8 @@
 from unittest import mock
 
 import pytest
+from requests.models import Response
+from rest_framework import status
 
 from ansible_catalog.common.auth.keycloak.models import OpenIDConfiguration
 from ansible_catalog.common.auth.keycloak.openid import OpenIdConnect
@@ -120,3 +122,21 @@ def test_client_credentials_auth(api_client):
             "client_secret": CLIENT_SECRET,
         },
     )
+
+
+def test_session_logout_user_success(api_client):
+    openid_client = OpenIdConnect(SERVER_URL, REALM, CLIENT_ID, CLIENT_SECRET)
+    response = mock.Mock(spec=Response)
+    response.status_code = 200
+
+    api_client.request.return_value = response
+    result = openid_client.logout_user_session("access_tok", "ref_tok")
+    assert result is None
+
+
+def test_session_logout_raises_exception(api_client):
+    openid_client = OpenIdConnect(SERVER_URL, REALM, CLIENT_ID, CLIENT_SECRET)
+
+    api_client.request.side_effect = Exception("Some HTTP failure")
+    with pytest.raises(Exception):
+        openid_client.logout_user_session("access_tok", "ref_tok")

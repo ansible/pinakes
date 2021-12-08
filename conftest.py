@@ -55,6 +55,13 @@ def api_request(admin):
         request.session = Mock()
         if user and authenticated:
             force_authenticate(request, user=user)
+        keycloak_mock = Mock()
+        keycloak_mock.extra_data = {
+            "id": "1",
+            "access_token": "yabba dabba doo",
+            "refresh_token": "scooby doo",
+        }
+        request.keycloak_user = keycloak_mock
         response = view(request, *view_args, **view_kwargs)
         response.render()
         return response

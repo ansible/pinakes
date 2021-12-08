@@ -11,6 +11,7 @@ urlpatterns = [
     path(
         "me/", views.CurrentUserViewSet.as_view({"get": "retrieve"}), name="me"
     ),
+    path("logout/", views.SessionLogoutView.as_view(), name="logout"),
 ]
 
 urlpatterns += router.urls
