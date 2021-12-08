@@ -5,6 +5,7 @@ from . import models
 from . import openid
 from .client import ApiClient
 
+
 GROUPS_PATH = "admin/realms/{realm}/groups"
 
 
