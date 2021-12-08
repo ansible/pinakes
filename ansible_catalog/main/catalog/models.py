@@ -74,7 +74,7 @@ class PortfolioItem(ImageableModel):
     """Portfolio Item represent a Job Template or a Workflow."""
 
     favorite = models.BooleanField(
-        default=False, help_text="Definition of a favorate portfolio item"
+        default=False, help_text="Definition of a favorite portfolio item"
     )
     description = models.TextField(
         blank=True, default="", help_text="Description of the portfolio item"
