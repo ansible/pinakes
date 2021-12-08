@@ -549,10 +549,16 @@ class CatalogServicePlan(BaseModel):
         null=True,
         help_text="Modified JSON schema for the service plan",
     )
-    create_json_schema = models.JSONField(
+    outdated = models.BooleanField(
+        default=False,
+        editable=False,
+        help_text="Whether or not the base schema is outdated. The portfolio item is not orderable if the base schema is outdated.",
+    )
+    outdated_changes = models.CharField(
         blank=True,
-        null=True,
-        help_text="Current JSON schema for the service plan",
+        default="",
+        editable=False,
+        help_text="Changes of the base schema from inventory since last edit",
     )
     service_plan_ref = models.CharField(
         max_length=64,
@@ -564,14 +570,6 @@ class CatalogServicePlan(BaseModel):
         null=True,
         help_text="Corresponding service offering from inventory-api",
     )
-    modified = models.BooleanField(
-        default=False,
-        help_text="Whether or not the service plan has a modified schema",
-    )
-    imported = models.BooleanField(
-        default=True,
-        help_text="Whether or not the service plan has been imported for editing",
-    )
 
     portfolio_item = models.ForeignKey(
         PortfolioItem,
@@ -581,6 +579,16 @@ class CatalogServicePlan(BaseModel):
 
     class Meta:
         indexes = [models.Index(fields=["tenant", "portfolio_item"])]
+
+    @property
+    def schema(self):
+        """The active schema of parameters for provisioning a portfolio item"""
+        return self.modified_schema or self.base_schema
+
+    @property
+    def modified(self):
+        """Indicates whether the schema has been modified by user"""
+        return self.modified_schema is not None
 
     def __str__(self):
         return self.name

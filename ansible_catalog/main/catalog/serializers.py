@@ -300,36 +300,64 @@ class ProgressMessageSerializer(serializers.ModelSerializer):
         )
 
 
+class CatalogServicePlanExtraSerializer(serializers.Serializer):
+    """
+    Extra data for a service plan including its base schema,
+    available only when query parameter extra=true
+    """
+
+    base_schema = serializers.JSONField(
+        read_only=True,
+        allow_null=True,
+        help_text="The base schema, same as schema if unmodified",
+    )
+
+
 class CatalogServicePlanSerializer(serializers.ModelSerializer):
     """CatalogServicePlan which describes parameters required for a portfolio item"""
+
+    id = serializers.IntegerField(
+        read_only=True,
+        allow_null=True,
+        help_text="ID of the service plan. Can be null if the service plan has not been imported for editing",
+    )
+    schema = serializers.JSONField(
+        read_only=True,
+        allow_null=True,
+        help_text="The active schema of parameters for provisioning a portfolio item",
+    )
+    modified = serializers.BooleanField(
+        read_only=True,
+        help_text="Whether or not the schema has been modified by user",
+    )
+    extra_data = serializers.SerializerMethodField(
+        "get_extra_data", allow_null=True, read_only=True
+    )
 
     class Meta:
         model = CatalogServicePlan
         fields = (
             "id",
             "name",
-            "create_json_schema",
-            "imported",
+            "schema",
             "modified",
+            "outdated",
+            "outdated_changes",
             "service_offering_ref",
             "service_plan_ref",
             "portfolio_item",
+            "extra_data",
         )
 
-    def create(self, validated_data):
-        return CatalogServicePlan.objects.create(
-            tenant=Tenant.current(), **validated_data
-        )
-
-
-class CatalogServicePlanInSerializer(serializers.ModelSerializer):
-    """Input parameters for creating a catalog servic plan"""
-
-    portfolio_item_id = serializers.IntegerField(required=True)
-
-    class Meta:
-        model = CatalogServicePlan
-        fields = ("portfolio_item_id",)
+    @extend_schema_field(CatalogServicePlanExtraSerializer(many=False))
+    def get_extra_data(self, service_plan):
+        extra = self.context.get("request").GET.get("extra")
+        if extra and extra.lower() == "true":
+            serializer = CatalogServicePlanExtraSerializer(
+                instance=service_plan, many=False, context=self.context
+            )
+            return serializer.data
+        return None
 
 
 class ModifiedServicePlanInSerializer(serializers.Serializer):

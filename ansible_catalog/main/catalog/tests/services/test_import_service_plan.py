@@ -4,18 +4,22 @@ import json
 
 from ansible_catalog.main.catalog.tests.factories import (
     PortfolioItemFactory,
+    CatalogServicePlanFactory,
 )
 from ansible_catalog.main.inventory.tests.factories import (
     ServiceOfferingFactory,
     InventoryServicePlanFactory,
 )
-from ansible_catalog.main.catalog.services.fetch_service_plans import (
-    FetchServicePlans,
+from ansible_catalog.main.catalog.services.import_service_plan import (
+    ImportServicePlan,
+)
+from ansible_catalog.main.catalog.exceptions import (
+    ServicePlanImportedException,
 )
 
 
 @pytest.mark.django_db
-def test_fetch_service_plans_from_remote_with_enabled_survey():
+def test_import_service_plan_from_remote_with_enabled_survey():
     service_offering = ServiceOfferingFactory(survey_enabled=True)
     portfolio_item = PortfolioItemFactory(
         service_offering_ref=str(service_offering.id)
@@ -50,17 +54,19 @@ def test_fetch_service_plans_from_remote_with_enabled_survey():
         create_json_schema=schema,
     )
 
-    svc = FetchServicePlans(portfolio_item)
+    svc = ImportServicePlan(portfolio_item)
     svc.process()
 
-    assert len(svc.service_plans) == 1
-    assert svc.service_plans[0].portfolio_item_id == portfolio_item.id
-    assert svc.service_plans[0].service_offering_ref == service_offering.id
-    assert svc.service_plans[0].create_json_schema == schema
+    assert svc.imported_service_plan.portfolio_item_id == portfolio_item.id
+    assert svc.imported_service_plan.service_offering_ref == str(
+        service_offering.id
+    )
+    assert svc.imported_service_plan.schema == schema
+    assert svc.imported_service_plan.imported is True
 
 
 @pytest.mark.django_db
-def test_fetch_service_plans_from_remote_with_disabled_survey():
+def test_import_service_plans_from_remote_with_disabled_survey():
     service_offering = ServiceOfferingFactory()
     portfolio_item = PortfolioItemFactory(
         service_offering_ref=str(service_offering.id)
@@ -70,35 +76,40 @@ def test_fetch_service_plans_from_remote_with_disabled_survey():
         service_offering=service_offering,
     )
 
-    svc = FetchServicePlans(portfolio_item)
+    svc = ImportServicePlan(portfolio_item)
     svc.process()
 
-    assert len(svc.service_plans) == 1
-    assert svc.service_plans[0].portfolio_item_id == portfolio_item.id
-    assert svc.service_plans[0].service_offering_ref == service_offering.id
-    assert (
-        svc.service_plans[0].create_json_schema["schemaType"] == "emptySchema"
+    assert svc.imported_service_plan.portfolio_item_id == portfolio_item.id
+    assert svc.imported_service_plan.service_offering_ref == str(
+        service_offering.id
     )
+    assert svc.imported_service_plan.schema["schemaType"] == "emptySchema"
+    assert svc.imported_service_plan.imported is True
 
 
 @pytest.mark.django_db
-def test_fetch_service_plans_from_local():
-    from ansible_catalog.main.catalog.tests.factories import ServicePlanFactory
-
+def test_import_service_plans_with_already_imported():
     service_offering = ServiceOfferingFactory()
     portfolio_item = PortfolioItemFactory(
         service_offering_ref=str(service_offering.id)
     )
-    service_plan = ServicePlanFactory(
+    service_plan = CatalogServicePlanFactory(
         portfolio_item=portfolio_item,
     )
 
-    svc = FetchServicePlans(portfolio_item)
+    with pytest.raises(ServicePlanImportedException) as excinfo:
+        ImportServicePlan(portfolio_item).process()
+
+    assert "Service plan was already imported" in str(excinfo.value)
+
+
+@pytest.mark.django_db
+def test_import_service_plans_with_empty_entities():
+    service_offering = ServiceOfferingFactory(survey_enabled=True)
+    portfolio_item = PortfolioItemFactory(
+        service_offering_ref=str(service_offering.id)
+    )
+    svc = ImportServicePlan(portfolio_item)
     svc.process()
 
-    assert len(svc.service_plans) == 1
-    assert svc.service_plans[0].portfolio_item_id == portfolio_item.id
-    assert svc.service_plans[0].name == service_plan.name
-    assert svc.service_plans[0].create_json_schema == {}
-    assert svc.service_plans[0].imported is True
-    assert svc.service_plans[0].modified is False
+    assert svc.imported_service_plan is None

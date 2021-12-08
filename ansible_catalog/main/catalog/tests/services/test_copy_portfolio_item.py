@@ -13,7 +13,7 @@ from ansible_catalog.main.catalog.tests.factories import (
     PortfolioItemFactory,
 )
 from ansible_catalog.main.catalog.tests.factories import (
-    ServicePlanFactory as CatalogServicePlanFactory,
+    CatalogServicePlanFactory,
 )
 from ansible_catalog.main.inventory.tests.factories import (
     InventoryServicePlanFactory,

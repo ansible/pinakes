@@ -84,7 +84,7 @@ class ProgressMessageFactory(factory.django.DjangoModelFactory):
     message = factory.Sequence(lambda n: f"message_{n}")
 
 
-class ServicePlanFactory(factory.django.DjangoModelFactory):
+class CatalogServicePlanFactory(factory.django.DjangoModelFactory):
     """Catalog ServicePlan Factory"""
 
     class Meta:

@@ -38,15 +38,14 @@ urls_views["portfolio-portfolioitem-list"] = PortfolioItemViewSet.as_view(
 )  # read only
 
 portfolio_items.register(
-    r"service_plans",
+    r"catalog_service_plans",
     CatalogServicePlanViewSet,
     basename="portfolioitem-serviceplan",
     parents_query_lookups=CatalogServicePlanViewSet.parent_field_names,
 )
 
+urls_views["portfolioitem-serviceplan-list"] = CatalogServicePlanViewSet.as_view({"get": "list"})
 urls_views["portfolioitem-serviceplan-detail"] = None  # disable
-urls_views["portfolioitem-serviceplan-base"] = None  # disable
-urls_views["portfolioitem-serviceplan-modified"] = None  # disable
 urls_views["portfolioitem-serviceplan-reset"] = None  # disable
 
 orders = router.register(r"orders", OrderViewSet, basename="order")
@@ -91,6 +90,4 @@ service_plans = router.register(
     CatalogServicePlanViewSet,
     basename="catalogserviceplan",
 )
-urls_views["catalogserviceplan-list"] = CatalogServicePlanViewSet.as_view(
-    {"post": "create"}
-)
+urls_views["catalogserviceplan-list"] = None
