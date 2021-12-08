@@ -14,7 +14,6 @@ class OpenIdConnect:
         realm: str,
         client_id: str,
         client_secret: Optional[str] = None,
-        token: Optional[str] = None,
     ):
         self._server_url = server_url.rstrip("/")
         self._realm = realm
@@ -23,7 +22,7 @@ class OpenIdConnect:
 
         self._openid_configuration = None
 
-        self._client = ApiClient(token=token)
+        self._client = ApiClient()
 
     def openid_configuration(
         self, force_reload=False
@@ -67,12 +66,15 @@ class OpenIdConnect:
             data=data,
         )
 
-    def logout_user_session(self, refresh_token) -> None:
+    def logout_user_session(self, access_token, refresh_token) -> None:
         path = constants.SESSION_LOGOUT_PATH.format(realm=self._realm)
         url = f"{self._server_url}/{path}"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+        }
         data = {
             "client_id": self._client_id,
             "client_secret": self._client_secret,
             "refresh_token": refresh_token,
         }
-        self._client.request("POST", url, data=data)
+        self._client.request("POST", url, headers=headers, data=data)

@@ -56,10 +56,9 @@ class SessionLogoutView(APIView):
             settings.KEYCLOAK_REALM,
             settings.KEYCLOAK_CLIENT_ID,
             settings.KEYCLOAK_CLIENT_SECRET,
-            extra_data["access_token"],
         )
         openid_client.logout_user_session(
-            extra_data["refresh_token"],
+            extra_data["access_token"], extra_data["refresh_token"]
         )
         logout(request)
         return Response(status=status.HTTP_200_OK)
