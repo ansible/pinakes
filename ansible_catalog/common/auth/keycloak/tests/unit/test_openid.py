@@ -12,7 +12,6 @@ SERVER_URL = "https://keycloak.example.com/auth"
 REALM = "testrealm"
 CLIENT_ID = "pytest"
 CLIENT_SECRET = "supersecret"
-TOKEN = "token"
 
 TOKEN_ENDPOINT = f"{SERVER_URL}/realms/{REALM}/protocol/openid-connect"
 
