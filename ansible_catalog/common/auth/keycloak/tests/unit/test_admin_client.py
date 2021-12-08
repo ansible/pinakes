@@ -79,3 +79,36 @@ def test_list_groups(api_client):
             ],
         ),
     ]
+
+
+def test_group_members(api_client):
+    client = AdminClient(SERVER_URL, REALM, TOKEN)
+    group_id = "ff530978-1e4f-4bb9-a1d8-2c374c9ad739"
+
+    api_client.request_json.return_value = [
+        {
+            "id": "00000000-1111-2222-3333-444444444444",
+            "username": "barney",
+            "email": "barney@example.com",
+        },
+        {
+            "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+            "username": "fred",
+            "email": "fred@example.com",
+        },
+    ]
+
+    members = client.group_members(group_id)
+
+    api_client.request_json.assert_called_with(
+        "GET", f"{SERVER_URL}/admin/realms/{REALM}/groups/{group_id}/members"
+    )
+    assert len(members) == 2
+
+
+def test_group_members_invalid_id(api_client):
+    client = AdminClient(SERVER_URL, REALM, TOKEN)
+    group_id = "ff530978-1e4f-4bb9-a1d8-2c374c9ad739"
+    api_client.request.side_effect = Exception("Some HTTP failure")
+    with pytest.raises(Exception):
+        client.get_members(group_id)
