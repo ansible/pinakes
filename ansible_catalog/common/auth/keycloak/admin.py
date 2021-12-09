@@ -22,7 +22,7 @@ class AdminClient:
         items = self._client.request_json("GET", url)
         return [models.Group.parse_obj(item) for item in items]
 
-    def group_members(self, group_id):
+    def group_members(self, group_id: str) -> List[dict]:
         path = constants.GROUP_MEMBERS_PATH.format(
             realm=self._realm, id=group_id
         )
