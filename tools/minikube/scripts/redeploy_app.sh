@@ -7,8 +7,6 @@
 #
 set -e
 eval $(minikube -p minikube docker-env)
-kubectl delete --namespace=catalog -f ./tools/minikube/templates/worker-deployment.yaml
-kubectl delete --namespace=catalog -f ./tools/minikube/templates/app-deployment.yaml
 minikube image build -t localhost/ansible-catalog -f tools/docker/Dockerfile .
-kubectl apply --namespace=catalog -f ./tools/minikube/templates/app-deployment.yaml
-kubectl apply --namespace=catalog -f ./tools/minikube/templates/worker-deployment.yaml
+kubectl rollout restart --namespace=catalog -f ./tools/minikube/templates/app-deployment.yaml
+kubectl rollout restart --namespace=catalog -f ./tools/minikube/templates/worker-deployment.yaml
