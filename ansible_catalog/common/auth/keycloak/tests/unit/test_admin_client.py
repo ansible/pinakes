@@ -81,33 +81,6 @@ def test_list_groups(api_client):
     ]
 
 
-def test_group_members(api_client):
-    client = AdminClient(SERVER_URL, REALM, TOKEN)
-    group_id = "ff530978-1e4f-4bb9-a1d8-2c374c9ad739"
-
-    api_client.request_json.return_value = [
-        {
-            "id": "00000000-1111-2222-3333-444444444444",
-            "username": "barney",
-            "email": "barney@example.com",
-        },
-        {
-            "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-            "username": "fred",
-            "email": "fred@example.com",
-        },
-    ]
-
-    members = client.group_members(group_id)
-
-    api_client.request_json.assert_called_with(
-        "GET",
-        f"{SERVER_URL}/admin/realms/{REALM}/groups/{group_id}/members",
-        params={},
-    )
-    assert len(members) == 2
-
-
 def test_group_members_invalid_id(api_client):
     client = AdminClient(SERVER_URL, REALM, TOKEN)
     group_id = "does-not-exist"
@@ -116,38 +89,27 @@ def test_group_members_invalid_id(api_client):
         SERVER_URL, 404, "Not Found", {}, None
     )
     with pytest.raises(HTTPError):
-        client.group_members(group_id)
-
-    api_client.request_json.assert_called_with(
-        "GET",
-        f"{SERVER_URL}/admin/realms/{REALM}/groups/{group_id}/members",
-        params={},
-    )
+        list(client.group_members(group_id))
 
 
 def test_group_members_pagination(api_client):
     client = AdminClient(SERVER_URL, REALM, TOKEN)
     group_id = "ff530978-1e4f-4bb9-a1d8-2c374c9ad739"
-    params = {"first": 0, "max": 50}
 
-    api_client.request_json.return_value = [
-        {
-            "id": "00000000-1111-2222-3333-444444444444",
-            "username": "barney",
-            "email": "barney@example.com",
-        },
-        {
-            "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-            "username": "fred",
-            "email": "fred@example.com",
-        },
+    api_client.request_json.side_effect = [
+        [
+            {
+                "id": "00000000-1111-2222-3333-444444444444",
+                "username": "barney",
+                "email": "barney@example.com",
+            },
+            {
+                "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                "username": "fred",
+                "email": "fred@example.com",
+            },
+        ],
+        [],
     ]
 
-    members = client.group_members(group_id, params)
-
-    api_client.request_json.assert_called_with(
-        "GET",
-        f"{SERVER_URL}/admin/realms/{REALM}/groups/{group_id}/members",
-        params=params,
-    )
-    assert len(members) == 2
+    assert len(list(client.group_members(group_id))) == 2

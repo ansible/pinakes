@@ -22,12 +22,19 @@ class AdminClient:
         items = self._client.request_json("GET", url)
         return [models.Group.parse_obj(item) for item in items]
 
-    def group_members(self, group_id: str, params: dict = {}) -> List[dict]:
+    def group_members(self, group_id: str, max_prefetch: int = 100) -> dict:
         path = constants.GROUP_MEMBERS_PATH.format(
             realm=self._realm, id=group_id
         )
+        params = {"first": 0, "max": max_prefetch}
         url = f"{self._server_url}/{path}"
-        return self._client.request_json("GET", url, params=params)
+        while True:
+            objects = self._client.request_json("GET", url, params=params)
+            for obj in objects:
+                yield obj
+            if len(objects) == 0:
+                break
+            params["first"] += len(objects)
 
 
 def create_admin_client(
