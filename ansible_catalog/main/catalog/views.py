@@ -481,8 +481,7 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
             ),
         ],
         responses={
-            200,
-            OpenApiResponse(
+            200: OpenApiResponse(
                 OrderItemSerializer,
                 description="Return a list of order items. An empty list indicates either undefined orders in the system or inaccessibility to the caller.",
             ),
