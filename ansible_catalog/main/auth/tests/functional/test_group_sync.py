@@ -37,7 +37,7 @@ def test_group_sync_job_status(api_request, mocker):
 
 
 @pytest.mark.django_db
-def test_group_sync_job_status(api_request, mocker):
+def test_group_sync_missing_job_status(api_request, mocker):
     mocker.patch("django_rq.get_connection")
 
     job_id = str(uuid.uuid4())
