@@ -30,9 +30,10 @@ class AdminClient:
         url = f"{self._server_url}/{path}"
         while True:
             objects = self._client.request_json("GET", url, params=params)
-            for obj in objects:
-                yield obj
-            if len(objects) == 0:
+            if objects:
+                for obj in objects:
+                    yield obj
+            else:
                 break
             params["first"] += len(objects)
 
