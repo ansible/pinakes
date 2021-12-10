@@ -62,12 +62,14 @@ class PortfolioSerializer(serializers.ModelSerializer):
 
 
 class PortfolioItemInSerializer(serializers.Serializer):
-    """Input parameters for creating a Portfolio item"""
+    """Input parameters for creating a portfolio item"""
 
     service_offering_ref = serializers.CharField(
-        required=False, help_text="Associated service offering id"
+        required=True, help_text="Associated service offering id"
     )
-    portfolio = serializers.IntegerField(required=True)
+    portfolio = serializers.IntegerField(
+        required=True, help_text="ID of the portofolio"
+    )
 
 
 class CopyPortfolioSerializer(serializers.Serializer):
