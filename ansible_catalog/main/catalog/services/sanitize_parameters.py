@@ -36,26 +36,26 @@ class SanitizeParameters:
             raise
 
     def _compute_sanitized_parameters(self):
-        if self.order_item.inventory_service_plan_ref is None:
+        if (
+            self.order_item.inventory_service_plan_ref is None
+            or self.order_item.service_parameters is None
+        ):
             return {}
 
         fields = self._service_plan_fields()
         service_parameters = self.order_item.service_parameters
 
-        dicts = {}
-        for field in fields:
-            dicts[field["name"]] = (
-                self.MASKED_VALUE
-                if self._mask_value(field)
-                else service_parameters[field["name"]]
-            )
+        dicts = {
+            field["name"]: self.MASKED_VALUE
+            if self._mask_value(field)
+            else service_parameters.get(field["name"])
+            for field in fields
+        }
 
-        result = {}
-
-        for key, __value in service_parameters.items():
-            result[key] = dicts[key]
-
-        return result
+        return {
+            key: dicts.get(key) if dicts.get(key) else value
+            for key, value in service_parameters.items()
+        }
 
     def _service_plan_fields(self):
         service_plan = ServicePlan.objects.filter(
@@ -65,30 +65,30 @@ class SanitizeParameters:
         if service_plan is None:
             service_plan_schema = (
                 GetServicePlan(self.order_item.inventory_service_plan_ref)
-                .proces()
+                .process()
                 .service_plan.create_json_schema
             )
         else:
             service_plan_schema = (
                 service_plan.schema
                 or GetServicePlan(self.order_item.inventory_service_plan_ref)
-                .proces()
+                .process()
                 .service_plan.create_json_schema
             )
 
-        return service_plan_schema["schema"]["fields"]
+        return service_plan_schema.get("schema", {}).get("fields", {})
 
     def _mask_value(self, field):
         need_mask = False
 
         for param in self.FILTERED_PARAMS:
             type = field.get("type", None)
-            is_password = False if type is None else type == "password"
+            is_password = True if type == "password" else False
             need_mask = (
                 need_mask
                 or is_password
-                or re.match(param, field["name"])
-                or re.match(param, field["label"])
+                or re.match(param, field.get("name"))
+                or re.match(param, field.get("label"))
             )
 
         return need_mask

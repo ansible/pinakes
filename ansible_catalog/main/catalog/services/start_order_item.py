@@ -6,7 +6,9 @@ from ansible_catalog.main.catalog.models import (
     OrderItem,
     ProgressMessage,
 )
-
+from ansible_catalog.main.catalog.services.compute_runtime_parameters import (
+    ComputeRuntimeParameters,
+)
 from ansible_catalog.main.catalog.services.finish_order import FinishOrder
 from ansible_catalog.main.catalog.services.finish_order_item import (
     FinishOrderItem,
@@ -62,5 +64,8 @@ class StartOrderItem:
             logger.error("Error Submitting Order Item: %s", str(error))
 
             FinishOrderItem(order_item=item, error_msg=str(error)).process()
-
-        # TODO: compute runtime parameters later
+        finally:
+            svc = ComputeRuntimeParameters(item).process()
+            if bool(svc.runtime_parameters):
+                item.service_parameters = svc.runtime_parameters
+                item.save()
