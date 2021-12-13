@@ -100,7 +100,7 @@ def test_portfolio_item_post_with_exception(api_request):
     response = api_request("post", "portfolioitem-list", data=data)
 
     assert response.status_code == 400
-    assert "Failed to get service offering" in response.data["detail"]
+    assert "service_offering_ref" in response.data["errors"]
 
 
 @pytest.mark.django_db
