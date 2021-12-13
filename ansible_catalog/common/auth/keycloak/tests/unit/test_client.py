@@ -165,9 +165,8 @@ def test_api_client_exception_conflict(session):
 def test_api_client_exception_with_error(session):
     client = ApiClient()
     session.request.return_value = _mock_response_with_exception(
-        status_code=requests.codes.bad_request, json_data={
-            "error": "invalid request"
-        }
+        status_code=requests.codes.bad_request,
+        json_data={"error": "invalid request"},
     )
     with pytest.raises(exceptions.ApiException) as excinfo:
         client.request_json("GET", "https://example-8.com")
@@ -177,10 +176,11 @@ def test_api_client_exception_with_error(session):
 def test_api_client_exception_with_error_description(session):
     client = ApiClient()
     session.request.return_value = _mock_response_with_exception(
-        status_code=requests.codes.bad_request, json_data={
+        status_code=requests.codes.bad_request,
+        json_data={
             "error": "invalid request",
-            "error_description": "unknown error"
-        }
+            "error_description": "unknown error",
+        },
     )
     with pytest.raises(exceptions.ApiException) as excinfo:
         client.request_json("GET", "https://example-9.com")
