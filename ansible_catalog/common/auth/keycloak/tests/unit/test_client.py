@@ -1,7 +1,9 @@
 from unittest import mock
 
 import pytest
+import requests
 
+from ansible_catalog.common.auth.keycloak import exceptions
 from ansible_catalog.common.auth.keycloak.client import ApiClient
 
 
@@ -27,6 +29,17 @@ def test_api_client_request(session, method):
         data=None,
         json=None,
     )
+
+
+def _mock_response_with_exception(status_code, json_data):
+    response = mock.Mock()
+    response.status_code = status_code
+    response.json.return_value = json_data
+
+    error = requests.HTTPError(response=response)
+    response.raise_for_status.side_effect = error
+
+    return response
 
 
 def test_api_client_request_no_token(session):
@@ -129,4 +142,46 @@ def test_api_client_request_json_no_token(session):
     )
 
 
-# TODO: Test exception handling
+def test_api_client_exception_not_found(session):
+    client = ApiClient()
+    session.request.return_value = _mock_response_with_exception(
+        status_code=requests.codes.not_found, json_data={}
+    )
+    with pytest.raises(exceptions.ResourceNotFound) as excinfo:
+        client.request_json("GET", "https://example-6.com")
+    assert str(excinfo.value) == "API Error (status: 404)"
+
+
+def test_api_client_exception_conflict(session):
+    client = ApiClient()
+    session.request.return_value = _mock_response_with_exception(
+        status_code=requests.codes.conflict, json_data={}
+    )
+    with pytest.raises(exceptions.ResourceExists) as excinfo:
+        client.request_json("GET", "https://example-7.com")
+    assert str(excinfo.value) == "API Error (status: 409)"
+
+
+def test_api_client_exception_with_error(session):
+    client = ApiClient()
+    session.request.return_value = _mock_response_with_exception(
+        status_code=requests.codes.bad_request, json_data={
+            "error": "invalid request"
+        }
+    )
+    with pytest.raises(exceptions.ApiException) as excinfo:
+        client.request_json("GET", "https://example-8.com")
+    assert str(excinfo.value) == "invalid request (status: 400)"
+
+
+def test_api_client_exception_with_error_description(session):
+    client = ApiClient()
+    session.request.return_value = _mock_response_with_exception(
+        status_code=requests.codes.bad_request, json_data={
+            "error": "invalid request",
+            "error_description": "unknown error"
+        }
+    )
+    with pytest.raises(exceptions.ApiException) as excinfo:
+        client.request_json("GET", "https://example-9.com")
+    assert str(excinfo.value) == "invalid request: unknown error (status: 400)"
