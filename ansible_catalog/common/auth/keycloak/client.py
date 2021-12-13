@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Mapping, Optional
+from typing import Any, Mapping, Optional, Tuple
 
 import requests
 
@@ -67,15 +67,26 @@ class ApiClient:
         ).json()
 
     def exception_handler(self, e: requests.HTTPError):
-        if e.response.status_code == requests.codes.not_found:
-            raise exceptions.ResourceNotFound
-        if e.response.status_code == requests.codes.conflict:
-            raise exceptions.ResourceExists
+        status_code = e.response.status_code
 
+        # TODO(cutwater): Refactor this as a dispatch dictionary
+        exception_cls = exceptions.ApiException
+        if e.response.status_code == requests.codes.not_found:
+            exception_cls = exceptions.ResourceNotFound
+        elif e.response.status_code == requests.codes.conflict:
+            exception_cls = exceptions.ResourceExists
+        elif e.response.status_code == requests.codes.forbidden:
+            exception_cls = exceptions.Forbidden
+
+        error = None
+        error_description = None
         try:
             data = e.response.json()
-            message = data["error"]
         except ValueError:
-            message = "Unknown error"
+            pass
+        else:
+            if isinstance(data, dict):
+                error = data.get("error")
+                error_description = data.get("error_description")
 
-        raise exceptions.ApiException(message) from e
+        raise exception_cls(error, error_description, status_code) from e
