@@ -75,7 +75,9 @@ class ApiClient:
         try:
             data = e.response.json()
             message = data["error"]
-        except ValueError:
+            if "error_description" in data:
+                message = ": ".join([data["error"], data["error_description"]])
+        except (KeyError, ValueError):
             message = "Unknown error"
 
         raise exceptions.ApiException(message) from e

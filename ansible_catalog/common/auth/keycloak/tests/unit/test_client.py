@@ -1,8 +1,13 @@
 from unittest import mock
 
 import pytest
-
+import requests
 from ansible_catalog.common.auth.keycloak.client import ApiClient
+from ansible_catalog.common.auth.keycloak.exceptions import (
+    ApiException,
+    ResourceNotFound,
+    ResourceExists,
+)
 
 
 @pytest.fixture
@@ -10,6 +15,17 @@ def session(mocker):
     session_mock = mock.Mock()
     mocker.patch("requests.Session", return_value=session_mock)
     yield session_mock
+
+
+def _mock_response_with_exception(status, json_data):
+    e = requests.HTTPError("error")
+    e.response = mock.Mock()
+    e.response.status_code = status
+    e.response.json.return_value = json_data
+    mock_resp = mock.Mock()
+    mock_resp.raise_for_status.side_effect = e
+    mock_resp.status_code = status
+    return mock_resp
 
 
 @pytest.mark.parametrize("method", ["GET", "POST"])
@@ -129,4 +145,75 @@ def test_api_client_request_json_no_token(session):
     )
 
 
-# TODO: Test exception handling
+def test_api_client_request_json_404_exception(session):
+    client = ApiClient()
+    session.request.return_value = _mock_response_with_exception(
+        status=requests.codes.not_found, json_data={}
+    )
+    with pytest.raises(ResourceNotFound) as execinfo:
+        client.request(
+            "GET",
+            "https://example-6.com/",
+        )
+
+
+def test_api_client_request_409_exception(session):
+    client = ApiClient()
+    session.request.return_value = _mock_response_with_exception(
+        status=requests.codes.conflict, json_data={}
+    )
+    with pytest.raises(ResourceExists) as execinfo:
+        client.request(
+            "GET",
+            "https://example-7.com/",
+        )
+
+
+def test_api_client_request_api_exception_with_description(session):
+    client = ApiClient()
+    keycloak_error = {
+        "error": "invalid request",
+        "error_description": "no refresh token",
+    }
+
+    session.request.return_value = _mock_response_with_exception(
+        status=requests.codes.bad_request, json_data=keycloak_error
+    )
+    with pytest.raises(ApiException) as execinfo:
+        client.request(
+            "GET",
+            "https://example-8.com/test",
+        )
+
+    assert str(execinfo.value) == "invalid request: no refresh token"
+
+
+def test_api_client_request_api_exception(session):
+    client = ApiClient()
+    keycloak_error = {"error": "invalid request"}
+
+    session.request.return_value = _mock_response_with_exception(
+        status=requests.codes.bad_request, json_data=keycloak_error
+    )
+    with pytest.raises(ApiException) as execinfo:
+        client.request(
+            "GET",
+            "https://example-9.com/test",
+        )
+
+    assert str(execinfo.value) == "invalid request"
+
+
+def test_api_client_request_api_exception_no_details(session):
+    client = ApiClient()
+
+    session.request.return_value = _mock_response_with_exception(
+        status=requests.codes.bad_request, json_data={}
+    )
+    with pytest.raises(ApiException) as execinfo:
+        client.request(
+            "GET",
+            "https://example-10.com/test",
+        )
+
+    assert str(execinfo.value) == "Unknown error"
