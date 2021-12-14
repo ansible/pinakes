@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Iterator
 
 from . import constants
 from . import models
@@ -24,7 +24,7 @@ class AdminClient:
 
     def iter_group_members(
         self, group_id: str, max_prefetch: int = 100
-    ) -> dict:
+    ) -> Iterator[dict]:
         params = {"first": 0, "max": max_prefetch}
         while True:
             objects = self.list_group_members(group_id, params)
