@@ -2,6 +2,8 @@
     from Ansible Tower. It converts the Spec to DDF
     format and saves it in the DB
 """
+import json
+import hashlib
 
 from django.utils import timezone
 from ansible_catalog.main.inventory.models import InventoryServicePlan
@@ -29,6 +31,7 @@ class ServicePlanImport:
         InventoryServicePlan.objects.create(
             source_ref=source_ref,
             create_json_schema=ddf_data,
+            schema_sha256=self._get_sha256(ddf_data),
             source=self.source,
             tenant=self.tenant,
             service_offering_id=service_offering_id,
@@ -36,3 +39,7 @@ class ServicePlanImport:
             source_updated_at=now,
             extra={},
         )
+
+    def _get_sha256(self, schema):
+        hash_object = hashlib.sha256(json.dumps(schema).encode())
+        return hash_object.hexdigest()

@@ -41,7 +41,8 @@ class TestServicePlanImport:
             service_offering.id,
             service_offering.source_ref,
         )
-        assert (InventoryServicePlan.objects.all().count()) == 1
+        assert (InventoryServicePlan.objects.count()) == 1
         assert (
             InventoryServicePlan.objects.first().service_offering.id
         ) == service_offering.id
+        assert InventoryServicePlan.objects.first().schema_sha256 is not None
