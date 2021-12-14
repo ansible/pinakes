@@ -3,9 +3,9 @@ from unittest.mock import patch
 import json
 import pytest
 from ansible_catalog.main.inventory.tests.factories import (
+    InventoryServicePlanFactory,
     SourceFactory,
     ServiceInventoryFactory,
-    ServicePlanFactory,
     ServiceOfferingFactory,
 )
 
@@ -111,9 +111,9 @@ def test_source_service_plan_list(api_request):
 
     source1 = SourceFactory()
     source2 = SourceFactory()
-    ServicePlanFactory(source=source1)
-    ServicePlanFactory(source=source1)
-    ServicePlanFactory(source=source2)
+    InventoryServicePlanFactory(source=source1)
+    InventoryServicePlanFactory(source=source1)
+    InventoryServicePlanFactory(source=source2)
 
     response = api_request("get", "source-service_plan-list", source1.id)
 

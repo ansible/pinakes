@@ -7,7 +7,7 @@ from ansible_catalog.main.catalog.tests.factories import (
 )
 from ansible_catalog.main.inventory.tests.factories import (
     ServiceOfferingFactory,
-    ServicePlanFactory,
+    InventoryServicePlanFactory,
 )
 from ansible_catalog.main.catalog.services.fetch_service_plans import (
     FetchServicePlans,
@@ -45,7 +45,7 @@ def test_fetch_service_plans_from_remote_with_enabled_survey():
             "description": "",
         },
     }
-    ServicePlanFactory(
+    InventoryServicePlanFactory(
         service_offering=service_offering,
         create_json_schema=schema,
     )
@@ -66,7 +66,7 @@ def test_fetch_service_plans_from_remote_with_disabled_survey():
         service_offering_ref=str(service_offering.id)
     )
 
-    ServicePlanFactory(
+    InventoryServicePlanFactory(
         service_offering=service_offering,
     )
 

@@ -4,7 +4,7 @@
 """
 
 from django.utils import timezone
-from ansible_catalog.main.inventory.models import ServicePlan
+from ansible_catalog.main.inventory.models import InventoryServicePlan
 
 
 class ServicePlanImport:
@@ -26,7 +26,7 @@ class ServicePlanImport:
         """Convert the survey spec to DDF format and save it"""
         ddf_data = self.spec_converter.process(data)
         now = timezone.now()
-        ServicePlan.objects.create(
+        InventoryServicePlan.objects.create(
             source_ref=source_ref,
             create_json_schema=ddf_data,
             source=self.source,

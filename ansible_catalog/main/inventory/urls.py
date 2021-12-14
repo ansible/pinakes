@@ -4,7 +4,7 @@ from ansible_catalog.main.inventory.views import (
     ServiceInstanceViewSet,
     ServiceInventoryViewSet,
     SourceViewSet,
-    ServicePlanViewSet,
+    InventoryServicePlanViewSet,
     ServiceOfferingViewSet,
 )
 
@@ -25,9 +25,9 @@ urls_views["source-service_inventory-untag"] = None
 
 sources.register(
     r"service_plans",
-    ServicePlanViewSet,
+    InventoryServicePlanViewSet,
     basename="source-service_plan",
-    parents_query_lookups=(ServicePlanViewSet.parent_field_names[1],),
+    parents_query_lookups=(InventoryServicePlanViewSet.parent_field_names[1],),
 )
 urls_views["source-service_plan-detail"] = None
 
@@ -46,9 +46,9 @@ offerings = router.register(
 )
 offerings.register(
     r"service_plans",
-    ServicePlanViewSet,
+    InventoryServicePlanViewSet,
     basename="offering-service_plans",
-    parents_query_lookups=(ServicePlanViewSet.parent_field_names[0],),
+    parents_query_lookups=(InventoryServicePlanViewSet.parent_field_names[0],),
 )
 urls_views["offering-service_plans-detail"] = None
 
@@ -58,7 +58,11 @@ router.register(
 urls_views["serviceinventory-list"] = ServiceInventoryViewSet.as_view(
     {"get": "list"}
 )  # list only
-router.register("service_plans", ServicePlanViewSet, basename="serviceplan")
+router.register(
+    "inventory_service_plans",
+    InventoryServicePlanViewSet,
+    basename="inventoryserviceplan",
+)
 router.register(
     "service_instances", ServiceInstanceViewSet, basename="serviceinstance"
 )

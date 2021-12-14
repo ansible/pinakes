@@ -3,9 +3,9 @@ import time
 import logging
 
 from ansible_catalog.main.inventory.models import (
+    InventoryServicePlan,
     ServiceInstance,
     ServiceOffering,
-    ServicePlan,
 )
 from ansible_catalog.main.inventory.task_utils.tower_api import TowerAPI
 
@@ -66,7 +66,7 @@ class LaunchJob:
         service_offering = ServiceOffering.objects.get(
             source_ref=self.output["unified_job_template"]
         )
-        service_plan = ServicePlan.objects.filter(
+        service_plan = InventoryServicePlan.objects.filter(
             service_offering=service_offering
         ).first()
 

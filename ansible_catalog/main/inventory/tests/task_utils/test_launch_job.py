@@ -4,13 +4,13 @@ from unittest.mock import patch
 from ansible_catalog.main.inventory.task_utils.launch_job import LaunchJob
 
 from ansible_catalog.main.inventory.models import (
+    InventoryServicePlan,
     ServiceInstance,
     ServiceOffering,
-    ServicePlan,
 )
 from ansible_catalog.main.inventory.tests.factories import (
+    InventoryServicePlanFactory,
     ServiceOfferingFactory,
-    ServicePlanFactory,
 )
 
 
@@ -45,7 +45,9 @@ class TestLaunchJob:
         """Test the process method"""
         source_ref = "abc"
         service_offering = ServiceOfferingFactory(source_ref=source_ref)
-        service_plan = ServicePlanFactory(service_offering=service_offering)
+        service_plan = InventoryServicePlanFactory(
+            service_offering=service_offering
+        )
 
         instance = mock1.return_value
         instance.post.return_value = {"status": "pending", "url": "/abc/def/"}

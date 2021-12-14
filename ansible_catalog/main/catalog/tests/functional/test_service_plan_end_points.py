@@ -10,7 +10,7 @@ from ansible_catalog.main.inventory.tests.factories import (
     ServiceOfferingFactory,
 )
 from ansible_catalog.main.inventory.tests.factories import (
-    ServicePlanFactory as InventoryServicePlanFactory,
+    InventoryServicePlanFactory,
 )
 
 

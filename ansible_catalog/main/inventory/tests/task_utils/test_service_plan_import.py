@@ -7,7 +7,7 @@ from ansible_catalog.main.inventory.tests.factories import (
     SourceFactory,
     ServiceOfferingFactory,
 )
-from ansible_catalog.main.inventory.models import ServicePlan
+from ansible_catalog.main.inventory.models import InventoryServicePlan
 from ansible_catalog.main.inventory.task_utils.service_plan_import import (
     ServicePlanImport,
 )
@@ -41,7 +41,7 @@ class TestServicePlanImport:
             service_offering.id,
             service_offering.source_ref,
         )
-        assert (ServicePlan.objects.all().count()) == 1
+        assert (InventoryServicePlan.objects.all().count()) == 1
         assert (
-            ServicePlan.objects.first().service_offering.id
+            InventoryServicePlan.objects.first().service_offering.id
         ) == service_offering.id

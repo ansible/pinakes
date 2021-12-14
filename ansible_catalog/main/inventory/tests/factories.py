@@ -8,7 +8,7 @@ from ansible_catalog.main.inventory.models import (
     ServiceInventory,
 )
 from ansible_catalog.main.inventory.models import ServiceOffering, OfferingKind
-from ansible_catalog.main.inventory.models import ServicePlan
+from ansible_catalog.main.inventory.models import InventoryServicePlan
 from ansible_catalog.main.inventory.models import ServiceOfferingNode
 
 
@@ -57,11 +57,11 @@ class ServiceOfferingFactory(factory.django.DjangoModelFactory):
     extra = {}
 
 
-class ServicePlanFactory(factory.django.DjangoModelFactory):
-    """ServicePlan Factory"""
+class InventoryServicePlanFactory(factory.django.DjangoModelFactory):
+    """InventoryServicePlan Factory"""
 
     class Meta:
-        model = ServicePlan
+        model = InventoryServicePlan
 
     tenant = factory.LazyAttribute(lambda _: default_tenant())
     source = factory.SubFactory(SourceFactory)
@@ -119,7 +119,7 @@ class ServiceInstanceFactory(factory.django.DjangoModelFactory):
         survey_enabled=True,
     )
     service_plan = factory.SubFactory(
-        ServicePlanFactory,
+        InventoryServicePlanFactory,
         tenant=tenant,
         source=source,
     )
