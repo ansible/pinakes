@@ -73,6 +73,26 @@ class Source(models.Model):
         auto_now=True,
         help_text="The time at which the object was last updated",
     )
+    refresh_started_at = models.DateTimeField(
+        editable=False,
+        null=True,
+        help_text="The time at which the source refresh is started",
+    )
+    refresh_finished_at = models.DateTimeField(
+        editable=False,
+        null=True,
+        help_text="The time at which the source refresh is finished",
+    )
+    last_successful_refresh_at = models.DateTimeField(
+        editable=False,
+        null=True,
+        help_text="The time at which the latest source refresh was succeeded",
+    )
+    last_refresh_message = models.TextField(
+        blank=True,
+        default="",
+        help_text="The message for the last source refresh",
+    )
 
     def __str__(self):
         return self.name
