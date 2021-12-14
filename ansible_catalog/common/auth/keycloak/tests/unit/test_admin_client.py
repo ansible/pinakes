@@ -102,11 +102,15 @@ def test_iter_group_members(api_client):
                 "id": "00000000-1111-2222-3333-444444444444",
                 "username": "barney",
                 "email": "barney@example.com",
+                "firstName": "Barney",
+                "lastName": "Rubble",
             },
             {
                 "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
                 "username": "fred",
                 "email": "fred@example.com",
+                "firstName": "Fred",
+                "lastName": "Flintstone",
             },
         ],
         [],
@@ -118,22 +122,28 @@ def test_iter_group_members(api_client):
 def test_list_group_members(api_client):
     client = AdminClient(SERVER_URL, REALM, TOKEN)
     group_id = "ff530978-1e4f-4bb9-a1d8-2c374c9ad739"
-    params = {"first": 0, "max": 10}
+    first = 0
+    max_prefetch = 10
+    params = {"first": first, "max": max_prefetch}
 
     api_client.request_json.return_value = [
         {
             "id": "00000000-1111-2222-3333-444444444444",
             "username": "barney",
             "email": "barney@example.com",
+            "firstName": "Barney",
+            "lastName": "Rubble",
         },
         {
             "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
             "username": "fred",
             "email": "fred@example.com",
+            "firstName": "Fred",
+            "lastName": "Flintstone",
         },
     ]
 
-    assert len(client.list_group_members(group_id, params)) == 2
+    assert len(client.list_group_members(group_id, first, max_prefetch)) == 2
     api_client.request_json.assert_called_with(
         "GET",
         f"{SERVER_URL}/admin/realms/{REALM}/groups/{group_id}/members",

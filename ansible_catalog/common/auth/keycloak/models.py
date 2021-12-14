@@ -90,3 +90,10 @@ class UmaPermission(pydantic.BaseModel):
     clients: Optional[List[str]] = None
     users: Optional[List[str]] = None
     scopes: Optional[List[str]] = None
+
+
+class User(pydantic.BaseModel):
+    email: str
+    username: str
+    firstName: str
+    lastName: str
