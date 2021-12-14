@@ -8,14 +8,14 @@ from ansible_catalog.main.inventory.task_utils.service_offering_import import (
     OfferingKind,
 )
 from ansible_catalog.main.inventory.tests.factories import (
+    InventoryServicePlanFactory,
     SourceFactory,
     ServiceInventoryFactory,
     ServiceOfferingFactory,
-    ServicePlanFactory,
 )
 from ansible_catalog.main.inventory.models import (
+    InventoryServicePlan,
     ServiceOffering,
-    ServicePlan,
 )
 from ansible_catalog.main.tests.factories import TenantFactory
 
@@ -211,7 +211,7 @@ class TestServiceOfferingImport:
             service_inventory=service_inventory,
             survey_enabled=True,
         )
-        ServicePlanFactory(
+        InventoryServicePlanFactory(
             tenant=tenant,
             source=source,
             service_offering=service_offering,
@@ -267,7 +267,7 @@ class TestServiceOfferingImport:
         assert (obj.description) == "Bedrock Template"
         assert (soi.get_stats().get("updates")) == 1
         assert (len(surveys)) == 0
-        assert (ServicePlan.objects.all().count()) == 0
+        assert (InventoryServicePlan.objects.all().count()) == 0
         assert (
             soi.source_ref_to_id(service_offering.source_ref)
         ) == service_offering.id

@@ -1,7 +1,10 @@
 """ Get service plan for a given service plan id """
 
 from django.utils.translation import gettext_lazy as _
-from ansible_catalog.main.inventory.models import ServiceOffering, ServicePlan
+from ansible_catalog.main.inventory.models import (
+    InventoryServicePlan,
+    ServiceOffering,
+)
 
 from ansible_catalog.main.catalog.exceptions import (
     BadParamsException,
@@ -17,7 +20,7 @@ class GetServiceOffering:
                 id=int(service_offering_id)
             ).first()
             if get_service_plans:
-                self.service_plans = ServicePlan.objects.filter(
+                self.service_plans = InventoryServicePlan.objects.filter(
                     service_offering=self.service_offering
                 )
         except Exception:

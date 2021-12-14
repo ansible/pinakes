@@ -4,9 +4,9 @@
 import re
 import dateutil.parser
 from ansible_catalog.main.inventory.models import (
-    ServiceOffering,
+    InventoryServicePlan,
     OfferingKind,
-    ServicePlan,
+    ServiceOffering,
 )
 
 
@@ -138,7 +138,7 @@ class ServiceOfferingImport:
                 db_obj.survey_enabled is True
                 and new_obj["survey_enabled"] is False
             ):
-                ServicePlan.objects.filter(
+                InventoryServicePlan.objects.filter(
                     tenant=self.tenant,
                     source=self.source,
                     source_ref=source_ref,

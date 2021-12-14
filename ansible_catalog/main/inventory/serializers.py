@@ -3,11 +3,11 @@ from rest_framework import serializers
 
 from ansible_catalog.main.models import Source
 from ansible_catalog.main.inventory.models import (
+    InventoryServicePlan,
     ServiceInstance,
     ServiceInventory,
     ServiceOffering,
     ServiceOfferingNode,
-    ServicePlan,
 )
 
 
@@ -67,11 +67,11 @@ class ServiceOfferingNodeSerializer(serializers.ModelSerializer):
         read_only_fields = ("created_at", "updated_at")
 
 
-class ServicePlanSerializer(serializers.ModelSerializer):
-    """Serializer for ServicePlan."""
+class InventoryServicePlanSerializer(serializers.ModelSerializer):
+    """Serializer for InventoryServicePlan."""
 
     class Meta:
-        model = ServicePlan
+        model = InventoryServicePlan
         fields = (
             "id",
             "name",

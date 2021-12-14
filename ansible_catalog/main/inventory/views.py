@@ -13,15 +13,10 @@ import django_rq
 from ansible_catalog.common.tag_mixin import TagMixin
 from ansible_catalog.common.queryset_mixin import QuerySetMixin
 from ansible_catalog.main.models import Source
-from ansible_catalog.main.inventory.models import (
-    ServiceInventory,
-    ServiceOffering,
-    ServicePlan,
-)
 from ansible_catalog.main.inventory.serializers import (
+    InventoryServicePlanSerializer,
     ServiceInstanceSerializer,
     ServiceInventorySerializer,
-    ServicePlanSerializer,
     ServiceOfferingSerializer,
     SourceSerializer,
 )
@@ -52,10 +47,12 @@ class SourceViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
-class ServicePlanViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
+class InventoryServicePlanViewSet(
+    NestedViewSetMixin, QuerySetMixin, ModelViewSet
+):
     """API endpoint for listing and retrieving service plans."""
 
-    serializer_class = ServicePlanSerializer
+    serializer_class = InventoryServicePlanSerializer
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
     filterset_fields = (

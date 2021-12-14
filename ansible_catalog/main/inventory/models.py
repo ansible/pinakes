@@ -89,7 +89,7 @@ class ServiceOfferingNode(TowerModel):
     extra = models.JSONField()
 
 
-class ServicePlan(TowerModel):
+class InventoryServicePlan(TowerModel):
     """Service Plan object stores tower surveys and links it to a
     ServiceOffering
     """
@@ -115,7 +115,7 @@ class ServiceInstance(TowerModel):
         ServiceOffering, on_delete=models.SET_NULL, blank=True, null=True
     )
     service_plan = models.ForeignKey(
-        ServicePlan, on_delete=models.SET_NULL, blank=True, null=True
+        InventoryServicePlan, on_delete=models.SET_NULL, blank=True, null=True
     )
     service_inventory = models.ForeignKey(
         ServiceInventory, on_delete=models.SET_NULL, blank=True, null=True

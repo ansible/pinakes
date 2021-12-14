@@ -2,7 +2,7 @@
 import json
 import pytest
 from ansible_catalog.main.inventory.tests.factories import (
-    ServicePlanFactory,
+    InventoryServicePlanFactory,
     ServiceOfferingFactory,
 )
 
@@ -83,9 +83,9 @@ def test_service_offering_service_plan_list(api_request):
     service_offering1 = ServiceOfferingFactory()
     service_offering2 = ServiceOfferingFactory()
 
-    ServicePlanFactory(service_offering=service_offering1)
-    ServicePlanFactory(service_offering=service_offering1)
-    ServicePlanFactory(service_offering=service_offering2)
+    InventoryServicePlanFactory(service_offering=service_offering1)
+    InventoryServicePlanFactory(service_offering=service_offering1)
+    InventoryServicePlanFactory(service_offering=service_offering2)
 
     response = api_request(
         "get", "offering-service_plans-list", service_offering1.id
