@@ -16,7 +16,17 @@ class SourceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Source
-        fields = ("id", "name")
+        fields = (
+            "id",
+            "name",
+            "refresh_started_at",
+            "refresh_finished_at",
+            "last_successful_refresh_at",
+            "last_refresh_message",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = ("created_at", "updated_at")
 
 
 class ServiceInventorySerializer(serializers.ModelSerializer):
