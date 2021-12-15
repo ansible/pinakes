@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Iterator
 
 from . import constants
 from . import models
@@ -21,6 +21,28 @@ class AdminClient:
         url = f"{self._server_url}/{path}"
         items = self._client.request_json("GET", url)
         return [models.Group.parse_obj(item) for item in items]
+
+    def iter_group_members(
+        self, group_id: str, max_prefetch: int = 100
+    ) -> Iterator[models.User]:
+        first = 0
+        while True:
+            objects = self.list_group_members(group_id, first, max_prefetch)
+            if not objects:
+                break
+            yield from objects
+            first += len(objects)
+
+    def list_group_members(
+        self, group_id: str, first: int, max_prefetch: int
+    ) -> List[models.User]:
+        path = constants.GROUP_MEMBERS_PATH.format(
+            realm=self._realm, id=group_id
+        )
+        params = {"first": first, "max": max_prefetch}
+        url = f"{self._server_url}/{path}"
+        items = self._client.request_json("GET", url, params=params)
+        return [models.User.parse_obj(item) for item in items]
 
 
 def create_admin_client(
