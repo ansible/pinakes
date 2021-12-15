@@ -10,10 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveIndex(
-            model_name="serviceplan",
-            name="main_servic_tenant__bd89da_idx",
-        ),
         migrations.RemoveField(
             model_name="serviceplan",
             name="create_json_schema",

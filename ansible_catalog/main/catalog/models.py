@@ -583,6 +583,9 @@ class ServicePlan(BaseModel):
         help_text="ID of the portfolio item",
     )
 
+    class Meta:
+        indexes = [models.Index(fields=["tenant", "portfolio_item"])]
+
     @property
     def schema(self):
         """The active schema of parameters for provisioning a portfolio item"""
