@@ -88,6 +88,7 @@ class InventoryServicePlanSerializer(serializers.ModelSerializer):
             "extra",
             "create_json_schema",
             "update_json_schema",
+            "schema_sha256",
             "service_offering",
         )
         read_only_fields = ("created_at", "updated_at")

@@ -101,6 +101,7 @@ class InventoryServicePlan(TowerModel):
     extra = models.JSONField()
     create_json_schema = models.JSONField()
     update_json_schema = models.JSONField(null=True)
+    schema_sha256 = models.TextField(blank=True, default="")
 
     def __str__(self):
         return self.name
