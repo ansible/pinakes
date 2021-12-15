@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django.db import transaction
 
 from ansible_catalog.main.catalog.models import (
-    CatalogServicePlan,
+    ServicePlan,
     Image,
     Portfolio,
     PortfolioItem,
@@ -69,7 +69,7 @@ class CopyPortfolioItem:
         self.new_portfolio_item.portfolio = self.portfolio
         self.new_portfolio_item.save()
 
-        service_plans = CatalogServicePlan.objects.filter(
+        service_plans = ServicePlan.objects.filter(
             portfolio_item=self.portfolio_item
         )
         for plan in service_plans:
@@ -92,7 +92,7 @@ class CopyPortfolioItem:
         if len(svc.service_plans) > 0:
             original_schema = svc.service_plans.first().create_json_schema
 
-        service_plans = CatalogServicePlan.objects.filter(
+        service_plans = ServicePlan.objects.filter(
             portfolio_item=self.portfolio_item
         )
         for service_plan in service_plans:

@@ -530,8 +530,8 @@ class ApprovalRequest(BaseModel):
         return str(self.id)
 
 
-class CatalogServicePlan(BaseModel):
-    """Catalog Service Plan Model"""
+class ServicePlan(BaseModel):
+    """Service Plan Model"""
 
     name = models.CharField(
         max_length=255,
@@ -549,12 +549,18 @@ class CatalogServicePlan(BaseModel):
         null=True,
         help_text="Modified JSON schema for the service plan",
     )
+    base_sha256 = models.TextField(
+        blank=True,
+        default="",
+        editable=False,
+        help_text="SHA256 of the base schema",
+    )
     outdated = models.BooleanField(
         default=False,
         editable=False,
         help_text="Whether or not the base schema is outdated. The portfolio item is not orderable if the base schema is outdated.",
     )
-    outdated_changes = models.CharField(
+    outdated_changes = models.TextField(
         blank=True,
         default="",
         editable=False,
@@ -576,9 +582,6 @@ class CatalogServicePlan(BaseModel):
         on_delete=models.CASCADE,
         help_text="ID of the portfolio item",
     )
-
-    class Meta:
-        indexes = [models.Index(fields=["tenant", "portfolio_item"])]
 
     @property
     def schema(self):

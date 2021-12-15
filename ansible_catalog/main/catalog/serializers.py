@@ -6,7 +6,7 @@ from ansible_catalog.main.models import Tenant, Image
 from ansible_catalog.main.auth.models import Group
 from ansible_catalog.main.catalog.models import (
     ApprovalRequest,
-    CatalogServicePlan,
+    ServicePlan,
     Order,
     OrderItem,
     Portfolio,
@@ -300,7 +300,7 @@ class ProgressMessageSerializer(serializers.ModelSerializer):
         )
 
 
-class CatalogServicePlanExtraSerializer(serializers.Serializer):
+class ServicePlanExtraSerializer(serializers.Serializer):
     """
     Extra data for a service plan including its base schema,
     available only when query parameter extra=true
@@ -313,8 +313,8 @@ class CatalogServicePlanExtraSerializer(serializers.Serializer):
     )
 
 
-class CatalogServicePlanSerializer(serializers.ModelSerializer):
-    """CatalogServicePlan which describes parameters required for a portfolio item"""
+class ServicePlanSerializer(serializers.ModelSerializer):
+    """ServicePlan which describes parameters required for a portfolio item"""
 
     id = serializers.IntegerField(
         read_only=True,
@@ -335,7 +335,7 @@ class CatalogServicePlanSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = CatalogServicePlan
+        model = ServicePlan
         fields = (
             "id",
             "name",
@@ -349,11 +349,11 @@ class CatalogServicePlanSerializer(serializers.ModelSerializer):
             "extra_data",
         )
 
-    @extend_schema_field(CatalogServicePlanExtraSerializer(many=False))
+    @extend_schema_field(ServicePlanExtraSerializer(many=False))
     def get_extra_data(self, service_plan):
         extra = self.context.get("request").GET.get("extra")
         if extra and extra.lower() == "true":
-            serializer = CatalogServicePlanExtraSerializer(
+            serializer = ServicePlanExtraSerializer(
                 instance=service_plan, many=False, context=self.context
             )
             return serializer.data

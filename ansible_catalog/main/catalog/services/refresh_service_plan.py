@@ -2,14 +2,14 @@
 
 import logging
 
-from ansible_catalog.main.catalog.models import CatalogServicePlan
+from ansible_catalog.main.catalog.models import ServicePlan
 from ansible_catalog.main.inventory.services.get_service_offering import (
     GetServiceOffering,
 )
 
 logger = logging.getLogger("catalog")
 
-EMPTY_SCHEMA={
+EMPTY_SCHEMA = {
     "schemaType": "emptySchema",
     "schema": {
         "fields": [
@@ -21,6 +21,10 @@ EMPTY_SCHEMA={
         ]
     },
 }
+EMPTY_SHA256 = (
+    "d6ac89987a40f596ee85e25d4c80f12b697370f92d4ec3a1a258c4dbf921cf8c"
+)
+
 
 class RefreshServicePlan:
     """
@@ -32,16 +36,23 @@ class RefreshServicePlan:
         self.service_plan = service_plan
 
     def process(self):
-        remote_plan = self._get_remote_schema()
-        self.service_plan.name = remote_plan[0]
-        self.service_plan.service_plan_ref = remote_plan[1]
-        remote_schema = remote_plan[2]
-        if self.service_plan.modified and not remote_schema == self.service_plan.base_schema:
+        temp_service_plan = self._get_remote_schema()
+        self.service_plan.name = temp_service_plan.name
+        self.service_plan.service_plan_ref = temp_service_plan.service_plan_ref
+
+        if (
+            self.service_plan.modified
+            and not self.service_plan.base_sha256
+            == temp_service_plan.base_sha256
+        ):
             self.service_plan.outdated = True
             # TODO: fill in the actual changes
-            self.service_plan.outdated_changes = "Base schema from inventory has changed"
+            self.service_plan.outdated_changes = (
+                "Base schema from inventory has changed"
+            )
         else:
-            self.service_plan.base_schema = remote_schema
+            self.service_plan.base_schema = temp_service_plan.base_schema
+            self.service_plan.base_sha256 = temp_service_plan.base_sha256
             self.service_plan.outdated = False
             self.service_plan.outdated_changes = ""
 
@@ -50,11 +61,13 @@ class RefreshServicePlan:
         return self
 
     def _get_remote_schema(self):
-        """return (name, id, schema)"""
         service_offering_ref = self.service_plan.service_offering_ref
 
         try:
-            logger.info("Fetching service plans from inventory: %s", service_offering_ref)
+            logger.info(
+                "Fetching service plans from inventory: %s",
+                service_offering_ref,
+            )
             svc = GetServiceOffering(service_offering_ref, True).process()
         except Exception as error:
             logger.error("Error fetching service plans: %s", str(error))
@@ -72,8 +85,23 @@ class RefreshServicePlan:
                     "Service offering: %d has no service plans",
                     service_offering.id,
                 )
-                return ("", "", None)
+                return ServicePlan(
+                    name="",
+                    service_plan_ref="",
+                    base_sha256="",
+                    base_schema=None,
+                )
             else:
-                return (remote_service_plan.name, str(remote_service_plan.id), remote_service_plan.create_json_schema)
+                return ServicePlan(
+                    name=remote_service_plan.name,
+                    service_plan_ref=str(remote_service_plan.id),
+                    base_sha256=remote_service_plan.schema_sha256,
+                    base_schema=remote_service_plan.create_json_schema,
+                )
         else:
-            return ("", "", EMPTY_SCHEMA)
+            return ServicePlan(
+                name="",
+                service_plan_ref="",
+                base_sha256=EMPTY_SHA256,
+                base_schema=EMPTY_SCHEMA,
+            )

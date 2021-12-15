@@ -34,7 +34,7 @@ from ansible_catalog.main.catalog.exceptions import (
 )
 from ansible_catalog.main.catalog.models import (
     ApprovalRequest,
-    CatalogServicePlan,
+    ServicePlan,
     Order,
     Portfolio,
     PortfolioItem,
@@ -42,7 +42,7 @@ from ansible_catalog.main.catalog.models import (
 )
 from ansible_catalog.main.catalog.serializers import (
     ApprovalRequestSerializer,
-    CatalogServicePlanSerializer,
+    ServicePlanSerializer,
     CopyPortfolioSerializer,
     CopyPortfolioItemSerializer,
     ModifiedServicePlanInSerializer,
@@ -588,14 +588,14 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         description="Get a specific service plan",
     ),
 )
-class CatalogServicePlanViewSet(
+class ServicePlanViewSet(
     NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
 ):
-    """API endpoint for listing and creating catalog service plans"""
+    """API endpoint for listing and creating service plans"""
 
     pagination_class = None
-    queryset = CatalogServicePlan.objects.all()
-    serializer_class = CatalogServicePlanSerializer
+    queryset = ServicePlan.objects.all()
+    serializer_class = ServicePlanSerializer
     http_method_names = ["get", "patch", "post", "head"]
     permission_classes = (IsAuthenticated,)
     filter_backends = []  # no filtering is needed
@@ -612,14 +612,14 @@ class CatalogServicePlanViewSet(
             ),
         ],
         request=None,
-        responses={200: CatalogServicePlanSerializer},
+        responses={200: ServicePlanSerializer},
     )
     def retrieve(self, request, pk):
-        service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
+        service_plan = get_object_or_404(ServicePlan, pk=pk)
 
         RefreshServicePlan(service_plan).process()
 
-        serializer = CatalogServicePlanSerializer(
+        serializer = ServicePlanSerializer(
             service_plan, many=False, context=self.get_serializer_context()
         )
         return Response(serializer.data)
@@ -635,7 +635,7 @@ class CatalogServicePlanViewSet(
             ),
         ],
         request=None,
-        responses={200: CatalogServicePlanSerializer},
+        responses={200: ServicePlanSerializer},
     )
     def list(self, request, *args, **kwargs):
         portfolio_item_id = kwargs.pop("portfolio_item_id")
@@ -644,7 +644,7 @@ class CatalogServicePlanViewSet(
         service_plans = (
             FetchServicePlans(portfolio_item).process().service_plans
         )
-        serializer = CatalogServicePlanSerializer(
+        serializer = ServicePlanSerializer(
             service_plans, many=True, context=self.get_serializer_context()
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -652,10 +652,10 @@ class CatalogServicePlanViewSet(
     @extend_schema(
         description="Modify the schema of the service plan",
         request=ModifiedServicePlanInSerializer,
-        responses={200: CatalogServicePlanSerializer},
+        responses={200: ServicePlanSerializer},
     )
     def partial_update(self, request, pk):
-        service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
+        service_plan = get_object_or_404(ServicePlan, pk=pk)
 
         serializer = ModifiedServicePlanInSerializer(data=request.data)
         if not serializer.is_valid():
@@ -670,7 +670,7 @@ class CatalogServicePlanViewSet(
 
         RefreshServicePlan(service_plan).process()
 
-        output_serializer = CatalogServicePlanSerializer(
+        output_serializer = ServicePlanSerializer(
             service_plan, context=self.get_serializer_context()
         )
         return Response(output_serializer.data)
@@ -678,17 +678,17 @@ class CatalogServicePlanViewSet(
     @extend_schema(
         description="Reset the schema of the service plan. It deletes any user modifications and pulls in latest schema from inventory",
         request=None,
-        responses={200: CatalogServicePlanSerializer},
+        responses={200: ServicePlanSerializer},
     )
     @action(methods=["post"], detail=True)
     def reset(self, request, pk):
         """Reset the specified service plan."""
-        service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
+        service_plan = get_object_or_404(ServicePlan, pk=pk)
 
         service_plan.modified_schema = None
         svc = RefreshServicePlan(service_plan).process()
 
-        serializer = CatalogServicePlanSerializer(
+        serializer = ServicePlanSerializer(
             svc.service_plan, many=False, context=self.get_serializer_context()
         )
         return Response(serializer.data)

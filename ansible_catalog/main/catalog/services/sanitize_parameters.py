@@ -3,7 +3,7 @@
 import logging
 import re
 
-from ansible_catalog.main.catalog.models import CatalogServicePlan
+from ansible_catalog.main.catalog.models import ServicePlan
 from ansible_catalog.main.inventory.services.get_service_plan import (
     GetServicePlan,
 )
@@ -58,7 +58,7 @@ class SanitizeParameters:
         return result
 
     def _service_plan_fields(self):
-        service_plan = CatalogServicePlan.objects.filter(
+        service_plan = ServicePlan.objects.filter(
             portfolio_item_id=self.order_item.portfolio_item.id
         ).first()
 
