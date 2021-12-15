@@ -64,7 +64,9 @@ def test_refresh_service_plan_from_remote_with_enabled_survey():
     assert service_plan.modified is False
     assert service_plan.outdated is False
     assert service_plan.name == remote_service_plan.name
-    assert service_plan.service_plan_ref == str(remote_service_plan.id)
+    assert service_plan.inventory_service_plan_ref == str(
+        remote_service_plan.id
+    )
 
 
 @pytest.mark.django_db
@@ -85,7 +87,7 @@ def test_refresh_service_plans_from_remote_with_disabled_survey():
     assert service_plan.modified is False
     assert service_plan.outdated is False
     assert service_plan.name == ""
-    assert service_plan.service_plan_ref == ""
+    assert service_plan.inventory_service_plan_ref == ""
 
 
 @pytest.mark.django_db
@@ -101,7 +103,7 @@ def test_refresh_service_plans_with_empty_entities():
     assert service_plan.modified is False
     assert service_plan.outdated is False
     assert service_plan.name == ""
-    assert service_plan.service_plan_ref == ""
+    assert service_plan.inventory_service_plan_ref == ""
 
 
 @pytest.mark.django_db
@@ -132,4 +134,6 @@ def test_refresh_service_plan_with_modified_base():
     assert service_plan.outdated is True
     assert len(service_plan.outdated_changes) > 0
     assert service_plan.name == remote_service_plan.name
-    assert service_plan.service_plan_ref == str(remote_service_plan.id)
+    assert service_plan.inventory_service_plan_ref == str(
+        remote_service_plan.id
+    )

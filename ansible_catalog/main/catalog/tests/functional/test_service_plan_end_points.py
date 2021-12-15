@@ -66,7 +66,9 @@ def test_list_portfolio_item_service_plans(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
 
-    assert content[0]["service_plan_ref"] == str(inventory_service_plan.id)
+    assert content[0]["inventory_service_plan_ref"] == str(
+        inventory_service_plan.id
+    )
     assert content[0]["portfolio_item"] == portfolio_item.id
     assert content[0]["schema"] == TEST_SCHEMA
     assert content[0]["extra_data"] is not None
@@ -98,7 +100,9 @@ def test_service_plan_retrieve(api_request):
     content = json.loads(response.content)
     assert content["name"] == inventory_service_plan.name
     assert content["schema"] == TEST_SCHEMA
-    assert content["service_plan_ref"] == str(inventory_service_plan.id)
+    assert content["inventory_service_plan_ref"] == str(
+        inventory_service_plan.id
+    )
     assert content["portfolio_item"] == portfolio_item.id
     assert content["extra_data"]["base_schema"] == TEST_SCHEMA
 

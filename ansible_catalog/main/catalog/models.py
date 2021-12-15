@@ -398,7 +398,7 @@ class OrderItem(UserOwnedModel, MessageableMixin):
     inventory_task_ref = models.CharField(
         max_length=64, null=True, help_text="Task reference from inventory-api"
     )
-    service_plan_ref = models.CharField(
+    inventory_service_plan_ref = models.CharField(
         max_length=64,
         null=True,
         help_text="Corresponding service plan from inventory-api",
@@ -566,7 +566,7 @@ class ServicePlan(BaseModel):
         editable=False,
         help_text="Changes of the base schema from inventory since last edit",
     )
-    service_plan_ref = models.CharField(
+    inventory_service_plan_ref = models.CharField(
         max_length=64,
         null=True,
         help_text="Corresponding service plan from inventory-api",

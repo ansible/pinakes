@@ -36,7 +36,7 @@ class SanitizeParameters:
             raise
 
     def _compute_sanitized_parameters(self):
-        if self.order_item.service_plan_ref is None:
+        if self.order_item.inventory_service_plan_ref is None:
             return {}
 
         fields = self._service_plan_fields()
@@ -64,14 +64,14 @@ class SanitizeParameters:
 
         if service_plan is None:
             service_plan_schema = (
-                GetServicePlan(self.order_item.service_plan_ref)
+                GetServicePlan(self.order_item.inventory_service_plan_ref)
                 .proces()
                 .service_plan.create_json_schema
             )
         else:
             service_plan_schema = (
                 service_plan.schema
-                or GetServicePlan(self.order_item.service_plan_ref)
+                or GetServicePlan(self.order_item.inventory_service_plan_ref)
                 .proces()
                 .service_plan.create_json_schema
             )

@@ -38,7 +38,9 @@ class RefreshServicePlan:
     def process(self):
         temp_service_plan = self._get_remote_schema()
         self.service_plan.name = temp_service_plan.name
-        self.service_plan.service_plan_ref = temp_service_plan.service_plan_ref
+        self.service_plan.inventory_service_plan_ref = (
+            temp_service_plan.inventory_service_plan_ref
+        )
 
         if (
             self.service_plan.modified
@@ -87,21 +89,21 @@ class RefreshServicePlan:
                 )
                 return ServicePlan(
                     name="",
-                    service_plan_ref="",
+                    inventory_service_plan_ref="",
                     base_sha256="",
                     base_schema=None,
                 )
             else:
                 return ServicePlan(
                     name=remote_service_plan.name,
-                    service_plan_ref=str(remote_service_plan.id),
+                    inventory_service_plan_ref=str(remote_service_plan.id),
                     base_sha256=remote_service_plan.schema_sha256,
                     base_schema=remote_service_plan.create_json_schema,
                 )
         else:
             return ServicePlan(
                 name="",
-                service_plan_ref="",
+                inventory_service_plan_ref="",
                 base_sha256=EMPTY_SHA256,
                 base_schema=EMPTY_SCHEMA,
             )

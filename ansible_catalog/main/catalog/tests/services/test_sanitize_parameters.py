@@ -61,7 +61,7 @@ def test_sanitize_parameters_from_service_plan_base():
     order_item = OrderItemFactory(
         portfolio_item=portfolio_item,
         service_parameters=service_parameters,
-        service_plan_ref=str(service_plan.id),
+        inventory_service_plan_ref=str(service_plan.id),
     )
 
     svc = SanitizeParameters(order_item).process()

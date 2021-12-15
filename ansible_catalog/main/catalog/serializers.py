@@ -133,7 +133,7 @@ class OrderItemFields:
         "portfolio_item",
         "order",
         "service_instance_ref",
-        "service_plan_ref",
+        "inventory_service_plan_ref",
         "inventory_task_ref",
         "external_url",
         "owner",
@@ -344,7 +344,7 @@ class ServicePlanSerializer(serializers.ModelSerializer):
             "outdated",
             "outdated_changes",
             "service_offering_ref",
-            "service_plan_ref",
+            "inventory_service_plan_ref",
             "portfolio_item",
             "extra_data",
         )
