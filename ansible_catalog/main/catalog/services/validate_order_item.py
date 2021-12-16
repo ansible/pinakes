@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from ansible_catalog.main.catalog.exceptions import (
     InvalidSurveyException,
 )
-from ansible_catalog.main.catalog.models import CatalogServicePlan
+from ansible_catalog.main.catalog.models import ServicePlan
 from ansible_catalog.main.catalog.services.compare_service_plans import (
     CompareServicePlans,
 )
@@ -18,7 +18,7 @@ class ValidateOrderItem:
         self.order_item = order_item
 
     def process(self):
-        service_plans = CatalogServicePlan.objects.filter(
+        service_plans = ServicePlan.objects.filter(
             portfolio_item=self.order_item.portfolio_item
         )
 

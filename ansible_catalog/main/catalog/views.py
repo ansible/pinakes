@@ -626,6 +626,16 @@ class ServicePlanViewSet(
     def retrieve(self, request, pk):
         service_plan = get_object_or_404(ServicePlan, pk=pk)
 
+        if CompareServicePlans.is_changed(service_plan):
+            raise InvalidSurveyException(
+                _(
+                    "The underlying survey on {} in the {} portfolio has been changed and is no longer valid, please contact an administrator to fix it."
+                ).format(
+                    service_plan.portfolio_item.name,
+                    service_plan.portfolio_item.portfolio.name,
+                )
+            )
+
         RefreshServicePlan(service_plan).process()
 
         serializer = ServicePlanSerializer(
@@ -646,25 +656,9 @@ class ServicePlanViewSet(
         request=None,
         responses={200: ServicePlanSerializer},
     )
-    def retrieve(self, request, pk):
-        service_plan = get_object_or_404(CatalogServicePlan, pk=pk)
-
-        if CompareServicePlans.is_changed(service_plan):
-            raise InvalidSurveyException(
-                _(
-                    "The underlying survey on {} in the {} portfolio has been changed and is no longer valid, please contact an administrator to fix it."
-                ).format(
-                    service_plan.portfolio_item.name,
-                    service_plan.portfolio_item.portfolio.name,
-                )
-            )
-
-        serializer = CatalogServicePlanSerializer(service_plan, many=False)
-        return Response(serializer.data)
-
     @extend_schema(
         request=None,
-        responses={200: CatalogServicePlanSerializer},
+        responses={200: ServicePlanSerializer},
     )
     def list(self, request, *args, **kwargs):
         portfolio_item_id = kwargs.pop("portfolio_item_id")

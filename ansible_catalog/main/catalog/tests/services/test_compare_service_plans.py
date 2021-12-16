@@ -3,7 +3,7 @@ import pytest
 
 from ansible_catalog.main.catalog.tests.factories import (
     PortfolioItemFactory,
-    ServicePlanFactory as CatalogServicePlanFactory,
+    ServicePlanFactory,
 )
 from ansible_catalog.main.inventory.tests.factories import (
     ServiceOfferingFactory,
@@ -122,7 +122,7 @@ SCHEMA_3 = {
 
 @pytest.mark.django_db
 def test_is_changed_with_empty_schema():
-    service_plan = CatalogServicePlanFactory(base_schema=SCHEMA)
+    service_plan = ServicePlanFactory(base_schema=SCHEMA)
 
     assert CompareServicePlans.is_changed(service_plan) is False
 
@@ -138,7 +138,7 @@ def test_is_changed_with_same_schema():
         create_json_schema=SCHEMA_1,
     )
 
-    service_plan = CatalogServicePlanFactory(
+    service_plan = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_1
     )
 
@@ -156,7 +156,7 @@ def test_is_changed_with_different_schemas():
         create_json_schema=SCHEMA_2,
     )
 
-    service_plan = CatalogServicePlanFactory(
+    service_plan = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_1
     )
 
@@ -175,13 +175,13 @@ def test_any_changed_with_changed_plans():
         create_json_schema=SCHEMA_2,
     )
 
-    plan1 = CatalogServicePlanFactory(
+    plan1 = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA
     )
-    plan2 = CatalogServicePlanFactory(
+    plan2 = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_1
     )
-    plan3 = CatalogServicePlanFactory(
+    plan3 = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_2
     )
 
@@ -200,13 +200,13 @@ def test_any_changed_with_unchanged_plans():
         create_json_schema=SCHEMA_2,
     )
 
-    plan1 = CatalogServicePlanFactory(
+    plan1 = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_2
     )
-    plan2 = CatalogServicePlanFactory(
+    plan2 = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_2
     )
-    plan3 = CatalogServicePlanFactory(
+    plan3 = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_2
     )
 
@@ -225,13 +225,13 @@ def test_changed_plans_with_changes():
         create_json_schema=SCHEMA_2,
     )
 
-    plan1 = CatalogServicePlanFactory(
+    plan1 = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_3
     )
-    plan2 = CatalogServicePlanFactory(
+    plan2 = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_2
     )
-    plan3 = CatalogServicePlanFactory(
+    plan3 = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_2
     )
 
@@ -257,10 +257,10 @@ def test_changed_plans_with_unchanges():
         create_json_schema=SCHEMA_2,
     )
 
-    plan1 = CatalogServicePlanFactory(
+    plan1 = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_2
     )
-    plan2 = CatalogServicePlanFactory(
+    plan2 = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_2
     )
 
@@ -279,7 +279,7 @@ def test_changed_plans_with_changed_fields():
         create_json_schema=SCHEMA_2,
     )
 
-    plan = CatalogServicePlanFactory(
+    plan = ServicePlanFactory(
         portfolio_item=portfolio_item, base_schema=SCHEMA_1
     )
 
@@ -293,11 +293,11 @@ def test_changed_plans_with_changed_fields():
 
 @pytest.mark.django_db
 def test_is_empty_with_empty_schema():
-    service_plan = CatalogServicePlanFactory(base_schema=SCHEMA)
+    service_plan = ServicePlanFactory(base_schema=SCHEMA)
     assert CompareServicePlans.is_empty(service_plan) is True
 
 
 @pytest.mark.django_db
 def test_is_empty_with_valid_schema():
-    service_plan = CatalogServicePlanFactory(base_schema=SCHEMA_1)
+    service_plan = ServicePlanFactory(base_schema=SCHEMA_1)
     assert CompareServicePlans.is_empty(service_plan) is False
