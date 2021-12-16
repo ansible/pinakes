@@ -6,8 +6,10 @@
 # they will be incorporated into the image.
 #
 set -e
+kubectl delete --namespace=catalog -f ./tools/minikube/templates/app-deployment.yaml
+kubectl delete --namespace=catalog -f ./tools/minikube/templates/worker-deployment.yaml
 echo "Rebuilding app image"
 eval $(minikube -p minikube docker-env)
 minikube image build -t localhost/ansible-catalog -f tools/docker/Dockerfile .
-kubectl rollout restart --namespace=catalog -f ./tools/minikube/templates/app-deployment.yaml
-kubectl rollout restart --namespace=catalog -f ./tools/minikube/templates/worker-deployment.yaml
+kubectl create --namespace=catalog -f ./tools/minikube/templates/app-deployment.yaml
+kubectl create --namespace=catalog -f ./tools/minikube/templates/worker-deployment.yaml
