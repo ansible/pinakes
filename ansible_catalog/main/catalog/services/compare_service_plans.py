@@ -29,7 +29,7 @@ class CompareServicePlans:
         if plan.base_sha256 != schema_sha256:  # Survey is changed by Tower
             if plan.modified:
                 plan.outdated = True
-                plan.outdated_message = potential._compare_schema_fields(
+                plan.outdated_changes = potential._compare_schema_fields(
                     inventory_schema
                 )
             else:  # resync with the remote
@@ -42,7 +42,7 @@ class CompareServicePlans:
         else:
             if plan.modified:  # only user modified
                 plan.outdated = True
-                plan.outdated_message = potential._compare_schema_fields(
+                plan.outdated_changes = potential._compare_schema_fields(
                     inventory_schema
                 )
                 plan.save()

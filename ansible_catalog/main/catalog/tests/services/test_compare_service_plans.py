@@ -294,7 +294,7 @@ def test_changed_plans_with_changes():
     assert plan2.outdated is False
     assert plan3.outdated is False
     assert (
-        plan1.outdated_message
+        plan1.outdated_changes
         == "Schema fields changes have been detected: fields changed: ['empty-service-plan', 'dev_null']"
     )
 
@@ -350,7 +350,7 @@ def test_changed_plans_with_changed_fields():
     assert plan.outdated is True
     assert (
         "fields added: ['dev_null']; fields removed: ['state']; fields changed: ['empty-service-plan']"
-        in plan.outdated_message
+        in plan.outdated_changes
     )
 
 
