@@ -25,6 +25,9 @@ from ansible_catalog.common.auth.keycloak_django.permissions import (
     KeycloakPermission,
 )
 from ansible_catalog.common.auth.keycloak_django.utils import parse_scope
+from ansible_catalog.common.auth.keycloak_django.views import (
+    KeycloakPermissionMixin,
+)
 from ansible_catalog.common.serializers import TaskSerializer
 from ansible_catalog.common.tag_mixin import TagMixin
 from ansible_catalog.common.image_mixin import ImageMixin
@@ -136,6 +139,7 @@ class PortfolioViewSet(
     TagMixin,
     NestedViewSetMixin,
     QuerySetMixin,
+    KeycloakPermissionMixin,
     viewsets.ModelViewSet,
 ):
     """API endpoint for listing and creating portfolios."""
@@ -208,8 +212,7 @@ class PortfolioViewSet(
             group_ids,
             data["permissions"],
         )
-        serializer = TaskSerializer(job)
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response({"id": job.id}, status=status.HTTP_202_ACCEPTED)
 
     @extend_schema(
         description=(
@@ -236,8 +239,7 @@ class PortfolioViewSet(
             group_ids,
             data["permissions"],
         )
-        serializer = TaskSerializer(job)
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response({"id": job.id}, status=status.HTTP_202_ACCEPTED)
 
     @extend_schema(
         description="Retrieve a portfolio sharing info.",
@@ -314,13 +316,14 @@ class PortfolioItemViewSet(
     TagMixin,
     NestedViewSetMixin,
     QuerySetMixin,
+    KeycloakPermissionMixin,
     viewsets.ModelViewSet,
 ):
     """API endpoint for listing and creating portfolio items."""
 
     serializer_class = PortfolioItemSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, KeycloakPermission)
     ordering = ("-id",)
     filterset_fields = (
         "name",
@@ -332,6 +335,46 @@ class PortfolioItemViewSet(
     )
     search_fields = ("name", "description")
     parent_field_names = ("portfolio",)
+
+    keycloak_resource_type = "catalog:portfolio"
+    keycloak_access_policies = {
+        "create": {"type": "object", "permission": "update"},
+        "retrieve": {"type": "object", "permission": "read"},
+        "update": {"type": "object", "permission": "update"},
+        "destroy": {"type": "object", "permission": "update"},
+    }
+
+    def get_keycloak_access_policies(self):
+        if "portfolio_id" in self.kwargs:
+            return {
+                "list": {"type": "object", "permission": "read"},
+                **self.keycloak_access_policies,
+            }
+        else:
+            return {
+                "list": {"type": "queryset", "permission": "read"},
+                **self.keycloak_access_policies,
+            }
+
+    def check_permissions(self, request):
+        if "portfolio_id" in self.kwargs:
+            portfolio = get_object_or_404(
+                Portfolio, pk=self.kwargs["portfolio_id"]
+            )
+            return super().check_object_permissions(request, portfolio)
+        else:
+            return super().check_permissions(request)
+
+    def check_object_permissions(self, request, obj):
+        return super().check_object_permissions(request, obj.portfolio)
+
+    def get_queryset(self):
+        return KeycloakPermission.scope_queryset(
+            self.request,
+            self,
+            super().get_queryset(),
+            filter_field="portfolio_id",
+        )
 
     @extend_schema(
         description="Create a new portfolio item",
@@ -346,8 +389,9 @@ class PortfolioItemViewSet(
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        portfolio = request.data.get("portfolio")
-        get_object_or_404(Portfolio, pk=portfolio)
+        portfolio_id = request.data.get("portfolio")
+        portfolio = get_object_or_404(Portfolio, pk=portfolio_id)
+        super().check_object_permissions(request, portfolio)
 
         svc = CreatePortfolioItem(request.data).process()
         output_serializer = PortfolioItemSerializer(svc.item, many=False)
