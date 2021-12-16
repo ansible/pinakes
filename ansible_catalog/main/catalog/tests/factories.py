@@ -5,7 +5,7 @@ import factory
 from ansible_catalog.main.models import Image
 from ansible_catalog.main.catalog.models import (
     ApprovalRequest,
-    CatalogServicePlan,
+    ServicePlan,
     Order,
     OrderItem,
     Portfolio,
@@ -85,15 +85,15 @@ class ProgressMessageFactory(factory.django.DjangoModelFactory):
 
 
 class ServicePlanFactory(factory.django.DjangoModelFactory):
-    """Catalog ServicePlan Factory"""
+    """ServicePlan Factory"""
 
     class Meta:
-        model = CatalogServicePlan
+        model = ServicePlan
 
     tenant = factory.LazyAttribute(lambda _: default_tenant())
     portfolio_item = factory.SubFactory(PortfolioItemFactory)
 
-    name = factory.Sequence(lambda n: f"catalog service_plan_{n}")
+    name = factory.Sequence(lambda n: f"service_plan_{n}")
 
 
 class ImageFactory(factory.django.DjangoModelFactory):

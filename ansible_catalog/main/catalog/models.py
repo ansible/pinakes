@@ -398,7 +398,7 @@ class OrderItem(UserOwnedModel, MessageableMixin):
     inventory_task_ref = models.CharField(
         max_length=64, null=True, help_text="Task reference from inventory-api"
     )
-    service_plan_ref = models.CharField(
+    inventory_service_plan_ref = models.CharField(
         max_length=64,
         null=True,
         help_text="Corresponding service plan from inventory-api",
@@ -530,8 +530,8 @@ class ApprovalRequest(BaseModel):
         return str(self.id)
 
 
-class CatalogServicePlan(BaseModel):
-    """Catalog Service Plan Model"""
+class ServicePlan(BaseModel):
+    """Service Plan Model"""
 
     name = models.CharField(
         max_length=255,
@@ -549,12 +549,24 @@ class CatalogServicePlan(BaseModel):
         null=True,
         help_text="Modified JSON schema for the service plan",
     )
-    create_json_schema = models.JSONField(
+    base_sha256 = models.TextField(
         blank=True,
-        null=True,
-        help_text="Current JSON schema for the service plan",
+        default="",
+        editable=False,
+        help_text="SHA256 of the base schema",
     )
-    service_plan_ref = models.CharField(
+    outdated = models.BooleanField(
+        default=False,
+        editable=False,
+        help_text="Whether or not the base schema is outdated. The portfolio item is not orderable if the base schema is outdated.",
+    )
+    outdated_changes = models.TextField(
+        blank=True,
+        default="",
+        editable=False,
+        help_text="Changes of the base schema from inventory since last edit",
+    )
+    inventory_service_plan_ref = models.CharField(
         max_length=64,
         null=True,
         help_text="Corresponding service plan from inventory-api",
@@ -563,14 +575,6 @@ class CatalogServicePlan(BaseModel):
         max_length=64,
         null=True,
         help_text="Corresponding service offering from inventory-api",
-    )
-    modified = models.BooleanField(
-        default=False,
-        help_text="Whether or not the service plan has a modified schema",
-    )
-    imported = models.BooleanField(
-        default=True,
-        help_text="Whether or not the service plan has been imported for editing",
     )
 
     portfolio_item = models.ForeignKey(
@@ -581,6 +585,16 @@ class CatalogServicePlan(BaseModel):
 
     class Meta:
         indexes = [models.Index(fields=["tenant", "portfolio_item"])]
+
+    @property
+    def schema(self):
+        """The active schema of parameters for provisioning a portfolio item"""
+        return self.modified_schema or self.base_schema
+
+    @property
+    def modified(self):
+        """Indicates whether the schema has been modified by user"""
+        return self.modified_schema is not None
 
     def __str__(self):
         return self.name

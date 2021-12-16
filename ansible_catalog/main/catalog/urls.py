@@ -2,7 +2,7 @@
 from ansible_catalog.common.nested_router import NestedDefaultRouter
 from ansible_catalog.main.catalog.views import (
     ApprovalRequestViewSet,
-    CatalogServicePlanViewSet,
+    ServicePlanViewSet,
     OrderViewSet,
     OrderItemViewSet,
     PortfolioViewSet,
@@ -39,14 +39,15 @@ urls_views["portfolio-portfolioitem-list"] = PortfolioItemViewSet.as_view(
 
 portfolio_items.register(
     r"service_plans",
-    CatalogServicePlanViewSet,
+    ServicePlanViewSet,
     basename="portfolioitem-serviceplan",
-    parents_query_lookups=CatalogServicePlanViewSet.parent_field_names,
+    parents_query_lookups=ServicePlanViewSet.parent_field_names,
 )
 
+urls_views["portfolioitem-serviceplan-list"] = ServicePlanViewSet.as_view(
+    {"get": "list"}
+)
 urls_views["portfolioitem-serviceplan-detail"] = None  # disable
-urls_views["portfolioitem-serviceplan-base"] = None  # disable
-urls_views["portfolioitem-serviceplan-modified"] = None  # disable
 urls_views["portfolioitem-serviceplan-reset"] = None  # disable
 
 orders = router.register(r"orders", OrderViewSet, basename="order")
@@ -87,10 +88,8 @@ urls_views["orderitem-list"] = None
 urls_views["orderitem-progressmessage-detail"] = None
 
 service_plans = router.register(
-    r"catalog_service_plans",
-    CatalogServicePlanViewSet,
-    basename="catalogserviceplan",
+    r"service_plans",
+    ServicePlanViewSet,
+    basename="serviceplan",
 )
-urls_views["catalogserviceplan-list"] = CatalogServicePlanViewSet.as_view(
-    {"post": "create"}
-)
+urls_views["serviceplan-list"] = None

@@ -147,7 +147,7 @@ def test_sanitized_params():
     order_item = OrderItem.objects.create(
         name="order_item",
         service_parameters=service_parameters,
-        service_plan_ref=str(service_plan.id),
+        inventory_service_plan_ref=str(service_plan.id),
         order=order,
         portfolio_item=portfolio_item,
         tenant=tenant,

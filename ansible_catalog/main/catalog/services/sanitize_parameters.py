@@ -3,7 +3,7 @@
 import logging
 import re
 
-from ansible_catalog.main.catalog.models import CatalogServicePlan
+from ansible_catalog.main.catalog.models import ServicePlan
 from ansible_catalog.main.inventory.services.get_service_plan import (
     GetServicePlan,
 )
@@ -36,7 +36,7 @@ class SanitizeParameters:
             raise
 
     def _compute_sanitized_parameters(self):
-        if self.order_item.service_plan_ref is None:
+        if self.order_item.inventory_service_plan_ref is None:
             return {}
 
         fields = self._service_plan_fields()
@@ -58,21 +58,20 @@ class SanitizeParameters:
         return result
 
     def _service_plan_fields(self):
-        service_plan = CatalogServicePlan.objects.filter(
+        service_plan = ServicePlan.objects.filter(
             portfolio_item_id=self.order_item.portfolio_item.id
         ).first()
 
         if service_plan is None:
             service_plan_schema = (
-                GetServicePlan(self.order_item.service_plan_ref)
+                GetServicePlan(self.order_item.inventory_service_plan_ref)
                 .proces()
                 .service_plan.create_json_schema
             )
         else:
             service_plan_schema = (
-                service_plan.modified_schema
-                or service_plan.base_schema
-                or GetServicePlan(self.order_item.service_plan_ref)
+                service_plan.schema
+                or GetServicePlan(self.order_item.inventory_service_plan_ref)
                 .proces()
                 .service_plan.create_json_schema
             )

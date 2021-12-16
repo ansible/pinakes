@@ -2,7 +2,7 @@
 import pytest
 
 from ansible_catalog.main.catalog.models import (
-    CatalogServicePlan,
+    ServicePlan,
     PortfolioItem,
 )
 from ansible_catalog.main.catalog.services.copy_portfolio_item import (
@@ -13,7 +13,7 @@ from ansible_catalog.main.catalog.tests.factories import (
     PortfolioItemFactory,
 )
 from ansible_catalog.main.catalog.tests.factories import (
-    ServicePlanFactory as CatalogServicePlanFactory,
+    ServicePlanFactory,
 )
 from ansible_catalog.main.inventory.tests.factories import (
     InventoryServicePlanFactory,
@@ -90,7 +90,7 @@ def test_portfolio_item_is_orderable_with_service_plans():
         service_offering_ref=str(service_offering.id),
         portfolio=portfolio,
     )
-    CatalogServicePlanFactory(base_schema={}, portfolio_item=portfolio_item)
+    ServicePlanFactory(base_schema={}, portfolio_item=portfolio_item)
 
     options = {
         "portfolio_item_name": "my test",
@@ -139,14 +139,14 @@ def test_process():
         service_offering_ref=str(service_offering.id),
         portfolio=portfolio,
     )
-    CatalogServicePlanFactory(portfolio_item=portfolio_item)
+    ServicePlanFactory(portfolio_item=portfolio_item)
 
     options = {
         "portfolio_item_name": portfolio_item.name,
     }
 
     assert PortfolioItem.objects.count() == 1
-    assert CatalogServicePlan.objects.count() == 1
+    assert ServicePlan.objects.count() == 1
 
     svc = CopyPortfolioItem(portfolio_item, options)
     svc.process()
@@ -157,8 +157,5 @@ def test_process():
     )
     assert portfolio_item.portfolio == PortfolioItem.objects.last().portfolio
 
-    assert CatalogServicePlan.objects.count() == 2
-    assert (
-        CatalogServicePlan.objects.first().name
-        == CatalogServicePlan.objects.last().name
-    )
+    assert ServicePlan.objects.count() == 2
+    assert ServicePlan.objects.first().name == ServicePlan.objects.last().name

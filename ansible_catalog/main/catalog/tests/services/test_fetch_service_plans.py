@@ -4,6 +4,7 @@ import json
 
 from ansible_catalog.main.catalog.tests.factories import (
     PortfolioItemFactory,
+    ServicePlanFactory,
 )
 from ansible_catalog.main.inventory.tests.factories import (
     ServiceOfferingFactory,
@@ -12,85 +13,51 @@ from ansible_catalog.main.inventory.tests.factories import (
 from ansible_catalog.main.catalog.services.fetch_service_plans import (
     FetchServicePlans,
 )
+from ansible_catalog.main.catalog.models import ServicePlan
+
+
+TEST_SCHEMA = {
+    "schema_type": "default",
+    "schema": {
+        "fields": [
+            {
+                "label": "Number of Job templates",
+                "name": "dev_null",
+                "initial_value": 8,
+                "helper_text": "Number of Job templates on this workflow",
+                "is_required": True,
+                "component": "text-field",
+                "type": "number",
+                "data_type": "integer",
+                "options": [{"label": "", "value": ""}],
+                "validate": [
+                    {"type": "required-validator"},
+                    {"type": "min-number-value", "value": 0},
+                    {"type": "max-number-value", "value": 100},
+                ],
+            }
+        ],
+        "title": "",
+        "description": "",
+    },
+}
+TEST_SHA256 = "abc123"
 
 
 @pytest.mark.django_db
-def test_fetch_service_plans_from_remote_with_enabled_survey():
+def test_fetch_new_service_plans():
     service_offering = ServiceOfferingFactory(survey_enabled=True)
     portfolio_item = PortfolioItemFactory(
         service_offering_ref=str(service_offering.id)
     )
-    schema = {
-        "schema_type": "default",
-        "schema": {
-            "fields": [
-                {
-                    "label": "Number of Job templates",
-                    "name": "dev_null",
-                    "initial_value": 8,
-                    "helper_text": "Number of Job templates on this workflow",
-                    "is_required": True,
-                    "component": "text-field",
-                    "type": "number",
-                    "data_type": "integer",
-                    "options": [{"label": "", "value": ""}],
-                    "validate": [
-                        {"type": "required-validator"},
-                        {"type": "min-number-value", "value": 0},
-                        {"type": "max-number-value", "value": 100},
-                    ],
-                }
-            ],
-            "title": "",
-            "description": "",
-        },
-    }
-    InventoryServicePlanFactory(
-        service_offering=service_offering,
-        create_json_schema=schema,
-    )
-
-    svc = FetchServicePlans(portfolio_item)
-    svc.process()
-
-    assert len(svc.service_plans) == 1
-    assert svc.service_plans[0].portfolio_item_id == portfolio_item.id
-    assert svc.service_plans[0].service_offering_ref == service_offering.id
-    assert svc.service_plans[0].create_json_schema == schema
-
-
-@pytest.mark.django_db
-def test_fetch_service_plans_from_remote_with_disabled_survey():
-    service_offering = ServiceOfferingFactory()
-    portfolio_item = PortfolioItemFactory(
-        service_offering_ref=str(service_offering.id)
-    )
-
-    InventoryServicePlanFactory(
-        service_offering=service_offering,
-    )
-
-    svc = FetchServicePlans(portfolio_item)
-    svc.process()
-
-    assert len(svc.service_plans) == 1
-    assert svc.service_plans[0].portfolio_item_id == portfolio_item.id
-    assert svc.service_plans[0].service_offering_ref == service_offering.id
     assert (
-        svc.service_plans[0].create_json_schema["schemaType"] == "emptySchema"
+        ServicePlan.objects.filter(portfolio_item=portfolio_item).count() == 0
     )
 
-
-@pytest.mark.django_db
-def test_fetch_service_plans_from_local():
-    from ansible_catalog.main.catalog.tests.factories import ServicePlanFactory
-
-    service_offering = ServiceOfferingFactory()
-    portfolio_item = PortfolioItemFactory(
-        service_offering_ref=str(service_offering.id)
-    )
-    service_plan = ServicePlanFactory(
-        portfolio_item=portfolio_item,
+    InventoryServicePlanFactory(
+        service_offering=service_offering,
+        create_json_schema=TEST_SCHEMA,
+        schema_sha256=TEST_SHA256,
     )
 
     svc = FetchServicePlans(portfolio_item)
@@ -98,7 +65,46 @@ def test_fetch_service_plans_from_local():
 
     assert len(svc.service_plans) == 1
     assert svc.service_plans[0].portfolio_item_id == portfolio_item.id
-    assert svc.service_plans[0].name == service_plan.name
-    assert svc.service_plans[0].create_json_schema == {}
-    assert svc.service_plans[0].imported is True
-    assert svc.service_plans[0].modified is False
+    assert svc.service_plans[0].service_offering_ref == str(
+        service_offering.id
+    )
+    assert svc.service_plans[0].schema == TEST_SCHEMA
+
+    assert (
+        ServicePlan.objects.filter(portfolio_item=portfolio_item).count() == 1
+    )
+
+
+@pytest.mark.django_db
+def test_fetch_existing_service_plans():
+    service_offering = ServiceOfferingFactory(survey_enabled=True)
+    portfolio_item = PortfolioItemFactory(
+        service_offering_ref=str(service_offering.id)
+    )
+    ServicePlanFactory(
+        portfolio_item=portfolio_item,
+        service_offering_ref=portfolio_item.service_offering_ref,
+    )
+    assert (
+        ServicePlan.objects.filter(portfolio_item=portfolio_item).count() == 1
+    )
+
+    InventoryServicePlanFactory(
+        service_offering=service_offering,
+        create_json_schema=TEST_SCHEMA,
+        schema_sha256=TEST_SHA256,
+    )
+
+    svc = FetchServicePlans(portfolio_item)
+    svc.process()
+
+    assert len(svc.service_plans) == 1
+    assert svc.service_plans[0].portfolio_item_id == portfolio_item.id
+    assert svc.service_plans[0].service_offering_ref == str(
+        service_offering.id
+    )
+    assert svc.service_plans[0].schema == TEST_SCHEMA
+
+    assert (
+        ServicePlan.objects.filter(portfolio_item=portfolio_item).count() == 1
+    )
