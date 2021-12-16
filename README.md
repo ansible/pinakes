@@ -215,10 +215,11 @@ This will stop the app and worker pods, build the image with latest changes and
 start the app and worker pods.
 
 ### Starting a fresh with a clean env 
-To delete all the pods and reset the application, run the helper_script delete_pods.sh
+To delete all the pods and reset the application, run the helper_script delete_pods.sh.
+The -d option deletes the persistent volumes so you can a fresh start
 
 ```
-./tools/minikube/scripts/delete_pods.sh
+./tools/minikube/scripts/delete_pods.sh -d
 ```
 
 ## About credentials
