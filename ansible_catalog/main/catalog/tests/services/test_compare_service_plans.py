@@ -122,7 +122,7 @@ SCHEMA_3 = {
 
 @pytest.mark.django_db
 def test_is_changed_with_empty_schema():
-    service_plan = ServicePlanFactory(base_schema=SCHEMA)
+    service_plan = ServicePlanFactory(base_schema=SCHEMA, base_sha256="SCHEMA")
 
     assert CompareServicePlans.is_changed(service_plan) is False
 
@@ -136,17 +136,20 @@ def test_is_changed_with_same_schema():
     InventoryServicePlanFactory(
         service_offering=service_offering,
         create_json_schema=SCHEMA_1,
+        schema_sha256="SCHEMA_1",
     )
 
     service_plan = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_1
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_1,
+        base_sha256="SCHEMA_1",
     )
 
     assert CompareServicePlans.is_changed(service_plan) is False
 
 
 @pytest.mark.django_db
-def test_is_changed_with_different_schemas():
+def test_is_changed_with_different_schemas_when_modified_is_true():
     service_offering = ServiceOfferingFactory(survey_enabled=True)
     portfolio_item = PortfolioItemFactory(
         service_offering_ref=str(service_offering.id)
@@ -154,13 +157,41 @@ def test_is_changed_with_different_schemas():
     InventoryServicePlanFactory(
         service_offering=service_offering,
         create_json_schema=SCHEMA_2,
+        schema_sha256="SCHEMA_2",
     )
 
     service_plan = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_1
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_1,
+        base_sha256="SCHEMA_1",
+        modified_schema=SCHEMA,
     )
 
     assert CompareServicePlans.is_changed(service_plan) is True
+
+
+@pytest.mark.django_db
+def test_is_changed_with_different_schemas_when_modified_is_false():
+    service_offering = ServiceOfferingFactory(survey_enabled=True)
+    portfolio_item = PortfolioItemFactory(
+        service_offering_ref=str(service_offering.id)
+    )
+    InventoryServicePlanFactory(
+        service_offering=service_offering,
+        create_json_schema=SCHEMA_2,
+        schema_sha256="SCHEMA_2",
+    )
+
+    service_plan = ServicePlanFactory(
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_1,
+        base_sha256="SCHEMA_1",
+    )
+
+    assert CompareServicePlans.is_changed(service_plan) is False
+    assert service_plan.base_schema == SCHEMA_2
+    assert service_plan.modified_schema is None
+    assert service_plan.base_sha256 == "SCHEMA_2"
 
 
 @pytest.mark.django_db
@@ -173,16 +204,24 @@ def test_any_changed_with_changed_plans():
     InventoryServicePlanFactory(
         service_offering=service_offering,
         create_json_schema=SCHEMA_2,
+        schema_sha256="SCHEMA_2",
     )
 
     plan1 = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA,
+        base_sha256="SCHEMA",
     )
     plan2 = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_1
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_1,
+        base_sha256="SCHEMA_1",
     )
     plan3 = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_2
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_2,
+        base_sha256="SCHEMA_2",
+        modified_schema=SCHEMA_1,
     )
 
     assert CompareServicePlans.any_changed([plan1, plan2, plan3]) is True
@@ -198,16 +237,23 @@ def test_any_changed_with_unchanged_plans():
     InventoryServicePlanFactory(
         service_offering=service_offering,
         create_json_schema=SCHEMA_2,
+        schema_sha256="SCHEMA_2",
     )
 
     plan1 = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_2
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_2,
+        base_sha256="SCHEMA_2",
     )
     plan2 = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_2
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_2,
+        base_sha256="SCHEMA_2",
     )
     plan3 = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_2
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_2,
+        base_sha256="SCHEMA_2",
     )
 
     assert CompareServicePlans.any_changed([plan1, plan2, plan3]) is False
@@ -223,24 +269,32 @@ def test_changed_plans_with_changes():
     InventoryServicePlanFactory(
         service_offering=service_offering,
         create_json_schema=SCHEMA_2,
+        schema_sha256="SCHEMA_2",
     )
 
     plan1 = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_3
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_3,
+        base_sha256="SCHEMA_3",
+        modified_schema=SCHEMA,
     )
     plan2 = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_2
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_2,
+        base_sha256="SCHEMA_2",
     )
     plan3 = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_2
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_2,
+        base_sha256="SCHEMA_2",
     )
 
     assert CompareServicePlans.changed_plans([plan1, plan2, plan3]) == [plan1]
-    assert plan1.changed is True
-    assert plan2.changed is False
-    assert plan3.changed is False
+    assert plan1.outdated is True
+    assert plan2.outdated is False
+    assert plan3.outdated is False
     assert (
-        plan1.changed_message
+        plan1.outdated_message
         == "Schema fields changes have been detected: fields changed: ['empty-service-plan', 'dev_null']"
     )
 
@@ -255,13 +309,18 @@ def test_changed_plans_with_unchanges():
     InventoryServicePlanFactory(
         service_offering=service_offering,
         create_json_schema=SCHEMA_2,
+        schema_sha256="SCHEMA_2",
     )
 
     plan1 = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_2
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_2,
+        base_sha256="SCHEMA_2",
     )
     plan2 = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_2
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_2,
+        base_sha256="SCHEMA_2",
     )
 
     assert CompareServicePlans.changed_plans([plan1, plan2]) == []
@@ -277,17 +336,21 @@ def test_changed_plans_with_changed_fields():
     InventoryServicePlanFactory(
         service_offering=service_offering,
         create_json_schema=SCHEMA_2,
+        schema_sha256="SCHEMA_2",
     )
 
     plan = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=SCHEMA_1
+        portfolio_item=portfolio_item,
+        base_schema=SCHEMA_1,
+        base_sha256="SCHEMA_1",
+        modified_schema=SCHEMA,
     )
 
     assert CompareServicePlans.is_changed(plan) is True
-    assert plan.changed is True
+    assert plan.outdated is True
     assert (
         "fields added: ['dev_null']; fields removed: ['state']; fields changed: ['empty-service-plan']"
-        in plan.changed_message
+        in plan.outdated_message
     )
 
 

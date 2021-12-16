@@ -87,9 +87,7 @@ def test_process_with_valid_order_item():
         service_offering=service_offering,
         create_json_schema=schema1(),
     )
-    ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=schema1()
-    )
+    ServicePlanFactory(portfolio_item=portfolio_item, base_schema=schema1())
 
     order_item = OrderItemFactory(portfolio_item=portfolio_item)
 
@@ -109,9 +107,13 @@ def test_process_with_invalid_order_item():
     InventoryServicePlanFactory(
         service_offering=service_offering,
         create_json_schema=schema1(),
+        schema_sha256="schema1",
     )
     ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=schema2()
+        portfolio_item=portfolio_item,
+        base_schema=schema2(),
+        base_sha256="schema2",
+        modified_schema="schema2",
     )
 
     order_item = OrderItemFactory(portfolio_item=portfolio_item)

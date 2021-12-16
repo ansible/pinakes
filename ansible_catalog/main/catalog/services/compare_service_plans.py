@@ -24,17 +24,30 @@ class CompareServicePlans:
             return False
 
         potential = cls(plan)
-        inventory_schema = potential._inventory_base()
+        inventory_schema, schema_sha256 = potential._inventory_base()
 
-        if inventory_schema != potential.base_schema:
-            plan.changed = True
-            plan.changed_message = potential._compare_schema_fields(
-                inventory_schema
-            )
+        if plan.base_sha256 != schema_sha256:  # Survey is changed by Tower
+            if plan.modified:
+                plan.outdated = True
+                plan.outdated_message = potential._compare_schema_fields(
+                    inventory_schema
+                )
+            else:  # resync with the remote
+                plan.outdated = False
+                plan.base_schema = inventory_schema
+                plan.modified_schema = None
+                plan.base_sha256 = schema_sha256
+
             plan.save()
-            return True
         else:
-            return False
+            if plan.modified:  # only user modified
+                plan.outdated = True
+                plan.outdated_message = potential._compare_schema_fields(
+                    inventory_schema
+                )
+                plan.save()
+
+        return plan.outdated
 
     @classmethod
     def any_changed(cls, plans):
@@ -57,7 +70,10 @@ class CompareServicePlans:
 
     def _inventory_base(self):
         svc = GetServiceOffering(self.service_offering_ref, True).process()
-        return svc.service_plans.first().create_json_schema
+        plan = svc.service_plans.first()
+        return (
+            (plan.create_json_schema, plan.schema_sha256) if plan else ({}, "")
+        )
 
     def _compare_schema_fields(self, inventory_schema):
         message = "Schema fields changes have been detected: "
