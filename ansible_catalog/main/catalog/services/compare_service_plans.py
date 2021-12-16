@@ -19,9 +19,12 @@ class CompareServicePlans:
         )
 
     @classmethod
-    def is_changed(cls, plan):
+    def is_outdated(cls, plan):
         if cls.is_empty(plan):
             return False
+
+        if plan.outdated:
+            return True
 
         potential = cls(plan)
         inventory_schema, schema_sha256 = potential._inventory_base()
@@ -34,6 +37,7 @@ class CompareServicePlans:
                 )
             else:  # resync with the remote
                 plan.outdated = False
+                plan.outdated_changes = ""
                 plan.base_schema = inventory_schema
                 plan.modified_schema = None
                 plan.base_sha256 = schema_sha256
@@ -51,13 +55,13 @@ class CompareServicePlans:
 
     @classmethod
     def any_changed(cls, plans):
-        changed = [plan for plan in plans if cls.is_changed(plan)]
+        changed = [plan for plan in plans if cls.is_outdated(plan)]
 
         return len(changed) > 0
 
     @classmethod
     def changed_plans(cls, plans):
-        return [plan for plan in plans if cls.is_changed(plan)]
+        return [plan for plan in plans if cls.is_outdated(plan)]
 
     @classmethod
     def is_empty(cls, plan):
@@ -93,10 +97,11 @@ class CompareServicePlans:
         )
 
         if len(common_field_names) == 0:  # no same field
-            message += "fields added: %s; fields removed: %s" % (
-                inventory_field_names,
-                base_field_names,
-            )
+            if len(inventory_field_names) > 0:
+                message += "fields added: %s; " % inventory_field_names
+
+            if len(base_field_names) > 0:
+                message += "fields removed: %s" % base_field_names
         # remote and local have same fields in names
         elif set(inventory_field_names) == set(base_field_names):
             changed_field_names = self._changed_field_names(
@@ -111,13 +116,15 @@ class CompareServicePlans:
             removed_field_names = list(
                 set(base_field_names) - set(common_field_names)
             )
-            message += "fields added: %s; fields removed: %s; " % (
-                add_field_names,
-                removed_field_names,
-            )
             changed_field_names = self._changed_field_names(
                 base_fields, inventory_fields, common_field_names
             )
+
+            if len(add_field_names) > 0:
+                message += "fields added: %s; " % add_field_names
+
+            if len(removed_field_names) > 0:
+                message += "fields removed: %s; " % removed_field_names
 
             if len(changed_field_names) != 0:
                 message += "fields changed: %s" % changed_field_names

@@ -121,14 +121,14 @@ SCHEMA_3 = {
 
 
 @pytest.mark.django_db
-def test_is_changed_with_empty_schema():
+def test_is_outdated_with_empty_schema():
     service_plan = ServicePlanFactory(base_schema=SCHEMA, base_sha256="SCHEMA")
 
-    assert CompareServicePlans.is_changed(service_plan) is False
+    assert CompareServicePlans.is_outdated(service_plan) is False
 
 
 @pytest.mark.django_db
-def test_is_changed_with_same_schema():
+def test_is_outdated_with_same_schema():
     service_offering = ServiceOfferingFactory(survey_enabled=True)
     portfolio_item = PortfolioItemFactory(
         service_offering_ref=str(service_offering.id)
@@ -145,11 +145,11 @@ def test_is_changed_with_same_schema():
         base_sha256="SCHEMA_1",
     )
 
-    assert CompareServicePlans.is_changed(service_plan) is False
+    assert CompareServicePlans.is_outdated(service_plan) is False
 
 
 @pytest.mark.django_db
-def test_is_changed_with_different_schemas_when_modified_is_true():
+def test_is_outdated_with_different_schemas_when_modified_is_true():
     service_offering = ServiceOfferingFactory(survey_enabled=True)
     portfolio_item = PortfolioItemFactory(
         service_offering_ref=str(service_offering.id)
@@ -167,11 +167,11 @@ def test_is_changed_with_different_schemas_when_modified_is_true():
         modified_schema=SCHEMA,
     )
 
-    assert CompareServicePlans.is_changed(service_plan) is True
+    assert CompareServicePlans.is_outdated(service_plan) is True
 
 
 @pytest.mark.django_db
-def test_is_changed_with_different_schemas_when_modified_is_false():
+def test_is_outdated_with_different_schemas_when_modified_is_false():
     service_offering = ServiceOfferingFactory(survey_enabled=True)
     portfolio_item = PortfolioItemFactory(
         service_offering_ref=str(service_offering.id)
@@ -188,7 +188,7 @@ def test_is_changed_with_different_schemas_when_modified_is_false():
         base_sha256="SCHEMA_1",
     )
 
-    assert CompareServicePlans.is_changed(service_plan) is False
+    assert CompareServicePlans.is_outdated(service_plan) is False
     assert service_plan.base_schema == SCHEMA_2
     assert service_plan.modified_schema is None
     assert service_plan.base_sha256 == "SCHEMA_2"
@@ -346,7 +346,7 @@ def test_changed_plans_with_changed_fields():
         modified_schema=SCHEMA,
     )
 
-    assert CompareServicePlans.is_changed(plan) is True
+    assert CompareServicePlans.is_outdated(plan) is True
     assert plan.outdated is True
     assert (
         "fields added: ['dev_null']; fields removed: ['state']; fields changed: ['empty-service-plan']"
