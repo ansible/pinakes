@@ -67,6 +67,8 @@ spec:
               value: keycloak
             - name: ANSIBLE_CATALOG_POSTGRES_PASSWORD
               value: password
+            - name: ANSIBLE_CATALOG_MEDIA_ROOT
+              value: /app/media
             - name: ANSIBLE_CATALOG_CONTROLLER_URL
               valueFrom:
                 configMapKeyRef:
