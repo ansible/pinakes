@@ -190,8 +190,9 @@ CONTROLLER_VERIFY_SSL = env.str(
 )
 
 # Media (Icons) configuration
-MEDIA_BASE_DIR = env.str("ANSIBLE_CATALOG_MEDIA_BASE_DIR", default=BASE_DIR)
-MEDIA_ROOT = os.path.join(MEDIA_BASE_DIR, "media")
+MEDIA_ROOT = env.str(
+    "ANSIBLE_CATALOG_MEDIA_ROOT", default=os.path.join(BASE_DIR, "media")
+)
 MEDIA_URL = "/media/"
 
 # Logging configuration
