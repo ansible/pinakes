@@ -28,8 +28,6 @@ class FetchServicePlans:
         else:
             self.service_plans = local_service_plans.all()
 
-        RefreshServicePlan(self.service_plans[0]).process()
-
         return self
 
     def _create_service_plans(self):

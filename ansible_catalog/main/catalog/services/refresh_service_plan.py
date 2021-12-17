@@ -47,16 +47,17 @@ class RefreshServicePlan:
             and not self.service_plan.base_sha256
             == temp_service_plan.base_sha256
         ):
-            self.service_plan.outdated = True
             # TODO: fill in the actual changes
-            self.service_plan.outdated_changes = (
+            # self.outdated_changes = CompareServicePlans(self.service_plan, temp_service_plan).process().changes
+            # or
+            # self.outdated_changes = CompareSchemas(self.service_plan.base_schema, temp_service_plan.base_schema).process().changes
+            self.service_plan._base_changes = (
                 "Base schema from inventory has changed"
             )
         else:
             self.service_plan.base_schema = temp_service_plan.base_schema
             self.service_plan.base_sha256 = temp_service_plan.base_sha256
-            self.service_plan.outdated = False
-            self.service_plan.outdated_changes = ""
+            self.service_plan._base_changes = ""
 
         self.service_plan.save()
 

@@ -316,11 +316,6 @@ class ServicePlanExtraSerializer(serializers.Serializer):
 class ServicePlanSerializer(serializers.ModelSerializer):
     """ServicePlan which describes parameters required for a portfolio item"""
 
-    id = serializers.IntegerField(
-        read_only=True,
-        allow_null=True,
-        help_text="ID of the service plan. Can be null if the service plan has not been imported for editing",
-    )
     schema = serializers.JSONField(
         read_only=True,
         allow_null=True,
@@ -329,6 +324,13 @@ class ServicePlanSerializer(serializers.ModelSerializer):
     modified = serializers.BooleanField(
         read_only=True,
         help_text="Whether or not the schema has been modified by user",
+    )
+    outdated = serializers.BooleanField(
+        read_only=True,
+        help_text="Whether or not the base schema is outdated. The portfolio item is not orderable if the base schema is outdated.",
+    )
+    outdated_changes = serializers.ReadOnlyField(
+        help_text="Changes of the base schema from inventory since last edit",
     )
     extra_data = serializers.SerializerMethodField(
         "get_extra_data", allow_null=True, read_only=True

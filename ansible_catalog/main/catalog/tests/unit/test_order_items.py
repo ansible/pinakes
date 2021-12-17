@@ -9,7 +9,7 @@ from ansible_catalog.main.catalog.tests.factories import (
     OrderFactory,
     OrderItemFactory,
     PortfolioItemFactory,
-    ServicePlanFactory,
+    make_service_plan,
 )
 
 
@@ -133,10 +133,7 @@ def test_sanitized_params():
     tenant = TenantFactory()
     user = UserFactory()
     order = OrderFactory(tenant=tenant, user=user)
-    portfolio_item = PortfolioItemFactory()
-    service_plan = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=base
-    )
+    service_plan = make_service_plan(base)
 
     service_parameters = {
         "name": "Joe",
@@ -147,9 +144,9 @@ def test_sanitized_params():
     order_item = OrderItem.objects.create(
         name="order_item",
         service_parameters=service_parameters,
-        inventory_service_plan_ref=str(service_plan.id),
+        inventory_service_plan_ref=service_plan.inventory_service_plan_ref,
         order=order,
-        portfolio_item=portfolio_item,
+        portfolio_item=service_plan.portfolio_item,
         tenant=tenant,
         user=user,
     )

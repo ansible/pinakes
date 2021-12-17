@@ -13,10 +13,9 @@ from ansible_catalog.main.catalog.tests.factories import (
     PortfolioItemFactory,
 )
 from ansible_catalog.main.catalog.tests.factories import (
-    ServicePlanFactory,
+    make_service_plan,
 )
 from ansible_catalog.main.inventory.tests.factories import (
-    InventoryServicePlanFactory,
     ServiceOfferingFactory,
 )
 
@@ -81,16 +80,8 @@ def test_portfolio_item_is_orderable_with_service_plans():
             "description": "",
         },
     }
-    service_offering = ServiceOfferingFactory()
-    InventoryServicePlanFactory(
-        create_json_schema=schema, service_offering=service_offering
-    )
-    portfolio = PortfolioFactory()
-    portfolio_item = PortfolioItemFactory(
-        service_offering_ref=str(service_offering.id),
-        portfolio=portfolio,
-    )
-    ServicePlanFactory(base_schema={}, portfolio_item=portfolio_item)
+    service_plan = make_service_plan(schema)
+    portfolio_item = service_plan.portfolio_item
 
     options = {
         "portfolio_item_name": "my test",
@@ -129,17 +120,8 @@ def test_process():
             "description": "",
         },
     }
-    service_offering = ServiceOfferingFactory()
-    InventoryServicePlanFactory(
-        create_json_schema=schema, service_offering=service_offering
-    )
-
-    portfolio = PortfolioFactory()
-    portfolio_item = PortfolioItemFactory(
-        service_offering_ref=str(service_offering.id),
-        portfolio=portfolio,
-    )
-    ServicePlanFactory(portfolio_item=portfolio_item)
+    service_plan = make_service_plan(schema)
+    portfolio_item = service_plan.portfolio_item
 
     options = {
         "portfolio_item_name": portfolio_item.name,

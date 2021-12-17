@@ -7,7 +7,7 @@ from ansible_catalog.main.catalog.services.sanitize_parameters import (
 from ansible_catalog.main.catalog.tests.factories import (
     OrderItemFactory,
     PortfolioItemFactory,
-    ServicePlanFactory,
+    make_service_plan,
 )
 
 
@@ -54,12 +54,9 @@ def test_sanitize_parameters_from_service_plan_base():
         "token idea": "my secret",
     }
 
-    portfolio_item = PortfolioItemFactory()
-    service_plan = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=base
-    )
+    service_plan = make_service_plan(base)
     order_item = OrderItemFactory(
-        portfolio_item=portfolio_item,
+        portfolio_item=service_plan.portfolio_item,
         service_parameters=service_parameters,
         inventory_service_plan_ref=str(service_plan.id),
     )

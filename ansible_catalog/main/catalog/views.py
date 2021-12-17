@@ -585,8 +585,18 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
 @extend_schema_view(
     retrieve=extend_schema(
-        description="Get a specific service plan",
-    ),
+        description="Get the service plan by the specific ID",
+        parameters=[
+            OpenApiParameter(
+                "extra",
+                required=False,
+                enum=["true", "false"],
+                description="Include extra data such as base_schema",
+            ),
+        ],
+        request=None,
+        responses={200: ServicePlanSerializer},
+    )
 )
 class ServicePlanViewSet(
     NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
@@ -600,29 +610,6 @@ class ServicePlanViewSet(
     permission_classes = (IsAuthenticated,)
     filter_backends = []  # no filtering is needed
     parent_field_names = ("portfolio_item",)
-
-    @extend_schema(
-        description="Get the service plan by the specific ID",
-        parameters=[
-            OpenApiParameter(
-                "extra",
-                required=False,
-                enum=["true", "false"],
-                description="Include extra data such as base_schema",
-            ),
-        ],
-        request=None,
-        responses={200: ServicePlanSerializer},
-    )
-    def retrieve(self, request, pk):
-        service_plan = get_object_or_404(ServicePlan, pk=pk)
-
-        RefreshServicePlan(service_plan).process()
-
-        serializer = ServicePlanSerializer(
-            service_plan, many=False, context=self.get_serializer_context()
-        )
-        return Response(serializer.data)
 
     @extend_schema(
         description="List all service plans of the portfolio item",
@@ -665,10 +652,10 @@ class ServicePlanViewSet(
             )
 
         modified = request.data["modified"]
+
+        # TODO validate modified data are compatible with base_schema
         service_plan.modified_schema = modified
         service_plan.save()
-
-        RefreshServicePlan(service_plan).process()
 
         output_serializer = ServicePlanSerializer(
             service_plan, context=self.get_serializer_context()
@@ -686,9 +673,9 @@ class ServicePlanViewSet(
         service_plan = get_object_or_404(ServicePlan, pk=pk)
 
         service_plan.modified_schema = None
-        svc = RefreshServicePlan(service_plan).process()
+        service_plan.save()
 
         serializer = ServicePlanSerializer(
-            svc.service_plan, many=False, context=self.get_serializer_context()
+            service_plan, many=False, context=self.get_serializer_context()
         )
         return Response(serializer.data)

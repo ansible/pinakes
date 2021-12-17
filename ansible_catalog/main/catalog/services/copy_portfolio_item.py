@@ -20,9 +20,6 @@ from ansible_catalog.main.catalog.services import (
 from ansible_catalog.main.catalog.services.copy_image import (
     CopyImage,
 )
-from ansible_catalog.main.inventory.services.get_service_offering import (
-    GetServiceOffering,
-)
 
 logger = logging.getLogger("catalog")
 
@@ -83,23 +80,10 @@ class CopyPortfolioItem:
         if service_offering_ref is None:
             return False
 
-        svc = GetServiceOffering(service_offering_ref, True).process()
-        service_offering = svc.service_offering
-
-        if service_offering is None:
-            return False
-
-        if len(svc.service_plans) > 0:
-            original_schema = svc.service_plans.first().create_json_schema
-
-        service_plans = ServicePlan.objects.filter(
+        for service_plan in ServicePlan.objects.filter(
             portfolio_item=self.portfolio_item
-        )
-        for service_plan in service_plans:
-            if not service_plan.base_schema:
-                return True
-
-            if original_schema != service_plan.base_schema:
+        ):
+            if service_plan.outdated:
                 return False
 
         return True

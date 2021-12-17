@@ -1,6 +1,8 @@
 """ This modules stores the definition of the Catalog model."""
 import logging
 
+from functools import lru_cache
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.db import models
@@ -555,12 +557,7 @@ class ServicePlan(BaseModel):
         editable=False,
         help_text="SHA256 of the base schema",
     )
-    outdated = models.BooleanField(
-        default=False,
-        editable=False,
-        help_text="Whether or not the base schema is outdated. The portfolio item is not orderable if the base schema is outdated.",
-    )
-    outdated_changes = models.TextField(
+    _base_changes = models.TextField(
         blank=True,
         default="",
         editable=False,
@@ -589,12 +586,33 @@ class ServicePlan(BaseModel):
     @property
     def schema(self):
         """The active schema of parameters for provisioning a portfolio item"""
+        self.outdated_changes
         return self.modified_schema or self.base_schema
 
     @property
     def modified(self):
         """Indicates whether the schema has been modified by user"""
         return self.modified_schema is not None
+
+    @property
+    def outdated(self):
+        """Whether or not the base schema is outdated"""
+        return bool(self.outdated_changes)
+
+    @cached_property
+    def outdated_changes(self):
+        """What in the base schema have been changed"""
+
+        if self._base_changes:
+            return self._base_changes
+
+        from ansible_catalog.main.catalog.services.refresh_service_plan import (
+            RefreshServicePlan,
+        )
+
+        RefreshServicePlan(self).process()
+
+        return self._base_changes
 
     def __str__(self):
         return self.name
