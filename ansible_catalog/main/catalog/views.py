@@ -70,12 +70,6 @@ from ansible_catalog.main.catalog.services.copy_portfolio_item import (
 from ansible_catalog.main.catalog.services.create_portfolio_item import (
     CreatePortfolioItem,
 )
-from ansible_catalog.main.catalog.services.fetch_service_plans import (
-    FetchServicePlans,
-)
-from ansible_catalog.main.catalog.services.refresh_service_plan import (
-    RefreshServicePlan,
-)
 from ansible_catalog.main.catalog.services.submit_approval_request import (
     SubmitApprovalRequest,
 )
@@ -584,6 +578,17 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
 
 @extend_schema_view(
+    list=extend_schema(
+        description="List all service plans of the portfolio item",
+        parameters=[
+            OpenApiParameter(
+                "extra",
+                required=False,
+                enum=["true", "false"],
+                description="Include extra data such as base_schema",
+            ),
+        ],
+    ),
     retrieve=extend_schema(
         description="Get the service plan by the specific ID",
         parameters=[
@@ -594,9 +599,7 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
                 description="Include extra data such as base_schema",
             ),
         ],
-        request=None,
-        responses={200: ServicePlanSerializer},
-    )
+    ),
 )
 class ServicePlanViewSet(
     NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
@@ -610,31 +613,6 @@ class ServicePlanViewSet(
     permission_classes = (IsAuthenticated,)
     filter_backends = []  # no filtering is needed
     parent_field_names = ("portfolio_item",)
-
-    @extend_schema(
-        description="List all service plans of the portfolio item",
-        parameters=[
-            OpenApiParameter(
-                "extra",
-                required=False,
-                enum=["true", "false"],
-                description="Include extra data such as base_schema",
-            ),
-        ],
-        request=None,
-        responses={200: ServicePlanSerializer},
-    )
-    def list(self, request, *args, **kwargs):
-        portfolio_item_id = kwargs.pop("portfolio_item_id")
-        portfolio_item = get_object_or_404(PortfolioItem, pk=portfolio_item_id)
-
-        service_plans = (
-            FetchServicePlans(portfolio_item).process().service_plans
-        )
-        serializer = ServicePlanSerializer(
-            service_plans, many=True, context=self.get_serializer_context()
-        )
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
         description="Modify the schema of the service plan",
@@ -673,6 +651,7 @@ class ServicePlanViewSet(
         service_plan = get_object_or_404(ServicePlan, pk=pk)
 
         service_plan.modified_schema = None
+        service_plan._base_changes = ""
         service_plan.save()
 
         serializer = ServicePlanSerializer(

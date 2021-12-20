@@ -1,7 +1,6 @@
 """ This modules stores the definition of the Catalog model."""
 import logging
 
-from functools import lru_cache
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
