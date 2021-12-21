@@ -100,6 +100,7 @@ class User(pydantic.BaseModel):
     firstName: str
     lastName: str
 
+
 @dataclass(frozen=True)
 class AuthzPermission:
     resource: str = ""

@@ -1,4 +1,4 @@
-from typing import Protocol, Sequence
+from typing import Protocol, Sequence, Tuple
 
 
 class GroupProto(Protocol):
@@ -39,3 +39,16 @@ def parse_scope(obj: KeycloakResourceProto, scope: str):
         return scope[len(prefix) :]
     else:
         raise ValueError("Unexpected scope. Must begin with '{prefix}'.")
+
+
+def make_scope_name(resource_type: str, permission: str) -> str:
+    return f"{resource_type}:{permission}"
+
+
+def make_resource_name(resource_type: str, resource_id: str) -> str:
+    return f"{resource_type}:{resource_id}"
+
+
+def parse_resource_name(resource_name: str) -> Tuple[str, str]:
+    resource_type, _, resource_id = resource_name.rpartition(":")
+    return resource_type, resource_id

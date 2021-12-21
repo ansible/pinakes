@@ -1,7 +1,10 @@
-from typing import Any, Tuple
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
 
 from django.conf import settings
 from django.db.models import QuerySet
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from rest_framework.request import Request
 
@@ -9,27 +12,52 @@ from ansible_catalog.common.auth.keycloak import models
 from ansible_catalog.common.auth.keycloak_django.clients import (
     get_authz_client,
 )
-
+from ansible_catalog.common.auth.keycloak_django.utils import make_scope_name, \
+    make_resource_name, parse_resource_name
 
 WILDCARD_RESOURCE_ID = "all"
 
-WILDCARD_PERMISSION = "wildcard"
-OBJECT_PERMISSION = "object"
-QUERYSET_PERMISSION = "queryset"
+
+class KeycloakPolicyType(Enum):
+    WILDCARD = 1
+    OBJECT = 2
+    QUERYSET = 3
+
+
+@dataclass(frozen=True)
+class KeycloakPolicy:
+    permission: str
+    type: KeycloakPolicyType
 
 
 class KeycloakPermission(BasePermission):
     def has_permission(self, request: Request, view: Any) -> bool:
-        if is_drf_browsable_renderer_request(request, view):
+        if _is_drf_browsable_renderer_request(request, view):
             return True
         policy = _get_view_policy(view)
         if policy is None:
             return False
-        if policy["type"] != WILDCARD_PERMISSION:
+        if policy.type != KeycloakPolicyType.WILDCARD:
             return True
-        return _check_wildcard_permission(
-            request, view.keycloak_resource_type, policy["permission"]
-        )
+
+        parent_model = view.keycloak_parent_model
+        lookup_field = view.keycloak_lookup_field
+        lookup_value = None
+
+        if parent_model is not None:
+            lookup_value = view.kwargs.get(lookup_field)
+
+        if lookup_value is not None:
+            obj = get_object_or_404(
+                parent_model, **{lookup_field: lookup_value}
+            )
+            return _check_resource_permission(
+                request, view.keycloak_resource_type, policy.permission, obj
+            )
+        else:
+            return _check_wildcard_permission(
+                request, view.keycloak_resource_type, policy.permission
+            )
 
     def has_object_permission(
         self, request: Request, view: Any, obj: Any
@@ -37,14 +65,27 @@ class KeycloakPermission(BasePermission):
         policy = _get_view_policy(view)
         if policy is None:
             return False
-        if policy["type"] != OBJECT_PERMISSION:
+        if policy.type != KeycloakPolicyType.OBJECT:
             return True
-        return _check_resource_permission(
-            request,
-            view.keycloak_resource_type,
-            policy["permission"],
-            obj,
-        )
+
+        parent_model = view.keycloak_parent_model
+        lookup_field = view.keycloak_lookup_field
+        lookup_value = None
+
+        if parent_model is not None:
+            lookup_value = getattr(obj, lookup_field)
+
+        if lookup_value is not None:
+            obj = get_object_or_404(
+                parent_model, **{lookup_field: lookup_value}
+            )
+            return _check_resource_permission(
+                request, view.keycloak_resource_type, policy.permission, obj
+            )
+        else:
+            return _check_resource_permission(
+                request, view.keycloak_resource_type, policy.permission, obj
+            )
 
     @classmethod
     def scope_queryset(
@@ -52,53 +93,25 @@ class KeycloakPermission(BasePermission):
         request: Request,
         view: Any,
         qs: QuerySet,
-        filter_field: str = "pk",
     ) -> QuerySet:
         policy = _get_view_policy(view)
         if policy is None:
             return qs.none()
-        if policy["type"] != QUERYSET_PERMISSION:
+        if policy.type != KeycloakPolicyType.QUERYSET:
             return qs
 
+        lookup_field = view.keycloak_lookup_field
+
         resource_ids, all_resources = _get_permitted_resources(
-            request, view.keycloak_resource_type, policy["permission"]
+            request, view.keycloak_resource_type, policy.permission
         )
         if all_resources:
             return qs
         else:
-            return qs.filter(**{f"{filter_field}__in": resource_ids})
+            return qs.filter(**{f"{lookup_field}__in": resource_ids})
 
 
-class KeycloakNestedPermission(BasePermission):
-
-    def has_permission(self, request, view):
-        pass
-
-    def has_object_permission(self, request, view, obj):
-        pass
-
-    def scope_queryset(self):
-        pass
-
-
-# TODO(cutwater): Move to utils.py
-def make_scope_name(resource_type: str, permission: str) -> str:
-    return f"{resource_type}:{permission}"
-
-
-# TODO(cutwater): Move to utils.py
-def make_resource_name(resource_type: str, resource_id: str) -> str:
-    return f"{resource_type}:{resource_id}"
-
-
-# TODO(cutwater): Move to utils.py
-def parse_resource_name(resource_name: str) -> Tuple[str, str]:
-    resource_type, _, resource_id = resource_name.rpartition(":")
-    return resource_type, resource_id
-
-
-# TODO(cutwater): Move to utils.py
-def is_drf_browsable_renderer_request(request: Request, view: Any) -> bool:
+def _is_drf_browsable_renderer_request(request: Request, view: Any) -> bool:
     """Checks if a request is intended for the DRF Browsable Renderer.
 
     For security reasons this is limited only to DEBUG mode.
@@ -116,9 +129,7 @@ def _get_view_policy(view):
     return view.get_keycloak_access_policies().get(view.action)
 
 
-def _check_resource_permission(
-    request, resource_type, permission, obj
-):
+def _check_resource_permission(request, resource_type, permission, obj):
     client = get_authz_client(request.keycloak_user.access_token)
     scope = make_scope_name(resource_type, permission)
     wildcard_permission = models.AuthzPermission(
@@ -129,14 +140,10 @@ def _check_resource_permission(
         resource=make_resource_name(resource_type, obj.pk),
         scope=scope,
     )
-    return client.check_permissions(
-        [wildcard_permission, object_permission]
-    )
+    return client.check_permissions([wildcard_permission, object_permission])
 
 
-def _get_permitted_resources(
-    request, resource_type, permission
-):
+def _get_permitted_resources(request, resource_type, permission):
     client = get_authz_client(request.keycloak_user.access_token)
     permissions = client.get_permissions(
         models.AuthzPermission(

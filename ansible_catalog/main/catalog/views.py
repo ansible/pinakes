@@ -22,7 +22,7 @@ from drf_spectacular.utils import (
 
 from ansible_catalog.common.auth import keycloak_django
 from ansible_catalog.common.auth.keycloak_django.permissions import (
-    KeycloakPermission,
+    KeycloakPermission, KeycloakPolicy, KeycloakPolicyType,
 )
 from ansible_catalog.common.auth.keycloak_django.utils import parse_scope
 from ansible_catalog.common.auth.keycloak_django.views import (
@@ -153,20 +153,12 @@ class PortfolioViewSet(
 
     keycloak_resource_type = "catalog:portfolio"
     keycloak_access_policies = {
-        "list": {"type": "queryset", "permission": "read"},
-        "create": {"type": "wildcard", "permission": "create"},
-        "retrieve": {"type": "object", "permission": "read"},
-        "update": {"type": "object", "permission": "update"},
-        "destroy": {"type": "object", "permission": "delete"},
-        "share": {"type": "object", "permission": "update"},
-        "unshare": {"type": "object", "permission": "update"},
-        "share_info": {"type": "object", "permission": "update"},
+        **KeycloakPermissionMixin.keycloak_access_policies,
+        "list": KeycloakPolicy("read", KeycloakPolicyType.QUERYSET),
+        "share": KeycloakPolicy("update", KeycloakPolicyType.OBJECT),
+        "unshare": KeycloakPolicy("update", KeycloakPolicyType.OBJECT),
+        "share_info": KeycloakPolicy("update", KeycloakPolicyType.OBJECT),
     }
-
-    # TODO(cutwater): Move to a helper mixin class
-    def get_queryset(self):
-        qs = super().get_queryset()
-        return KeycloakPermission.scope_queryset(self.request, self, qs)
 
     @extend_schema(
         description="Make a copy of the portfolio",
@@ -280,6 +272,12 @@ class PortfolioViewSet(
             )
         return Response(data)
 
+    def perform_destroy(self, instance):
+        if instance.keycloak_id:
+            client = keycloak_django.get_uma_client()
+            client.delete_resource(instance.keycloak_id)
+        super().perform_destroy(instance)
+
     def _parse_share_policy(self, request, portfolio):
         serializer = SharingRequestSerializer(
             data=request.data,
@@ -289,12 +287,6 @@ class PortfolioViewSet(
         )
         serializer.is_valid(raise_exception=True)
         return serializer.validated_data
-
-    def perform_destroy(self, instance):
-        if instance.keycloak_id:
-            client = keycloak_django.get_uma_client()
-            client.delete_resource(instance.keycloak_id)
-        super().perform_destroy(instance)
 
 
 @extend_schema_view(
@@ -337,44 +329,25 @@ class PortfolioItemViewSet(
     parent_field_names = ("portfolio",)
 
     keycloak_resource_type = "catalog:portfolio"
+    keycloak_lookup_field = "portfolio_id"
+    keycloak_parent_model = Portfolio
+
     keycloak_access_policies = {
-        "create": {"type": "object", "permission": "update"},
-        "retrieve": {"type": "object", "permission": "read"},
-        "update": {"type": "object", "permission": "update"},
-        "destroy": {"type": "object", "permission": "update"},
+        "retrieve": KeycloakPolicy("read", KeycloakPolicyType.OBJECT),
+        "create": KeycloakPolicy("update", KeycloakPolicyType.OBJECT),
+        "update": KeycloakPolicy("update", KeycloakPolicyType.OBJECT),
+        "destroy": KeycloakPolicy("update", KeycloakPolicyType.OBJECT),
     }
 
     def get_keycloak_access_policies(self):
-        if "portfolio_id" in self.kwargs:
-            return {
-                "list": {"type": "object", "permission": "read"},
-                **self.keycloak_access_policies,
-            }
+        if self.keycloak_lookup_field in self.kwargs:
+            policy_type = KeycloakPolicyType.OBJECT
         else:
-            return {
-                "list": {"type": "queryset", "permission": "read"},
-                **self.keycloak_access_policies,
-            }
-
-    def check_permissions(self, request):
-        if "portfolio_id" in self.kwargs:
-            portfolio = get_object_or_404(
-                Portfolio, pk=self.kwargs["portfolio_id"]
-            )
-            return super().check_object_permissions(request, portfolio)
-        else:
-            return super().check_permissions(request)
-
-    def check_object_permissions(self, request, obj):
-        return super().check_object_permissions(request, obj.portfolio)
-
-    def get_queryset(self):
-        return KeycloakPermission.scope_queryset(
-            self.request,
-            self,
-            super().get_queryset(),
-            filter_field="portfolio_id",
-        )
+            policy_type = KeycloakPolicyType.QUERYSET
+        return {
+            **self.keycloak_access_policies,
+            "list": KeycloakPolicy("read", policy_type),
+        }
 
     @extend_schema(
         description="Create a new portfolio item",
@@ -389,9 +362,10 @@ class PortfolioItemViewSet(
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        portfolio_id = request.data.get("portfolio")
-        portfolio = get_object_or_404(Portfolio, pk=portfolio_id)
-        super().check_object_permissions(request, portfolio)
+        # FIXME(cutwater): This doesn't work at the moment
+        # portfolio_id = serializer.validated_data["portfolio"]
+        # portfolio = get_object_or_404(Portfolio, pk=portfolio_id)
+        # self.check_object_permissions(request, portfolio)
 
         svc = CreatePortfolioItem(request.data).process()
         output_serializer = PortfolioItemSerializer(svc.item, many=False)
