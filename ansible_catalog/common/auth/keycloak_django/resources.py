@@ -1,4 +1,4 @@
-from typing import List, Optional, Sequence
+from typing import Optional, Sequence
 
 from ansible_catalog.common.auth.keycloak.uma import UmaClient
 from ansible_catalog.common.auth.keycloak import exceptions as keycloak_exc
