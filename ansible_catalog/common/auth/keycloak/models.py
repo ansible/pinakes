@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Union
 
 import pydantic
@@ -12,6 +13,7 @@ class OpenIDConfiguration(pydantic.BaseModel):
 
 
 class Uma2Configuration(pydantic.BaseModel):
+    token_endpoint: str
     resource_registration_endpoint: str
     permission_endpoint: str
     policy_endpoint: str
@@ -97,3 +99,27 @@ class User(pydantic.BaseModel):
     username: str
     firstName: str
     lastName: str
+
+
+@dataclass(frozen=True)
+class AuthzPermission:
+    resource: str = ""
+    scope: str = ""
+
+    def __post_init__(self):
+        if not (self.resource or self.scope):
+            raise ValueError("Both 'resource' and 'scope' cannot be empty.")
+
+    def __str__(self):
+        return f"{self.resource}#{self.scope}"
+
+    @classmethod
+    def parse(cls, value: str):
+        resource, _, scope = value.partition("#")
+        return cls(resource, scope)
+
+
+class AuthzResource(pydantic.BaseModel):
+    rsid: str
+    rsname: str = ""
+    scopes: Optional[List[str]] = None

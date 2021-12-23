@@ -2,7 +2,6 @@ from unittest import mock
 
 import pytest
 from requests.models import Response
-from rest_framework import status
 
 from ansible_catalog.common.auth.keycloak.models import OpenIDConfiguration
 from ansible_catalog.common.auth.keycloak.openid import OpenIdConnect

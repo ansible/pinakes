@@ -36,6 +36,6 @@ def make_scope(
 def parse_scope(obj: KeycloakResourceProto, scope: str):
     prefix = obj.keycloak_type() + ":"
     if scope.startswith(prefix):
-        return scope[len(prefix) :]
+        return scope[len(prefix) :]  # noqa: E203
     else:
         raise ValueError("Unexpected scope. Must begin with '{prefix}'.")

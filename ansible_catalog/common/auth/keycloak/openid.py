@@ -67,7 +67,8 @@ class OpenIdConnect:
         )
 
     def logout_user_session(self, access_token, refresh_token) -> None:
-        path = constants.SESSION_LOGOUT_PATH.format(realm=self._realm)
+        # TODO(cutwater): Use openid_configuration helper class.
+        path = constants.END_SESSION_ENDPOINT.format(realm=self._realm)
         url = f"{self._server_url}/{path}"
         headers = {
             "Authorization": f"Bearer {access_token}",
