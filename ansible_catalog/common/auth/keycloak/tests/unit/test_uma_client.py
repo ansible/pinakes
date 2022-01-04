@@ -15,11 +15,13 @@ PROTECTION_URL = f"{SERVER_URL}/realms/{REALM}/authz/protection"
 RESOURCE_REGISTRATION_ENDPOINT = f"{PROTECTION_URL}/resource_set"
 PERMISSION_ENDPOINT = f"{PROTECTION_URL}/permission"
 POLICY_ENDPOINT = f"{PROTECTION_URL}/policy"
+TOKEN_ENDPOINT = f"{SERVER_URL}/realms/{REALM}/protocol/openid-connect"
 
 UMA2_CONFIGURATION = models.Uma2Configuration(
     resource_registration_endpoint=RESOURCE_REGISTRATION_ENDPOINT,
     permission_endpoint=PERMISSION_ENDPOINT,
     policy_endpoint=POLICY_ENDPOINT,
+    token_endpoint=TOKEN_ENDPOINT,
 )
 
 
