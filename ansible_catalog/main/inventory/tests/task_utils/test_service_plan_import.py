@@ -6,6 +6,7 @@ from ansible_catalog.main.tests.factories import TenantFactory
 from ansible_catalog.main.inventory.tests.factories import (
     SourceFactory,
     ServiceOfferingFactory,
+    InventoryServicePlanFactory,
 )
 from ansible_catalog.main.inventory.models import InventoryServicePlan
 from ansible_catalog.main.inventory.task_utils.service_plan_import import (
@@ -45,4 +46,33 @@ class TestServicePlanImport:
         assert (
             InventoryServicePlan.objects.first().service_offering.id
         ) == service_offering.id
+        assert InventoryServicePlan.objects.first().schema_sha256 is not None
+
+    @pytest.mark.django_db
+    def test_update(self):
+        """Test updating survey objects."""
+        inventory_service_plan = InventoryServicePlanFactory()
+        tenant = inventory_service_plan.tenant
+        source = inventory_service_plan.source
+        tower_mock = Mock()
+        objs = [{"name": "298", "desc": "Test Description", "spec": []}]
+
+        def fake_method(*_args, **_kwarg):
+            for i in objs:
+                yield i
+
+        tower_mock.get.side_effect = fake_method
+        converter_mock = Mock()
+        converter_mock.process.return_value = {"abc": 123}
+        spi = ServicePlanImport(tenant, source, tower_mock, converter_mock)
+
+        spi.process(
+            f"/api/v2/survey_spec/{inventory_service_plan.source_ref}/",
+            inventory_service_plan.id,
+            inventory_service_plan.source_ref,
+        )
+        assert (InventoryServicePlan.objects.count()) == 1
+        assert (
+            InventoryServicePlan.objects.first().id
+        ) == inventory_service_plan.id
         assert InventoryServicePlan.objects.first().schema_sha256 is not None

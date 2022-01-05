@@ -3,10 +3,13 @@
     format and saves it in the DB
 """
 import json
+import logging
 import hashlib
 
 from django.utils import timezone
 from ansible_catalog.main.inventory.models import InventoryServicePlan
+
+logger = logging.getLogger("inventory")
 
 
 class ServicePlanImport:
@@ -21,6 +24,7 @@ class ServicePlanImport:
 
     def process(self, slug, service_offering_id, source_ref):
         """Fetch the Service Plan"""
+        logger.info(f"Fetching survey spec {slug}")
         for new_obj in self.tower.get(slug, ["name", "description", "spec"]):
             self._handle(new_obj, service_offering_id, source_ref)
 
@@ -28,17 +32,32 @@ class ServicePlanImport:
         """Convert the survey spec to DDF format and save it"""
         ddf_data = self.spec_converter.process(data)
         now = timezone.now()
-        InventoryServicePlan.objects.create(
-            source_ref=source_ref,
-            create_json_schema=ddf_data,
-            schema_sha256=self._get_sha256(ddf_data),
-            source=self.source,
-            tenant=self.tenant,
-            service_offering_id=service_offering_id,
-            source_created_at=now,
-            source_updated_at=now,
-            extra={},
-        )
+        old_obj = InventoryServicePlan.objects.filter(
+            source_ref=source_ref, source=self.source
+        ).first()
+        if old_obj is None:
+            logger.info(
+                f"Creating new InventoryServicePlan source_ref {source_ref}"
+            )
+            InventoryServicePlan.objects.create(
+                source_ref=source_ref,
+                create_json_schema=ddf_data,
+                schema_sha256=self._get_sha256(ddf_data),
+                source=self.source,
+                tenant=self.tenant,
+                service_offering_id=service_offering_id,
+                source_created_at=now,
+                source_updated_at=now,
+                extra={},
+            )
+        else:
+            logger.info(
+                "Updating existing InventoryServicePlan source_ref {source_ref}"
+            )
+            old_obj.create_json_schema = ddf_data
+            old_obj.schema_sha256 = self._get_sha256(ddf_data)
+            old_obj.source_updated_at = now
+            old_obj.save()
 
     def _get_sha256(self, schema):
         hash_object = hashlib.sha256(json.dumps(schema).encode())
