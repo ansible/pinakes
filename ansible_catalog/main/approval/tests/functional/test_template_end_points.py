@@ -31,21 +31,23 @@ def test_template_retrieve(api_request):
 
 
 @pytest.mark.django_db
-def test_template_delete_not_supported(api_request):
+def test_template_delete(api_request):
     template = TemplateFactory()
     response = api_request("delete", "template-detail", template.id)
 
-    assert response.status_code == 405
+    assert response.status_code == 204
 
 
 @pytest.mark.django_db
-def test_template_patch_not_supported(api_request):
+def test_template_patch(api_request):
     template = TemplateFactory()
     response = api_request(
         "patch", "template-detail", template.id, {"title": "update"}
     )
 
-    assert response.status_code == 405
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["title"] == "update"
 
 
 @pytest.mark.django_db
@@ -74,10 +76,13 @@ def test_template_workflows_get(api_request):
 
 
 @pytest.mark.django_db
-def test_template_post_not_supported(api_request):
+def test_template_post(api_request):
     TenantFactory()
     response = api_request(
         "post", "template-list", data={"title": "abcdef", "description": "abc"}
     )
 
-    assert response.status_code == 405
+    assert response.status_code == 201
+    content = json.loads(response.content)
+    assert content["title"] == "abcdef"
+    assert content["description"] == "abc"

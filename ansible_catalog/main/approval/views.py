@@ -52,18 +52,30 @@ logger = logging.getLogger("approval")
     list=extend_schema(
         description="List all templates, available to admin only",
     ),
+    create=extend_schema(
+        description="Create a template, available to admin only",
+    ),
+    partial_update=extend_schema(
+        description="Find a template by its id and update its attributes, available to admin only",
+    ),
+    destroy=extend_schema(
+        description="Delete a template by its id, available to admin only",
+    ),
 )
 class TemplateViewSet(
     NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
 ):
     """API endpoint for listing and templates."""
 
-    http_method_names = ["get", "head"]
+    http_method_names = ["get", "post", "patch", "delete"]
     permission_classes = (IsAuthenticated,)
     serializer_class = TemplateSerializer
     ordering_fields = "__all__"  # This line is optional, default
     ordering = ("-id",)
     search_fields = ("title", "description")
+
+    def perform_create(self, serializer):
+        serializer.save(tenant=Tenant.current())
 
 
 class WorkflowFilterBackend(BaseFilterBackend):
