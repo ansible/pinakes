@@ -161,6 +161,13 @@ class ServiceOfferingImport:
                 self.survey_objects.append(
                     (new_obj["related.survey_spec"], db_obj.id, source_ref)
                 )
+        else:
+            # TODO: Since Survey Specs don't have an update timestamp force to check every time
+            db_obj = ServiceOffering.objects.get(pk=info[0])
+            if new_obj["survey_enabled"] is True:
+                self.survey_objects.append(
+                    (new_obj["related.survey_spec"], db_obj.id, source_ref)
+                )
 
     def _get_old_ids(self):
         """Get old objects in the database."""

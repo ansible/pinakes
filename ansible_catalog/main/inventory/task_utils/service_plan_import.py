@@ -30,7 +30,7 @@ class ServicePlanImport:
 
     def _handle(self, data, service_offering_id, source_ref):
         """Convert the survey spec to DDF format and save it"""
-        ddf_data = self.spec_converter.process(data)
+        new_sha = self._get_sha256(data)
         now = timezone.now()
         old_obj = InventoryServicePlan.objects.filter(
             source_ref=source_ref, source=self.source
@@ -39,10 +39,11 @@ class ServicePlanImport:
             logger.info(
                 f"Creating new InventoryServicePlan source_ref {source_ref}"
             )
+            ddf_data = self.spec_converter.process(data)
             InventoryServicePlan.objects.create(
                 source_ref=source_ref,
                 create_json_schema=ddf_data,
-                schema_sha256=self._get_sha256(ddf_data),
+                schema_sha256=new_sha,
                 source=self.source,
                 tenant=self.tenant,
                 service_offering_id=service_offering_id,
@@ -50,12 +51,13 @@ class ServicePlanImport:
                 source_updated_at=now,
                 extra={},
             )
-        else:
+        elif old_obj.schema_sha256 != new_sha:
             logger.info(
-                "Updating existing InventoryServicePlan source_ref {source_ref}"
+                f"Updating existing InventoryServicePlan source_ref {source_ref}"
             )
+            ddf_data = self.spec_converter.process(data)
             old_obj.create_json_schema = ddf_data
-            old_obj.schema_sha256 = self._get_sha256(ddf_data)
+            old_obj.schema_sha256 = new_sha
             old_obj.source_updated_at = now
             old_obj.save()
 
