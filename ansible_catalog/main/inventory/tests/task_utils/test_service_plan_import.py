@@ -44,6 +44,8 @@ class TestServicePlanImport:
             service_offering.id,
             service_offering.source_ref,
         )
+        assert spi.get_stats()["adds"] == 1
+        assert spi.get_stats()["updates"] == 0
         assert (InventoryServicePlan.objects.count()) == 1
         assert (
             InventoryServicePlan.objects.first().service_offering.id
@@ -93,6 +95,8 @@ class TestServicePlanImport:
             inventory_service_plan.id,
             inventory_service_plan.source_ref,
         )
+        assert spi.get_stats()["adds"] == 0
+        assert spi.get_stats()["updates"] == 1
         assert (InventoryServicePlan.objects.count()) == 1
         assert (
             InventoryServicePlan.objects.first().id
@@ -136,6 +140,8 @@ class TestServicePlanImport:
             inventory_service_plan.id,
             inventory_service_plan.source_ref,
         )
+        assert spi.get_stats()["adds"] == 0
+        assert spi.get_stats()["updates"] == 0
         assert (InventoryServicePlan.objects.count()) == 1
         assert (
             InventoryServicePlan.objects.first().id

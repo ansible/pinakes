@@ -18,9 +18,13 @@ class ServicePlanImport:
     def __init__(self, tenant, source, tower, spec_converter):
         self.tenant = tenant
         self.source = source
-        self.stats = {}
+        self.stats = {"adds": 0, "updates": 0}
         self.tower = tower
         self.spec_converter = spec_converter
+
+    def get_stats(self):
+        """Get the adds/updates for this object."""
+        return self.stats
 
     def process(self, slug, service_offering_id, source_ref):
         """Fetch the Service Plan"""
@@ -39,6 +43,7 @@ class ServicePlanImport:
             logger.info(
                 f"Creating new InventoryServicePlan source_ref {source_ref}"
             )
+            self.stats["adds"] += 1
             ddf_data = self.spec_converter.process(data)
             InventoryServicePlan.objects.create(
                 source_ref=source_ref,
@@ -55,6 +60,7 @@ class ServicePlanImport:
             logger.info(
                 f"Updating existing InventoryServicePlan source_ref {source_ref}"
             )
+            self.stats["updates"] += 1
             ddf_data = self.spec_converter.process(data)
             old_obj.create_json_schema = ddf_data
             old_obj.schema_sha256 = new_sha
