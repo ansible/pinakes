@@ -190,8 +190,8 @@ class TestSpecToDDF:
     }
     """
     result1 = {"component": "select-field"}
-    result2 = {"data_type": "integer"}
-    result3 = {"data_type": "float"}
+    result2 = {"dataType": "integer"}
+    result3 = {"dataType": "float"}
     result4 = {"component": "textarea-field"}
     result5 = {"component": "text-field"}
     result6 = {"component": "text-field"}

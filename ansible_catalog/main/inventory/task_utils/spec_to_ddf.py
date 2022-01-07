@@ -11,12 +11,12 @@ class SpecToDDF:
         "integer": {
             "component": "text-field",
             "type": "number",
-            "data_type": "integer",
+            "dataType": "integer",
         },
         "float": {
             "component": "text-field",
             "type": "number",
-            "data_type": "float",
+            "dataType": "float",
         },
         "password": {"component": "text-field", "type": "password"},
         "textarea": {"component": "textarea-field"},
@@ -33,16 +33,16 @@ class SpecToDDF:
         schema["title"] = data["name"]
         schema["description"] = data["description"]
 
-        result = {"schema_type": "default", "schema": schema}
+        result = {"schemaType": "default", "schema": schema}
         return result
 
     def _convertField(self, field):
         result = {
             "label": field["question_name"],
             "name": field["variable"],
-            "initial_value": field.get("default", ""),
-            "helper_text": field["question_description"],
-            "is_required": field["required"],
+            "initialValue": field.get("default", ""),
+            "helperText": field["question_description"],
+            "isRequired": field["required"],
         }
         result = {**result, **self.DDF_FIELD_TYPES[field["type"]]}
 
@@ -60,7 +60,7 @@ class SpecToDDF:
         values = None
         if isinstance(field["choices"], list):
             values = field["choices"]
-        elif isinstance(field["choices"], str):
+        elif isinstance(field["choices"], str) and field["choices"] != "":
             values = field["choices"].split("\n")
         else:
             return []

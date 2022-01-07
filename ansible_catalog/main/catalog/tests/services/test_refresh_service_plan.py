@@ -16,18 +16,18 @@ from ansible_catalog.main.catalog.services.refresh_service_plan import (
 )
 
 TEST_SCHEMA = {
-    "schema_type": "default",
+    "schemaType": "default",
     "schema": {
         "fields": [
             {
                 "label": "Number of Job templates",
                 "name": "dev_null",
-                "initial_value": 8,
+                "initialValue": 8,
                 "helper_text": "Number of Job templates on this workflow",
-                "is_required": True,
+                "isRequired": True,
                 "component": "text-field",
                 "type": "number",
-                "data_type": "integer",
+                "dataType": "integer",
                 "options": [{"label": "", "value": ""}],
                 "validate": [
                     {"type": "required-validator"},
@@ -109,7 +109,7 @@ def test_refresh_service_plans_with_empty_entities():
 @pytest.mark.django_db
 def test_refresh_service_plan_with_modified_base():
     service_offering = ServiceOfferingFactory(survey_enabled=True)
-    modified_schama = {"schema_type": "custom"}
+    modified_schama = {"schemaType": "custom"}
     service_plan = ServicePlanFactory(
         service_offering_ref=str(service_offering.id),
         base_schema=TEST_SCHEMA,
@@ -118,7 +118,7 @@ def test_refresh_service_plan_with_modified_base():
     )
 
     remote_schema = copy.deepcopy(TEST_SCHEMA)
-    remote_schema["schema"]["fields"][0]["initial_value"] = 10
+    remote_schema["schema"]["fields"][0]["initialValue"] = 10
     remote_sha256 = "xyz123"
 
     remote_service_plan = InventoryServicePlanFactory(

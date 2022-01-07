@@ -15,18 +15,18 @@ from ansible_catalog.main.inventory.tests.factories import (
 )
 
 TEST_SCHEMA = {
-    "schema_type": "default",
+    "schemaType": "default",
     "schema": {
         "fields": [
             {
                 "label": "Number of Job templates",
                 "name": "dev_null",
-                "initial_value": 8,
-                "helper_text": "Number of Job templates on this workflow",
-                "is_required": True,
+                "initialValue": 8,
+                "helperText": "Number of Job templates on this workflow",
+                "isRequired": True,
                 "component": "text-field",
                 "type": "number",
-                "data_type": "integer",
+                "dataType": "integer",
                 "options": [{"label": "", "value": ""}],
                 "validate": [
                     {"type": "required-validator"},
@@ -110,7 +110,7 @@ def test_service_plan_retrieve(api_request):
 @pytest.mark.django_db
 def test_service_plan_patch(api_request):
     """Update the modified schema for a service plan by id"""
-    base_schema = {"schema_type": "base"}
+    base_schema = {"schemaType": "base"}
     service_offering = ServiceOfferingFactory(survey_enabled=True)
     inventory_service_plan = InventoryServicePlanFactory(
         service_offering=service_offering,
@@ -153,7 +153,7 @@ def test_service_plan_reset_post(api_request):
     service_offering = ServiceOfferingFactory(survey_enabled=True)
     remote_service_plan = InventoryServicePlanFactory(
         service_offering=service_offering,
-        create_json_schema={"schema_type": "base"},
+        create_json_schema={"schemaType": "base"},
         schema_sha256="xyz123",
     )
 
