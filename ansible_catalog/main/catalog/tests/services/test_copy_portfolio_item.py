@@ -57,18 +57,18 @@ def test_portfolio_item_is_orderable_with_empty_service_plans():
 @pytest.mark.django_db
 def test_portfolio_item_is_orderable_with_service_plans():
     schema = {
-        "schema_type": "default",
+        "schemaType": "default",
         "schema": {
             "fields": [
                 {
                     "label": "Number of Job templates",
                     "name": "dev_null",
-                    "initial_value": 8,
-                    "helper_text": "Number of Job templates on this workflow",
-                    "is_required": True,
+                    "initialValue": 8,
+                    "helperText": "Number of Job templates on this workflow",
+                    "isRequired": True,
                     "component": "text-field",
                     "type": "number",
-                    "data_type": "integer",
+                    "dataType": "integer",
                     "options": [{"label": "", "value": ""}],
                     "validate": [
                         {"type": "required-validator"},
@@ -105,18 +105,18 @@ def test_portfolio_item_is_orderable_with_service_plans():
 @pytest.mark.django_db
 def test_process():
     schema = {
-        "schema_type": "default",
+        "schemaType": "default",
         "schema": {
             "fields": [
                 {
                     "label": "Number of Job templates",
                     "name": "dev_null",
-                    "initial_value": 8,
-                    "helper_text": "Number of Job templates on this workflow",
-                    "is_required": True,
+                    "initialValue": 8,
+                    "helperText": "Number of Job templates on this workflow",
+                    "isRequired": True,
                     "component": "text-field",
                     "type": "number",
-                    "data_type": "integer",
+                    "dataType": "integer",
                     "options": [{"label": "", "value": ""}],
                     "validate": [
                         {"type": "required-validator"},
