@@ -74,6 +74,7 @@ class InventoryServicePlanFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: f"service_plan{n}")
     source_created_at = timezone.now()
     source_updated_at = timezone.now()
+    source_ref = factory.Sequence(lambda n: f"{n}")
     extra = {}
     create_json_schema = {}
 

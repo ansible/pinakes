@@ -1,6 +1,7 @@
 """ ServiceOfferingImporter module imports job Templates and
     Workflow Job templates from the tower
 """
+import logging
 import re
 import dateutil.parser
 from ansible_catalog.main.inventory.models import (
@@ -8,6 +9,8 @@ from ansible_catalog.main.inventory.models import (
     OfferingKind,
     ServiceOffering,
 )
+
+logger = logging.getLogger("inventory")
 
 
 class ServiceOfferingImport:
@@ -58,14 +61,14 @@ class ServiceOfferingImport:
     def _deletes(self):
         """Delete any left over objects in the old_objects."""
         for key, value in self.old_objects.items():
-            print(f"Deleting source_ref {key}, object {value[0]}")
+            logger.info(f"Deleting source_ref {key}, object {value[0]}")
             self.stats["deletes"] += 1
             ServiceOffering.objects.get(pk=value[0]).delete()
 
     def _fetch_survey_specs(self):
         """Fetch the Survey Spec from tower"""
         for info in self.survey_objects:
-            print(f"Importing {info[0]}")
+            logger.info(f"Importing Survey Spec {info[0]}")
             self.plan_importer.process(info[0], info[1], info[2])
 
     def _handle_obj(self, new_obj, kind):
@@ -105,8 +108,9 @@ class ServiceOfferingImport:
 
     def _create_db_obj(self, new_obj, source_ref, kind, inventory):
         """Create a new object in the local DB."""
-        print(new_obj["url"])
-        print(new_obj["survey_enabled"])
+        logger.info(
+            f"Creating {new_obj['url']}, survey enabled {new_obj['survey_enabled']}"
+        )
 
         self.stats["adds"] += 1
         obj = ServiceOffering.objects.create(
@@ -144,13 +148,22 @@ class ServiceOfferingImport:
                     source_ref=source_ref,
                 ).first().delete()
 
-            print("Updating modified object")
+            logger.info(
+                f"Updating {new_obj['url']}, survey enabled {new_obj['survey_enabled']}"
+            )
             db_obj.name = new_obj["name"]
             db_obj.description = new_obj["description"]
             db_obj.source_updated_at = modified
             db_obj.service_inventory_id = inventory
             db_obj.survey_enabled = new_obj["survey_enabled"]
             db_obj.save()
+            if new_obj["survey_enabled"] is True:
+                self.survey_objects.append(
+                    (new_obj["related.survey_spec"], db_obj.id, source_ref)
+                )
+        else:
+            # TODO: Since Survey Specs don't have an update timestamp force to check every time
+            db_obj = ServiceOffering.objects.get(pk=info[0])
             if new_obj["survey_enabled"] is True:
                 self.survey_objects.append(
                     (new_obj["related.survey_spec"], db_obj.id, source_ref)

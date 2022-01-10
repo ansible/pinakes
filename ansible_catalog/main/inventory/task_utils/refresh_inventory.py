@@ -1,4 +1,5 @@
 """ Task to Refresh Inventory from the Tower """
+import logging
 from django.utils import timezone
 
 from ansible_catalog.main.models import Source, Tenant
@@ -16,6 +17,9 @@ from ansible_catalog.main.inventory.task_utils.service_offering_node_import impo
 )
 from ansible_catalog.main.inventory.task_utils.tower_api import TowerAPI
 from ansible_catalog.main.inventory.task_utils.spec_to_ddf import SpecToDDF
+
+
+logger = logging.getLogger("inventory")
 
 
 class RefreshInventory:
@@ -38,7 +42,7 @@ class RefreshInventory:
                 self.tenant, self.source, self.tower, spec_converter
             )
             sii = ServiceInventoryImport(self.tenant, self.source, self.tower)
-            print("Fetching Inventory")
+            logger.info("Fetching Inventory")
             sii.process()
             self.source.last_refresh_message = (
                 "Service Inventories: %s" % sii.get_stats()
@@ -47,7 +51,7 @@ class RefreshInventory:
             soi = ServiceOfferingImport(
                 self.tenant, self.source, self.tower, sii, plan_importer
             )
-            print("Fetching Job Templates & Workflows")
+            logger.info("Fetching Job Templates & Workflows")
             soi.process()
             self.source.last_refresh_message = (
                 "%s; Job Templates & Workflows: %s"
@@ -57,7 +61,7 @@ class RefreshInventory:
             son = ServiceOfferingNodeImport(
                 self.tenant, self.source, self.tower, sii, soi
             )
-            print("Fetching Workflow Template Nodes")
+            logger.info("Fetching Workflow Template Nodes")
             son.process()
             self.source.last_refresh_message = (
                 "%s; Workflow Template Nodes: %s"
