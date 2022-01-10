@@ -14,9 +14,7 @@ class CompareServicePlans:
 
     def __init__(self, service_plan):
         self.base_schema = service_plan.base_schema
-        self.service_offering_ref = (
-            service_plan.portfolio_item.service_offering_ref
-        )
+        self.service_offering_ref = service_plan.service_offering_ref
 
     @classmethod
     def is_outdated(cls, plan):
@@ -43,13 +41,6 @@ class CompareServicePlans:
                 plan.base_sha256 = schema_sha256
 
             plan.save()
-        else:
-            if plan.modified:  # only user modified
-                plan.outdated = True
-                plan.outdated_changes = potential._compare_schema_fields(
-                    inventory_schema
-                )
-                plan.save()
 
         return plan.outdated
 

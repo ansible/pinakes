@@ -45,7 +45,7 @@ class ValidateOrderItem:
 
             raise InvalidSurveyException(
                 _(
-                    "The underlying survey on {} in the {} portfolio has been changed and is no longer valid, please contact an administrator to fix it."
+                    "The underlying survey on product {} in the portfolio {} has been changed and is no longer valid, please contact an administrator to fix it."
                 ).format(
                     portfolio_item_names,
                     portfolio_names,
