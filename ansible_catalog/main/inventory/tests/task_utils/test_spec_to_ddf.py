@@ -17,7 +17,7 @@ class TestSpecToDDF:
                 "variable": "hobbies",
                 "min": null,
                 "max": null,
-                "default": "Lawn Tennis",
+                "default": "Lawn Tennis\\nCricket",
                 "choices": "Cricket\\nTable Tennis\\nLawn Tennis",
                 "new_question": true
             }
