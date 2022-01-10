@@ -40,7 +40,6 @@ class SpecToDDF:
         result = {
             "label": field["question_name"],
             "name": field["variable"],
-            "initialValue": field.get("default", ""),
             "helperText": field["question_description"],
             "isRequired": field["required"],
         }
@@ -53,6 +52,11 @@ class SpecToDDF:
         value = self._getValidateArray(field)
         if len(value) > 0:
             result["validate"] = value
+
+        if "multi" in result:
+            result["initialValue"] = field.get("default", "").split("\n")
+        else:
+            result["initialValue"] = field.get("default", "")
 
         return result
 
