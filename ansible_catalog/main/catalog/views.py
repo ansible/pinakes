@@ -1,6 +1,5 @@
 """ Default views for Catalog."""
 
-
 import logging
 
 import django_rq
