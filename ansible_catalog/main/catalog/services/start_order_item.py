@@ -2,17 +2,11 @@
 import logging
 from django.utils.translation import gettext_lazy as _
 
-from ansible_catalog.main.catalog.exceptions import (
-    InvalidSurveyException,
-)
 from ansible_catalog.main.catalog.models import (
-    Order,
     OrderItem,
     ProgressMessage,
 )
-from ansible_catalog.main.catalog.services.compare_service_plans import (
-    CompareServicePlans,
-)
+
 from ansible_catalog.main.catalog.services.finish_order import FinishOrder
 from ansible_catalog.main.catalog.services.finish_order_item import (
     FinishOrderItem,

@@ -106,13 +106,14 @@ def test_process_with_invalid_order_item():
         service_offering_ref=str(service_offering.id)
     )
 
-    InventoryServicePlanFactory(
+    inventory_service_plan = InventoryServicePlanFactory(
         service_offering=service_offering,
         create_json_schema=schema1(),
         schema_sha256="schema1",
     )
     ServicePlanFactory(
         portfolio_item=portfolio_item,
+        inventory_service_plan_ref=str(inventory_service_plan.id),
         service_offering_ref=str(service_offering.id),
         base_schema=schema2(),
         base_sha256="schema2",

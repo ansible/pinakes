@@ -3,6 +3,9 @@
 import logging
 
 from ansible_catalog.main.catalog.models import ServicePlan
+from ansible_catalog.main.catalog.services.compare_schema import (
+    CompareSchema,
+)
 from ansible_catalog.main.inventory.services.get_service_offering import (
     GetServiceOffering,
 )
@@ -47,11 +50,17 @@ class RefreshServicePlan:
             and not self.service_plan.base_sha256
             == temp_service_plan.base_sha256
         ):
-            self.service_plan.outdated = True
-            # TODO: fill in the actual changes
-            self.service_plan.outdated_changes = (
-                "Base schema from inventory has changed"
+            changed_content = CompareSchema.compare_schema(
+                self.service_plan.base_schema, temp_service_plan.base_schema
             )
+            logger.info(
+                "Service plan %s changed with content: %s",
+                self.service_plan.name,
+                changed_content,
+            )
+
+            self.service_plan.outdated = True
+            self.service_plan.outdated_changes = changed_content
         else:
             self.service_plan.base_schema = temp_service_plan.base_schema
             self.service_plan.base_sha256 = temp_service_plan.base_sha256
