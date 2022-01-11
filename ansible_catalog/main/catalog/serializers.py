@@ -398,6 +398,8 @@ class SharingPermissionSerializer(serializers.Serializer):
         min_length=1,
         help_text="List of permissions (e.g. `read`, `update`, `delete`).",
     )
-    group = serializers.PrimaryKeyRelatedField(
+    group_id = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all(), help_text="Group ID"
     )
+
+    group_name = serializers.CharField(help_text="Group Name")
