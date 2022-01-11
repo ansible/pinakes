@@ -291,7 +291,6 @@ def test_portfolio_share_info(api_request, mocker):
     """Test Share Information of Portfolio"""
     group = GroupFactory()
     portfolio = PortfolioFactory()
-    action = Portfolio.KEYCLOAK_ACTIONS[0]
 
     client_mock = mock.Mock()
     mocker.patch(
@@ -301,7 +300,10 @@ def test_portfolio_share_info(api_request, mocker):
     permission = UmaPermission(
         name=make_permission_name(portfolio, group),
         groups=[group.path],
-        scopes=[make_scope(portfolio, action)],
+        scopes=[
+            make_scope(portfolio, Portfolio.KEYCLOAK_ACTIONS[0]),
+            make_scope(portfolio, Portfolio.KEYCLOAK_ACTIONS[1]),
+        ],
     )
     client_mock.find_permissions_by_resource.return_value = [permission]
 
@@ -312,4 +314,7 @@ def test_portfolio_share_info(api_request, mocker):
     assert (len(shares)) == 1
     assert shares[0]["group_id"] == group.id
     assert shares[0]["group_name"] == group.name
-    assert shares[0]["permissions"][0] == action
+    assert shares[0]["permissions"] == [
+        Portfolio.KEYCLOAK_ACTIONS[0],
+        Portfolio.KEYCLOAK_ACTIONS[1],
+    ]
