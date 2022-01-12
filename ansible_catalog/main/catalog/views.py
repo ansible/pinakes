@@ -232,7 +232,6 @@ class PortfolioViewSet(
     def share_info(self, request, pk=None):
         portfolio = self.get_object()
         data = []
-
         if portfolio.keycloak_id:
             client = keycloak_django.get_uma_client()
             permissions = client.find_permissions_by_resource(
@@ -248,12 +247,20 @@ class PortfolioViewSet(
             groups = Group.objects.filter(path__in=groups_lookup)
             groups_by_path = {group.path: group for group in groups}
 
+            permissions_by_group = {}
             for permission in permissions:
-                group = groups_by_path.get(permission.groups[0])
-                scopes = [
-                    parse_scope(portfolio, scope)
-                    for scope in permission.scopes
-                ]
+                if permission.groups[0] in permissions_by_group:
+                    permissions_by_group[permission.groups[0]].extend(
+                        permission.scopes
+                    )
+                else:
+                    permissions_by_group[
+                        permission.groups[0]
+                    ] = permission.scopes
+
+            for path, scopes in permissions_by_group.items():
+                group = groups_by_path.get(path)
+                scopes = [parse_scope(portfolio, scope) for scope in scopes]
                 data.append(
                     {
                         "group_id": group.id if group else None,
