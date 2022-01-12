@@ -23,7 +23,7 @@ def refresh_task(tenant_id, source_id):
     obj = RefreshInventory(tenant_id, source_id)
     obj.process()
     logger.info("Updating Service Plans")
-    upd_sp = UpdateServicePlans(tenant_id, source_id)
+    upd_sp = UpdateServicePlans(tenant_id)
     upd_sp.process()
     logger.info(f"Updated {upd_sp.updated} Service Plans")
     logger.info("Finished Inventory Refresh")

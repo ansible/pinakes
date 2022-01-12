@@ -17,9 +17,8 @@ logger = logging.getLogger("catalog")
 
 
 class UpdateServicePlans:
-    def __init__(self, tenant_id, source_id):
+    def __init__(self, tenant_id):
         self.tenant_id = tenant_id
-        self.source_id = source_id
         self.updated = 0
 
     def process(self):

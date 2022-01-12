@@ -125,7 +125,7 @@ def configure_test_sp(
 @pytest.mark.django_db
 def test_same_service_plan():
     service_plan = configure_test_sp()
-    upd = UpdateServicePlans(service_plan.tenant_id, 1)
+    upd = UpdateServicePlans(service_plan.tenant_id)
     upd.process()
 
     assert upd.updated == 0
@@ -134,7 +134,7 @@ def test_same_service_plan():
 @pytest.mark.django_db
 def test_update_service_plan():
     service_plan = configure_test_sp(UPDATED_SCHEMA, UPDATED_SHA256)
-    upd = UpdateServicePlans(service_plan.tenant_id, 1)
+    upd = UpdateServicePlans(service_plan.tenant_id)
     upd.process()
 
     assert upd.updated == 1
@@ -151,7 +151,7 @@ def test_modified_service_plan():
         BASE_SHA256,
         MODIFIED_SCHEMA,
     )
-    upd = UpdateServicePlans(service_plan.tenant_id, 1)
+    upd = UpdateServicePlans(service_plan.tenant_id)
     upd.process()
 
     service_plan.refresh_from_db()
