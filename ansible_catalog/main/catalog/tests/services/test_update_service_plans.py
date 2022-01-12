@@ -157,20 +157,3 @@ def test_modified_service_plan():
     service_plan.refresh_from_db()
     assert upd.updated == 1
     assert service_plan.outdated == True
-
-
-@pytest.mark.django_db
-def test_missing_service_plan_id():
-    service_plan = configure_test_sp(
-        UPDATED_SCHEMA,
-        UPDATED_SHA256,
-        BASE_SCHEMA,
-        BASE_SHA256,
-        MODIFIED_SCHEMA,
-        "99999",
-    )
-    upd = UpdateServicePlans(service_plan.tenant_id, 1)
-    upd.process()
-
-    service_plan.refresh_from_db()
-    assert upd.updated == 0
