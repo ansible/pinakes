@@ -31,6 +31,7 @@ from ansible_catalog.main.models import Tenant
 from ansible_catalog.main.auth.models import Group
 from ansible_catalog.main.catalog.exceptions import (
     BadParamsException,
+    InvalidSurveyException,
 )
 from ansible_catalog.main.catalog.models import (
     ApprovalRequest,
@@ -78,6 +79,9 @@ from ansible_catalog.main.catalog.services.refresh_service_plan import (
 )
 from ansible_catalog.main.catalog.services.submit_approval_request import (
     SubmitApprovalRequest,
+)
+from ansible_catalog.main.catalog.services.validate_order_item import (
+    ValidateOrderItem,
 )
 
 from ansible_catalog.main.catalog import tasks
@@ -423,6 +427,8 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
                     order.id
                 )
             )
+
+        ValidateOrderItem(order.product).process()
 
         tag_resources = CollectTagResources(order).process().tag_resources
         message = _("Computed tags for order {}: {}").format(

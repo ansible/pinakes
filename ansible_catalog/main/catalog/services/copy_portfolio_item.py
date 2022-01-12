@@ -1,16 +1,11 @@
 """Copy portfolio item service"""
 import copy
 import logging
-import os
-import random
-import string
-from django.core.files.base import ContentFile
 from django.utils.translation import gettext_lazy as _
 from django.db import transaction
 
 from ansible_catalog.main.catalog.models import (
     ServicePlan,
-    Image,
     Portfolio,
     PortfolioItem,
 )
@@ -95,6 +90,15 @@ class CopyPortfolioItem:
         service_plans = ServicePlan.objects.filter(
             portfolio_item=self.portfolio_item
         )
+
+        changed_plans = [plan for plan in service_plans if plan.outdated]
+
+        if len(changed_plans) > 0:
+            logger.info(
+                "Survey Changed for Portfolio Item #{@portfolio_item.name}"
+            )
+            return False
+
         for service_plan in service_plans:
             if not service_plan.base_schema:
                 return True

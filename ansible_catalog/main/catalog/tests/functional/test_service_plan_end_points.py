@@ -1,7 +1,6 @@
 """ Test service_plan end points """
 import json
 import pytest
-import copy
 
 from ansible_catalog.main.catalog.tests.factories import (
     PortfolioItemFactory,
