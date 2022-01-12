@@ -4,7 +4,7 @@ import logging
 
 from ansible_catalog.main.catalog.models import ServicePlan
 from ansible_catalog.main.catalog.utils import (
-    compare_schema,
+    compare_schemas,
 )
 from ansible_catalog.main.inventory.services.get_service_offering import (
     GetServiceOffering,
@@ -37,6 +37,7 @@ class RefreshServicePlan:
 
     def __init__(self, service_plan):
         self.service_plan = service_plan
+        self.is_updated = False
 
     def process(self):
         temp_service_plan = self._get_remote_schema()
@@ -45,29 +46,28 @@ class RefreshServicePlan:
             temp_service_plan.inventory_service_plan_ref
         )
 
-        if (
-            self.service_plan.modified
-            and not self.service_plan.base_sha256
-            == temp_service_plan.base_sha256
-        ):
-            changed_content = compare_schema(
-                self.service_plan.base_schema, temp_service_plan.base_schema
-            )
-            logger.info(
-                "Service plan %s changed with content: %s",
-                self.service_plan.name,
-                changed_content,
-            )
+        if self.service_plan.base_sha256 != temp_service_plan.base_sha256:
+            if self.service_plan.modified:
+                changed_content = compare_schemas(
+                    self.service_plan.base_schema,
+                    temp_service_plan.base_schema,
+                )
+                logger.info(
+                    "Service plan %s changed with content: %s",
+                    self.service_plan.name,
+                    changed_content,
+                )
 
-            self.service_plan.outdated = True
-            self.service_plan.outdated_changes = changed_content
-        else:
-            self.service_plan.base_schema = temp_service_plan.base_schema
-            self.service_plan.base_sha256 = temp_service_plan.base_sha256
-            self.service_plan.outdated = False
-            self.service_plan.outdated_changes = ""
+                self.service_plan.outdated = True
+                self.service_plan.outdated_changes = changed_content
+            else:
+                self.service_plan.base_schema = temp_service_plan.base_schema
+                self.service_plan.base_sha256 = temp_service_plan.base_sha256
+                self.service_plan.outdated = False
+                self.service_plan.outdated_changes = ""
 
-        self.service_plan.save()
+            self.is_updated = True
+            self.service_plan.save()
 
         return self
 

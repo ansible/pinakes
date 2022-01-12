@@ -3,18 +3,7 @@ import logging
 logger = logging.getLogger("catalog")
 
 
-def is_empty_schema(target_schema):
-    """Compare if target_schema is empty"""
-
-    if target_schema is None:
-        return True
-
-    schema_type = target_schema.get("schemaType", None)
-
-    return schema_type is None or schema_type == "emptySchema"
-
-
-def compare_schema(source_schema, target_schema):
+def compare_schemas(source_schema, target_schema):
     """Compare target_schema with source_ schema
     @return empty string if they are the same, otherwise return changed content
     """

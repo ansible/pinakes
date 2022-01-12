@@ -1,8 +1,7 @@
 """ Test comparison of the two schemas """
 
 from ansible_catalog.main.catalog.utils import (
-    compare_schema,
-    is_empty_schema,
+    compare_schemas,
 )
 
 
@@ -112,26 +111,19 @@ SCHEMA_3 = {
 }
 
 
-def test_is_empty_schema():
-    assert is_empty_schema(None) is True
-    assert is_empty_schema(SCHEMA) is True
-    assert is_empty_schema(SCHEMA_1) is False
-    assert is_empty_schema(SCHEMA_2) is False
-
-
-def test_compare_schema():
-    changed_info = compare_schema(SCHEMA, SCHEMA)
+def test_compare_schemas():
+    changed_info = compare_schemas(SCHEMA, SCHEMA)
 
     assert changed_info == ""
 
-    changed_info = compare_schema(SCHEMA_1, SCHEMA_2)
+    changed_info = compare_schemas(SCHEMA_1, SCHEMA_2)
 
     assert (
         changed_info
         == "Schema fields changes have been detected: fields added: ['dev_null']; fields removed: ['state']; fields changed: ['empty-service-plan']"
     )
 
-    changed_info = compare_schema(SCHEMA_3, SCHEMA_2)
+    changed_info = compare_schemas(SCHEMA_3, SCHEMA_2)
 
     assert (
         changed_info
