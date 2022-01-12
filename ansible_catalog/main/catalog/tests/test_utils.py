@@ -1,16 +1,8 @@
 """ Test comparison of the two schemas """
-import pytest
 
-from ansible_catalog.main.catalog.tests.factories import (
-    PortfolioItemFactory,
-    ServicePlanFactory,
-)
-from ansible_catalog.main.inventory.tests.factories import (
-    ServiceOfferingFactory,
-    InventoryServicePlanFactory,
-)
-from ansible_catalog.main.catalog.services.compare_schema import (
-    CompareSchema,
+from ansible_catalog.main.catalog.utils import (
+    compare_schema,
+    is_empty_schema,
 )
 
 
@@ -121,25 +113,25 @@ SCHEMA_3 = {
 
 
 def test_is_empty_schema():
-    assert CompareSchema.is_empty_schema(None) is True
-    assert CompareSchema.is_empty_schema(SCHEMA) is True
-    assert CompareSchema.is_empty_schema(SCHEMA_1) is False
-    assert CompareSchema.is_empty_schema(SCHEMA_2) is False
+    assert is_empty_schema(None) is True
+    assert is_empty_schema(SCHEMA) is True
+    assert is_empty_schema(SCHEMA_1) is False
+    assert is_empty_schema(SCHEMA_2) is False
 
 
 def test_compare_schema():
-    changed_info = CompareSchema.compare_schema(SCHEMA, SCHEMA)
+    changed_info = compare_schema(SCHEMA, SCHEMA)
 
     assert changed_info == ""
 
-    changed_info = CompareSchema.compare_schema(SCHEMA_1, SCHEMA_2)
+    changed_info = compare_schema(SCHEMA_1, SCHEMA_2)
 
     assert (
         changed_info
         == "Schema fields changes have been detected: fields added: ['dev_null']; fields removed: ['state']; fields changed: ['empty-service-plan']"
     )
 
-    changed_info = CompareSchema.compare_schema(SCHEMA_3, SCHEMA_2)
+    changed_info = compare_schema(SCHEMA_3, SCHEMA_2)
 
     assert (
         changed_info

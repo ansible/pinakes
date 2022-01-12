@@ -62,9 +62,6 @@ from ansible_catalog.main.catalog.serializers import (
 from ansible_catalog.main.catalog.services.collect_tag_resources import (
     CollectTagResources,
 )
-from ansible_catalog.main.catalog.services.compare_service_plans import (
-    CompareServicePlans,
-)
 from ansible_catalog.main.catalog.services.copy_portfolio import (
     CopyPortfolio,
 )

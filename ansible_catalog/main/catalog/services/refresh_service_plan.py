@@ -3,8 +3,8 @@
 import logging
 
 from ansible_catalog.main.catalog.models import ServicePlan
-from ansible_catalog.main.catalog.services.compare_schema import (
-    CompareSchema,
+from ansible_catalog.main.catalog.utils import (
+    compare_schema,
 )
 from ansible_catalog.main.inventory.services.get_service_offering import (
     GetServiceOffering,
@@ -50,7 +50,7 @@ class RefreshServicePlan:
             and not self.service_plan.base_sha256
             == temp_service_plan.base_sha256
         ):
-            changed_content = CompareSchema.compare_schema(
+            changed_content = compare_schema(
                 self.service_plan.base_schema, temp_service_plan.base_schema
             )
             logger.info(

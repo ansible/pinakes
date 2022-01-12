@@ -90,9 +90,7 @@ def test_portfolio_item_is_orderable_with_service_plans():
         service_offering_ref=str(service_offering.id),
         portfolio=portfolio,
     )
-    ServicePlanFactory(
-        base_schema=schema, service_offering_ref=str(service_offering.id)
-    )
+    ServicePlanFactory(base_schema={}, portfolio_item=portfolio_item)
 
     options = {
         "portfolio_item_name": "my test",

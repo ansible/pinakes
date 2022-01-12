@@ -1,16 +1,11 @@
 """Copy portfolio item service"""
 import copy
 import logging
-import os
-import random
-import string
-from django.core.files.base import ContentFile
 from django.utils.translation import gettext_lazy as _
 from django.db import transaction
 
 from ansible_catalog.main.catalog.models import (
     ServicePlan,
-    Image,
     Portfolio,
     PortfolioItem,
 )
@@ -19,9 +14,6 @@ from ansible_catalog.main.catalog.services import (
 )
 from ansible_catalog.main.catalog.services.copy_image import (
     CopyImage,
-)
-from ansible_catalog.main.catalog.services.compare_service_plans import (
-    CompareServicePlans,
 )
 from ansible_catalog.main.inventory.services.get_service_offering import (
     GetServiceOffering,
@@ -99,7 +91,9 @@ class CopyPortfolioItem:
             portfolio_item=self.portfolio_item
         )
 
-        if CompareServicePlans.any_changed(service_plans):
+        changed_plans = [plan for plan in service_plans if plan.outdated]
+
+        if len(changed_plans) > 0:
             logger.info(
                 "Survey Changed for Portfolio Item #{@portfolio_item.name}"
             )

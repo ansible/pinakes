@@ -123,7 +123,6 @@ def test_service_plan_patch(api_request):
     service_plan = ServicePlanFactory(
         portfolio_item=portfolio_item,
         service_offering_ref=portfolio_item.service_offering_ref,
-        inventory_service_plan_ref=str(inventory_service_plan.id),
         base_schema=base_schema,
         base_sha256="xyz123",
     )
