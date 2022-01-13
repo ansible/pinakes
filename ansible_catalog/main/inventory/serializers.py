@@ -55,7 +55,6 @@ class ServiceOfferingSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "survey_enabled",
-            "kind",
             "extra",
             "service_inventory",
         )
