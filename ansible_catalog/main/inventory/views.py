@@ -77,7 +77,6 @@ class ServiceOfferingViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
         "name",
         "description",
         "survey_enabled",
-        "kind",
         "service_inventory",
     )
     search_fields = ("name", "description")
