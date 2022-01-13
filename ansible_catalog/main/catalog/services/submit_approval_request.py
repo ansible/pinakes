@@ -72,6 +72,7 @@ class SubmitApprovalRequest:
             },
             "tag_resources": self.tag_resources,
             "tenant_id": self.order.tenant_id,
+            "user_id": self.order.user_id,
         }
 
     def _platform(self):
