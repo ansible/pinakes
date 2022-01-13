@@ -10,6 +10,10 @@ from ansible_catalog.main.catalog.services.finish_order_item import (
     FinishOrderItem,
 )
 
+from ansible_catalog.main.catalog.services.update_service_plans import (
+    UpdateServicePlans,
+)
+
 logger = logging.getLogger("inventory")
 
 
@@ -18,6 +22,10 @@ def refresh_task(tenant_id, source_id):
     logger.info("Starting Inventory Refresh")
     obj = RefreshInventory(tenant_id, source_id)
     obj.process()
+    logger.info("Updating Service Plans")
+    upd_sp = UpdateServicePlans(tenant_id)
+    upd_sp.process()
+    logger.info(f"Updated {upd_sp.updated} Service Plans")
     logger.info("Finished Inventory Refresh")
 
 
