@@ -58,6 +58,13 @@ class BaseModel(models.Model):
 class Source(models.Model):
     """Source"""
 
+    class State(models.TextChoices):
+        """states for Source"""
+
+        DONE = "Done"
+        FAILED = "Failed"
+        UNKNOWN = "Unknown"
+
     name = models.CharField(
         max_length=255, unique=True, help_text="Name of the source"
     )
@@ -72,6 +79,13 @@ class Source(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True,
         help_text="The time at which the object was last updated",
+    )
+    refresh_state = models.CharField(
+        max_length=10,
+        choices=State.choices,
+        default=State.UNKNOWN,
+        editable=False,
+        help_text="State of current refresh",
     )
     refresh_started_at = models.DateTimeField(
         editable=False,
@@ -92,6 +106,26 @@ class Source(models.Model):
         blank=True,
         default="",
         help_text="The message for the last source refresh",
+    )
+    availability_status = models.TextField(
+        blank=True,
+        default="unavailable",
+        help_text="The status for the source availability status",
+    )
+    last_available_at = models.DateTimeField(
+        editable=False,
+        null=True,
+        help_text="The time at which the source was available",
+    )
+    last_checked_at = models.DateTimeField(
+        editable=False,
+        null=True,
+        help_text="The time at which the source was checked availability",
+    )
+    availability_message = models.TextField(
+        blank=True,
+        default="Unavailable",
+        help_text="The message about the source availability",
     )
 
     def __str__(self):

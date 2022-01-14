@@ -39,6 +39,11 @@ class TestRefreshInventory:
         assert source_instance.refresh_finished_at is not None
         assert source_instance.last_successful_refresh_at is not None
         assert source_instance.last_refresh_message is not None
+        assert source_instance.refresh_state == source_instance.State.DONE
+        assert source_instance.last_available_at is not None
+        assert source_instance.last_checked_at is not None
+        assert source_instance.availability_status == "available"
+        assert source_instance.availability_message == "Available"
 
     @patch(
         "ansible_catalog.main.inventory.task_utils.refresh_inventory.ServiceInventoryImport",
@@ -60,3 +65,8 @@ class TestRefreshInventory:
         assert source_instance.last_refresh_message.startswith(
             "Error: Failed to import inventory"
         )
+        assert source_instance.refresh_state == source_instance.State.FAILED
+        assert source_instance.last_available_at is None
+        assert source_instance.last_checked_at is not None
+        assert source_instance.availability_status == "unavailable"
+        assert source_instance.availability_message == "Unavailable"
