@@ -68,9 +68,18 @@ class RefreshInventory:
                 % (self.source.last_refresh_message, son.get_stats())
             )
             self.source.last_successful_refresh_at = timezone.now()
+            self.source.refresh_state = Source.State.DONE
+            self.source.last_available_at = timezone.now()
+            self.source.availability_status = "available"
+            self.source.availability_message = "Available"
         except Exception as error:
             self.source.last_refresh_message = "Error: %s" % str(error)
+            self.source.refresh_state = Source.State.FAILED
+            self.source.availability_status = "unavailable"
+            self.source.availability_message = "Unavailable"
+            logger.error("Refresh failed: %s", str(error))
         finally:
             self.source.refresh_finished_at = timezone.now()
+            self.source.last_checked_at = timezone.now()
 
         self.source.save()

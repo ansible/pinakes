@@ -19,10 +19,15 @@ class SourceSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
+            "refresh_state",
             "refresh_started_at",
             "refresh_finished_at",
             "last_successful_refresh_at",
             "last_refresh_message",
+            "last_available_at",
+            "last_checked_at",
+            "availability_status",
+            "availability_message",
             "created_at",
             "updated_at",
         )
