@@ -151,10 +151,29 @@ def test_workflow_post(api_request):
         {
             "name": "abcdef",
             "description": "abc",
+            "group_refs": [{"name": "group1", "uuid": "uuid1"}]
         },
     )
 
     assert response.status_code == 201
+
+
+@pytest.mark.django_db
+def test_workflow_post_bad(api_request):
+    """Create a new Workflow but lack group uuid"""
+    template = TemplateFactory()
+    response = api_request(
+        "post",
+        "template-workflow-list",
+        template.id,
+        {
+            "name": "abcdef",
+            "description": "abc",
+            "group_refs": [{"name": "group1"}]
+        },
+    )
+
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db

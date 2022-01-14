@@ -23,12 +23,26 @@ class TemplateSerializer(serializers.ModelSerializer):
         read_only_fields = ("created_at", "updated_at")
 
 
+class GroupRefSerializer(serializers.Serializer):
+    """RBAC group reference"""
+
+    name = serializers.CharField(required=True, help_text="Name of the RBAC group")
+    uuid = serializers.CharField(required=True, help_text="UUID of the RBAC group")
+
+
+@extend_schema_field(GroupRefSerializer(many=True))
+class GroupRefsField(serializers.JSONField):
+    pass
+
+
 class WorkflowSerializer(serializers.ModelSerializer):
     """
     The workflow to process approval requests.
     Each workflow can be linked to multiple groups of approvers.
     """
 
+    group_refs = GroupRefsField(required=False, help_text="Array of RBAC groups associated with workflow. The groups need to have approval permission")
+ 
     class Meta:
         model = Workflow
         fields = (
@@ -36,10 +50,17 @@ class WorkflowSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "template",
+            "group_refs",
             "created_at",
             "updated_at",
         )
         read_only_fields = ("created_at", "updated_at", "template")
+
+
+    def validate_group_refs(self, value):
+        serializer = GroupRefSerializer(many=True, data=value)
+        serializer.is_valid(raise_exception=True)
+        return value
 
 
 class TagResourceSerializer(serializers.Serializer):
