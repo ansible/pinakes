@@ -151,7 +151,7 @@ def test_workflow_post(api_request):
         {
             "name": "abcdef",
             "description": "abc",
-            "group_refs": [{"name": "group1", "uuid": "uuid1"}]
+            "group_refs": [{"name": "group1", "uuid": "uuid1"}],
         },
     )
 
@@ -169,7 +169,7 @@ def test_workflow_post_bad(api_request):
         {
             "name": "abcdef",
             "description": "abc",
-            "group_refs": [{"name": "group1"}]
+            "group_refs": [{"name": "group1"}],
         },
     )
 
