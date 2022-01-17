@@ -1,7 +1,9 @@
 import json
 
 from social_core.tests.backends.oauth import OAuth2Test
-from social_core.tests.backends.test_open_id_connect import OpenIdConnectTestMixin
+from social_core.tests.backends.test_open_id_connect import (
+    OpenIdConnectTestMixin,
+)
 
 
 class TestKeycloakOpenIdConnect(OpenIdConnectTestMixin, OAuth2Test):
