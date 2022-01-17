@@ -353,7 +353,9 @@ class PortfolioItemViewSet(
         portfolio_item = get_object_or_404(PortfolioItem, pk=pk)
         options = {
             "portfolio_item_id": portfolio_item.id,
-            "portfolio": portfolio_item.portfolio.id,
+            "portfolio_id": request.data.get(
+                "portfolio_id", portfolio_item.portfolio.id
+            ),
             "portfolio_item_name": request.data.get(
                 "portfolio_item_name", portfolio_item.name
             ),
