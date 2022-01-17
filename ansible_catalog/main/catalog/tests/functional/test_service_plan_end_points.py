@@ -76,19 +76,12 @@ def test_list_portfolio_item_service_plans(api_request):
 @pytest.mark.django_db
 def test_service_plan_retrieve(api_request):
     """Retrieve a service plan by id"""
-    service_offering = ServiceOfferingFactory(survey_enabled=True)
-    inventory_service_plan = InventoryServicePlanFactory(
-        service_offering=service_offering,
-        create_json_schema=TEST_SCHEMA,
-        schema_sha256=TEST_SHA256,
-    )
-
-    portfolio_item = PortfolioItemFactory(
-        service_offering_ref=str(service_offering.id)
-    )
+    portfolio_item = PortfolioItemFactory()
     service_plan = ServicePlanFactory(
         portfolio_item=portfolio_item,
         service_offering_ref=portfolio_item.service_offering_ref,
+        base_schema=TEST_SCHEMA,
+        base_sha256=TEST_SHA256
     )
 
     response = api_request(
@@ -97,11 +90,7 @@ def test_service_plan_retrieve(api_request):
 
     assert response.status_code == 200
     content = json.loads(response.content)
-    assert content["name"] == inventory_service_plan.name
     assert content["schema"] == TEST_SCHEMA
-    assert content["inventory_service_plan_ref"] == str(
-        inventory_service_plan.id
-    )
     assert content["portfolio_item"] == portfolio_item.id
     assert content["extra_data"]["base_schema"] == TEST_SCHEMA
 
