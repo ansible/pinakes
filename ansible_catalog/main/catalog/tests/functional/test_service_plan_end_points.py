@@ -81,7 +81,7 @@ def test_service_plan_retrieve(api_request):
         portfolio_item=portfolio_item,
         service_offering_ref=portfolio_item.service_offering_ref,
         base_schema=TEST_SCHEMA,
-        base_sha256=TEST_SHA256
+        base_sha256=TEST_SHA256,
     )
 
     response = api_request(
