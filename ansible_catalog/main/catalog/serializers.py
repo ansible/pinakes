@@ -120,6 +120,10 @@ class CopyPortfolioItemSerializer(serializers.Serializer):
     portfolio_item_name = serializers.CharField(
         help_text="New portfolio item name", required=False
     )
+    portfolio_id = serializers.CharField(
+        help_text="The target portfolio which this item belongs to",
+        required=False,
+    )
 
 
 class OrderItemFields:

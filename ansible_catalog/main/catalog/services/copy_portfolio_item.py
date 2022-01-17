@@ -84,9 +84,6 @@ class CopyPortfolioItem:
         if service_offering is None:
             return False
 
-        if len(svc.service_plans) > 0:
-            original_schema = svc.service_plans.first().create_json_schema
-
         service_plans = ServicePlan.objects.filter(
             portfolio_item=self.portfolio_item
         )
@@ -98,13 +95,6 @@ class CopyPortfolioItem:
                 "Survey Changed for Portfolio Item #{@portfolio_item.name}"
             )
             return False
-
-        for service_plan in service_plans:
-            if not service_plan.base_schema:
-                return True
-
-            if original_schema != service_plan.base_schema:
-                return False
 
         return True
 
