@@ -591,7 +591,17 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
 @extend_schema_view(
     retrieve=extend_schema(
-        description="Get a specific service plan",
+        description="Get the service plan by the specific ID",
+        parameters=[
+            OpenApiParameter(
+                "extra",
+                required=False,
+                enum=["true", "false"],
+                description="Include extra data such as base_schema",
+            ),
+        ],
+        request=None,
+        responses={200: ServicePlanSerializer},
     ),
 )
 class ServicePlanViewSet(
@@ -606,29 +616,6 @@ class ServicePlanViewSet(
     permission_classes = (IsAuthenticated,)
     filter_backends = []  # no filtering is needed
     parent_field_names = ("portfolio_item",)
-
-    @extend_schema(
-        description="Get the service plan by the specific ID",
-        parameters=[
-            OpenApiParameter(
-                "extra",
-                required=False,
-                enum=["true", "false"],
-                description="Include extra data such as base_schema",
-            ),
-        ],
-        request=None,
-        responses={200: ServicePlanSerializer},
-    )
-    def retrieve(self, request, pk):
-        service_plan = get_object_or_404(ServicePlan, pk=pk)
-
-        RefreshServicePlan(service_plan).process()
-
-        serializer = ServicePlanSerializer(
-            service_plan, many=False, context=self.get_serializer_context()
-        )
-        return Response(serializer.data)
 
     @extend_schema(
         description="List all service plans of the portfolio item",
@@ -670,11 +657,8 @@ class ServicePlanViewSet(
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        modified = request.data["modified"]
-        service_plan.modified_schema = modified
+        service_plan.modified_schema = request.data["modified"]
         service_plan.save()
-
-        RefreshServicePlan(service_plan).process()
 
         output_serializer = ServicePlanSerializer(
             service_plan, context=self.get_serializer_context()
