@@ -18,6 +18,9 @@ sources.register(
     basename="source-service_inventory",
     parents_query_lookups=ServiceInventoryViewSet.parent_field_names,
 )
+urls_views["source-service_inventory-list"] = ServiceInventoryViewSet.as_view(
+    {"get": "list"}
+)  # list only
 urls_views["source-service_inventory-detail"] = None  # disable
 urls_views["source-service_inventory-tag"] = None
 urls_views["source-service_inventory-tags"] = None

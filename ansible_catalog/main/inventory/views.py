@@ -12,6 +12,7 @@ import django_rq
 
 from ansible_catalog.common.tag_mixin import TagMixin
 from ansible_catalog.common.queryset_mixin import QuerySetMixin
+from ansible_catalog.common.serializers import TaskSerializer
 from ansible_catalog.main.models import Source
 from ansible_catalog.main.inventory.serializers import (
     InventoryServicePlanSerializer,
@@ -21,11 +22,26 @@ from ansible_catalog.main.inventory.serializers import (
     SourceSerializer,
 )
 from ansible_catalog.main.inventory.tasks import refresh_task
+from drf_spectacular.utils import (
+    extend_schema,
+    extend_schema_view,
+)
 
 # Create your views here.
 logger = logging.getLogger("inventory")
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get an existing source",
+    ),
+    list=extend_schema(
+        description="List all sources",
+    ),
+    partial_update=extend_schema(
+        description="Edit an existing source",
+    ),
+)
 class SourceViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     """API endpoint for listing and updating sources."""
 
@@ -38,15 +54,31 @@ class SourceViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     # Enable PATCH for refresh API
     http_method_names = ["get", "patch", "head"]
 
+    @extend_schema(
+        description=(
+            "Refresh an existing Source. It returns a background task id"
+        ),
+        request=None,
+        responses={status.HTTP_202_ACCEPTED: TaskSerializer},
+    )
     @action(methods=["patch"], detail=True)
     def refresh(self, request, pk):
         source = get_object_or_404(Source, pk=pk)
         result = django_rq.enqueue(refresh_task, source.tenant_id, source.id)
         logger.info("Job Id is %s", result.id)
 
-        return Response(None, status=status.HTTP_204_NO_CONTENT)
+        serializer = TaskSerializer(result)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get an existing inventory service plan",
+    ),
+    list=extend_schema(
+        description="List all inventory service plans",
+    ),
+)
 class InventoryServicePlanViewSet(
     NestedViewSetMixin, QuerySetMixin, ModelViewSet
 ):
@@ -67,6 +99,14 @@ class InventoryServicePlanViewSet(
     http_method_names = ["get", "head"]
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get an existing service offering",
+    ),
+    list=extend_schema(
+        description="List all service offerings",
+    ),
+)
 class ServiceOfferingViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     """API endpoint for listing and retrieving service offerings."""
 
@@ -94,6 +134,14 @@ class ServiceOfferingViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get an existing inventory",
+    ),
+    list=extend_schema(
+        description="List all service inventories",
+    ),
+)
 class ServiceInventoryViewSet(
     TagMixin, NestedViewSetMixin, QuerySetMixin, ModelViewSet
 ):
@@ -117,6 +165,14 @@ class ServiceInventoryViewSet(
     http_method_names = ["get", "post", "head"]
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get an existing service instance",
+    ),
+    list=extend_schema(
+        description="List all service instances",
+    ),
+)
 class ServiceInstanceViewSet(QuerySetMixin, ModelViewSet):
     """API endpoint for listing service instances."""
 
