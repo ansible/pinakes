@@ -262,6 +262,11 @@ LOGGING = {
             "backupCount": BACKUP_COUNT,
             "formatter": "simple",
         },
+        "rq_console": {
+            "level": "DEBUG",
+            "class": "rq.utils.ColorizingStreamHandler",
+            "formatter": "simple",
+        },
     },
     "root": {
         "handlers": ["console"],
@@ -292,6 +297,11 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+        "rq.worker": {
+            "handlers": ["rq_console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
     },
 }
 
@@ -306,6 +316,15 @@ RQ_QUEUES = {
         "DEFAULT_TIMEOUT": 360,
     },
 }
+
+# RQ Cron Jobs setting
+RQ_CRONJOBS = [
+    ("*/30 * * * *", "ansible_catalog.main.auth.tasks.sync_external_groups"),
+    (
+        "*/30 * * * *",
+        "ansible_catalog.main.inventory.tasks.refresh_all_sources",
+    ),
+]
 
 # Auto generation of openapi spec using Spectacular
 SPECTACULAR_SETTINGS = {
