@@ -1,5 +1,8 @@
 #!/bin/bash
 set -e
+export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.defaults
+export ANSIBLE_CATALOG_ALLOWED_HOSTS="*"
+export ANSIBLE_CATALOG_DEBUG="True"
 echo -e "\e[34m >>> Seed Kaycloak data \e[97m"
 ansible-playbook -vvv tools/keycloak_setup/dev.yml
 echo -e "\e[34m >>> Migrating changes \e[97m"

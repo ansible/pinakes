@@ -28,14 +28,15 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (
+_SECRET_KEY = (
     "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("ANSIBLE_CATALOG_DEBUG", default=False)
+SECRET_KEY = env.str("ANSIBLE_CATALOG_SECRET_KEY", default=_SECRET_KEY)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("ANSIBLE_CATALOG_ALLOWED_HOSTS", default=[])
 
 CATALOG_API_PATH_PREFIX = env.str(
     "ANSIBLE_CATALOG_API_PATH_PREFIX", default="/api/ansible-catalog"
