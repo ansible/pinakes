@@ -136,13 +136,23 @@ def test_service_plan_patch(api_request):
 
 
 @pytest.mark.django_db
-def test_service_plan_reset_post(api_request):
+def test_service_plan_reset_post_another_base(api_request):
     """Reset the service plan by id"""
+    _test_service_plan_reset(api_request, {"schemaType": "base"}, "xyz123")
+
+
+@pytest.mark.django_db
+def test_service_plan_reset_post_same_base(api_request):
+    """Reset the service plan by id"""
+    _test_service_plan_reset(api_request, TEST_SCHEMA, TEST_SHA256)
+
+
+def _test_service_plan_reset(api_request, remote_schema, remote_sha):
     service_offering = ServiceOfferingFactory(survey_enabled=True)
     remote_service_plan = InventoryServicePlanFactory(
         service_offering=service_offering,
-        create_json_schema={"schemaType": "base"},
-        schema_sha256="xyz123",
+        create_json_schema=remote_schema,
+        schema_sha256=remote_sha,
     )
 
     portfolio_item = PortfolioItemFactory(
@@ -152,9 +162,11 @@ def test_service_plan_reset_post(api_request):
     catalog_service_plan = ServicePlanFactory(
         portfolio_item=portfolio_item,
         service_offering_ref=portfolio_item.service_offering_ref,
-        modified_schema=TEST_SCHEMA,
+        base_schema=TEST_SCHEMA,
+        modified_schema={"schemaType": "modified"},
         outdated=True,
         outdated_changes="message",
+        base_sha256=TEST_SHA256,
     )
 
     response = api_request(
@@ -169,3 +181,14 @@ def test_service_plan_reset_post(api_request):
     assert content["modified"] is False
     assert content["outdated"] is False
     assert content["outdated_changes"] == ""
+
+    catalog_service_plan.refresh_from_db()
+    assert (
+        catalog_service_plan.schema == remote_service_plan.create_json_schema
+    )
+    assert catalog_service_plan.modified is False
+    assert catalog_service_plan.outdated is False
+    assert catalog_service_plan.outdated_changes == ""
+    assert (
+        catalog_service_plan.base_sha256 == remote_service_plan.schema_sha256
+    )
