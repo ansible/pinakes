@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 from drf_spectacular.utils import OpenApiTypes
 
 from ansible_catalog.main.models import BaseModel
+from ansible_catalog.common.auth.keycloak_django import (
+    AbstractKeycloakResource,
+)
 
 models.CharField.register_lookup(Length)
 
@@ -84,8 +87,11 @@ class RequestContext(models.Model):
     context = models.JSONField()
 
 
-class Request(BaseModel):
+class Request(AbstractKeycloakResource, BaseModel):
     """Request model"""
+
+    KEYCLOAK_TYPE = "approval:request"
+    KEYCLOAK_ACTIONS = ("read",)
 
     class State(models.TextChoices):
         PENDING = "pending"
