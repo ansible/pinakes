@@ -10,7 +10,6 @@ from ansible_catalog.main.inventory.tests.factories import (
 @pytest.mark.django_db
 def test_service_offering_list(api_request):
     """Test to list ServiceOffering endpoint"""
-
     ServiceOfferingFactory()
     response = api_request("get", "serviceoffering-list")
 
@@ -32,6 +31,16 @@ def test_service_offering_retrieve(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == service_offering.id
+    attr_list = [
+        "id",
+        "name",
+        "description",
+        "survey_enabled",
+        "created_at",
+        "updated_at",
+    ]
+    for attr in attr_list:
+        assert content[attr] is not None
 
 
 @pytest.mark.django_db
