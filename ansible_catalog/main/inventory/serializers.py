@@ -42,7 +42,7 @@ class ServiceInventorySerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "description",
-            "extra",
+            "name",
             "source_ref",
             "created_at",
             "updated_at",
@@ -60,7 +60,6 @@ class ServiceOfferingSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "survey_enabled",
-            "extra",
             "service_inventory",
         )
         read_only_fields = ("created_at", "updated_at")
@@ -76,7 +75,6 @@ class ServiceOfferingNodeSerializer(serializers.ModelSerializer):
             "service_inventory",
             "service_offering",
             "root_service_offering",
-            "extra",
         )
         read_only_fields = ("created_at", "updated_at")
 
@@ -89,7 +87,6 @@ class InventoryServicePlanSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
-            "extra",
             "create_json_schema",
             "update_json_schema",
             "schema_sha256",
