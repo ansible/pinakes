@@ -678,6 +678,8 @@ class ServicePlanViewSet(
         service_plan = get_object_or_404(ServicePlan, pk=pk)
 
         service_plan.modified_schema = None
+        service_plan.base_schema = None
+        service_plan.base_sha256 = None
         svc = RefreshServicePlan(service_plan).process()
 
         serializer = ServicePlanSerializer(
