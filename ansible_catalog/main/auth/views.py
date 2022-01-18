@@ -12,31 +12,63 @@ from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import mixins
+from drf_spectacular.utils import (
+    extend_schema,
+    extend_schema_view,
+    OpenApiParameter,
+    OpenApiResponse,
+    OpenApiTypes,
+)
 
 from ansible_catalog.main.auth import models
 from ansible_catalog.main.auth import tasks
 from ansible_catalog.main.auth import serializers
+from ansible_catalog.common.serializers import TaskSerializer
 from ansible_catalog.common.auth.keycloak.openid import OpenIdConnect
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get an existing group",
+    ),
+    list=extend_schema(
+        description="List all groups",
+    ),
+)
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Group.objects.all()
     serializer_class = serializers.GroupSerializer
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get the status of the background task for syncing groups",
+        responses={status.HTTP_202_ACCEPTED: TaskSerializer},
+    ),
+    create=extend_schema(
+        description="Sync groups from keycloak. Returns a background task id.",
+        responses={status.HTTP_200_OK: TaskSerializer},
+    ),
+)
 class GroupSyncViewSet(viewsets.ViewSet):
     def create(self, request: Request):
         job = django_rq.enqueue(tasks.sync_external_groups)
-        return Response({"id": job.id}, status=status.HTTP_202_ACCEPTED)
+        serializer = TaskSerializer(job)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     def retrieve(self, request: Request, pk: str):
         try:
             job = rq_job.Job.fetch(pk, connection=django_rq.get_connection())
         except rq_job.NoSuchJobError:
             raise Http404
-        return Response({"id": job.id, "status": job.get_status()})
+        return Response(TaskSerializer(job).data, status=status.HTTP_200_OK)
 
 
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get the current login user",
+    ),
+)
 class CurrentUserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.CurrentUserSerializer

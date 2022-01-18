@@ -1,7 +1,8 @@
 """ Module to test Source end points """
-from unittest.mock import patch
+from unittest.mock import Mock
 import json
 import pytest
+import rq
 from ansible_catalog.main.inventory.tests.factories import (
     InventoryServicePlanFactory,
     SourceFactory,
@@ -35,15 +36,22 @@ def test_source_retrieve(api_request):
     assert content["id"] == source.id
 
 
-@patch("ansible_catalog.main.inventory.views.django_rq", autoSpec=True)
 @pytest.mark.django_db
-def test_source_refresh(mock1, api_request):
+def test_source_refresh(mocker, api_request):
     """Test to refresh Source endpoint"""
+    job_id = "uuid1"
+    job_mock = Mock(id=job_id)
+    job_mock.get_status.return_value = "queued"
+    mocker.patch("django_rq.enqueue", return_value=job_mock)
+
     source = SourceFactory()
     response = api_request("patch", "source-refresh", source.id)
 
-    assert response.status_code == 204
-    assert (mock1.enqueue.call_count) == 1
+    assert response.status_code == 202
+    assert response.data == {
+        "id": job_id,
+        "status": "queued",
+    }
 
 
 @pytest.mark.django_db

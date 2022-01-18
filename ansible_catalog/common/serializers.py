@@ -15,3 +15,13 @@ class TaskSerializer(serializers.Serializer):
         max_length=64,
         help_text="Task id that can be used to track the progress",
     )
+
+    status = serializers.SerializerMethodField(
+        "get_status",
+        allow_null=True,
+        read_only=True,
+        help_text="Status of the task",
+    )
+
+    def get_status(self, background_job):
+        return background_job.get_status()
