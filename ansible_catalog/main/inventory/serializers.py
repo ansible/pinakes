@@ -62,6 +62,7 @@ class ServiceOfferingSerializer(serializers.ModelSerializer):
             "survey_enabled",
             "created_at",
             "updated_at",
+            "source",
         )
         read_only_fields = ("created_at", "updated_at")
 
