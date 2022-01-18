@@ -24,7 +24,7 @@ def test_service_inventory_list(api_request):
 def test_service_inventory_retrieve(api_request):
     """Test to retrieve ServiceInventory endpoint"""
 
-    service_inventory = ServiceInventoryFactory()
+    service_inventory = ServiceInventoryFactory(name="fred")
     response = api_request(
         "get", "serviceinventory-detail", service_inventory.id
     )
@@ -32,6 +32,7 @@ def test_service_inventory_retrieve(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == service_inventory.id
+    assert content["name"] == service_inventory.name
 
 
 @pytest.mark.django_db
