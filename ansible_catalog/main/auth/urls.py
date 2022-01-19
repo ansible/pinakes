@@ -6,6 +6,7 @@ from ansible_catalog.main.auth import views
 router = SimpleRouter()
 router.register("groups/sync", views.GroupSyncViewSet, basename="group-sync")
 router.register("groups", views.GroupViewSet)
+router.register("tasks", views.TaskViewSet, basename="task")
 
 urlpatterns = [
     path(
