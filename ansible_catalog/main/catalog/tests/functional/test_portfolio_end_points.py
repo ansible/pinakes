@@ -314,15 +314,18 @@ def test_portfolio_share_info(api_request, mocker):
     assert (len(shares)) == 1
     assert shares[0]["group_id"] == group.id
     assert shares[0]["group_name"] == group.name
-    assert shares[0]["permissions"] == [
-        Portfolio.KEYCLOAK_ACTIONS[0],
-        Portfolio.KEYCLOAK_ACTIONS[1],
-    ]
+    assert (
+        shares[0]["permissions"].sort()
+        == [
+            Portfolio.KEYCLOAK_ACTIONS[0],
+            Portfolio.KEYCLOAK_ACTIONS[1],
+        ].sort()
+    )
 
 
 @pytest.mark.django_db
 def test_portfolio_share_info_empty(api_request, mocker):
-    """Test Share Information of Portfolio with keycloak_id set"""
+    """Test Share Information of Portfolio without keycloak_id"""
     portfolio = PortfolioFactory()
 
     response = api_request("get", "portfolio-share-info", portfolio.id)
@@ -330,3 +333,49 @@ def test_portfolio_share_info_empty(api_request, mocker):
     assert response.status_code == 200
     shares = json.loads(response.content)
     assert (len(shares)) == 0
+
+
+@pytest.mark.django_db
+def test_portfolio_share_info_consolidated(api_request, mocker):
+    """Test Share Information of Portfolio with separate permission set"""
+    group = GroupFactory()
+    portfolio = PortfolioFactory(keycloak_id="abc")
+
+    client_mock = mock.Mock()
+    mocker.patch(
+        "ansible_catalog.common.auth.keycloak_django.get_uma_client",
+        return_value=client_mock,
+    )
+    permission1 = UmaPermission(
+        name=make_permission_name(portfolio, group),
+        groups=[group.path],
+        scopes=[
+            make_scope(portfolio, Portfolio.KEYCLOAK_ACTIONS[1]),
+        ],
+    )
+    permission2 = UmaPermission(
+        name=make_permission_name(portfolio, group),
+        groups=[group.path],
+        scopes=[
+            make_scope(portfolio, Portfolio.KEYCLOAK_ACTIONS[0]),
+        ],
+    )
+    client_mock.find_permissions_by_resource.return_value = [
+        permission1,
+        permission2,
+    ]
+
+    response = api_request("get", "portfolio-share-info", portfolio.id)
+
+    assert response.status_code == 200
+    shares = json.loads(response.content)
+    assert (len(shares)) == 1
+    assert shares[0]["group_id"] == group.id
+    assert shares[0]["group_name"] == group.name
+    assert (
+        shares[0]["permissions"].sort()
+        == [
+            Portfolio.KEYCLOAK_ACTIONS[0],
+            Portfolio.KEYCLOAK_ACTIONS[1],
+        ].sort()
+    )
