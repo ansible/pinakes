@@ -318,6 +318,10 @@ RQ_QUEUES = {
 }
 
 # RQ Cron Jobs setting
+STARTUP_RQ_JOBS = [
+    "ansible_catalog.main.auth.tasks.sync_external_groups",
+    "ansible_catalog.main.inventory.tasks.refresh_all_sources",
+]
 RQ_CRONJOBS = [
     ("*/30 * * * *", "ansible_catalog.main.auth.tasks.sync_external_groups"),
     (
