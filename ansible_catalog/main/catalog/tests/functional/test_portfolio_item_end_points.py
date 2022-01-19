@@ -224,3 +224,40 @@ def test_portfolio_item_copy(api_request, mocker):
     assert (
         PortfolioItem.objects.last().name == "Copy of %s" % portfolio_item.name
     )
+
+
+@pytest.mark.django_db
+def test_next_name_in_same_portfolio(api_request):
+    portfolio = PortfolioFactory()
+    portfolio_item = PortfolioItemFactory(name="test", portfolio=portfolio)
+
+    response = api_request(
+        "get",
+        "portfolioitem-next-name",
+        portfolio_item.id,
+    )
+
+    assert response.status_code == 200
+    assert response.data["next_name"] == "Copy of " + portfolio_item.name
+
+
+@pytest.mark.django_db
+def test_next_name_in_different_portfolio(api_request):
+    portfolio_1 = PortfolioFactory()
+    PortfolioItemFactory(name="test", portfolio=portfolio_1)
+    PortfolioItemFactory(name="Copy of test", portfolio=portfolio_1)
+
+    portfolio_2 = PortfolioFactory()
+    portfolio_item = PortfolioItemFactory(name="test", portfolio=portfolio_2)
+
+    data = {"destination_portfolio_id": portfolio_1.id}
+
+    response = api_request(
+        "get",
+        "portfolioitem-next-name",
+        portfolio_item.id,
+        data,
+    )
+
+    assert response.status_code == 200
+    assert response.data["next_name"] == "Copy (1) of " + portfolio_item.name

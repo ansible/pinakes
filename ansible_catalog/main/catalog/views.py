@@ -47,6 +47,8 @@ from ansible_catalog.main.catalog.serializers import (
     CopyPortfolioSerializer,
     CopyPortfolioItemSerializer,
     ModifiedServicePlanInSerializer,
+    NextNameInSerializer,
+    NextNameOutSerializer,
     OrderItemSerializer,
     OrderItemDocSerializer,
     OrderSerializer,
@@ -73,6 +75,9 @@ from ansible_catalog.main.catalog.services.create_portfolio_item import (
 )
 from ansible_catalog.main.catalog.services.fetch_service_plans import (
     FetchServicePlans,
+)
+from ansible_catalog.main.catalog.services import (
+    name,
 )
 from ansible_catalog.main.catalog.services.refresh_service_plan import (
     RefreshServicePlan,
@@ -376,6 +381,49 @@ class PortfolioItemViewSet(
         serializer = self.get_serializer(svc.new_portfolio_item)
 
         return Response(serializer.data)
+
+    @extend_schema(
+        description="Get next available portfolio item name",
+        parameters=[
+            OpenApiParameter(
+                "destination_portfolio_id",
+                required=False,
+                description="Retrieve next available portfolio item name from destination portfolio",
+            ),
+        ],
+        request=NextNameInSerializer,
+        responses={
+            200: OpenApiResponse(
+                NextNameOutSerializer(many=False),
+                description="The next available portfolio item name",
+            )
+        },
+    )
+    @action(methods=["get"], detail=True)
+    def next_name(self, request, pk):
+        """Retrieve next available portfolio item name"""
+        portfolio_item = get_object_or_404(PortfolioItem, pk=pk)
+        destination_portfolio_id = request.GET.get(
+            "destination_portfolio_id", None
+        )
+        portfolio = (
+            portfolio_item.portfolio
+            if destination_portfolio_id is None
+            else Portfolio.objects.get(id=destination_portfolio_id)
+        )
+
+        portfolio_item_names = [
+            item.name
+            for item in PortfolioItem.objects.filter(portfolio=portfolio)
+        ]
+        available_name = name.create_copy_name(
+            portfolio_item.name, portfolio_item_names
+        )
+
+        output_serializer = NextNameOutSerializer(
+            {"next_name": available_name}
+        )
+        return Response(output_serializer.data)
 
 
 @extend_schema_view(
