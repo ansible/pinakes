@@ -288,9 +288,9 @@ def test_portfolio_icon_delete(api_request, small_image, media_dir):
 
 @pytest.mark.django_db
 def test_portfolio_share_info(api_request, mocker):
-    """Test Share Information of Portfolio"""
+    """Test Share Information of Portfolio with keycloak_id set"""
     group = GroupFactory()
-    portfolio = PortfolioFactory()
+    portfolio = PortfolioFactory(keycloak_id="abc")
 
     client_mock = mock.Mock()
     mocker.patch(
@@ -318,3 +318,15 @@ def test_portfolio_share_info(api_request, mocker):
         Portfolio.KEYCLOAK_ACTIONS[0],
         Portfolio.KEYCLOAK_ACTIONS[1],
     ]
+
+
+@pytest.mark.django_db
+def test_portfolio_share_info_empty(api_request, mocker):
+    """Test Share Information of Portfolio with keycloak_id set"""
+    portfolio = PortfolioFactory()
+
+    response = api_request("get", "portfolio-share-info", portfolio.id)
+
+    assert response.status_code == 200
+    shares = json.loads(response.content)
+    assert (len(shares)) == 0
