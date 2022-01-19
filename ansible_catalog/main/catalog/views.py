@@ -256,7 +256,8 @@ class PortfolioViewSet(
             ]
             data.append(
                 {
-                    "group": group.id if group else None,
+                    "group_id": group.id if group else None,
+                    "group_name": group.name if group else None,
                     "permissions": scopes,
                 }
             )

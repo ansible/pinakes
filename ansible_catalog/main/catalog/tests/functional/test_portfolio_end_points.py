@@ -4,6 +4,7 @@ import os
 import glob
 
 from unittest.mock import patch
+from unittest import mock
 import pytest
 
 from ansible_catalog.main.models import Image
@@ -15,6 +16,13 @@ from ansible_catalog.main.catalog.tests.factories import (
     ImageFactory,
     PortfolioFactory,
     PortfolioItemFactory,
+)
+
+from ansible_catalog.main.auth.tests.factories import GroupFactory
+from ansible_catalog.common.auth.keycloak.models import UmaPermission
+from ansible_catalog.common.auth.keycloak_django.utils import (
+    make_permission_name,
+    make_scope,
 )
 
 
@@ -276,3 +284,37 @@ def test_portfolio_icon_delete(api_request, small_image, media_dir):
     assert len(images) == len(orignal_images) - 1
     portfolio.refresh_from_db()
     assert portfolio.icon is None
+
+
+@pytest.mark.django_db
+def test_portfolio_share_info(api_request, mocker):
+    """Test Share Information of Portfolio"""
+    group = GroupFactory()
+    portfolio = PortfolioFactory()
+
+    client_mock = mock.Mock()
+    mocker.patch(
+        "ansible_catalog.common.auth.keycloak_django.get_uma_client",
+        return_value=client_mock,
+    )
+    permission = UmaPermission(
+        name=make_permission_name(portfolio, group),
+        groups=[group.path],
+        scopes=[
+            make_scope(portfolio, Portfolio.KEYCLOAK_ACTIONS[0]),
+            make_scope(portfolio, Portfolio.KEYCLOAK_ACTIONS[1]),
+        ],
+    )
+    client_mock.find_permissions_by_resource.return_value = [permission]
+
+    response = api_request("get", "portfolio-share-info", portfolio.id)
+
+    assert response.status_code == 200
+    shares = json.loads(response.content)
+    assert (len(shares)) == 1
+    assert shares[0]["group_id"] == group.id
+    assert shares[0]["group_name"] == group.name
+    assert shares[0]["permissions"] == [
+        Portfolio.KEYCLOAK_ACTIONS[0],
+        Portfolio.KEYCLOAK_ACTIONS[1],
+    ]
