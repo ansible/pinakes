@@ -63,6 +63,8 @@ spec:
               value: "*"
             - name: ANSIBLE_CATALOG_DEBUG
               value: "True"
+            - name: ANSIBLE_CATALOG_SECRET_KEY
+              value: "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
             - name: ANSIBLE_CATALOG_CONTROLLER_URL
               valueFrom:
                 configMapKeyRef:
