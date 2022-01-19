@@ -34,6 +34,8 @@ _SECRET_KEY = (
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("ANSIBLE_CATALOG_DEBUG", default=False)
+TEMPLATE_DEBUG = DEBUG
+SQL_DEBUG = DEBUG
 SECRET_KEY = env.str("ANSIBLE_CATALOG_SECRET_KEY", default=_SECRET_KEY)
 
 ALLOWED_HOSTS = env.list("ANSIBLE_CATALOG_ALLOWED_HOSTS", default=[])

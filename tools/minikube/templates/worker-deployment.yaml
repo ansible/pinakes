@@ -50,7 +50,7 @@ spec:
             - name: CONTROLLER_VERIFY_SSL
               value: "False"
             - name: DJANGO_SETTINGS_MODULE
-              value: ansible_catalog.settings.development
+              value: ansible_catalog.settings.defaults
             - name: ANSIBLE_CATALOG_DATABASE_NAME
               value: dev_catalog
             - name: ANSIBLE_CATALOG_POSTGRES_HOST
@@ -59,6 +59,10 @@ spec:
               value: keycloak
             - name: ANSIBLE_CATALOG_POSTGRES_PASSWORD
               value: password
+            - name: ANSIBLE_CATALOG_ALLOWED_HOSTS
+              value: "*"
+            - name: ANSIBLE_CATALOG_DEBUG
+              value: "True"
             - name: ANSIBLE_CATALOG_CONTROLLER_URL
               valueFrom:
                 configMapKeyRef:
