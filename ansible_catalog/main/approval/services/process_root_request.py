@@ -22,16 +22,25 @@ class ProcessRootRequest:
         return self
 
     def _create_child_requests(self):
-        if len(self.workflows) == 1 and len(self.workflows[0].group_refs) == 1:
+        if len(self.workflows) == 1 and len(self.workflows[0].group_refs) <= 1:
+            if len(self.workflows[0].group_refs) == 0:
+                group_ref = {}
+            else:
+                group_ref = self.workflows[0].group_refs[0]
+
             self._update_leaf_with_workflow(
                 self.request,
                 self.workflows[0],
-                self.workflows[0].group_refs[0],
+                group_ref,
             )
             return
 
         for workflow in self.workflows:
-            for group_ref in workflow.group_refs:
+            if len(workflow.group_refs) == 0:
+                group_refs = [{}]
+            else:
+                group_refs = workflow.group_refs
+            for group_ref in group_refs:
                 child_request = self.request.create_child()
                 self._update_leaf_with_workflow(
                     child_request, workflow, group_ref
@@ -40,8 +49,8 @@ class ProcessRootRequest:
         self._update_root_group_name()
 
     def _update_leaf_with_workflow(self, leaf_request, workflow, group_ref):
-        group_name = group_ref.get("name")
-        group_uuid = group_ref.get("uuid")
+        group_name = group_ref.get("name", "<NO_GROUP>")
+        group_uuid = group_ref.get("uuid", "")
         if group_uuid:
             tasks.add_group_permissions(leaf_request, (group_uuid,), ("read",))
         Request.objects.filter(id=leaf_request.id).update(
