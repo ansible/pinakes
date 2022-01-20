@@ -9,12 +9,19 @@ from ansible_catalog.main.inventory.task_utils.launch_job import LaunchJob
 from ansible_catalog.main.catalog.services.finish_order_item import (
     FinishOrderItem,
 )
-
 from ansible_catalog.main.catalog.services.update_service_plans import (
     UpdateServicePlans,
 )
+from ansible_catalog.main.models import Source
 
 logger = logging.getLogger("inventory")
+
+
+def refresh_all_sources():
+    """Task to refresh all sources, used by cron jobs"""
+    for source in Source.objects.all():
+        logger.info("Refreshing source %s", source.name)
+        refresh_task(source.tenant_id, source.id)
 
 
 def refresh_task(tenant_id, source_id):

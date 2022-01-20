@@ -8,8 +8,10 @@
 set -e
 kubectl delete --namespace=catalog -f ./tools/minikube/templates/app-deployment.yaml
 kubectl delete --namespace=catalog -f ./tools/minikube/templates/worker-deployment.yaml
+kubectl delete --namespace=catalog -f ./tools/minikube/templates/scheduler-deployment.yaml
 echo "Rebuilding app image"
 eval $(minikube -p minikube docker-env)
 minikube image build -t localhost/ansible-catalog -f tools/docker/Dockerfile .
 kubectl create --namespace=catalog -f ./tools/minikube/templates/app-deployment.yaml
 kubectl create --namespace=catalog -f ./tools/minikube/templates/worker-deployment.yaml
+kubectl create --namespace=catalog -f ./tools/minikube/templates/scheduler-deployment.yaml

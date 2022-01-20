@@ -52,3 +52,5 @@ kubectl apply --namespace=catalog -f ./tools/minikube/templates/app-service.yaml
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/ingress.yaml
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/worker-claim0-persistentvolumeclaim.yaml
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/worker-deployment.yaml
+kubectl apply --namespace=catalog -f ./tools/minikube/templates/scheduler-claim0-persistentvolumeclaim.yaml
+kubectl apply --namespace=catalog -f ./tools/minikube/templates/scheduler-deployment.yaml

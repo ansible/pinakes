@@ -82,6 +82,10 @@ export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
   export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
   python3 manage.py rqworker default
   ```
+* To run a scheduler to schedule the background tasks we need to run the scheduler separate from the server. 
+  ```
+  python manage.py cronjobs  # (re)schedule cron jobs defined in the settings file  
+  ```
 ## Using docker-compose for development
 ### Requirements
 You will need to install docker/podman and docker-compose.
