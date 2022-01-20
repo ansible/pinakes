@@ -33,6 +33,7 @@ urls_views["portfolio-portfolioitem-tag"] = None
 urls_views["portfolio-portfolioitem-tags"] = None
 urls_views["portfolio-portfolioitem-untag"] = None
 urls_views["portfolio-portfolioitem-copy"] = None
+urls_views["portfolio-portfolioitem-next-name"] = None
 urls_views["portfolio-portfolioitem-list"] = PortfolioItemViewSet.as_view(
     {"get": "list"}
 )  # read only

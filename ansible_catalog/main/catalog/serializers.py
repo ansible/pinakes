@@ -407,3 +407,25 @@ class SharingPermissionSerializer(serializers.Serializer):
     )
 
     group_name = serializers.CharField(help_text="Group Name")
+
+
+class NextNameInSerializer(serializers.Serializer):
+    """Paramters to retrieve next available portfolio item name"""
+
+    portfolio_item_id = serializers.IntegerField(
+        required=True,
+        help_text="ID of the portfolio item.",
+    )
+    destination_portfolio_id = serializers.IntegerField(
+        read_only=True,
+        required=False,
+        help_text="ID of the destination portfolio.",
+    )
+
+
+class NextNameOutSerializer(serializers.Serializer):
+    """Next available portfolio item name"""
+
+    next_name = serializers.CharField(
+        max_length=64, help_text="Next available portfolio item name"
+    )
