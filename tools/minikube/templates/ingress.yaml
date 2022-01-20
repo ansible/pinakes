@@ -36,6 +36,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: app
+                name: nginx
                 port:
-                  number: 8000
+                  number: 80
