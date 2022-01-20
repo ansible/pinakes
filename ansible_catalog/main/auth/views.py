@@ -66,6 +66,21 @@ class GroupSyncViewSet(viewsets.ViewSet):
 
 @extend_schema_view(
     retrieve=extend_schema(
+        description="Get the status of a background task",
+        responses={status.HTTP_202_ACCEPTED: TaskSerializer},
+    ),
+)
+class TaskViewSet(viewsets.ViewSet):
+    def retrieve(self, request: Request, pk: str):
+        try:
+            job = rq_job.Job.fetch(pk, connection=django_rq.get_connection())
+        except rq_job.NoSuchJobError:
+            raise Http404
+        return Response(TaskSerializer(job).data, status=status.HTTP_200_OK)
+
+
+@extend_schema_view(
+    retrieve=extend_schema(
         description="Get the current login user",
     ),
 )
