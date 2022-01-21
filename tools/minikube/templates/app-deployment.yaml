@@ -70,7 +70,7 @@ spec:
             - name: ANSIBLE_CATALOG_MEDIA_ROOT
               value: /app/media
             - name: ANSIBLE_CATALOG_ALLOWED_HOSTS
-              value: "*"
+              value: "catalog.k8s.local,app"
             - name: ANSIBLE_CATALOG_SECRET_KEY
               value: "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
             - name: ANSIBLE_CATALOG_CONTROLLER_URL
