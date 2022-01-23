@@ -171,7 +171,7 @@ STATICFILES_DIRS = [
     BASE_DIR / "ui",
 ]
 STATIC_ROOT = env.str("ANSIBLE_CATALOG_STATIC_ROOT", default="/app/static")
-LOGIN_REDIRECT_URL = "/ui/catalog/index.html"
+LOGIN_REDIRECT_URL = env.str("ANSIBLE_CATALOG_LOGIN_REDIRECT_URL", default="/ui/catalog/index.html")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

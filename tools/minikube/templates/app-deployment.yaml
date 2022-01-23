@@ -75,6 +75,8 @@ spec:
               value: "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
             - name: ANSIBLE_CATALOG_STATIC_ROOT
               value: /app/static
+            - name: ANSIBLE_CATALOG_LOGIN_REDIRECT_URL
+              value: /catalog/ui/index.html
             - name: ANSIBLE_CATALOG_CONTROLLER_URL
               valueFrom:
                 configMapKeyRef:
