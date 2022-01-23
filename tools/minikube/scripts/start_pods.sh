@@ -35,9 +35,13 @@ fi
 
 kubectl get configmap --namespace=catalog catalog-nginx.conf 2>> /dev/null
 if [ $? -ne 0 ]; then
-	kubectl create --namespace=catalog configmap catalog-nginx.conf --from-file=./tools/minikube/conf
+	kubectl create --namespace=catalog configmap catalog-nginx.conf --from-file=./tools/minikube/nginx
 fi
 
+kubectl get configmap --namespace=catalog ssl 2>> /dev/null
+if [ $? -ne 0 ]; then
+	kubectl create --namespace=catalog configmap ssl --from-file=./tools/minikube/nginx/catalog.k8s.local.key --from-file=./tools/minikube/nginx/catalog.k8s.local.crt
+fi
 
 kubectl get configmap --namespace=catalog ansible-controller-env 2>> /dev/null
 if [ $? -eq 0 ]; then

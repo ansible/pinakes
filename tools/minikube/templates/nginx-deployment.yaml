@@ -18,13 +18,15 @@ spec:
       - name: nginx
         image: nginx:alpine
         ports:
-        - containerPort: 80
+        - containerPort: 443
         resources: {}
         volumeMounts:
         - mountPath: /app
           name: app-claim0
         - mountPath: /etc/nginx/conf.d
           name: catalog-nginx
+        - mountPath: /etc/ssl
+          name: ssl
       volumes:
         - name: catalog-nginx
           configMap:
@@ -33,7 +35,16 @@ spec:
               - key: "catalog-nginx.conf"
                 path: "catalog-nginx.conf"
                 mode: 0777
-
+        - name: ssl
+          configMap:
+            name: ssl
+            items:
+              - key: "catalog.k8s.local.crt"
+                path: "catalog.k8s.local.crt"
+                mode: 0777
+              - key: "catalog.k8s.local.key"
+                path: "catalog.k8s.local.key"
+                mode: 0777
         - name: app-claim0
           persistentVolumeClaim:
             claimName: app-claim0

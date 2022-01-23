@@ -189,21 +189,20 @@ Once this has been setup you can start the deployments, services and ingress ser
 ```
 
 To login to the UI use
-http://catalog.k8s.local/ui/index.html
+https://catalog.k8s.local/
 
 To access the keycloak server running inside the cluster use the following URL
 http://keycloak.k8s.local/auth  (Default userid is admin password is admin)
 
 
 To login to the catalog app using API endpoint
-http://catalog.k8s.local/login/keycloak-oidc/
+https://catalog.k8s.local/login/keycloak-oidc/
 When prompted enter the userid/password (barney/barney)
-This would lead to a page (http://catalog.k8s.local/accounts/profile/) that has a 404 not found that's ok.
 
 To access the catalog app use
 
-http://catalog.k8s.local/api/ansible-catalog/v1/schema/openapi.json
-http://catalog.k8s.local/api/ansible-catalog/v1/portfolios/ (You wont be able to get to this link without logging in first)
+https://catalog.k8s.local/api/ansible-catalog/v1/schema/openapi.json
+https://catalog.k8s.local/api/ansible-catalog/v1/portfolios/ (You wont be able to get to this link without logging in first)
 
 ### Applying local code changes for testing
 To deploy your code changes that you have made locally before creating a PR you can redeploy the app using
