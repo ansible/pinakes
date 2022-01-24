@@ -60,9 +60,7 @@ def test_update_single_request(mocker):
             SendEvent, "__init__", return_value=None
         )
         mocker.patch.object(SendEvent, "process")
-        workflow = WorkflowFactory(
-            group_refs=[{"group_name": "g", "group_ref": "r"}]
-        )
+        workflow = WorkflowFactory()
         request = RequestFactory(workflow=workflow)
         request = UpdateRequest(request, suite[0]).process().request
 
@@ -76,21 +74,17 @@ def test_update_single_request(mocker):
 @pytest.mark.django_db
 def test_auto_approve(mocker):
     """Test auto approve a request"""
-    testing_suites = (
-        RequestFactory(),
-        RequestFactory(workflow=WorkflowFactory()),
+    init_request = RequestFactory(workflow=None)
+    mocker.patch.object(SendEvent, "process")
+    request = (
+        UpdateRequest(init_request, {"state": Request.State.STARTED})
+        .process()
+        .request
     )
-    for suite in testing_suites:
-        mocker.patch.object(SendEvent, "process")
-        request = (
-            UpdateRequest(suite, {"state": Request.State.STARTED})
-            .process()
-            .request
-        )
 
-        assert request.state == Request.State.COMPLETED
-        assert request.reason == AUTO_APPROVED_REASON
-        assert request.decision == Request.Decision.APPROVED
+    assert request.state == Request.State.COMPLETED
+    assert request.reason == AUTO_APPROVED_REASON
+    assert request.decision == Request.Decision.APPROVED
 
 
 @pytest.mark.django_db

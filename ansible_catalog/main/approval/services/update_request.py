@@ -200,9 +200,4 @@ class UpdateRequest:
     def _should_auto_approve(self):
         if self.request.is_parent():
             return False
-        if (
-            self.request.workflow is None
-            or len(self.request.workflow.group_refs) == 0
-        ):
-            return True
-        return False
+        return self.request.workflow is None

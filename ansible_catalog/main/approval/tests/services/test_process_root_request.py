@@ -31,7 +31,9 @@ def test_process_request_one_workflow(mocker):
     workflow = WorkflowFactory()
     service = _prepare_service(mocker, [workflow.id])
     request = service.process().request
-    _assert_request(request, "completed", decision="approved")
+    _assert_request(
+        request, state="started", group_name="<NO_GROUP>", workflow=workflow
+    )
 
 
 @pytest.mark.django_db
@@ -85,13 +87,13 @@ def test_process_request_workflows_groups(mocker):
         "ansible_catalog.common.tasks.add_group_permissions", return_value=None
     )
     workflow1 = WorkflowFactory(group_refs=({"name": "n1", "uuid": "u1"},))
-    workflow2 = WorkflowFactory(group_refs=({"name": "n2", "uuid": "u2"},))
+    workflow2 = WorkflowFactory()
     service = _prepare_service(mocker, [workflow1.id, workflow2.id])
     request = service.process().request
 
     request.refresh_from_db()
     _assert_request(
-        request, state="started", num_children=2, group_name="n1,n2"
+        request, state="started", num_children=2, group_name="n1,<NO_GROUP>"
     )
     _assert_request(
         request.requests[0],
@@ -102,10 +104,10 @@ def test_process_request_workflows_groups(mocker):
     _assert_request(
         request.requests[1],
         state="pending",
-        group_name="n2",
+        group_name="<NO_GROUP>",
         workflow=workflow2,
     )
-    assert add_permissions.call_count == 2
+    assert add_permissions.call_count == 1
 
 
 def _prepare_service(mocker, workflow_ids):
