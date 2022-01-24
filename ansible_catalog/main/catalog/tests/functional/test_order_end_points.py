@@ -7,6 +7,7 @@ from ansible_catalog.main.catalog.tests.factories import (
     OrderItemFactory,
     PortfolioFactory,
     PortfolioItemFactory,
+    ServicePlanFactory,
 )
 from ansible_catalog.main.inventory.tests.factories import (
     ServiceOfferingFactory,
@@ -191,7 +192,13 @@ def test_order_order_items_get(api_request):
 def test_order_order_item_post(api_request):
     """Create a new order item from an order"""
     order = OrderFactory()
-    portfolio_item = PortfolioItemFactory()
+    service_offering = ServiceOfferingFactory()
+    portfolio_item = PortfolioItemFactory(
+        service_offering_ref=service_offering.id
+    )
+    service_plan = ServicePlanFactory(
+        portfolio_item=portfolio_item,
+    )
     data = {
         "portfolio_item": portfolio_item.id,
     }
@@ -200,3 +207,4 @@ def test_order_order_item_post(api_request):
     assert response.status_code == 201
     assert content["name"] == portfolio_item.name
     assert content["order"] == str(order.id)
+    assert content["inventory_service_plan_ref"] == str(service_plan.id)
