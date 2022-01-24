@@ -70,11 +70,13 @@ spec:
             - name: ANSIBLE_CATALOG_MEDIA_ROOT
               value: /app/media
             - name: ANSIBLE_CATALOG_ALLOWED_HOSTS
-              value: "*"
-            - name: ANSIBLE_CATALOG_DEBUG
-              value: "True"
+              value: "catalog.k8s.local,app"
             - name: ANSIBLE_CATALOG_SECRET_KEY
               value: "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
+            - name: ANSIBLE_CATALOG_STATIC_ROOT
+              value: /app/static
+            - name: ANSIBLE_CATALOG_LOGIN_REDIRECT_URL
+              value: /ui/catalog/index.html
             - name: ANSIBLE_CATALOG_CONTROLLER_URL
               valueFrom:
                 configMapKeyRef:

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 443
+        resources: {}
+        volumeMounts:
+        - mountPath: /app
+          name: app-claim0
+        - mountPath: /etc/nginx/conf.d
+          name: catalog-nginx
+        - mountPath: /etc/ssl
+          name: ssl
+      volumes:
+        - name: catalog-nginx
+          configMap:
+            name: catalog-nginx.conf
+            items:
+              - key: "catalog-nginx.conf"
+                path: "catalog-nginx.conf"
+                mode: 0777
+        - name: ssl
+          configMap:
+            name: ssl
+            items:
+              - key: "catalog.k8s.local.crt"
+                path: "catalog.k8s.local.crt"
+                mode: 0777
+              - key: "catalog.k8s.local.key"
+                path: "catalog.k8s.local.key"
+                mode: 0777
+        - name: app-claim0
+          persistentVolumeClaim:
+            claimName: app-claim0
+      restartPolicy: Always
+status: {}
