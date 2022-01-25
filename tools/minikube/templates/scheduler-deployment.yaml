@@ -49,8 +49,6 @@ spec:
               value: /tmp
             - name: CONTROLLER_VERIFY_SSL
               value: "False"
-            - name: DJANGO_SETTINGS_MODULE
-              value: ansible_catalog.settings.defaults
             - name: ANSIBLE_CATALOG_DATABASE_NAME
               value: dev_catalog
             - name: ANSIBLE_CATALOG_POSTGRES_HOST
