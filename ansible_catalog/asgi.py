@@ -11,6 +11,8 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ansible_catalog.settings.defaults")
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE", "ansible_catalog.settings.defaults"
+)
 
 application = get_asgi_application()
