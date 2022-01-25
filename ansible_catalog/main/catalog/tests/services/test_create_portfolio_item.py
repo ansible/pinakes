@@ -55,10 +55,11 @@ def test_process_only_with_required_parameters():
 
 
 @pytest.mark.django_db
-def test_process_without_service_offering():
+def test_process_with_invalid_service_offering():
     portfolio = PortfolioFactory()
     options = {
         "portfolio": portfolio.id,
+        "service_offering_ref": "abc",
     }
 
     with pytest.raises(BadParamsException) as excinfo:

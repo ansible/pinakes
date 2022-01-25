@@ -334,7 +334,16 @@ class OrderItemManager(models.Manager):
             SanitizeParameters,
         )
 
-        kwargs["name"] = kwargs["portfolio_item"].name
+        portfolio_item = kwargs["portfolio_item"]
+        service_plan = ServicePlan.objects.filter(
+            portfolio_item=portfolio_item
+        ).first()
+
+        if service_plan:
+            kwargs["inventory_service_plan_ref"] = str(service_plan.id)
+
+        kwargs["name"] = portfolio_item.name
+
         order_item = super(OrderItemManager, self).create(*args, **kwargs)
 
         sanitized_parameters = (
