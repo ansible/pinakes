@@ -240,43 +240,41 @@ class PortfolioViewSet(
     )
     def share_info(self, request, pk=None):
         portfolio = self.get_object()
-        data = []
-        if portfolio.keycloak_id:
-            client = keycloak_django.get_uma_client()
-            permissions = client.find_permissions_by_resource(
-                portfolio.keycloak_id
-            )
-            permissions = list(
-                filter(keycloak_django.is_group_permission, permissions)
-            )
+        if not portfolio.keycloak_id:
+            return Response([])
 
-            groups_lookup = [
-                permission.groups[0] for permission in permissions
-            ]
-            groups = Group.objects.filter(path__in=groups_lookup)
-            groups_by_path = {group.path: group for group in groups}
+        client = keycloak_django.get_uma_client()
+        permissions = client.find_permissions_by_resource(
+            portfolio.keycloak_id
+        )
+        permissions = list(
+            filter(keycloak_django.is_group_permission, permissions)
+        )
 
-            permissions_by_group = {}
-            for permission in permissions:
-                if permission.groups[0] in permissions_by_group:
-                    permissions_by_group[permission.groups[0]].extend(
-                        permission.scopes
-                    )
-                else:
-                    permissions_by_group[
-                        permission.groups[0]
-                    ] = permission.scopes
+        groups_lookup = [permission.groups[0] for permission in permissions]
+        groups = Group.objects.filter(path__in=groups_lookup)
+        groups_by_path = {group.path: group for group in groups}
 
-            for path, scopes in permissions_by_group.items():
-                group = groups_by_path.get(path)
-                scopes = [parse_scope(portfolio, scope) for scope in scopes]
-                data.append(
-                    {
-                        "group_id": group.id if group else None,
-                        "group_name": group.name if group else None,
-                        "permissions": scopes,
-                    }
+        permissions_by_group = {}
+        for permission in permissions:
+            if permission.groups[0] in permissions_by_group:
+                permissions_by_group[permission.groups[0]].extend(
+                    permission.scopes
                 )
+            else:
+                permissions_by_group[permission.groups[0]] = permission.scopes
+
+        data = []
+        for path, scopes in permissions_by_group.items():
+            group = groups_by_path.get(path)
+            scopes = [parse_scope(portfolio, scope) for scope in scopes]
+            data.append(
+                {
+                    "group_id": group.id if group else None,
+                    "group_name": group.name if group else None,
+                    "permissions": scopes,
+                }
+            )
         return Response(data)
 
     def _parse_share_policy(self, request, portfolio):
