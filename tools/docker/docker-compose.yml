@@ -1,84 +1,52 @@
 version: '3'
 
 services:
+  frontend:
+    image: ansible-catalog-ui:dev
+    build:
+      context: frontend/
+    depends_on:
+      - app
+
   app:
     image: ansible-catalog:dev
     build:
       context: ../../
       dockerfile: tools/docker/Dockerfile
-    ports:
-      - '8000:8000'
-    volumes:
-      - "../../:/home/appuser/catalog:z"
-    environment:
-      - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
-      - CONTROLLER_VERIFY_SSL=False
-      - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
-      - ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
-      - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
-      - ANSIBLE_CATALOG_REDIS_HOST=redis
-      - ANSIBLE_CATALOG_POSTGRES_USER=admin
-      - ANSIBLE_CATALOG_POSTGRES_PASSWORD=admin
     depends_on:
       - keycloak-setup
       - postgres
 
+  # TODO: remove ansible-playbook from app image and use specific image for keycloak setup (affects minikube env)
   keycloak-setup:
     image: ansible-catalog:dev
-    volumes:
-      - "../../:/home/appuser/catalog:z"
-    environment:
-      - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
-      - CONTROLLER_VERIFY_SSL=False
-      - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
-      - ANSIBLE_CATALOG_KEYCLOAK_USER=admin
-      - ANSIBLE_CATALOG_KEYCLOAK_PASSWORD=admin
-      - ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
-      - ANSIBLE_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://localhost:8080/auth
-      - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
     depends_on:
       - keycloak-app
     command: /home/appuser/catalog/tools/docker/scripts/keycloak-setup.sh
 
   worker:
     image: ansible-catalog:dev
-    environment:
-      - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
-      - OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
-      - ANSIBLE_CATALOG_REDIS_HOST=redis
-      - CONTROLLER_VERIFY_SSL=False
-      - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
-      - ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
-      - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
-      - ANSIBLE_CATALOG_POSTGRES_USER=admin
-      - ANSIBLE_CATALOG_POSTGRES_PASSWORD=admin
-    volumes:
-      - "../../:/home/appuser/catalog:z"
     depends_on:
       - app
       - redis
       - keycloak-setup
     command: /home/appuser/catalog/tools/docker/scripts/worker.sh
 
+  scheduler:
+    image: ansible-catalog:dev
+    depends_on:
+      - app
+      - redis
+      - keycloak-setup
+    command: "python manage.py cronjobs"
+
   keycloak-app:
     image: 'quay.io/keycloak/keycloak:15.0.2'
-    environment:
-      - 'DB_VENDOR=postgres'
-      - 'DB_ADDR=postgres'
-      - 'DB_DATABASE=keycloak'
-      - 'DB_USER=admin'
-      - 'DB_PASSWORD=admin'
-      - 'KEYCLOAK_USER=admin'
-      - 'KEYCLOAK_PASSWORD=admin'
-    ports:
-      - '8080:8080'
     depends_on:
       - 'postgres'
 
   redis:
     image: redis:alpine
-    ports:
-      - '6379:6379'
 
   postgres:
     image: 'postgres:13-alpine'
@@ -91,6 +59,12 @@ services:
       - "../docker/initdb:/docker-entrypoint-initdb.d:z"
     ports:
       - '5432:5432'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
 volumes:
   pg_data: {}

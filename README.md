@@ -104,25 +104,41 @@ export DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock
 ```
 
 ### Build and Run
+Create a terminal session and go in the docker-compose env dir:
+
+```
+cd tools/docker/
+```
 
 Build the containers (docker)
 ```
-cd tools/docker/
 docker-compose build
 ```
+
 Build the containers (rootless podman)
 ```
-cd tools/docker/
 docker-compose build --build-arg USER_ID=0
 ```
 
+You have to create a .env file with the environments variables for the controller:
+```
+# .env contents:
+ANSIBLE_CATALOG_CONTROLLER_TOKEN=secret-token
+ANSIBLE_CATALOG_CONTROLLER_URL="https://your-controller-host"
+```
 
 Run the application (this may take a while until the keycloak setup process has finished)
 ```
 docker-compose up -d
 ```
 
-Now you can try to open http://localhost:8000/api/ansible-catalog/v1/
+You can check that everything works as expected with
+```
+docker-compose logs -f
+```
+(You will see errors in the worker until keycloak is properly configured)
+
+Once is finished you can try to open http://localhost:8000/api/ansible-catalog/v1/
 You can do log in with http://localhost:8000/login/keycloak/
 The project path is mounted in the pod and you can edit it in real time from outside the container.
 
@@ -131,18 +147,25 @@ You can get an interactive shell inside the application pod with the command:
 docker-compose exec app bash
 ```
 
+Remove the deployment (add `-v` to remove the volumes as well)
+```
+docker-compose down
+```
+
+
+Deploy catalog in a production-like setup:
+```
+docker-compose -f docker-compose.yml -f docker-compose.stage.yml up -d
+```
+
+
+
 ### Things to do manually the first time
 - create a superuser:
 ```
 docker-compose exec app python manage.py createsuperuser
 ```
-
-- create the source: (Ensure before you have configured the tower connection, see above)
-```
-docker-compose exec app python manage.py shell
->>> from ansible_catalog.main.models import Source, Tenant
->>> Source.objects.create(name="source_1", tenant=Tenant.current())
-```
+- refresh the controller
 open in your browser: http://localhost:8000/api/ansible-catalog/v1/sources/1/refresh/
 and execute a patch with empty body. (this may take a while)
 

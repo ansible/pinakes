@@ -6,7 +6,6 @@ do echo -e "\e[34m >>> Waiting for postgres \e[97m"
     sleep 1;
 done
 
-
 echo -e "\e[34m >>> Migrating changes \e[97m"
 python manage.py migrate || exit 1
 echo -e "\e[32m >>> migration completed \e[97m"
@@ -14,5 +13,5 @@ echo -e "\e[32m >>> migration completed \e[97m"
 echo -e "\e[34m >>> Collecting static files \e[97m"
 python manage.py collectstatic --no-input  || exit 1
 
-echo -e "\e[34m >>> Starting production server \e[97m"
-gunicorn --workers=3 --bind 0.0.0.0:8000 ansible_catalog.wsgi --log-level=debug || exit 1
+echo -e "\e[34m >>> Start development server \e[97m"
+python manage.py runserver 0.0.0.0:8000 || exit 1
