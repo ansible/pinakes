@@ -123,16 +123,6 @@ class ServiceOfferingViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     parent_field_names = ("source",)
     http_method_names = ["get", "head"]
 
-    # TODO:
-    @action(methods=["post"], detail=True)
-    def applied_inventories_tags(self, request, pk):
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    # TODO:
-    @action(methods=["post"], detail=True)
-    def order(self, request, pk):
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 @extend_schema_view(
     retrieve=extend_schema(
