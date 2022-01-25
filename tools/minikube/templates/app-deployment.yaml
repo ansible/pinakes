@@ -51,8 +51,6 @@ spec:
               value: http://app:8000,http://app:8000/*,*
             - name: CONTROLLER_VERIFY_SSL
               value: "False"
-            - name: DJANGO_SETTINGS_MODULE
-              value: ansible_catalog.settings.defaults
             - name: ANSIBLE_CATALOG_REDIS_HOST
               value: redis
             - name: ANSIBLE_CATALOG_REDIS_PORT
