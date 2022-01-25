@@ -12,7 +12,6 @@ services:
       - "../../:/home/appuser/catalog:z"
     environment:
       - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
-      - CATALOG_LOG_ROOT=/home/appuser/catalog
       - CONTROLLER_VERIFY_SSL=False
       - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
       - ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
@@ -30,7 +29,6 @@ services:
       - "../../:/home/appuser/catalog:z"
     environment:
       - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
-      - CATALOG_LOG_ROOT=/home/appuser/catalog
       - CONTROLLER_VERIFY_SSL=False
       - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
       - ANSIBLE_CATALOG_KEYCLOAK_USER=admin
@@ -46,7 +44,6 @@ services:
     image: ansible-catalog:dev
     environment:
       - DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
-      - CATALOG_LOG_ROOT=/home/appuser/catalog
       - OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
       - ANSIBLE_CATALOG_REDIS_HOST=redis
       - CONTROLLER_VERIFY_SSL=False
