@@ -75,6 +75,8 @@ spec:
               value: /app/static
             - name: ANSIBLE_CATALOG_LOGIN_REDIRECT_URL
               value: /ui/catalog/index.html
+            - name: ANSIBLE_CATALOG_HTTPS_ENABLED
+              value: "True"
             - name: ANSIBLE_CATALOG_CONTROLLER_URL
               valueFrom:
                 configMapKeyRef:
