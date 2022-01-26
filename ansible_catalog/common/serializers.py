@@ -23,5 +23,5 @@ class TaskSerializer(serializers.Serializer):
         help_text="Status of the task",
     )
 
-    def get_status(self, background_job):
+    def get_status(self, background_job) -> str:
         return background_job.get_status()

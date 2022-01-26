@@ -237,9 +237,6 @@ class WorkflowViewSet(
             ),
         ],
     ),
-    create=extend_schema(
-        description="Create an approval request using given parameters, available to everyone"
-    ),
 )
 class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating requests"""
@@ -253,6 +250,7 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     parent_field_names = ("parent",)
 
     @extend_schema(
+        description="Create an approval request using given parameters, available to everyone",
         request=RequestInSerializer,
         responses={201: RequestSerializer},
     )

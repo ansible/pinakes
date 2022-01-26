@@ -41,13 +41,10 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 @extend_schema_view(
-    retrieve=extend_schema(
-        description="Get the status of the background task for syncing groups",
-        responses={status.HTTP_202_ACCEPTED: TaskSerializer},
-    ),
     create=extend_schema(
         description="Sync groups from keycloak. Returns a background task id.",
         responses={status.HTTP_200_OK: TaskSerializer},
+        request=None,
     ),
 )
 class GroupSyncViewSet(viewsets.ViewSet):
@@ -56,18 +53,20 @@ class GroupSyncViewSet(viewsets.ViewSet):
         serializer = TaskSerializer(job)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
-    def retrieve(self, request: Request, pk: str):
-        try:
-            job = rq_job.Job.fetch(pk, connection=django_rq.get_connection())
-        except rq_job.NoSuchJobError:
-            raise Http404
-        return Response(TaskSerializer(job).data, status=status.HTTP_200_OK)
-
 
 @extend_schema_view(
     retrieve=extend_schema(
         description="Get the status of a background task",
         responses={status.HTTP_202_ACCEPTED: TaskSerializer},
+        parameters=[
+            OpenApiParameter(
+                "id",
+                required=True,
+                type=OpenApiTypes.UUID,
+                location=OpenApiParameter.PATH,
+                description="background task UUID",
+            ),
+        ],
     ),
 )
 class TaskViewSet(viewsets.ViewSet):
@@ -95,6 +94,9 @@ class CurrentUserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
 class SessionLogoutView(APIView):
     permission_classes = (IsAuthenticated,)
+
+    def get_serializer(self):
+        return None
 
     def post(self, request):
         extra_data = request.keycloak_user.extra_data
