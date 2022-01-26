@@ -4,9 +4,6 @@ import logging
 import re
 
 from ansible_catalog.main.catalog.models import ServicePlan
-from ansible_catalog.main.inventory.services.get_service_plan import (
-    GetServicePlan,
-)
 
 logger = logging.getLogger("catalog")
 
@@ -58,25 +55,17 @@ class SanitizeParameters:
         }
 
     def _service_plan_fields(self):
-        service_plan = ServicePlan.objects.filter(
+        service_plan = ServicePlan.objects.get(
             portfolio_item_id=self.order_item.portfolio_item.id
-        ).first()
+        )
 
-        if service_plan is None:
-            service_plan_schema = (
-                GetServicePlan(self.order_item.inventory_service_plan_ref)
-                .process()
-                .service_plan.create_json_schema
-            )
-        else:
-            service_plan_schema = (
-                service_plan.schema
-                or GetServicePlan(self.order_item.inventory_service_plan_ref)
-                .process()
-                .service_plan.create_json_schema
-            )
+        if (
+            not service_plan.schema
+            or service_plan.schema.get("schemaType") == "emptySchema"
+        ):
+            return []
 
-        return service_plan_schema.get("schema", {}).get("fields", {})
+        return service_plan.schema.get("schema", {}).get("fields", [])
 
     def _mask_value(self, field):
         need_mask = False

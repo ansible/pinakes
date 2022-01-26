@@ -15,7 +15,7 @@ from ansible_catalog.main.inventory.tests.factories import (
 )
 
 BASE_SCHEMA = {
-    "schema_type": "default",
+    "schemaType": "default",
     "schema": {
         "fields": [
             {
@@ -40,7 +40,7 @@ BASE_SCHEMA = {
 
 # Looks like the BASE_SCHEMA but the max_length_validator is more restrictive
 MODIFIED_SCHEMA = {
-    "schema_type": "default",
+    "schemaType": "default",
     "schema": {
         "fields": [
             {
@@ -65,7 +65,7 @@ MODIFIED_SCHEMA = {
 BASE_SHA256 = "12345678"
 
 UPDATED_SCHEMA = {
-    "schema_type": "default",
+    "schemaType": "default",
     "schema": {
         "fields": [
             {

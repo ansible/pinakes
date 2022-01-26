@@ -1,11 +1,16 @@
 """Create portfolio item service"""
 import logging
+from django.db import transaction
 
 from ansible_catalog.main.models import Tenant
 
 from ansible_catalog.main.catalog.models import (
     Portfolio,
     PortfolioItem,
+    ServicePlan,
+)
+from ansible_catalog.main.catalog.services.refresh_service_plan import (
+    RefreshServicePlan,
 )
 from ansible_catalog.main.inventory.services.get_service_offering import (
     GetServiceOffering,
@@ -27,34 +32,44 @@ class CreatePortfolioItem:
 
     def __init__(self, options):
         self.params = options
+        self.item = None
+        self.service_plan = None
 
-        logger.info("Creating portfolio item service options: %s", self.params)
+    @transaction.atomic
+    def process(self):
+        logger.info("Creating portfolio item with options: %s", self.params)
+
+        self.service_offering_ref = self.params.get("service_offering_ref")
+        try:
+            logger.info(
+                "Fetching service offering from inventory: %s",
+                self.service_offering_ref,
+            )
+            self.service_offering = (
+                GetServiceOffering(self.service_offering_ref)
+                .process()
+                .service_offering
+            )
+        except Exception as error:
+            logger.error("Error fetching service offering: %s", str(error))
+            raise
 
         portfolio_id = self.params.pop("portfolio")
         self.portfolio = Portfolio.objects.get(id=portfolio_id)
-        self.service_offering_ref = self.params.get("service_offering_ref")
 
-        svc = GetServiceOffering(self.service_offering_ref).process()
-        self.service_offering = svc.service_offering
+        self._create_params()
+        self.item = PortfolioItem.objects.create(
+            tenant=self.portfolio.tenant,
+            portfolio=self.portfolio,
+            **self.params,
+        )
 
-        self.item = None
-
-    def process(self):
-        try:
-            self._create_params()
-
-            self.item = PortfolioItem.objects.create(
-                tenant=Tenant.current(),
-                portfolio=self.portfolio,
-                **self.params,
-            )
-        except Exception as exc:
-            logger.error(
-                "Service Offering Ref: %s, error: %s",
-                self.service_offering_ref,
-                str(exc),
-            )
-            raise
+        self.service_plan = ServicePlan.objects.create(
+            tenant=self.portfolio.tenant,
+            service_offering_ref=self.service_offering_ref,
+            portfolio_item=self.item,
+        )
+        RefreshServicePlan(self.service_plan).process()
 
         return self
 

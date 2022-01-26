@@ -7,10 +7,6 @@ from ansible_catalog.main.catalog.tests.factories import (
     PortfolioItemFactory,
     ServicePlanFactory,
 )
-from ansible_catalog.main.inventory.tests.factories import (
-    ServiceOfferingFactory,
-    InventoryServicePlanFactory,
-)
 from ansible_catalog.main.catalog.services.compute_runtime_parameters import (
     ComputeRuntimeParameters,
 )
@@ -60,7 +56,7 @@ def fields_2():
 
 def schema(fields):
     return {
-        "schema_type": "default",
+        "schemaType": "default",
         "schema": {
             "fields": fields,
             "title": "",
@@ -71,7 +67,13 @@ def schema(fields):
 
 @pytest.mark.django_db
 def test_process_without_service_plan_ref_in_order_item():
-    order_item = OrderItemFactory()
+    portfolio_item = PortfolioItemFactory()
+    service_plan = ServicePlanFactory(
+        portfolio_item=portfolio_item,
+    )
+    order_item = OrderItemFactory(
+        portfolio_item=portfolio_item,
+    )
 
     svc = ComputeRuntimeParameters(order_item)
     svc.process()
@@ -81,9 +83,16 @@ def test_process_without_service_plan_ref_in_order_item():
 
 @pytest.mark.django_db
 def test_process_without_service_parameters_in_order_item():
-    service_plan = InventoryServicePlanFactory()
+    inventory_service_plan_id = 1
+    portfolio_item = PortfolioItemFactory()
+    service_plan = ServicePlanFactory(
+        base_schema=schema(fields_1()),
+        inventory_service_plan_ref=str(inventory_service_plan_id),
+        portfolio_item=portfolio_item,
+    )
     order_item = OrderItemFactory(
-        inventory_service_plan_ref=str(service_plan.id),
+        portfolio_item=portfolio_item,
+        inventory_service_plan_ref=str(inventory_service_plan_id),
     )
 
     svc = ComputeRuntimeParameters(order_item)
@@ -94,9 +103,16 @@ def test_process_without_service_parameters_in_order_item():
 
 @pytest.mark.django_db
 def test_process_without_schema_in_service_plan():
-    service_plan = InventoryServicePlanFactory()
+    inventory_service_plan_id = 1
+    portfolio_item = PortfolioItemFactory()
+    service_plan = ServicePlanFactory(
+        base_schema=None,
+        inventory_service_plan_ref=str(inventory_service_plan_id),
+        portfolio_item=portfolio_item,
+    )
     order_item = OrderItemFactory(
-        inventory_service_plan_ref=str(service_plan.id),
+        portfolio_item=portfolio_item,
+        inventory_service_plan_ref=str(inventory_service_plan_id),
     )
 
     svc = ComputeRuntimeParameters(order_item)
@@ -107,11 +123,17 @@ def test_process_without_schema_in_service_plan():
 
 @pytest.mark.django_db
 def test_process_with_schema_in_service_plan():
-    service_plan = InventoryServicePlanFactory(
-        create_json_schema=schema(fields_1())
+    inventory_service_plan_id = 1
+    portfolio_item = PortfolioItemFactory()
+    service_plan = ServicePlanFactory(
+        base_schema=schema(fields_1()),
+        inventory_service_plan_ref=str(inventory_service_plan_id),
+        portfolio_item=portfolio_item,
     )
     order_item = OrderItemFactory(
-        inventory_service_plan_ref=str(service_plan.id),
+        portfolio_item=portfolio_item,
+        inventory_service_plan_ref=str(inventory_service_plan_id),
+        service_parameters={"extra": "not in schema fields"},
     )
 
     svc = ComputeRuntimeParameters(order_item)
@@ -122,11 +144,16 @@ def test_process_with_schema_in_service_plan():
 
 @pytest.mark.django_db
 def test_process_with_service_parameters_not_in_schema():
-    service_plan = InventoryServicePlanFactory(
-        create_json_schema=schema(fields_1())
+    inventory_service_plan_id = 1
+    portfolio_item = PortfolioItemFactory()
+    service_plan = ServicePlanFactory(
+        base_schema=schema(fields_1()),
+        inventory_service_plan_ref=str(inventory_service_plan_id),
+        portfolio_item=portfolio_item,
     )
     order_item = OrderItemFactory(
-        inventory_service_plan_ref=str(service_plan.id),
+        portfolio_item=portfolio_item,
+        inventory_service_plan_ref=str(inventory_service_plan_id),
         service_parameters={"extra": "not in schema fields"},
     )
 
@@ -138,22 +165,19 @@ def test_process_with_service_parameters_not_in_schema():
 
 @pytest.mark.django_db
 def test_process_with_service_parameters_in_schema():
+    inventory_service_plan_id = 1
     portfolio_item = PortfolioItemFactory()
-    service_offering = ServiceOfferingFactory(survey_enabled=True)
-    inventory_service_plan = InventoryServicePlanFactory(
-        service_offering=service_offering,
-        create_json_schema=schema(fields_2()),
-    )
     ServicePlanFactory(
         outdated=False,
         portfolio_item=portfolio_item,
         base_schema=schema(fields_2()),
+        inventory_service_plan_ref=str(inventory_service_plan_id),
     )
 
     order = OrderFactory()
     order_item = OrderItemFactory(
         order=order,
-        inventory_service_plan_ref=str(inventory_service_plan.id),
+        inventory_service_plan_ref=str(inventory_service_plan_id),
         service_parameters={
             "extra": "not in schema fields",
             "flexible": "in schema fields",
