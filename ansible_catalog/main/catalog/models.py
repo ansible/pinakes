@@ -66,6 +66,20 @@ class Portfolio(AbstractKeycloakResource, ImageableModel):
     def tag_resources(self):
         return list(self.tags.all())
 
+    @property
+    def metadata(self):
+        return {"statistics": self._statistics_metadata()}
+
+    def _statistics_metadata(self):
+        portfolio_item_number = PortfolioItem.objects.filter(
+            portfolio=self
+        ).count()
+
+        return {
+            "approval_processes": len(self.tag_resources),
+            "portfolio_items": portfolio_item_number,
+        }
+
     def __str__(self):
         return self.name
 
@@ -146,6 +160,15 @@ class PortfolioItem(ImageableModel):
     @property
     def tag_resources(self):
         return list(self.tags.all())
+
+    @property
+    def metadata(self):
+        return {"statistics": self._statistics_metadata()}
+
+    def _statistics_metadata(self):
+        return {
+            "approval_processes": len(self.tag_resources),
+        }
 
     def __str__(self):
         return self.name

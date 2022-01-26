@@ -33,12 +33,19 @@ class PortfolioSerializer(serializers.ModelSerializer):
         "get_icon_url", allow_null=True
     )
 
+    metadata = serializers.JSONField(
+        read_only=True,
+        help_text="JSON Metadata about the portfolio",
+        default={},
+    )
+
     class Meta:
         model = Portfolio
         fields = (
             "id",
             "name",
             "description",
+            "metadata",
             "icon_url",
             "created_at",
             "updated_at",
@@ -88,6 +95,12 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
         "get_icon_url", allow_null=True
     )
 
+    metadata = serializers.JSONField(
+        read_only=True,
+        help_text="JSON Metadata about the portfolio item",
+        default={},
+    )
+
     class Meta:
         model = PortfolioItem
         fields = (
@@ -96,6 +109,7 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
             "description",
             "service_offering_ref",
             "service_offering_source_ref",
+            "metadata",
             "portfolio",
             "icon_url",
             "created_at",
