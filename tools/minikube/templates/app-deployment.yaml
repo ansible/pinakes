@@ -77,6 +77,8 @@ spec:
               value: /ui/catalog/index.html
             - name: ANSIBLE_CATALOG_HTTPS_ENABLED
               value: "True"
+            - name: ANSIBLE_CATALOG_CSRF_TRUSTED_ORIGINS
+              value: "https://catalog.k8s.local"
             - name: ANSIBLE_CATALOG_CONTROLLER_URL
               valueFrom:
                 configMapKeyRef:
