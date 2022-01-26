@@ -13,7 +13,7 @@ How to install ansible catalog in a production-like environment. This guide assu
 ![arch overview](./docs/catalog-arch.png?raw=true)
 
 ## Dependencies
-Ansible Catalog act as a client for the ansible controller (AKA ansible tower). It can work without connectivity with the controller with limited functionality. 
+Ansible Catalog acts as a client for the ansible controller (AKA ansible tower). It can work without connectivity to the controller with limited functionality. 
 
 ## Requirements
 - Python >= 3.6
@@ -23,34 +23,18 @@ Ansible Catalog act as a client for the ansible controller (AKA ansible tower). 
 - Keycloak >= 15
 
 ## How to install
-Note: all commands examples are based on a clean linux server with RHEL compatible OS. Please check the respective official documentation for the equivalent commands if you use another environment. 
+Note: all command examples are based on a clean linux server with a RHEL compatible OS. Please check the respective official documentation for the equivalent commands if you use another environment. 
 
 ### Keycloak
 Install Keycloak and configure credentials for the admin user. See the official docs for further information
 
 ### Postgres
-Install the postgres and create a database and an user with all permissions over that database. See the official docs for further information
+Install postgres and create a database and a user with all permissions over that database. See the official docs for further information
 
 ### Redis
-Install redis, the default values may be enough. See the official docs for further information
+Install redis, the default values are enough. See the official docs for further information
 
-
-### Keycloak setup
-Several configurations must be done in keycloak in order to be used by ansible catalog as auth provider. There is an ansible collection to do it automatically. There are some variables that must be configured for the ansible collection in `tools/keycloak_setup/dev.yml`
-Copy this file and modify `settings_dir` and `seed_users` according to your setup and needs
-
-- install ansible and the collection:
-```
-pip3 install ansible
-ansible-galaxy collection install community.general mkanoor.catalog_keycloak
-```
-- run the collection:
-```
-ansible-playbook [path to your custom conf, eg: tools/keycloak_setup/dev.yml]
-```
-
-
-### Backend, worker and scheduler
+### First steps
 
 - Install python:
 ```
@@ -63,7 +47,45 @@ yum install -y python3-psycopg2
 pip3 install -U pip
 ```
 
+### Keycloak setup
+Several configurations must be done in keycloak in order to be used by ansible catalog as auth provider. There is an ansible collection to do it automatically. There are some variables that must be configured for the ansible collection in `tools/keycloak_setup/dev.yml`
+Copy this file and modify `seed_users` according to your setup and needs. 
 
+- install ansible and the collection:
+```
+pip3 install ansible
+ansible-galaxy collection install community.general mkanoor.catalog_keycloak
+```
+
+- some environment variables are needed: 
+```
+# internal keycloak url
+export ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak:8080/auth
+
+# keycloak client secret configured (see keycloak setup ahead)
+export ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
+
+# keycloak admin user
+export ANSIBLE_CATALOG_KEYCLOAK_USER=admin
+
+# keycloak admin password
+export ANSIBLE_CATALOG_KEYCLOAK_PASSWORD=password
+
+# public keycloak url
+export ANSIBLE_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://keycloak.k8s.local/auth
+
+# comma separated values of the internal django urls that keycloak will use for internal redirects
+export REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
+
+```
+
+- run the collection:
+```
+ansible-playbook [path to your custom conf, eg: tools/keycloak_setup/dev.yml]
+```
+
+
+### Backend, worker and scheduler
 - clone source code:
 ```
 git clone https://github.com/ansible/ansible-catalog.git
@@ -83,23 +105,6 @@ _Note_: _All application settings are defined in `ansible_catalog/settings/defau
 ```
 # WARNING: all these values are examples taken from the development environment, don't use it in your installation!
 
-# internal keycloak url
-export ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak:8080/auth
-
-# keycloak client secret configured (see keycloak setup ahead)
-export ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
-
-# keycloak admin user
-export ANSIBLE_CATALOG_KEYCLOAK_USER=admin
-
-# keycloak admin password
-export ANSIBLE_CATALOG_KEYCLOAK_PASSWORD=password
-
-# public keycloak url
-export ANSIBLE_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://keycloak.k8s.local/auth
-
-# comma separated values of the internal django urls that keycloak will use for internal redirects
-export REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
 
 # postgres conf
 export ANSIBLE_CATALOG_DATABASE_NAME=dev_catalog
@@ -119,7 +124,7 @@ export ANSIBLE_CATALOG_CONTROLLER_TOKEN=somesecrettoken
 export ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL=true
 ```
 
-- The following environment variables are recommended but not mandatory
+- The following environment variables are optional
 ```
 # enable debug mode for django
 export ANSIBLE_CATALOG_DEBUG=False

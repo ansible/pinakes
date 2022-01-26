@@ -1,7 +1,6 @@
 ---
 - hosts: localhost
   vars:
-    settings_dir: "/home/appuser/catalog/ansible_catalog/settings/"
     seed_keycloak: true
     seed_groups:
       - name: Development
