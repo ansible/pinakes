@@ -8,7 +8,7 @@ from django.utils import timezone as django_tz
 
 from ansible_catalog.common.auth import keycloak_django
 from ansible_catalog.common.auth.keycloak import models as keycloak_models
-from ansible_catalog.main.auth.models import Group
+from ansible_catalog.main.auth.models import Group, Role
 
 
 logger = logging.getLogger("approval")
@@ -37,7 +37,7 @@ def sync_external_groups():
 
     with transaction.atomic():
         for parent_id, group in iter_groups(all_groups):
-            _, created = Group.objects.update_or_create(
+            obj, created = Group.objects.update_or_create(
                 id=group.id,
                 defaults=dict(
                     name=group.name,
@@ -52,6 +52,8 @@ def sync_external_groups():
             else:
                 updated_count += 1
 
+            if group.client_roles:
+                _manage_roles(obj, set(group.client_roles.catalog))
         deleted_count, _ = Group.objects.exclude(
             last_sync_time=sync_time
         ).delete()
@@ -64,3 +66,18 @@ def sync_external_groups():
         updated_count,
         deleted_count,
     )
+
+
+def _manage_roles(obj, group_roles):
+    existing_role_names = set([role.name for role in obj.roles.all()])
+    new_role_names = group_roles - existing_role_names
+
+    roles = []
+    for role in new_role_names:
+        r, _ = Role.objects.get_or_create(name=role)
+        roles.append(r)
+    obj.roles.add(*roles)
+
+    stale_role_names = existing_role_names - group_roles
+    stale_roles = Role.objects.filter(name__in=stale_role_names)
+    obj.roles.remove(*stale_roles)

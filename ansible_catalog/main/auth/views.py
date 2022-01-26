@@ -36,8 +36,15 @@ from ansible_catalog.common.auth.keycloak.openid import OpenIdConnect
     ),
 )
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = models.Group.objects.all()
     serializer_class = serializers.GroupSerializer
+
+    def get_queryset(self):
+        roles = self.request.GET.getlist("role[]")
+        if roles:
+            queryset = models.Group.objects.filter(roles__name__in=roles).distinct()
+        else:
+            queryset = models.Group.objects.all()
+        return queryset
 
 
 @extend_schema_view(

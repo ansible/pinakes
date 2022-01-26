@@ -35,6 +35,7 @@ def test_list_groups(api_client):
             "id": "87bd0889-2ae0-45c5-9d27-a58b7cb728f7",
             "name": "test-group-01",
             "path": "/test-group-01",
+            "clientRoles": {"catalog": ["approver", "adjuster"]},
             "subGroups": [],
         },
         {
@@ -53,9 +54,11 @@ def test_list_groups(api_client):
     ]
 
     groups = client.list_groups()
-
+    params = {"briefRepresentation": False}
     api_client.request_json.assert_called_with(
-        "GET", f"{SERVER_URL}/admin/realms/{REALM}/groups"
+        "GET",
+        f"{SERVER_URL}/admin/realms/{REALM}/groups",
+        params=params,
     )
 
     assert groups == [
@@ -63,6 +66,7 @@ def test_list_groups(api_client):
             id="87bd0889-2ae0-45c5-9d27-a58b7cb728f7",
             name="test-group-01",
             path="/test-group-01",
+            client_roles=models.ClientRoles(catalog=["approver", "adjuster"]),
             sub_groups=[],
         ),
         models.Group(

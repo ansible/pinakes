@@ -27,6 +27,10 @@ class ApiModelBase(pydantic.BaseModel):
         allow_population_by_field_name = True
 
 
+class ClientRoles(pydantic.BaseModel):
+    catalog: List[str]
+
+
 class Group(ApiModelBase):
     """Keycloak group representation."""
 
@@ -35,7 +39,7 @@ class Group(ApiModelBase):
     path: Optional[str] = None
     sub_groups: Optional[List[Group]] = None
     realm_roles: Optional[List[str]] = None
-    client_roles: Optional[List[str]] = None
+    client_roles: Optional[ClientRoles] = None
 
 
 Group.update_forward_refs()
