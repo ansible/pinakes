@@ -26,6 +26,7 @@ class ServiceOfferingImport:
         self.inventory = inventory
         self.tower = tower
         self.old_objects = {}
+        self.new_objects = []
         self.survey_objects = []
         self.service_offering_objects = {}
         self.plan_importer = service_plan_importer
@@ -56,6 +57,7 @@ class ServiceOfferingImport:
         self._process_job_templates()
         self._process_workflow_job_templates()
         self._deletes()
+        self._create_new_objects()
         self._fetch_survey_specs()
 
     def _deletes(self):
@@ -64,6 +66,11 @@ class ServiceOfferingImport:
             logger.info(f"Deleting source_ref {key}, object {value[0]}")
             self.stats["deletes"] += 1
             ServiceOffering.objects.get(pk=value[0]).delete()
+
+    def _create_new_objects(self):
+        for new_object in self.new_objects:
+            db_obj = self._create_db_obj(*new_object)
+            self.service_offering_objects[new_object[1]] = db_obj.id
 
     def _fetch_survey_specs(self):
         """Fetch the Survey Spec from tower"""
@@ -80,6 +87,16 @@ class ServiceOfferingImport:
             self._update_db_obj(info, new_obj, source_ref, inventory)
             self.service_offering_objects[source_ref] = info[0]
             del self.old_objects[source_ref]
+        elif bool(self.old_objects):
+            # new objects may conflict with old objects to be deleted
+            self.new_objects.append(
+                (
+                    new_obj,
+                    source_ref,
+                    kind,
+                    inventory,
+                )
+            )
         else:
             db_obj = self._create_db_obj(new_obj, source_ref, kind, inventory)
             self.service_offering_objects[source_ref] = db_obj.id
