@@ -28,3 +28,18 @@ class TestPortfolioItems:
             f"CHECK constraint failed: {portfolio._meta.app_label}_portfolioitem_name_empty"
             in str(excinfo.value)
         )
+
+    @pytest.mark.django_db
+    def test_portfolio_metadata(self, api_request):
+        portfolio_item = PortfolioItemFactory()
+
+        assert portfolio_item.metadata["statistics"]["approval_processes"] == 0
+
+        api_request(
+            "post",
+            "portfolioitem-tag",
+            portfolio_item.id,
+            {"name": "test_tag"},
+        )
+
+        assert portfolio_item.metadata["statistics"]["approval_processes"] == 1

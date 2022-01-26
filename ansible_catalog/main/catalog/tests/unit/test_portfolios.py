@@ -1,6 +1,9 @@
 import pytest
 
-from ansible_catalog.main.catalog.tests.factories import PortfolioFactory
+from ansible_catalog.main.catalog.tests.factories import (
+    PortfolioFactory,
+    PortfolioItemFactory,
+)
 from ansible_catalog.main.tests.factories import TenantFactory
 
 
@@ -34,3 +37,18 @@ class TestPortfolios:
         with pytest.raises(IntegrityError) as excinfo:
             PortfolioFactory(tenant=tenant, name="")
         assert constraint_name in str(excinfo.value)
+
+    @pytest.mark.django_db
+    def test_portfolio_metadata(self, api_request):
+        portfolio = PortfolioFactory()
+
+        assert portfolio.metadata["statistics"]["approval_processes"] == 0
+        assert portfolio.metadata["statistics"]["portfolio_items"] == 0
+
+        PortfolioItemFactory(portfolio=portfolio)
+        api_request(
+            "post", "portfolio-tag", portfolio.id, {"name": "test_tag"}
+        )
+
+        assert portfolio.metadata["statistics"]["portfolio_items"] == 1
+        assert portfolio.metadata["statistics"]["approval_processes"] == 1
