@@ -35,8 +35,6 @@ spec:
         - args:
             - "/home/appuser/catalog/tools/minikube/scripts/server.sh"
           env:
-            - name: CATALOG_LOG_ROOT
-              value: /tmp
             - name: ANSIBLE_CATALOG_KEYCLOAK_URL
               value: http://keycloak:8080/auth
             - name: ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET

@@ -198,17 +198,11 @@ MEDIA_ROOT = env.str(
 )
 MEDIA_URL = "/media/"
 
-# Logging configuration
-LOG_ROOT = env.str("CATALOG_LOG_ROOT", default="/var/log/ansible_catalog/")
-LOG_FILE = "ansible_catalog.log"
-MAX_BYTES = 10 * 1024 * 1024
-BACKUP_COUNT = 5
-
-
 if "pytest" in sys.modules:
-    LOG_ROOT = env.str("CATALOG_LOG_ROOT", default="/tmp/ansible_catalog/")
     MEDIA_ROOT = os.path.join(BASE_DIR, "main/catalog/tests/data/")
-    Path(LOG_ROOT).mkdir(parents=True, exist_ok=True)
+
+# Logging configuration
+LOG_LEVEL = "DEBUG" if DEBUG else env.str("DJANGO_LOG_LEVEL", "INFO")
 
 LOGGING = {
     "version": 1,
@@ -232,48 +226,19 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
+            "level": LOG_LEVEL,
             "class": "logging.StreamHandler",
-        },
-        "file": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOG_ROOT, LOG_FILE),
-            "formatter": "simple",
-        },
-        "approval": {
-            "level": "DEBUG",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOG_ROOT, LOG_FILE),
-            "maxBytes": MAX_BYTES,
-            "backupCount": BACKUP_COUNT,
-            "formatter": "simple",
-        },
-        "inventory": {
-            "level": "DEBUG",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOG_ROOT, LOG_FILE),
-            "maxBytes": MAX_BYTES,
-            "backupCount": BACKUP_COUNT,
-            "formatter": "simple",
-        },
-        "catalog": {
-            "level": "DEBUG",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOG_ROOT, LOG_FILE),
-            "maxBytes": MAX_BYTES,
-            "backupCount": BACKUP_COUNT,
             "formatter": "simple",
         },
         "rq_console": {
-            "level": "DEBUG",
+            "level": LOG_LEVEL,
             "class": "rq.utils.ColorizingStreamHandler",
             "formatter": "simple",
         },
     },
     "root": {
         "handlers": ["console"],
-        "level": "WARNING",
+        "level": LOG_LEVEL,
     },
     "loggers": {
         "django": {
@@ -281,28 +246,28 @@ LOGGING = {
             "propagate": False,
         },
         "django.request": {
-            "handlers": ["console", "file"],
-            "level": "WARNING",
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
             "propagate": False,
         },
         "approval": {
-            "handlers": ["console", "approval"],
-            "level": "INFO",
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
             "propagate": False,
         },
         "catalog": {
-            "handlers": ["console", "catalog"],
-            "level": "INFO",
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
             "propagate": False,
         },
         "inventory": {
-            "handlers": ["console", "inventory"],
-            "level": "INFO",
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
             "propagate": False,
         },
         "rq.worker": {
             "handlers": ["rq_console"],
-            "level": "DEBUG",
+            "level": LOG_LEVEL,
             "propagate": False,
         },
     },

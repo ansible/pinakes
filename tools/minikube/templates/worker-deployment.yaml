@@ -45,8 +45,6 @@ spec:
               value: http://keycloak:8080/auth
             - name: ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET
               value: SOMESECRETVALUE
-            - name: CATALOG_LOG_ROOT
-              value: /tmp
             - name: CONTROLLER_VERIFY_SSL
               value: "False"
             - name: ANSIBLE_CATALOG_DATABASE_NAME

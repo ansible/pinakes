@@ -39,8 +39,6 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
       python3 manage.py migrate
       python3 manage.py createsuperuser
 ```
-* Check for the existence of the log directory, by default we log to /var/log/ansible_catalog/ if you don't have access to this directory. You can use an environment variable CATALOG_LOG_ROOT and set it to the the directory that exists and you have access to e.g.
-  ```export CATALOG_LOG_ROOT=/tmp```
 * Setup the development settings file
 ```
 export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
