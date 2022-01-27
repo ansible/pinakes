@@ -39,9 +39,11 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.GroupSerializer
 
     def get_queryset(self):
-        roles = self.request.GET.getlist("role[]")
+        roles = self.request.GET.getlist("role")
         if roles:
-            queryset = models.Group.objects.filter(roles__name__in=roles).distinct()
+            queryset = models.Group.objects.filter(
+                roles__name__in=roles
+            ).distinct()
         else:
             queryset = models.Group.objects.all()
         return queryset

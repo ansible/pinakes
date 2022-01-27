@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from unittest import mock
 
+from django.conf import settings
 from django.utils import timezone as django_tz
 import pytest
 
@@ -27,9 +28,9 @@ def test_group_sync_task_initial(mocker):
 
     role = factories.RoleFactory(name="arbitrator")
     to_keep.roles.add(role)
-
+    to_update.roles.add(role)
     actual_roles = ["approver", "adjuster"]
-    roles = keycloak_models.ClientRoles(catalog=actual_roles)
+    roles = {settings.KEYCLOAK_CLIENT_ID: actual_roles}
     keycloak_groups = [
         keycloak_models.Group(
             id=to_keep.id,
@@ -57,10 +58,11 @@ def test_group_sync_task_initial(mocker):
     assert group.path == to_keep.path
     assert group.last_sync_time != prev_sync_time
     roles = [role.name for role in group.roles.all()]
+    assert sorted(roles) == sorted(actual_roles)
 
     group = models.Group.objects.filter(id=to_update.id).first()
     assert group is not None
     assert group.name == to_update.name + "-upd"
     assert group.path == to_update.path + "-upd"
     assert group.last_sync_time != prev_sync_time
-    assert sorted(roles) == sorted(actual_roles)
+    assert len(group.roles.all()) == 0
