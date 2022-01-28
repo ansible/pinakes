@@ -312,9 +312,15 @@ SPECTACULAR_SETTINGS = {
     },
     "SERVERS": [
         {
-            "url": "http://localhost:{port}/{basePath}",
+            "url": "{scheme}://{host}:{port}/{basePath}",
             "description": "Development Server",
             "variables": {
+                "scheme": {
+                    "default": "http",
+                },
+                "host": {
+                    "default": "localhost",
+                },
                 "port": {
                     "default": "8000",
                 },
