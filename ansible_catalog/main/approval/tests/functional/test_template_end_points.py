@@ -16,7 +16,7 @@ def test_template_list(api_request):
 
     assert response.status_code == 200
     content = json.loads(response.content)
-    assert content["count"] == 1
+    assert content["count"] == 2  # including the default
 
 
 @pytest.mark.django_db
