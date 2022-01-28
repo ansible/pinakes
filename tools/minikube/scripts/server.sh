@@ -2,14 +2,14 @@
 set -e
 if [[ -z "${ANSIBLE_CATALOG_SECRET_KEY}" ]]
 then
-  echo "Please set the environment variable ANSIBLE_CATALOG_SECRET_KEY"
-  exit 1
+    echo "Please set the environment variable ANSIBLE_CATALOG_SECRET_KEY"
+    exit 1
 fi
 
 if [[ -z "${ANSIBLE_CATALOG_STATIC_ROOT}" ]]
 then
-  echo "Please set the environment variable ANSIBLE_CATALOG_STATIC_ROOT"
-  exit 1
+    echo "Please set the environment variable ANSIBLE_CATALOG_STATIC_ROOT"
+    exit 1
 fi
 
 echo -e "\e[34m >>> Seed Kaycloak data \e[97m"
@@ -20,7 +20,7 @@ python manage.py migrate
 echo -e "\e[32m >>> migration completed \e[97m"
 
 echo -e "\e[32m >>> Create Source object\e[97m"
-python manage.py shell < tools/minikube/scripts/initialize_source.py
+python manage.py create_source
 
 echo -e "\e[32m >>> Fetch UI tar\e[97m"
 

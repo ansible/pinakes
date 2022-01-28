@@ -139,12 +139,7 @@ docker-compose exec app python manage.py createsuperuser
 
 - create the source: (Ensure before you have configured the tower connection, see above)
 ```
-docker-compose exec app python manage.py shell
->>> from ansible_catalog.main.models import Source, Tenant
->>> Source.objects.create(name="source_1", tenant=Tenant.current())
-```
-open in your browser: http://localhost:8000/api/ansible-catalog/v1/sources/1/refresh/
-and execute a patch with empty body. (this may take a while)
+docker-compose exec app python manage.py create_source
 
 ### Download the open api schema
 http://localhost:8000/api/ansible-catalog/v1/schema/openapi.json
