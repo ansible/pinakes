@@ -34,7 +34,9 @@ TEMPLATE_DEBUG = DEBUG
 SQL_DEBUG = DEBUG
 SECRET_KEY = env.str("ANSIBLE_CATALOG_SECRET_KEY")
 
-ALLOWED_HOSTS = env.list("ANSIBLE_CATALOG_ALLOWED_HOSTS", default=[])
+ALLOWED_HOSTS = env.list(
+    "ANSIBLE_CATALOG_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"]
+)
 
 CATALOG_API_PATH_PREFIX = env.str(
     "ANSIBLE_CATALOG_API_PATH_PREFIX", default="/api/ansible-catalog"
@@ -104,7 +106,7 @@ DATABASES = {
         "PASSWORD": env.str(
             "ANSIBLE_CATALOG_POSTGRES_PASSWORD", default="password"
         ),
-        "HOST": env.str("ANSIBLE_CATALOG_POSTGRES_HOST", default="postgres"),
+        "HOST": env.str("ANSIBLE_CATALOG_POSTGRES_HOST", default="localhost"),
         "PORT": env.str("ANSIBLE_CATALOG_POSTGRES_PORT", default="5432"),
     }
 }
@@ -170,7 +172,9 @@ STATIC_URL = "/ui/"
 STATICFILES_DIRS = [
     BASE_DIR / "ui",
 ]
-STATIC_ROOT = env.str("ANSIBLE_CATALOG_STATIC_ROOT", default="/app/static")
+STATIC_ROOT = env.str(
+    "ANSIBLE_CATALOG_STATIC_ROOT", default=BASE_DIR / "staticfiles"
+)
 LOGIN_REDIRECT_URL = env.str(
     "ANSIBLE_CATALOG_LOGIN_REDIRECT_URL", default="/ui/catalog/index.html"
 )
@@ -290,10 +294,11 @@ STARTUP_RQ_JOBS = [
     "ansible_catalog.main.auth.tasks.sync_external_groups",
     "ansible_catalog.main.inventory.tasks.refresh_all_sources",
 ]
+CRONTAB = env.str("ANSIBLE_CATALOG_CRONTAB", default="*/30 * * * *")
 RQ_CRONJOBS = [
-    ("*/30 * * * *", "ansible_catalog.main.auth.tasks.sync_external_groups"),
+    (CRONTAB, "ansible_catalog.main.auth.tasks.sync_external_groups"),
     (
-        "*/30 * * * *",
+        CRONTAB,
         "ansible_catalog.main.inventory.tasks.refresh_all_sources",
     ),
 ]
@@ -337,7 +342,7 @@ KEYCLOAK_CLIENT_ID = env.str(
     "ANSIBLE_CATALOG_KEYCLOAK_CLIENT_ID", default="catalog"
 )
 KEYCLOAK_CLIENT_SECRET = env.str(
-    "ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET", default=""
+    "ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET", default="secret-token"
 )
 
 SOCIAL_AUTH_KEYCLOAK_OIDC_KEY = KEYCLOAK_CLIENT_ID
@@ -348,11 +353,11 @@ SOCIAL_AUTH_REDIRECT_IS_HTTPS = env.bool(
 )
 # CORS
 # Comma separated values list of :"SCHEME+HOST+[PORT]"
-# e.g.: ANSIBLE_CATALOG_UI_ALLOWED_ORIGINS="https://example.com,catalog.example.com"
+# e.g.: ANSIBLE_CATALOG_UI_ALLOWED_ORIGINS="https://example.com,https://catalog.example.com:9090"
 CORS_ALLOWED_ORIGINS = env.list(
     "ANSIBLE_CATALOG_UI_ALLOWED_ORIGINS", default=[]
 )
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = False
 CSRF_TRUSTED_ORIGINS = env.list(
     "ANSIBLE_CATALOG_CSRF_TRUSTED_ORIGINS", default=[]
 )
