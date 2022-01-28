@@ -2,9 +2,6 @@
 from ansible_catalog.main.catalog.models import (
     ServicePlan,
 )
-from ansible_catalog.main.inventory.services.get_service_plan import (
-    GetServicePlan,
-)
 
 
 class ComputeRuntimeParameters:
@@ -37,24 +34,17 @@ class ComputeRuntimeParameters:
         return self
 
     def _fields(self):
-        service_plan = ServicePlan.objects.filter(
+        # each portfolio_item must have one service plan
+        service_plan = ServicePlan.objects.get(
             portfolio_item=self.order_item.portfolio_item
-        ).first()
-
-        if (
-            service_plan
-            and service_plan.schema
-            and service_plan.outdated is False
-        ):
-            return service_plan.schema.get("schema", {}).get("fields", [])
-
-        schema = (
-            GetServicePlan(self.order_item.inventory_service_plan_ref)
-            .process()
-            .service_plan.create_json_schema
         )
+        if (
+            not service_plan.schema
+            or service_plan.schema.get("schemaType") == "emptySchema"
+        ):
+            return []
 
-        return schema.get("schema", {}).get("fields", [])
+        return service_plan.schema.get("schema", {}).get("fields", [])
 
     def _compute_value(self, key, value):
         for field in self._fields():

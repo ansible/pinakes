@@ -44,15 +44,12 @@ TEST_SHA256 = "abc123"
 @pytest.mark.django_db
 def test_list_portfolio_item_service_plans(api_request):
     """List ServicePlan by PortfolioItem id"""
-    service_offering = ServiceOfferingFactory(survey_enabled=True)
-    inventory_service_plan = InventoryServicePlanFactory(
-        service_offering=service_offering,
-        create_json_schema=TEST_SCHEMA,
-        schema_sha256=TEST_SHA256,
-    )
-
-    portfolio_item = PortfolioItemFactory(
-        service_offering_ref=str(service_offering.id)
+    portfolio_item = PortfolioItemFactory()
+    service_plan = ServicePlanFactory(
+        portfolio_item=portfolio_item,
+        service_offering_ref=portfolio_item.service_offering_ref,
+        base_schema=TEST_SCHEMA,
+        base_sha256=TEST_SHA256,
     )
 
     response = api_request(
@@ -65,9 +62,6 @@ def test_list_portfolio_item_service_plans(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
 
-    assert content[0]["inventory_service_plan_ref"] == str(
-        inventory_service_plan.id
-    )
     assert content[0]["portfolio_item"] == portfolio_item.id
     assert content[0]["schema"] == TEST_SCHEMA
     assert content[0]["extra_data"] is not None
