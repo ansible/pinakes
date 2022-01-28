@@ -32,7 +32,7 @@ def test_process_request_one_workflow(mocker):
     service = _prepare_service(mocker, [workflow.id])
     request = service.process().request
     _assert_request(
-        request, state="started", group_name="<NO_GROUP>", workflow=workflow
+        request, state="notified", group_name="<NO_GROUP>", workflow=workflow
     )
 
 
@@ -48,7 +48,7 @@ def test_process_request_one_workflow_one_group(mocker):
     service = _prepare_service(mocker, [workflow.id])
     request = service.process().request
     _assert_request(
-        request, state="started", group_name="n1", workflow=workflow
+        request, state="notified", group_name="n1", workflow=workflow
     )
     assert add_permissions.call_count == 1
 
@@ -93,11 +93,11 @@ def test_process_request_workflows_groups(mocker):
 
     request.refresh_from_db()
     _assert_request(
-        request, state="started", num_children=2, group_name="n1,<NO_GROUP>"
+        request, state="notified", num_children=2, group_name="n1,<NO_GROUP>"
     )
     _assert_request(
         request.requests[0],
-        state="started",
+        state="notified",
         group_name="n1",
         workflow=workflow1,
     )

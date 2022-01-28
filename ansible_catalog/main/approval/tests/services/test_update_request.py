@@ -1,6 +1,7 @@
 """module to test updating request"""
 
 import pytest
+from unittest import skip
 from ansible_catalog.main.approval.models import Request, Action
 from ansible_catalog.main.approval.tests.factories import (
     RequestFactory,
@@ -13,6 +14,7 @@ from ansible_catalog.main.approval.services.update_request import (
 from ansible_catalog.main.approval.services.send_event import SendEvent
 
 
+@skip("until notification is implemented")
 @pytest.mark.django_db
 def test_update_single_request(mocker):
     """Test update state of a standalone request"""
@@ -87,6 +89,7 @@ def test_auto_approve(mocker):
     assert request.decision == Request.Decision.APPROVED
 
 
+@skip("until notification is implemented")
 @pytest.mark.django_db
 def test_update_child1(mocker):
     """Test updating first child with siblings and parent"""
@@ -170,6 +173,7 @@ def test_update_child1(mocker):
         assert child2.state == suite[2][2]
 
 
+@skip("until notification is implemented")
 @pytest.mark.django_db
 def test_update_child2(mocker):
     """Test updating last child with siblings and parent"""
@@ -307,6 +311,7 @@ def test_complete_canceled():
     assert child2.state == Request.State.SKIPPED
 
 
+@skip("until notification is implemented")
 @pytest.mark.django_db
 def test_update_parallel():
     """Test update a child in parallel group"""

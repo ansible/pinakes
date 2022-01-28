@@ -46,8 +46,9 @@ class UpdateRequest:
         ):
             self._update_parent()
 
-        if self._should_auto_approve():
-            self._notify_request()
+        # Temporarily auto notify all requests until notification is implemented
+        # if self._should_auto_approve():
+        self._notify_request()
 
     def _notified(self):
         self._persist_request("notified_at")
