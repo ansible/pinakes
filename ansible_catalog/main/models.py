@@ -150,6 +150,7 @@ class UserOwnedModel(BaseModel):
 
     user = models.ForeignKey(
         User,
+        null=True,
         on_delete=models.CASCADE,
         help_text="ID of the user who created this object",
     )
@@ -179,7 +180,7 @@ class Image(models.Model):
         return str(self.id)
 
 
-class ImageableModel(BaseModel):
+class ImageableModel(models.Model):
     """ImagableModel"""
 
     icon = models.ForeignKey(

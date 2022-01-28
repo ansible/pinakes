@@ -345,7 +345,7 @@ class PortfolioItemViewSet(
         portfolio = request.data.get("portfolio")
         get_object_or_404(Portfolio, pk=portfolio)
 
-        svc = CreatePortfolioItem(request.data).process()
+        svc = CreatePortfolioItem(request).process()
         output_serializer = PortfolioItemSerializer(svc.item, many=False)
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 

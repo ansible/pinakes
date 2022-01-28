@@ -1,5 +1,6 @@
 """Test create a portfolio item service"""
 import pytest
+from unittest import mock
 
 from ansible_catalog.main.catalog.exceptions import (
     BadParamsException,
@@ -13,6 +14,9 @@ from ansible_catalog.main.catalog.tests.factories import (
 from ansible_catalog.main.inventory.tests.factories import (
     ServiceOfferingFactory,
     InventoryServicePlanFactory,
+)
+from ansible_catalog.main.tests.factories import (
+    UserFactory,
 )
 
 
@@ -31,8 +35,10 @@ def test_process_with_extra_parameters():
         "portfolio": portfolio.id,
         "service_offering_ref": str(service_offering.id),
     }
+    user = UserFactory()
+    request = mock.Mock(data=options, user=user)
 
-    svc = CreatePortfolioItem(options).process()
+    svc = CreatePortfolioItem(request).process()
     item = svc.item
     plan = svc.service_plan
 
@@ -41,6 +47,7 @@ def test_process_with_extra_parameters():
     assert item.service_offering_ref == str(service_offering.id)
     assert item.service_offering_source_ref == str(service_offering.source.id)
     assert item.portfolio == portfolio
+    assert item.owner == user.username
     assert plan.portfolio_item == item
     assert plan.inventory_service_plan_ref == str(inventory_service_plan.id)
     assert plan.name == inventory_service_plan.name
@@ -55,14 +62,17 @@ def test_process_only_with_required_parameters():
         "portfolio": portfolio.id,
         "service_offering_ref": str(service_offering.id),
     }
+    user = UserFactory()
+    request = mock.Mock(data=options, user=user)
 
-    svc = CreatePortfolioItem(options)
+    svc = CreatePortfolioItem(request)
     item = svc.process().item
 
     assert item.name == service_offering.name
     assert item.service_offering_ref == str(service_offering.id)
     assert item.service_offering_source_ref == str(service_offering.source.id)
     assert item.portfolio == portfolio
+    assert item.owner == user.username
 
 
 @pytest.mark.django_db
@@ -72,8 +82,10 @@ def test_process_with_invalid_service_offering():
         "portfolio": portfolio.id,
         "service_offering_ref": "abc",
     }
+    user = UserFactory()
+    request = mock.Mock(data=options, user=user)
 
     with pytest.raises(BadParamsException) as excinfo:
-        CreatePortfolioItem(options).process()
+        CreatePortfolioItem(request).process()
 
     assert "Failed to get service offering" in str(excinfo.value)

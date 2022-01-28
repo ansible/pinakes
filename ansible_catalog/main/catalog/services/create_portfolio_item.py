@@ -30,8 +30,10 @@ class CreatePortfolioItem:
         "tenant",
     ]
 
-    def __init__(self, options):
-        self.params = options
+    def __init__(self, request):
+        self.request = request
+        self.params = request.data
+
         self.item = None
         self.service_plan = None
 
@@ -60,6 +62,7 @@ class CreatePortfolioItem:
         self._create_params()
         self.item = PortfolioItem.objects.create(
             tenant=self.portfolio.tenant,
+            user=self.request.user,
             portfolio=self.portfolio,
             **self.params,
         )
