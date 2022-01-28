@@ -72,7 +72,7 @@ class CollectTagResources:
             tag_resource = {
                 "app_name": "inventory",
                 "object_type": "ServiceInventory",
-                "tags": [dict(name=tag) for tag in tags],
+                "tags": tags,
             }
 
             logger.info(" Applied Remote Tags: %s", tag_resource)
@@ -87,7 +87,7 @@ class CollectTagResources:
                 {
                     "app_name": "catalog",
                     "object_type": obj.__class__.__name__,
-                    "tags": [dict(name=tag) for tag in tags],
+                    "tags": tags,
                 }
             ]
         else:

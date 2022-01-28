@@ -61,7 +61,7 @@ def test_collect_remote_tag_resources():
     assert len(svc.tag_resources) == 1
     assert svc.tag_resources[0]["app_name"] == "inventory"
     assert svc.tag_resources[0]["object_type"] == "ServiceInventory"
-    assert svc.tag_resources[0]["tags"][0] == {"name": "/abc"}
+    assert svc.tag_resources[0]["tags"][0] == "/abc"
 
 
 @pytest.mark.django_db
@@ -89,7 +89,7 @@ def test_collect_local_tag_resources():
     assert len(svc.tag_resources) == 2
     assert svc.tag_resources[0]["app_name"] == "catalog"
     assert svc.tag_resources[0]["object_type"] == "Portfolio"
-    assert svc.tag_resources[0]["tags"][0] == {"name": "/abc"}
+    assert svc.tag_resources[0]["tags"][0] == "/abc"
     assert svc.tag_resources[1]["app_name"] == "catalog"
     assert svc.tag_resources[1]["object_type"] == "PortfolioItem"
-    assert svc.tag_resources[1]["tags"][0] == {"name": "/xyz"}
+    assert svc.tag_resources[1]["tags"][0] == "/xyz"
