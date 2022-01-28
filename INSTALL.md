@@ -76,7 +76,6 @@ export ANSIBLE_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://keycloak.k8s.local/aut
 
 # comma separated values of the internal django urls that keycloak will use for internal redirects
 export REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
-
 ```
 
 - run the collection:
@@ -140,17 +139,19 @@ export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.defaults
 # comma separated allowed public hostnames for the backend
 export ANSIBLE_CATALOG_ALLOWED_HOSTS=*
 
-# path to store the application logs
-export CATALOG_LOG_ROOT=/tmp
+# enable if the application is served under https (recommended)
+export ANSIBLE_CATALOG_HTTPS_ENABLED=True
+
+# public hostname [scheme]://[hostname] where the application is served, it can be a list of comma separated values
+ANSIBLE_CATALOG_CSRF_TRUSTED_ORIGINS=https://catalog.k8s.local
 ```
 
 - Run the backend:
+
+**migrate and collecstatic commands must to be executed with each application update**
 ```
 # ensure correct state for database
 python manage.py migrate
-
-# initialize the source (ansible controller)
-python manage.py shell < tools/minikube/scripts/initialize_source.py
 
 # generate static files for backend
 python manage.py collectstatic
