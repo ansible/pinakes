@@ -143,12 +143,12 @@ export ANSIBLE_CATALOG_ALLOWED_HOSTS=*
 export ANSIBLE_CATALOG_HTTPS_ENABLED=True
 
 # public hostname [scheme]://[hostname] where the application is served, it can be a list of comma separated values
-ANSIBLE_CATALOG_CSRF_TRUSTED_ORIGINS=https://catalog.k8s.local
+export ANSIBLE_CATALOG_CSRF_TRUSTED_ORIGINS=https://[your-public-hostname]
 ```
 
 - Run the backend:
 
-**migrate and collecstatic commands must to be executed with each application update**
+**migrate and collectstatic commands must be executed with each application update**
 ```
 # ensure correct state for database
 python manage.py migrate
