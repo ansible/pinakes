@@ -31,7 +31,7 @@ def sync_external_groups():
     sync_time = django_tz.now()
 
     client = keycloak_django.get_admin_client()
-    all_groups = client.list_groups(False)
+    all_groups = client.list_groups(brief_representation=False)
 
     added_count = 0
     updated_count = 0

@@ -54,7 +54,7 @@ def test_list_groups(api_client):
         },
     ]
 
-    groups = client.list_groups(False)
+    groups = client.list_groups(brief_representation=False)
     params = {"briefRepresentation": False}
     api_client.request_json.assert_called_with(
         "GET",

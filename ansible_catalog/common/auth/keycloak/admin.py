@@ -16,9 +16,11 @@ class AdminClient:
 
         self._client = ApiClient(token=token)
 
-    def list_groups(self, briefRepresentation: bool) -> List[models.Group]:
+    def list_groups(
+        self, *, brief_representation: bool = True
+    ) -> List[models.Group]:
         path = GROUPS_PATH.format(realm=self._realm)
-        params = {"briefRepresentation": briefRepresentation}
+        params = {"briefRepresentation": brief_representation}
         url = f"{self._server_url}/{path}"
         items = self._client.request_json("GET", url, params=params)
         return [models.Group.parse_obj(item) for item in items]
