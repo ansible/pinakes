@@ -33,7 +33,7 @@ spec:
           - 'while true; do echo "Waiting for catalog app service to come up..."; wget http://app:8000/api/ansible-catalog/v1/ -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break; sleep 1; done; echo "Service is up! Starting main container."'
       containers:
         - args:
-            - "/home/appuser/catalog/tools/minikube/scripts/scheduler.sh"
+            - "/opt/app-root/src/tools/minikube/scripts/scheduler.sh"
           env:
             - name: AUTOMATION_SERVICES_CATALOG_REDIS_HOST
               value: redis
