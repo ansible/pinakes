@@ -2,9 +2,11 @@ import sys
 import os
 from jinja2 import Template
 
+# Apply environment variables to a Jinga2 Template file
+# Save the results into an output file specified by the caller
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("usage: python apply.py input_file output_file")
+        print("usage: python apply_env.py input_file output_file")
         sys.exit(1)
 
     with open(sys.argv[1], "r") as f:

@@ -21,12 +21,12 @@ server {
   }
 
   location /ui {
-    alias /vagrant_data/static;
+    alias {{ANSIBLE_CATALOG_STATIC_ROOT}};
     try_files $uri $uri/ /catalog/index.html =404;
   }
 
   location /media {
-    alias /vagrant_data/media;
+    alias {{ANSIBLE_CATALOG_MEDIA_ROOT}};
   }
 
   location / {

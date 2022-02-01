@@ -1,10 +1,10 @@
+
 # Vagrant Dev Environment
 
-We can run our dev environment in VirtualBox using Vagrant. We have 3 VMs running RHEL8
+We can run our dev environment in VirtualBox using Vagrant. We have 2 VMs running RHEL8
 
- 1. NGINX (catalog.vm.local)
- 2. Keycloak (keycloak.vm.local)
- 3. Catalog VM (with Postgres, Redis, Catalog App, Catalog Worker, Catalog Scheduler)
+ 1. Keycloak (keycloak.vm.local)
+ 2. Catalog VM (with Postgres, Redis, NGINX, Catalog App, Catalog Worker, Catalog Scheduler)
  
 
 # Pre requisites
@@ -13,11 +13,11 @@ We can run our dev environment in VirtualBox using Vagrant. We have 3 VMs runnin
 
 ## Installation
 * git clone this repo
-* We use the private network with the following 3 IP addresses for the VMs
+* We use the private network with the following 2 IP addresses for the VMs
 	* 192.168.33.20 
 	* 192.168.33.21
-	* 192.168.33.22
-  Please ensure that these IP addresses don't have conflicts in your environment. If they do choose 3 different addresses.
+	
+  Please ensure that these IP addresses don't have conflicts in your environment. If they do choose 2 different addresses.
 * Modify the tools/vagrant/data/env_vars file for the following
     * RHN Credentials 
 	    * RHN_USER
@@ -27,11 +27,11 @@ We can run our dev environment in VirtualBox using Vagrant. We have 3 VMs runnin
 	    * ANSIBLE_CATALOG_CONTROLLER_TOKEN
 	    * ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL
     * Modify the **/etc/hosts** file to have the following lines
-	    *  192.168.33.22 catalog.vm.local
+	    *  192.168.33.21 catalog.vm.local
 	    * 192.168.33.20 keycloak.vm.local
 * Change directory to ./tools/vagrant
 * vagrant up
-* Login to the browser using the following url https://catalog.vm.local
+* Login to the browser using the following url https://catalog.vm.local The server uses self signed certificates.
 
 ## Cleanup/Restart
 Use **vagrant destroy** to cleanup the VM's 
@@ -49,4 +49,9 @@ journalctl -u catalog_worker > /tmp/catalog_worker.log
 journalctl -u catalog_scheduler > /tmp/catalog_scheduler.log
 
 ## SELinux issues
-* Currently the NGINX VM has some SELinux policy configured for dev environment which would have to be changed when used in production
+* Files served by NGINX are in /var/lib/catalog/public
+* Since NGNIX talks to the catalog app we need to use
+    * setsebool -P httpd_can_network_connect on
+
+## Keycloak
+To access Keycloak admin page use http://keycloak.vm.local:8080/auth (admin/admin)
