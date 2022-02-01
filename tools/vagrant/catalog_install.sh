@@ -66,12 +66,14 @@ tar -xf ui.tar.xz --directory ansible_catalog/ui/catalog
 
 # Clear out the old static and media directories, if we run
 # the provision multiple times
+# Both of these directories have to point to somewhere in
+# /var/lib so the nginx process can access it, else SELinux will
+# block it.
 rm -rf $ANSIBLE_CATALOG_STATIC_ROOT
 rm -rf $ANSIBLE_CATALOG_MEDIA_ROOT
 
 mkdir -p $ANSIBLE_CATALOG_STATIC_ROOT
 mkdir -p $ANSIBLE_CATALOG_MEDIA_ROOT
-
 
 python3 manage.py collectstatic --noinput
 
@@ -83,7 +85,7 @@ python3 /vagrant_data/scripts/apply_env.py /vagrant_data/catalog/services/catalo
 adduser "$ANSIBLE_CATALOG_SERVICE_USER"
 chown "$ANSIBLE_CATALOG_SERVICE_USER"."$ANSIBLE_CATALOG_SERVICE_USER" -R /opt/ansible-catalog
 # Catalog should be able to write to the media directory
-chown -R catalog:catalog $ANSIBLE_CATALOG_MEDIA_ROOT
+chown "$ANSIBLE_CATALOG_SERVICE_USER"."$ANSIBLE_CATALOG_SERVICE_USER" -R $ANSIBLE_CATALOG_MEDIA_ROOT
 
 systemctl daemon-reload
 systemctl enable --now catalog
