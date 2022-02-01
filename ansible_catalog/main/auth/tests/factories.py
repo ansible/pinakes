@@ -4,7 +4,7 @@ import uuid
 import factory
 from django.utils import timezone as django_tz
 
-from ansible_catalog.main.auth.models import Group
+from ansible_catalog.main.auth.models import Group, Role
 
 
 class GroupFactory(factory.django.DjangoModelFactory):
@@ -17,3 +17,12 @@ class GroupFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence("group-{}".format)
     path = factory.Sequence("/group-{}".format)
     last_sync_time = factory.LazyFunction(django_tz.now)
+
+
+class RoleFactory(factory.django.DjangoModelFactory):
+    """Role Factory"""
+
+    class Meta:
+        model = Role
+
+    name = factory.Sequence("role-{}".format)

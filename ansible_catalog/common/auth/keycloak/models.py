@@ -35,7 +35,7 @@ class Group(ApiModelBase):
     path: Optional[str] = None
     sub_groups: Optional[List[Group]] = None
     realm_roles: Optional[List[str]] = None
-    client_roles: Optional[List[str]] = None
+    client_roles: Optional[Dict[str, List[str]]] = None
 
 
 Group.update_forward_refs()

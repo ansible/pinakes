@@ -1,6 +1,7 @@
 from unittest import mock
 from urllib.error import HTTPError
 import pytest
+from django.conf import settings
 
 from ansible_catalog.common.auth.keycloak import models
 from ansible_catalog.common.auth.keycloak.admin import AdminClient
@@ -35,6 +36,7 @@ def test_list_groups(api_client):
             "id": "87bd0889-2ae0-45c5-9d27-a58b7cb728f7",
             "name": "test-group-01",
             "path": "/test-group-01",
+            "clientRoles": {"catalog": ["approver", "adjuster"]},
             "subGroups": [],
         },
         {
@@ -52,10 +54,12 @@ def test_list_groups(api_client):
         },
     ]
 
-    groups = client.list_groups()
-
+    groups = client.list_groups(brief_representation=False)
+    params = {"briefRepresentation": False}
     api_client.request_json.assert_called_with(
-        "GET", f"{SERVER_URL}/admin/realms/{REALM}/groups"
+        "GET",
+        f"{SERVER_URL}/admin/realms/{REALM}/groups",
+        params=params,
     )
 
     assert groups == [
@@ -63,6 +67,9 @@ def test_list_groups(api_client):
             id="87bd0889-2ae0-45c5-9d27-a58b7cb728f7",
             name="test-group-01",
             path="/test-group-01",
+            client_roles={
+                settings.KEYCLOAK_CLIENT_ID: ["approver", "adjuster"]
+            },
             sub_groups=[],
         ),
         models.Group(
