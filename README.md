@@ -155,7 +155,7 @@ docker-compose down
 
 Deploy catalog in a production-like setup:
 ```
-docker-compose -f docker-compose.yml -f docker-compose.stage.yml up -d
+docker-compose -f docker-compose.stage.yml up -d
 ```
 
 
