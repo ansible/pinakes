@@ -1,0 +1,11 @@
+[Unit]
+Description=Keycloak Server
+After=network.target
+
+[Service]
+User=keycloak
+WorkingDirectory=/opt/keycloak-16.1.1/bin
+ExecStart=/opt/keycloak-16.1.1/bin/standalone.sh -b 0.0.0.0
+
+[Install]
+WantedBy=multi-user.target
