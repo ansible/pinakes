@@ -22,14 +22,12 @@ ln -s python3.9 /usr/bin/python3
 systemctl enable --now postgresql-13
 sudo -u postgres psql -c "ALTER USER $ANSIBLE_CATALOG_POSTGRES_USER PASSWORD '$ANSIBLE_CATALOG_POSTGRES_PASSWORD';"
 
-# Start Redis
-systemctl enable --now redis
 
 cp -R /src /opt/ansible-catalog
-pip3 install -U pip
-
 cd /opt/ansible-catalog/
 
+# In some of the dev env they might have their own venv which we should
+# delete from this vm 
 if [ -d "venv" ] 
 then
     rm -rf venv
@@ -88,6 +86,7 @@ chown "$ANSIBLE_CATALOG_SERVICE_USER"."$ANSIBLE_CATALOG_SERVICE_USER" -R /opt/an
 chown "$ANSIBLE_CATALOG_SERVICE_USER"."$ANSIBLE_CATALOG_SERVICE_USER" -R $ANSIBLE_CATALOG_MEDIA_ROOT
 
 systemctl daemon-reload
+systemctl enable --now redis
 systemctl enable --now catalog
 systemctl enable --now catalog_worker
 systemctl enable --now catalog_scheduler
@@ -101,10 +100,7 @@ python3 /vagrant_data/scripts/apply_env.py /vagrant_data/nginx/conf/catalog-ngin
 systemctl enable nginx
 systemctl restart nginx
 
-firewall-cmd --permanent --add-service=http
 firewall-cmd --permanent --add-service=https
-# Since we are running our app on port 8000 open that port in firewall
-firewall-cmd --permanent --add-port 8000/tcp
 systemctl stop firewalld
 systemctl start firewalld
 
