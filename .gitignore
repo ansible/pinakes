@@ -146,6 +146,8 @@ cython_debug/
 
 # Local Developer settings files
 ansible_catalog/settings/local_*.py
+tools/vagrant/data/env_vars
+tools/vagrant/.vagrant
 
 # IDE's
 .vscode
