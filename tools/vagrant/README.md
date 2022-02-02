@@ -18,6 +18,7 @@ We can run our dev environment in VirtualBox using Vagrant. We have 2 VMs runnin
 	* 192.168.33.21
 	
   Please ensure that these IP addresses don't have conflicts in your environment. If they do choose 2 different addresses.
+* Copy the tools/vagrant/data/env_vars.sample to tools/vagrant/data/env_vars 
 * Modify the tools/vagrant/data/env_vars file for the following
     * RHN Credentials 
 	    * RHN_USER
