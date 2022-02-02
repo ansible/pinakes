@@ -22,6 +22,7 @@ def test_current_me_authenticated(api_request):
     assert content["username"] == "fred"
     assert content["last_name"] == "Flintstone"
     assert content["first_name"] == "Fred"
+    assert sorted(content["roles"]) == ["approval-admin", "catalog-admin"]
 
 
 @pytest.mark.django_db
