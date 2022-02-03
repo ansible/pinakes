@@ -28,9 +28,7 @@ class TestControllerConfig:
         tower_mock = Mock()
         cc = ControllerConfig(tower_mock)
         tower_mock.get.side_effect = self.fake_config
-        import pdb
 
-        pdb.set_trace()
         response = cc.process()
 
         assert (response["version"]) == "4.1.0"
