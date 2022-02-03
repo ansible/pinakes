@@ -13,6 +13,9 @@ from ansible_catalog.main.catalog.models import (
     PortfolioItem,
     ProgressMessage,
 )
+from ansible_catalog.main.catalog.services.create_portfolio_item import (
+    CreatePortfolioItem,
+)
 
 
 class TenantSerializer(serializers.ModelSerializer):
@@ -46,6 +49,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "metadata",
+            "owner",
             "icon_url",
             "created_at",
             "updated_at",
@@ -54,8 +58,9 @@ class PortfolioSerializer(serializers.ModelSerializer):
         read_only_fields = ("created_at", "updated_at")
 
     def create(self, validated_data):
+        user = self.context["request"].user
         return Portfolio.objects.create(
-            tenant=Tenant.current(), **validated_data
+            tenant=Tenant.current(), user=user, **validated_data
         )
 
     @extend_schema_field(OpenApiTypes.STR)
@@ -77,6 +82,9 @@ class PortfolioItemInSerializer(serializers.Serializer):
     portfolio = serializers.IntegerField(
         required=True, help_text="ID of the portofolio"
     )
+
+    def create(self, validate_data):
+        return CreatePortfolioItem(validate_data).process().item
 
 
 class CopyPortfolioSerializer(serializers.Serializer):
@@ -112,6 +120,7 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
             "metadata",
             "portfolio",
             "icon_url",
+            "owner",
             "created_at",
             "updated_at",
         )

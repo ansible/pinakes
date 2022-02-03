@@ -150,6 +150,7 @@ class UserOwnedModel(BaseModel):
 
     user = models.ForeignKey(
         User,
+        null=True,
         on_delete=models.CASCADE,
         help_text="ID of the user who created this object",
     )
@@ -161,7 +162,7 @@ class UserOwnedModel(BaseModel):
     @extend_schema_field(OpenApiTypes.STR)
     def owner(self):
         """Use for serializer_class"""
-        return self.user.username
+        return f"{self.user.first_name} {self.user.last_name}"
 
 
 class Image(models.Model):
@@ -179,7 +180,7 @@ class Image(models.Model):
         return str(self.id)
 
 
-class ImageableModel(BaseModel):
+class ImageableModel(models.Model):
     """ImagableModel"""
 
     icon = models.ForeignKey(

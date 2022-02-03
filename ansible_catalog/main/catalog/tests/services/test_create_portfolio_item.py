@@ -1,5 +1,6 @@
 """Test create a portfolio item service"""
 import pytest
+from unittest import mock
 
 from ansible_catalog.main.catalog.exceptions import (
     BadParamsException,
@@ -14,6 +15,9 @@ from ansible_catalog.main.inventory.tests.factories import (
     ServiceOfferingFactory,
     InventoryServicePlanFactory,
 )
+from ansible_catalog.main.tests.factories import (
+    UserFactory,
+)
 
 
 @pytest.mark.django_db
@@ -25,11 +29,14 @@ def test_process_with_extra_parameters():
         schema_sha256="111",
     )
     portfolio = PortfolioFactory()
+    user = UserFactory(first_name="Catalog", last_name="Ansible")
+
     options = {
         "name": "my test",
         "description": "my test description",
         "portfolio": portfolio.id,
         "service_offering_ref": str(service_offering.id),
+        "user": user,
     }
 
     svc = CreatePortfolioItem(options).process()
@@ -41,6 +48,7 @@ def test_process_with_extra_parameters():
     assert item.service_offering_ref == str(service_offering.id)
     assert item.service_offering_source_ref == str(service_offering.source.id)
     assert item.portfolio == portfolio
+    assert item.owner == f"{user.first_name} {user.last_name}"
     assert plan.portfolio_item == item
     assert plan.inventory_service_plan_ref == str(inventory_service_plan.id)
     assert plan.name == inventory_service_plan.name
@@ -51,9 +59,12 @@ def test_process_with_extra_parameters():
 def test_process_only_with_required_parameters():
     service_offering = ServiceOfferingFactory()
     portfolio = PortfolioFactory()
+    user = UserFactory(first_name="Catalog", last_name="Ansible")
+
     options = {
         "portfolio": portfolio.id,
         "service_offering_ref": str(service_offering.id),
+        "user": user,
     }
 
     svc = CreatePortfolioItem(options)
@@ -63,6 +74,7 @@ def test_process_only_with_required_parameters():
     assert item.service_offering_ref == str(service_offering.id)
     assert item.service_offering_source_ref == str(service_offering.source.id)
     assert item.portfolio == portfolio
+    assert item.owner == f"{user.first_name} {user.last_name}"
 
 
 @pytest.mark.django_db

@@ -4,15 +4,18 @@ from ansible_catalog.main.catalog.tests.factories import (
     PortfolioFactory,
     PortfolioItemFactory,
 )
-from ansible_catalog.main.tests.factories import TenantFactory
+from ansible_catalog.main.tests.factories import TenantFactory, UserFactory
 
 
 class TestPortfolios:
     @pytest.mark.django_db
     def test_portfolio(self):
         tenant = TenantFactory()
-        portfolio = PortfolioFactory(tenant=tenant)
+        user = UserFactory(first_name="John", last_name="Doe")
+
+        portfolio = PortfolioFactory(tenant=tenant, user=user)
         assert tenant.id == portfolio.tenant.id
+        assert portfolio.owner == f"{user.first_name} {user.last_name}"
 
     @pytest.mark.django_db
     def test_duplicate_portfolio_name(self):

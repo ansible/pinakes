@@ -22,7 +22,7 @@ models.CharField.register_lookup(Length)
 logger = logging.getLogger("catalog")
 
 
-class Portfolio(AbstractKeycloakResource, ImageableModel):
+class Portfolio(AbstractKeycloakResource, ImageableModel, UserOwnedModel):
     """Portfolio object to wrap products."""
 
     KEYCLOAK_TYPE = "catalog:portfolio"
@@ -36,9 +36,6 @@ class Portfolio(AbstractKeycloakResource, ImageableModel):
     )
     enabled = models.BooleanField(
         default=False, help_text="Whether or not this portfolio is enabled"
-    )
-    owner = models.CharField(
-        max_length=255, help_text="Name of the user who created the portfolio"
     )
 
     tags = TaggableManager()
@@ -84,7 +81,7 @@ class Portfolio(AbstractKeycloakResource, ImageableModel):
         return self.name
 
 
-class PortfolioItem(ImageableModel):
+class PortfolioItem(ImageableModel, UserOwnedModel):
     """Portfolio Item represent a Job Template or a Workflow."""
 
     favorite = models.BooleanField(
