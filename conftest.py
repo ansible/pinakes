@@ -27,7 +27,13 @@ def admin():
     try:
         user = User.objects.get(username="admin")
     except User.DoesNotExist:
-        user = User(username="admin", is_superuser=True, password="admin")
+        user = User(
+            username="admin",
+            is_superuser=True,
+            password="admin",
+            first_name="Ansible",
+            last_name="Catalog",
+        )
         user.save()
     return user
 

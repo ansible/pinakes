@@ -11,11 +11,11 @@ class TestPortfolios:
     @pytest.mark.django_db
     def test_portfolio(self):
         tenant = TenantFactory()
-        user = UserFactory()
+        user = UserFactory(first_name="John", last_name="Doe")
 
         portfolio = PortfolioFactory(tenant=tenant, user=user)
         assert tenant.id == portfolio.tenant.id
-        assert portfolio.owner == user.username
+        assert portfolio.owner == f"{user.first_name} {user.last_name}"
 
     @pytest.mark.django_db
     def test_duplicate_portfolio_name(self):

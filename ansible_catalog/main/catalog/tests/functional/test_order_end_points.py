@@ -167,7 +167,7 @@ def test_order_post(api_request):
     content = json.loads(response.content)
 
     assert response.status_code == 201
-    assert content["owner"] == "admin"
+    assert content["owner"] == "Ansible Catalog"
 
 
 @pytest.mark.django_db

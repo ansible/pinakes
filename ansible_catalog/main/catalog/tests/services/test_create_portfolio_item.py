@@ -29,16 +29,17 @@ def test_process_with_extra_parameters():
         schema_sha256="111",
     )
     portfolio = PortfolioFactory()
+    user = UserFactory(first_name="Catalog", last_name="Ansible")
+
     options = {
         "name": "my test",
         "description": "my test description",
         "portfolio": portfolio.id,
         "service_offering_ref": str(service_offering.id),
+        "user": user,
     }
-    user = UserFactory()
-    request = mock.Mock(data=options, user=user)
 
-    svc = CreatePortfolioItem(request).process()
+    svc = CreatePortfolioItem(options).process()
     item = svc.item
     plan = svc.service_plan
 
@@ -47,7 +48,7 @@ def test_process_with_extra_parameters():
     assert item.service_offering_ref == str(service_offering.id)
     assert item.service_offering_source_ref == str(service_offering.source.id)
     assert item.portfolio == portfolio
-    assert item.owner == user.username
+    assert item.owner == f"{user.first_name} {user.last_name}"
     assert plan.portfolio_item == item
     assert plan.inventory_service_plan_ref == str(inventory_service_plan.id)
     assert plan.name == inventory_service_plan.name
@@ -58,21 +59,22 @@ def test_process_with_extra_parameters():
 def test_process_only_with_required_parameters():
     service_offering = ServiceOfferingFactory()
     portfolio = PortfolioFactory()
+    user = UserFactory(first_name="Catalog", last_name="Ansible")
+
     options = {
         "portfolio": portfolio.id,
         "service_offering_ref": str(service_offering.id),
+        "user": user,
     }
-    user = UserFactory()
-    request = mock.Mock(data=options, user=user)
 
-    svc = CreatePortfolioItem(request)
+    svc = CreatePortfolioItem(options)
     item = svc.process().item
 
     assert item.name == service_offering.name
     assert item.service_offering_ref == str(service_offering.id)
     assert item.service_offering_source_ref == str(service_offering.source.id)
     assert item.portfolio == portfolio
-    assert item.owner == user.username
+    assert item.owner == f"{user.first_name} {user.last_name}"
 
 
 @pytest.mark.django_db
@@ -82,10 +84,8 @@ def test_process_with_invalid_service_offering():
         "portfolio": portfolio.id,
         "service_offering_ref": "abc",
     }
-    user = UserFactory()
-    request = mock.Mock(data=options, user=user)
 
     with pytest.raises(BadParamsException) as excinfo:
-        CreatePortfolioItem(request).process()
+        CreatePortfolioItem(options).process()
 
     assert "Failed to get service offering" in str(excinfo.value)

@@ -13,6 +13,9 @@ from ansible_catalog.main.catalog.models import (
     PortfolioItem,
     ProgressMessage,
 )
+from ansible_catalog.main.catalog.services.create_portfolio_item import (
+    CreatePortfolioItem,
+)
 
 
 class TenantSerializer(serializers.ModelSerializer):
@@ -79,6 +82,9 @@ class PortfolioItemInSerializer(serializers.Serializer):
     portfolio = serializers.IntegerField(
         required=True, help_text="ID of the portofolio"
     )
+
+    def create(self, validate_data):
+        return CreatePortfolioItem(validate_data).process().item
 
 
 class CopyPortfolioSerializer(serializers.Serializer):

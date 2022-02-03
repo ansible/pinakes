@@ -2,8 +2,6 @@
 import logging
 from django.db import transaction
 
-from ansible_catalog.main.models import Tenant
-
 from ansible_catalog.main.catalog.models import (
     Portfolio,
     PortfolioItem,
@@ -30,9 +28,8 @@ class CreatePortfolioItem:
         "tenant",
     ]
 
-    def __init__(self, request):
-        self.request = request
-        self.params = request.data
+    def __init__(self, options):
+        self.params = options
 
         self.item = None
         self.service_plan = None
@@ -41,14 +38,14 @@ class CreatePortfolioItem:
     def process(self):
         logger.info("Creating portfolio item with options: %s", self.params)
 
-        self.service_offering_ref = self.params.get("service_offering_ref")
+        service_offering_ref = self.params.get("service_offering_ref")
         try:
             logger.info(
                 "Fetching service offering from inventory: %s",
-                self.service_offering_ref,
+                service_offering_ref,
             )
             self.service_offering = (
-                GetServiceOffering(self.service_offering_ref)
+                GetServiceOffering(service_offering_ref)
                 .process()
                 .service_offering
             )
@@ -57,19 +54,18 @@ class CreatePortfolioItem:
             raise
 
         portfolio_id = self.params.pop("portfolio")
-        self.portfolio = Portfolio.objects.get(id=portfolio_id)
+        portfolio = Portfolio.objects.get(id=portfolio_id)
 
         self._create_params()
         self.item = PortfolioItem.objects.create(
-            tenant=self.portfolio.tenant,
-            user=self.request.user,
-            portfolio=self.portfolio,
+            tenant=portfolio.tenant,
+            portfolio=portfolio,
             **self.params,
         )
 
         self.service_plan = ServicePlan.objects.create(
-            tenant=self.portfolio.tenant,
-            service_offering_ref=self.service_offering_ref,
+            tenant=portfolio.tenant,
+            service_offering_ref=service_offering_ref,
             portfolio_item=self.item,
         )
         RefreshServicePlan(self.service_plan).process()
