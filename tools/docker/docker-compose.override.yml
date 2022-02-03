@@ -1,0 +1,133 @@
+version: '3'
+
+services:
+  frontend:
+    image: ansible-catalog-ui:dev
+    build:
+      context: frontend/
+    ports:
+      - "9080:9080"
+      - '8443:8443'
+    depends_on:
+      - app
+    volumes:
+      - 'media_files:/opt/app-root/src/media'
+      - 'static_files:/opt/app-root/src/staticfiles'
+
+  app:
+    image: ansible-catalog:dev
+    build:
+      context: ../../
+      dockerfile: tools/docker/Dockerfile
+    ports:
+      - '8000:8000'
+    volumes:
+      - "../../:/home/appuser/catalog:z"
+      - 'static_files:/home/appuser/catalog/staticfiles'
+      - 'media_files:/home/appuser/catalog/media_files'
+    environment:
+      - ANSIBLE_CATALOG_CONTROLLER_TOKEN=${ANSIBLE_CATALOG_CONTROLLER_TOKEN}
+      - ANSIBLE_CATALOG_CONTROLLER_URL=${ANSIBLE_CATALOG_CONTROLLER_URL}
+      - ANSIBLE_CATALOG_HTTPS_ENABLED=True
+      - ANSIBLE_CATALOG_CSRF_TRUSTED_ORIGINS=https://*,http://*
+      - ANSIBLE_CATALOG_STATIC_ROOT=/home/appuser/catalog/staticfiles
+      - ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL=False
+      - ANSIBLE_CATALOG_POSTGRES_HOST=postgres
+      - ANSIBLE_CATALOG_MEDIA_ROOT=/home/appuser/catalog/media
+      - ANSIBLE_CATALOG_ALLOWED_HOSTS=*
+      - ANSIBLE_CATALOG_DEBUG=True
+      - ANSIBLE_CATALOG_SECRET_KEY=django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5
+      - CATALOG_LOG_ROOT=/home/appuser/catalog
+      - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
+      - ANSIBLE_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://localhost:8080/auth
+      - ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
+      - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
+      - ANSIBLE_CATALOG_REDIS_HOST=redis
+      - ANSIBLE_CATALOG_POSTGRES_USER=admin
+      - ANSIBLE_CATALOG_POSTGRES_PASSWORD=admin
+    depends_on:
+      - keycloak-setup
+      - postgres
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8000/api/ansible-catalog/v1/"
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    command: /home/appuser/catalog/tools/docker/scripts/dev-server.sh
+  keycloak-setup:
+    image: ansible-catalog:dev
+    environment:
+      - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
+      - ANSIBLE_CATALOG_KEYCLOAK_USER=admin
+      - ANSIBLE_CATALOG_KEYCLOAK_PASSWORD=admin
+      - ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
+      - ANSIBLE_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://localhost:8080/auth
+      - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
+    depends_on:
+      - keycloak-app
+    command: /home/appuser/catalog/tools/docker/scripts/keycloak-setup.sh
+
+  worker:
+    image: ansible-catalog:dev
+    environment:
+      - ANSIBLE_CATALOG_CONTROLLER_TOKEN=${ANSIBLE_CATALOG_CONTROLLER_TOKEN}
+      - ANSIBLE_CATALOG_CONTROLLER_URL=${ANSIBLE_CATALOG_CONTROLLER_URL}
+      - ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL=False
+      - ANSIBLE_CATALOG_POSTGRES_HOST=postgres
+      - ANSIBLE_CATALOG_MEDIA_ROOT=/home/appuser/catalog/media
+      - ANSIBLE_CATALOG_ALLOWED_HOSTS=*
+      - ANSIBLE_CATALOG_DEBUG=True
+      - ANSIBLE_CATALOG_SECRET_KEY=django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5
+      - ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
+      - ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
+      - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
+      - ANSIBLE_CATALOG_REDIS_HOST=redis
+      - ANSIBLE_CATALOG_POSTGRES_USER=admin
+      - ANSIBLE_CATALOG_POSTGRES_PASSWORD=admin
+    volumes:
+      - "../../:/home/appuser/catalog:z"
+    depends_on:
+      - app
+      - redis
+      - keycloak-setup
+    command: /home/appuser/catalog/tools/docker/scripts/worker.sh
+
+  scheduler:
+    image: ansible-catalog:dev
+    environment:
+      - ANSIBLE_CATALOG_DEBUG=True
+      - ANSIBLE_CATALOG_REDIS_HOST=redis
+      - ANSIBLE_CATALOG_SECRET_KEY=django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5
+    volumes:
+      - "../../:/home/appuser/catalog:z"
+    depends_on:
+      - app
+      - redis
+      - keycloak-setup
+    command: "python manage.py cronjobs"
+
+  keycloak-app:
+    image: 'quay.io/keycloak/keycloak:15.0.2'
+    environment:
+      - 'DB_VENDOR=postgres'
+      - 'DB_ADDR=postgres'
+      - 'DB_DATABASE=keycloak'
+      - 'DB_USER=admin'
+      - 'DB_PASSWORD=admin'
+      - 'KEYCLOAK_USER=admin'
+      - 'KEYCLOAK_PASSWORD=admin'
+    ports:
+      - '8080:8080'
+    depends_on:
+      - 'postgres'
+volumes:
+  pg_data: {}
+  media_files: {}
+  static_files: {}
