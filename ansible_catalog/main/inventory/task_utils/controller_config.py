@@ -1,6 +1,5 @@
 """ Get Controller Config Information
 """
-import dateutil.parser
 
 
 class ControllerConfig:
@@ -10,5 +9,6 @@ class ControllerConfig:
         self.tower = tower
 
     def process(self):
+        """Get the Controller Config Information as a dict"""
         for data in self.tower.get("/api/v2/config", ("version")):
             return data
