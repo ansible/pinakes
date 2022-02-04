@@ -20,7 +20,7 @@ ln -s python3.9 /usr/bin/python3
 # Initialize Postgres, set password
 /usr/pgsql-13/bin/postgresql-13-setup initdb
 systemctl enable --now postgresql-13
-sudo -u postgres psql -c "ALTER USER $ANSIBLE_CATALOG_POSTGRES_USER PASSWORD '$ANSIBLE_CATALOG_POSTGRES_PASSWORD';"
+sudo -u postgres psql -c "ALTER USER $AUTOMATION_SERVICES_CATALOG_POSTGRES_USER PASSWORD '$AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD';"
 
 
 cp -R /src /opt/ansible-catalog
@@ -49,10 +49,10 @@ ansible-playbook tools/keycloak_setup/dev.yml
 
 
 # Create the Catalog Database
-sql="CREATE DATABASE "$ANSIBLE_CATALOG_DATABASE_NAME";"
+sql="CREATE DATABASE "$AUTOMATION_SERVICES_CATALOG_DATABASE_NAME";"
 echo $sql > /tmp/my.sql
-export PGPASSWORD=$ANSIBLE_CATALOG_POSTGRES_PASSWORD
-psql -v ON_ERROR_STOP=1 -h "$ANSIBLE_CATALOG_POSTGRES_HOST" -U "$ANSIBLE_CATALOG_POSTGRES_USER" -f /tmp/my.sql
+export PGPASSWORD=$AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD
+psql -v ON_ERROR_STOP=1 -h "$AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST" -U "$AUTOMATION_SERVICES_CATALOG_POSTGRES_USER" -f /tmp/my.sql
 
 # Run the migration
 python3 manage.py migrate
@@ -67,11 +67,11 @@ tar -xf ui.tar.xz --directory ansible_catalog/ui/catalog
 # Both of these directories have to point to somewhere in
 # /var/lib so the nginx process can access it, else SELinux will
 # block it.
-rm -rf $ANSIBLE_CATALOG_STATIC_ROOT
-rm -rf $ANSIBLE_CATALOG_MEDIA_ROOT
+rm -rf $AUTOMATION_SERVICES_CATALOG_STATIC_ROOT
+rm -rf $AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT
 
-mkdir -p $ANSIBLE_CATALOG_STATIC_ROOT
-mkdir -p $ANSIBLE_CATALOG_MEDIA_ROOT
+mkdir -p $AUTOMATION_SERVICES_CATALOG_STATIC_ROOT
+mkdir -p $AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT
 
 python3 manage.py collectstatic --noinput
 
@@ -80,10 +80,10 @@ python3 /vagrant_data/scripts/apply_env.py /vagrant_data/catalog/services/catalo
 python3 /vagrant_data/scripts/apply_env.py /vagrant_data/catalog/services/catalog_scheduler.service.j2 /etc/systemd/system/catalog_scheduler.service
 python3 /vagrant_data/scripts/apply_env.py /vagrant_data/catalog/services/catalog_worker.service.j2 /etc/systemd/system/catalog_worker.service
 
-adduser "$ANSIBLE_CATALOG_SERVICE_USER"
-chown "$ANSIBLE_CATALOG_SERVICE_USER"."$ANSIBLE_CATALOG_SERVICE_USER" -R /opt/ansible-catalog
+adduser "$AUTOMATION_SERVICES_CATALOG_SERVICE_USER"
+chown "$AUTOMATION_SERVICES_CATALOG_SERVICE_USER"."$AUTOMATION_SERVICES_CATALOG_SERVICE_USER" -R /opt/ansible-catalog
 # Catalog should be able to write to the media directory
-chown "$ANSIBLE_CATALOG_SERVICE_USER"."$ANSIBLE_CATALOG_SERVICE_USER" -R $ANSIBLE_CATALOG_MEDIA_ROOT
+chown "$AUTOMATION_SERVICES_CATALOG_SERVICE_USER"."$AUTOMATION_SERVICES_CATALOG_SERVICE_USER" -R $AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT
 
 systemctl daemon-reload
 systemctl enable --now redis

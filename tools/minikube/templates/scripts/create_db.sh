@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-sql="CREATE DATABASE "$ANSIBLE_CATALOG_DATABASE_NAME";"
+sql="CREATE DATABASE "$AUTOMATION_SERVICES_CATALOG_DATABASE_NAME";"
 echo $sql > /tmp/my.sql
 
 psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -f /tmp/my.sql

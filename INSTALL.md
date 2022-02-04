@@ -60,19 +60,19 @@ ansible-galaxy collection install community.general mkanoor.catalog_keycloak
 - some environment variables are needed: 
 ```
 # internal keycloak url
-export ANSIBLE_CATALOG_KEYCLOAK_URL=http://keycloak:8080/auth
+export AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL=http://keycloak:8080/auth
 
 # keycloak client secret configured (see keycloak setup ahead)
-export ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
+export AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
 
 # keycloak admin user
-export ANSIBLE_CATALOG_KEYCLOAK_USER=admin
+export AUTOMATION_SERVICES_CATALOG_KEYCLOAK_USER=admin
 
 # keycloak admin password
-export ANSIBLE_CATALOG_KEYCLOAK_PASSWORD=password
+export AUTOMATION_SERVICES_CATALOG_KEYCLOAK_PASSWORD=password
 
 # public keycloak url
-export ANSIBLE_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://keycloak.k8s.local/auth
+export AUTOMATION_SERVICES_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://keycloak.k8s.local/auth
 
 # comma separated values of the internal django urls that keycloak will use for internal redirects
 export REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
@@ -106,44 +106,44 @@ _Note_: _All application settings are defined in `ansible_catalog/settings/defau
 
 
 # postgres conf
-export ANSIBLE_CATALOG_DATABASE_NAME=dev_catalog
-export ANSIBLE_CATALOG_POSTGRES_HOST=postgres
-export ANSIBLE_CATALOG_POSTGRES_USER=postgres
-export ANSIBLE_CATALOG_POSTGRES_PASSWORD=password
+export AUTOMATION_SERVICES_CATALOG_DATABASE_NAME=dev_catalog
+export AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST=postgres
+export AUTOMATION_SERVICES_CATALOG_POSTGRES_USER=postgres
+export AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD=password
 
 # path where are stored the media files (basically images)
-export ANSIBLE_CATALOG_MEDIA_ROOT=/app/media
+export AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT=/app/media
 
 # secret key for internal cryptographic tasks. You can generate it here: https://djecrety.ir/
-export ANSIBLE_CATALOG_SECRET_KEY="django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
+export AUTOMATION_SERVICES_CATALOG_SECRET_KEY="django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
 
 # internal ansible controller configuration
-export ANSIBLE_CATALOG_CONTROLLER_URL=http://172.0.2.3
-export ANSIBLE_CATALOG_CONTROLLER_TOKEN=somesecrettoken
-export ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL=true
+export AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL=http://172.0.2.3
+export AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN=somesecrettoken
+export AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL=true
 ```
 
 - The following environment variables are optional
 ```
 # enable debug mode for django
-export ANSIBLE_CATALOG_DEBUG=False
+export AUTOMATION_SERVICES_CATALOG_DEBUG=False
 
 # internal redis conf
-export ANSIBLE_CATALOG_REDIS_HOST=localhost
-export ANSIBLE_CATALOG_REDIS_PORT=6379
-export ANSIBLE_CATALOG_REDIS_DB=0
+export AUTOMATION_SERVICES_CATALOG_REDIS_HOST=localhost
+export AUTOMATION_SERVICES_CATALOG_REDIS_PORT=6379
+export AUTOMATION_SERVICES_CATALOG_REDIS_DB=0
 
 # use it to define a custom configuration file as python module syntax 
 export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.defaults
 
 # comma separated allowed public hostnames for the backend
-export ANSIBLE_CATALOG_ALLOWED_HOSTS=*
+export AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS=*
 
 # enable if the application is served under https (recommended)
-export ANSIBLE_CATALOG_HTTPS_ENABLED=True
+export AUTOMATION_SERVICES_CATALOG_HTTPS_ENABLED=True
 
 # public hostname [scheme]://[hostname] where the application is served, it can be a list of comma separated values
-export ANSIBLE_CATALOG_CSRF_TRUSTED_ORIGINS=https://[your-public-hostname]
+export AUTOMATION_SERVICES_CATALOG_CSRF_TRUSTED_ORIGINS=https://[your-public-hostname]
 ```
 
 - Run the backend:
