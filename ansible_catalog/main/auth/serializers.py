@@ -4,7 +4,7 @@ import jwt
 from ansible_catalog.main.auth import models
 from django.contrib.auth.models import User
 from django.conf import settings
-from drf_spectacular.utils import extend_schema_field, OpenApiTypes
+from drf_spectacular.utils import extend_schema_field
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -20,9 +20,7 @@ class CurrentUserSerializer(serializers.ModelSerializer):
         model = User
         fields = ("username", "first_name", "last_name", "roles")
 
-    @extend_schema_field(
-        {"type": "array", "items": {"type": OpenApiTypes.STR}}
-    )
+    @extend_schema_field(field={"type": "array", "items": {"type": "string"}})
     def get_roles(self, obj):
         request = self.context.get("request")
         extra_data = request.keycloak_user.extra_data
