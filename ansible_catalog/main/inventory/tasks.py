@@ -2,6 +2,9 @@
 import logging
 from rq import get_current_job
 
+from ansible_catalog.main.inventory.task_utils.check_source_availability import (
+    CheckSourceAvailability,
+)
 from ansible_catalog.main.inventory.task_utils.refresh_inventory import (
     RefreshInventory,
 )
@@ -15,6 +18,15 @@ from ansible_catalog.main.catalog.services.update_service_plans import (
 from ansible_catalog.main.models import Source
 
 logger = logging.getLogger("inventory")
+
+
+def check_all_source_status():
+    """Task to check source status"""
+    for source in Source.objects.all():
+        logger.info("Checking source %s", source.name)
+        svc = CheckSourceAvailability(source.tenant_id, source.id)
+        svc.process()
+    logger.info("Finished checking source status")
 
 
 def refresh_all_sources():

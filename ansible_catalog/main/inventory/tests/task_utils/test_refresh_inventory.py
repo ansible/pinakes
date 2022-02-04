@@ -41,10 +41,6 @@ class TestRefreshInventory:
         assert source_instance.last_successful_refresh_at is not None
         assert source_instance.last_refresh_message is not None
         assert source_instance.refresh_state == source_instance.State.DONE
-        assert source_instance.last_available_at is not None
-        assert source_instance.last_checked_at is not None
-        assert source_instance.availability_status == "available"
-        assert source_instance.availability_message == "Available"
 
     @pytest.mark.django_db
     def test_last_refresh_message(self, mocker):
@@ -155,7 +151,3 @@ class TestRefreshInventory:
             "Error: Failed to import inventory"
         )
         assert source_instance.refresh_state == source_instance.State.FAILED
-        assert source_instance.last_available_at is None
-        assert source_instance.last_checked_at is not None
-        assert source_instance.availability_status == "unavailable"
-        assert source_instance.availability_message == "Unavailable"

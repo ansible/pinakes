@@ -1,6 +1,5 @@
 """ Test module for ControllerConfig  """
 from unittest.mock import Mock
-import pytest
 
 from ansible_catalog.main.inventory.task_utils.controller_config import (
     ControllerConfig,
@@ -10,25 +9,19 @@ from ansible_catalog.main.inventory.task_utils.controller_config import (
 class TestControllerConfig:
     """Test class for ControllerConfig."""
 
-    def fake_config(self, *_args, **_kwargs):
-        """Create a fake response object"""
-        objs = [
+    def test_controller_config(self):
+        """Test fetching controller config"""
+        config = [
             {
                 "time_zone": "UTC",
                 "version": "4.1.0",
                 "analytics_status": "off",
             }
         ]
-
-        for i in objs:
-            yield i
-
-    def test_controller_config(self):
-        """Test fetching controller config"""
         tower_mock = Mock()
-        cc = ControllerConfig(tower_mock)
-        tower_mock.get.side_effect = self.fake_config
+        tower_mock.get.return_value = config
 
-        response = cc.process()
+        svc = ControllerConfig(tower_mock).process()
+        response = svc.tower_info
 
         assert (response["version"]) == "4.1.0"
