@@ -10,7 +10,9 @@ from social_django.models import UserSocialAuth
 from social_django.utils import load_strategy
 
 import requests
+import logging
 
+logger = logging.getLogger(__name__)
 
 KEYCLOAK_PROVIDER = "keycloak-oidc"
 
@@ -30,6 +32,7 @@ class KeycloakAuthMiddleware:
             request.keycloak_user = self._process_keycloak_user(request.user)
         except TokenRefreshError:
             # NOTE(cutwater): Not sure about correctness of this one
+            logger.debug("Token expired, sending back a 401")
             django_auth.logout(request)
             return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
         return self.get_response(request)

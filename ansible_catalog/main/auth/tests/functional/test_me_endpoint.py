@@ -27,7 +27,7 @@ def test_current_me_authenticated(api_request):
 
 @pytest.mark.django_db
 def test_current_me_unauthenticated(api_request):
-    """Unauthenticated user should return 401"""
+    """Unauthenticated user should return 403"""
     fred = User(
         username="fred",
         is_superuser=False,
@@ -38,4 +38,4 @@ def test_current_me_unauthenticated(api_request):
     fred.save()
     response = api_request("get", "me", None, None, fred, "json", False)
 
-    assert response.status_code == 401
+    assert response.status_code == 403
