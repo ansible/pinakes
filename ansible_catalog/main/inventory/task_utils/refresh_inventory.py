@@ -44,28 +44,21 @@ class RefreshInventory:
             sii = ServiceInventoryImport(self.tenant, self.source, self.tower)
             logger.info("Fetching Inventory")
             sii.process()
-            self.source.last_refresh_message = (
-                "Service Inventories: %s" % sii.get_stats()
-            )
 
             soi = ServiceOfferingImport(
                 self.tenant, self.source, self.tower, sii, plan_importer
             )
             logger.info("Fetching Job Templates & Workflows")
             soi.process()
-            self.source.last_refresh_message = (
-                "%s; Job Templates & Workflows: %s"
-                % (self.source.last_refresh_message, soi.get_stats())
-            )
 
             son = ServiceOfferingNodeImport(
                 self.tenant, self.source, self.tower, sii, soi
             )
             logger.info("Fetching Workflow Template Nodes")
             son.process()
-            self.source.last_refresh_message = (
-                "%s; Workflow Template Nodes: %s"
-                % (self.source.last_refresh_message, son.get_stats())
+
+            self.source.last_refresh_message = self._set_last_refresh_message(
+                sii, soi, son
             )
             self.source.last_successful_refresh_at = timezone.now()
             self.source.refresh_state = Source.State.DONE
@@ -83,3 +76,44 @@ class RefreshInventory:
             self.source.last_checked_at = timezone.now()
 
         self.source.save()
+
+    def _set_last_refresh_message(
+        self,
+        service_inventory_import,
+        service_offering_import,
+        service_offering_node_import,
+    ):
+        last_refresh_message = ""
+        sii_stats = service_inventory_import.get_stats()
+        soi_stats = service_offering_import.get_stats()
+        son_stats = service_offering_node_import.get_stats()
+
+        filtered_sii_stats = {
+            key: value for key, value in sii_stats.items() if value > 0
+        }
+        filtered_soi_stats = {
+            key: value for key, value in soi_stats.items() if value > 0
+        }
+        filtered_son_stats = {
+            key: value for key, value in son_stats.items() if value > 0
+        }
+
+        if bool(filtered_sii_stats):
+            last_refresh_message += (
+                "Service Inventories: %s;\n" % filtered_sii_stats
+            )
+
+        if bool(filtered_soi_stats):
+            last_refresh_message += (
+                "Job Templates & Workflows: %s;\n" % filtered_soi_stats
+            )
+
+        if bool(filtered_son_stats):
+            last_refresh_message += (
+                "Workflow Template Nodes: %s" % filtered_son_stats
+            )
+
+        if not bool(last_refresh_message):
+            last_refresh_message = "Nothing to update"
+
+        return last_refresh_message
