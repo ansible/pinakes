@@ -35,11 +35,13 @@ SQL_DEBUG = DEBUG
 SECRET_KEY = env.str("AUTOMATION_SERVICES_CATALOG_SECRET_KEY")
 
 ALLOWED_HOSTS = env.list(
-    "AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"]
+    "AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS",
+    default=["localhost", "127.0.0.1"],
 )
 
 CATALOG_API_PATH_PREFIX = env.str(
-    "AUTOMATION_SERVICES_CATALOG_API_PATH_PREFIX", default="/api/ansible-catalog"
+    "AUTOMATION_SERVICES_CATALOG_API_PATH_PREFIX",
+    default="/api/ansible-catalog",
 )
 
 # Application definition
@@ -101,13 +103,21 @@ WSGI_APPLICATION = "ansible_catalog.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": env.str("AUTOMATION_SERVICES_CATALOG_DATABASE_NAME", default="catalog"),
-        "USER": env.str("AUTOMATION_SERVICES_CATALOG_POSTGRES_USER", default="catalog"),
+        "NAME": env.str(
+            "AUTOMATION_SERVICES_CATALOG_DATABASE_NAME", default="catalog"
+        ),
+        "USER": env.str(
+            "AUTOMATION_SERVICES_CATALOG_POSTGRES_USER", default="catalog"
+        ),
         "PASSWORD": env.str(
             "AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD", default="password"
         ),
-        "HOST": env.str("AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST", default="localhost"),
-        "PORT": env.str("AUTOMATION_SERVICES_CATALOG_POSTGRES_PORT", default="5432"),
+        "HOST": env.str(
+            "AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST", default="localhost"
+        ),
+        "PORT": env.str(
+            "AUTOMATION_SERVICES_CATALOG_POSTGRES_PORT", default="5432"
+        ),
     }
 }
 
@@ -176,7 +186,8 @@ STATIC_ROOT = env.str(
     "AUTOMATION_SERVICES_CATALOG_STATIC_ROOT", default=BASE_DIR / "staticfiles"
 )
 LOGIN_REDIRECT_URL = env.str(
-    "AUTOMATION_SERVICES_CATALOG_LOGIN_REDIRECT_URL", default="/ui/catalog/index.html"
+    "AUTOMATION_SERVICES_CATALOG_LOGIN_REDIRECT_URL",
+    default="/ui/catalog/index.html",
 )
 
 # Default primary key field type
@@ -186,7 +197,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Controller Info
 CONTROLLER_URL = env.str(
-    "AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL", default="https://Your_Controller_URL"
+    "AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL",
+    default="https://Your_Controller_URL",
 )
 CONTROLLER_TOKEN = env.str(
     "AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN", default="Secret Token"
@@ -282,8 +294,12 @@ LOGIN_URL = "/login/keycloak/"
 # Django Redis Queue Information
 RQ_QUEUES = {
     "default": {
-        "HOST": env.str("AUTOMATION_SERVICES_CATALOG_REDIS_HOST", default="localhost"),
-        "PORT": env.int("AUTOMATION_SERVICES_CATALOG_REDIS_PORT", default=6379),
+        "HOST": env.str(
+            "AUTOMATION_SERVICES_CATALOG_REDIS_HOST", default="localhost"
+        ),
+        "PORT": env.int(
+            "AUTOMATION_SERVICES_CATALOG_REDIS_PORT", default=6379
+        ),
         "DB": env.int("AUTOMATION_SERVICES_CATALOG_REDIS_DB", default=0),
         "DEFAULT_TIMEOUT": 360,
     },
@@ -294,7 +310,9 @@ STARTUP_RQ_JOBS = [
     "ansible_catalog.main.auth.tasks.sync_external_groups",
     "ansible_catalog.main.inventory.tasks.refresh_all_sources",
 ]
-CRONTAB = env.str("AUTOMATION_SERVICES_CATALOG_CRONTAB", default="*/30 * * * *")
+CRONTAB = env.str(
+    "AUTOMATION_SERVICES_CATALOG_CRONTAB", default="*/30 * * * *"
+)
 RQ_CRONJOBS = [
     (CRONTAB, "ansible_catalog.main.auth.tasks.sync_external_groups"),
     (
@@ -341,14 +359,18 @@ SPECTACULAR_SETTINGS = {
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 
 KEYCLOAK_URL = env.str(
-    "AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL", default="http://localhost:8080/auth"
+    "AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL",
+    default="http://localhost:8080/auth",
 ).rstrip("/")
-KEYCLOAK_REALM = env.str("AUTOMATION_SERVICES_CATALOG_KEYCLOAK_REALM", default="aap")
+KEYCLOAK_REALM = env.str(
+    "AUTOMATION_SERVICES_CATALOG_KEYCLOAK_REALM", default="aap"
+)
 KEYCLOAK_CLIENT_ID = env.str(
     "AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_ID", default="catalog"
 )
 KEYCLOAK_CLIENT_SECRET = env.str(
-    "AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET", default="secret-token"
+    "AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET",
+    default="secret-token",
 )
 
 SOCIAL_AUTH_KEYCLOAK_OIDC_KEY = KEYCLOAK_CLIENT_ID
