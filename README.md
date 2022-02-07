@@ -161,10 +161,7 @@ docker-compose -f docker-compose.yml -f docker-compose.stage.yml up -d
 
 
 ### Things to do manually the first time
-- create a superuser:
-```
-docker-compose exec app python manage.py createsuperuser
-```
+
 - refresh the controller
 open in your browser: http://localhost:8000/api/ansible-catalog/v1/sources/1/refresh/
 and execute a patch with empty body. (this may take a while)
