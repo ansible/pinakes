@@ -1,25 +1,25 @@
 #!/bin/sh
 # For development purpose only
 # Set the environment variable for accessing your Automation Controller
-# export ANSIBLE_CATALOG_CONTROLLER_URL=<<your controller url>>
-# export ANSIBLE_CATALOG_CONTROLLER_TOKEN=<<your controller token>>
-# export ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL=True|False
+# export AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL=<<your controller url>>
+# export AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN=<<your controller token>>
+# export AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL=True|False
 
-if [[ -z "${ANSIBLE_CATALOG_CONTROLLER_URL}" ]]
+if [[ -z "${AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL}" ]]
 then
-  echo "Please set the environment variable ANSIBLE_CATALOG_CONTROLLER_URL"
+  echo "Please set the environment variable AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL"
   exit 1
 fi
 
-if [[ -z "${ANSIBLE_CATALOG_CONTROLLER_TOKEN}" ]]
+if [[ -z "${AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN}" ]]
 then
-  echo "Please set the environment variable ANSIBLE_CATALOG_CONTROLLER_TOKEN"
+  echo "Please set the environment variable AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN"
   exit 1
 fi
 
-if [[ -z "${ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL}" ]]
+if [[ -z "${AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL}" ]]
 then
-  echo "Please set the environment variable ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL"
+  echo "Please set the environment variable AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL"
   exit 1
 fi
 
@@ -48,7 +48,7 @@ if [ $? -eq 0 ]; then
 	kubectl delete --namespace=catalog configmap ansible-controller-env
 fi
 
-kubectl create configmap --namespace=catalog ansible-controller-env --from-literal=ANSIBLE_CATALOG_CONTROLLER_URL="$ANSIBLE_CATALOG_CONTROLLER_URL" --from-literal=ANSIBLE_CATALOG_CONTROLLER_TOKEN="$ANSIBLE_CATALOG_CONTROLLER_TOKEN" --from-literal=ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL="$ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL"
+kubectl create configmap --namespace=catalog ansible-controller-env --from-literal=AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL="$AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL" --from-literal=AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN="$AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN" --from-literal=AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL="$AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL"
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/redis-deployment.yaml
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/redis-service.yaml
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/pg-data-persistentvolumeclaim.yaml

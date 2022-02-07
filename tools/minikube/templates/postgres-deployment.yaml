@@ -32,7 +32,7 @@ spec:
               value: password
             - name: POSTGRES_USER
               value: keycloak
-            - name: ANSIBLE_CATALOG_DATABASE_NAME
+            - name: AUTOMATION_SERVICES_CATALOG_DATABASE_NAME
               value: dev_catalog
           image: postgres:13-alpine
           name: postgres

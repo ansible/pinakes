@@ -29,17 +29,17 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("ANSIBLE_CATALOG_DEBUG", default=False)
+DEBUG = env.bool("AUTOMATION_SERVICES_CATALOG_DEBUG", default=False)
 TEMPLATE_DEBUG = DEBUG
 SQL_DEBUG = DEBUG
-SECRET_KEY = env.str("ANSIBLE_CATALOG_SECRET_KEY")
+SECRET_KEY = env.str("AUTOMATION_SERVICES_CATALOG_SECRET_KEY")
 
 ALLOWED_HOSTS = env.list(
-    "ANSIBLE_CATALOG_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"]
+    "AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"]
 )
 
 CATALOG_API_PATH_PREFIX = env.str(
-    "ANSIBLE_CATALOG_API_PATH_PREFIX", default="/api/ansible-catalog"
+    "AUTOMATION_SERVICES_CATALOG_API_PATH_PREFIX", default="/api/ansible-catalog"
 )
 
 # Application definition
@@ -101,13 +101,13 @@ WSGI_APPLICATION = "ansible_catalog.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": env.str("ANSIBLE_CATALOG_DATABASE_NAME", default="catalog"),
-        "USER": env.str("ANSIBLE_CATALOG_POSTGRES_USER", default="catalog"),
+        "NAME": env.str("AUTOMATION_SERVICES_CATALOG_DATABASE_NAME", default="catalog"),
+        "USER": env.str("AUTOMATION_SERVICES_CATALOG_POSTGRES_USER", default="catalog"),
         "PASSWORD": env.str(
-            "ANSIBLE_CATALOG_POSTGRES_PASSWORD", default="password"
+            "AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD", default="password"
         ),
-        "HOST": env.str("ANSIBLE_CATALOG_POSTGRES_HOST", default="localhost"),
-        "PORT": env.str("ANSIBLE_CATALOG_POSTGRES_PORT", default="5432"),
+        "HOST": env.str("AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST", default="localhost"),
+        "PORT": env.str("AUTOMATION_SERVICES_CATALOG_POSTGRES_PORT", default="5432"),
     }
 }
 
@@ -173,10 +173,10 @@ STATICFILES_DIRS = [
     BASE_DIR / "ui",
 ]
 STATIC_ROOT = env.str(
-    "ANSIBLE_CATALOG_STATIC_ROOT", default=BASE_DIR / "staticfiles"
+    "AUTOMATION_SERVICES_CATALOG_STATIC_ROOT", default=BASE_DIR / "staticfiles"
 )
 LOGIN_REDIRECT_URL = env.str(
-    "ANSIBLE_CATALOG_LOGIN_REDIRECT_URL", default="/ui/catalog/index.html"
+    "AUTOMATION_SERVICES_CATALOG_LOGIN_REDIRECT_URL", default="/ui/catalog/index.html"
 )
 
 # Default primary key field type
@@ -186,18 +186,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Controller Info
 CONTROLLER_URL = env.str(
-    "ANSIBLE_CATALOG_CONTROLLER_URL", default="https://Your_Controller_URL"
+    "AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL", default="https://Your_Controller_URL"
 )
 CONTROLLER_TOKEN = env.str(
-    "ANSIBLE_CATALOG_CONTROLLER_TOKEN", default="Secret Token"
+    "AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN", default="Secret Token"
 )
 CONTROLLER_VERIFY_SSL = env.str(
-    "ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL", default="True"
+    "AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL", default="True"
 )
 
 # Media (Icons) configuration
 MEDIA_ROOT = env.str(
-    "ANSIBLE_CATALOG_MEDIA_ROOT",
+    "AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT",
     default=BASE_DIR / "media",
 )
 MEDIA_URL = "/media/"
@@ -282,9 +282,9 @@ LOGIN_URL = "/login/keycloak/"
 # Django Redis Queue Information
 RQ_QUEUES = {
     "default": {
-        "HOST": env.str("ANSIBLE_CATALOG_REDIS_HOST", default="localhost"),
-        "PORT": env.int("ANSIBLE_CATALOG_REDIS_PORT", default=6379),
-        "DB": env.int("ANSIBLE_CATALOG_REDIS_DB", default=0),
+        "HOST": env.str("AUTOMATION_SERVICES_CATALOG_REDIS_HOST", default="localhost"),
+        "PORT": env.int("AUTOMATION_SERVICES_CATALOG_REDIS_PORT", default=6379),
+        "DB": env.int("AUTOMATION_SERVICES_CATALOG_REDIS_DB", default=0),
         "DEFAULT_TIMEOUT": 360,
     },
 }
@@ -294,7 +294,7 @@ STARTUP_RQ_JOBS = [
     "ansible_catalog.main.auth.tasks.sync_external_groups",
     "ansible_catalog.main.inventory.tasks.refresh_all_sources",
 ]
-CRONTAB = env.str("ANSIBLE_CATALOG_CRONTAB", default="*/30 * * * *")
+CRONTAB = env.str("AUTOMATION_SERVICES_CATALOG_CRONTAB", default="*/30 * * * *")
 RQ_CRONJOBS = [
     (CRONTAB, "ansible_catalog.main.auth.tasks.sync_external_groups"),
     (
@@ -341,30 +341,30 @@ SPECTACULAR_SETTINGS = {
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 
 KEYCLOAK_URL = env.str(
-    "ANSIBLE_CATALOG_KEYCLOAK_URL", default="http://localhost:8080/auth"
+    "AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL", default="http://localhost:8080/auth"
 ).rstrip("/")
-KEYCLOAK_REALM = env.str("ANSIBLE_CATALOG_KEYCLOAK_REALM", default="aap")
+KEYCLOAK_REALM = env.str("AUTOMATION_SERVICES_CATALOG_KEYCLOAK_REALM", default="aap")
 KEYCLOAK_CLIENT_ID = env.str(
-    "ANSIBLE_CATALOG_KEYCLOAK_CLIENT_ID", default="catalog"
+    "AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_ID", default="catalog"
 )
 KEYCLOAK_CLIENT_SECRET = env.str(
-    "ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET", default="secret-token"
+    "AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET", default="secret-token"
 )
 
 SOCIAL_AUTH_KEYCLOAK_OIDC_KEY = KEYCLOAK_CLIENT_ID
 SOCIAL_AUTH_KEYCLOAK_OIDC_API_URL = f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}"
 SOCIAL_AUTH_KEYCLOAK_OIDC_SECRET = KEYCLOAK_CLIENT_SECRET
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = env.bool(
-    "ANSIBLE_CATALOG_HTTPS_ENABLED", default=False
+    "AUTOMATION_SERVICES_CATALOG_HTTPS_ENABLED", default=False
 )
 # CORS
 # Comma separated values list of :"SCHEME+HOST+[PORT]"
-# e.g.: ANSIBLE_CATALOG_UI_ALLOWED_ORIGINS="https://example.com,https://catalog.example.com:9090"
+# e.g.: AUTOMATION_SERVICES_CATALOG_UI_ALLOWED_ORIGINS="https://example.com,https://catalog.example.com:9090"
 CORS_ALLOWED_ORIGINS = env.list(
-    "ANSIBLE_CATALOG_UI_ALLOWED_ORIGINS", default=[]
+    "AUTOMATION_SERVICES_CATALOG_UI_ALLOWED_ORIGINS", default=[]
 )
 CORS_ALLOW_CREDENTIALS = False
 CSRF_TRUSTED_ORIGINS = env.list(
-    "ANSIBLE_CATALOG_CSRF_TRUSTED_ORIGINS", default=[]
+    "AUTOMATION_SERVICES_CATALOG_CSRF_TRUSTED_ORIGINS", default=[]
 )
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

@@ -35,63 +35,63 @@ spec:
         - args:
             - "/home/appuser/catalog/tools/minikube/scripts/server.sh"
           env:
-            - name: ANSIBLE_CATALOG_KEYCLOAK_URL
+            - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL
               value: http://keycloak:8080/auth
-            - name: ANSIBLE_CATALOG_KEYCLOAK_CLIENT_SECRET
+            - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET
               value: SOMESECRETVALUE
-            - name: ANSIBLE_CATALOG_KEYCLOAK_USER
+            - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_USER
               value: admin
-            - name: ANSIBLE_CATALOG_KEYCLOAK_PASSWORD
+            - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_PASSWORD
               value: admin
-            - name: ANSIBLE_CATALOG_KEYCLOAK_REALM_FRONTEND_URL
+            - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_REALM_FRONTEND_URL
               value: http://keycloak.k8s.local/auth
             - name: REDIRECT_URIS_STR
               value: http://app:8000,http://app:8000/*,*
             - name: CONTROLLER_VERIFY_SSL
               value: "False"
-            - name: ANSIBLE_CATALOG_REDIS_HOST
+            - name: AUTOMATION_SERVICES_CATALOG_REDIS_HOST
               value: redis
-            - name: ANSIBLE_CATALOG_REDIS_PORT
+            - name: AUTOMATION_SERVICES_CATALOG_REDIS_PORT
               value: "6379"
-            - name: ANSIBLE_CATALOG_REDIS_DB
+            - name: AUTOMATION_SERVICES_CATALOG_REDIS_DB
               value: "0"
-            - name: ANSIBLE_CATALOG_DATABASE_NAME
+            - name: AUTOMATION_SERVICES_CATALOG_DATABASE_NAME
               value: dev_catalog
-            - name: ANSIBLE_CATALOG_POSTGRES_HOST
+            - name: AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST
               value: postgres
-            - name: ANSIBLE_CATALOG_POSTGRES_USER
+            - name: AUTOMATION_SERVICES_CATALOG_POSTGRES_USER
               value: keycloak
-            - name: ANSIBLE_CATALOG_POSTGRES_PASSWORD
+            - name: AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD
               value: password
-            - name: ANSIBLE_CATALOG_MEDIA_ROOT
+            - name: AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT
               value: /app/media
-            - name: ANSIBLE_CATALOG_ALLOWED_HOSTS
+            - name: AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS
               value: "catalog.k8s.local,app"
-            - name: ANSIBLE_CATALOG_SECRET_KEY
+            - name: AUTOMATION_SERVICES_CATALOG_SECRET_KEY
               value: "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
-            - name: ANSIBLE_CATALOG_STATIC_ROOT
+            - name: AUTOMATION_SERVICES_CATALOG_STATIC_ROOT
               value: /app/static
-            - name: ANSIBLE_CATALOG_LOGIN_REDIRECT_URL
+            - name: AUTOMATION_SERVICES_CATALOG_LOGIN_REDIRECT_URL
               value: /ui/catalog/index.html
-            - name: ANSIBLE_CATALOG_HTTPS_ENABLED
+            - name: AUTOMATION_SERVICES_CATALOG_HTTPS_ENABLED
               value: "True"
-            - name: ANSIBLE_CATALOG_CSRF_TRUSTED_ORIGINS
+            - name: AUTOMATION_SERVICES_CATALOG_CSRF_TRUSTED_ORIGINS
               value: "https://catalog.k8s.local"
-            - name: ANSIBLE_CATALOG_CONTROLLER_URL
+            - name: AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL
               valueFrom:
                 configMapKeyRef:
                   name: ansible-controller-env
-                  key: ANSIBLE_CATALOG_CONTROLLER_URL
-            - name: ANSIBLE_CATALOG_CONTROLLER_TOKEN
+                  key: AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL
+            - name: AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN
               valueFrom:
                 configMapKeyRef:
                   name: ansible-controller-env
-                  key: ANSIBLE_CATALOG_CONTROLLER_TOKEN
-            - name: ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL
+                  key: AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN
+            - name: AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL
               valueFrom:
                 configMapKeyRef:
                   name: ansible-controller-env
-                  key: ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL
+                  key: AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL
           image: localhost/ansible-catalog
           image: localhost/ansible-catalog
           image: localhost/ansible-catalog

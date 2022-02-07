@@ -13,7 +13,7 @@ jobs:
   build:
     env:
       DJANGO_SETTINGS_MODULE: ansible_catalog.settings.development
-      ANSIBLE_CATALOG_SECRET_KEY: test
+      AUTOMATION_SERVICES_CATALOG_SECRET_KEY: test
     runs-on: ubuntu-latest
     strategy:
       matrix:

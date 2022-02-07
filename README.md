@@ -63,11 +63,11 @@ export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
 ```deactivate```
 * The default database for development is Postgres, you can configure the following environment variables to setup your Postgres DB information
 
-	* ANSIBLE_CATALOG_POSTGRES_USER (default: catalog)
-	* ANSIBLE_CATALOG_POSTGRES_PASSWORD (default: password)
-	* ANSIBLE_CATALOG_POSTGRES_HOST (default: postgres)
-	* ANSIBLE_CATALOG_POSTGRES_PORT (default: 5432)
-	* ANSIBLE_CATALOG_DATABASE_NAME (default: catalog)
+	* AUTOMATION_SERVICES_CATALOG_POSTGRES_USER (default: catalog)
+	* AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD (default: password)
+	* AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST (default: postgres)
+	* AUTOMATION_SERVICES_CATALOG_POSTGRES_PORT (default: 5432)
+	* AUTOMATION_SERVICES_CATALOG_DATABASE_NAME (default: catalog)
 
 * To run background tasks we use Django RQ, which has a dependency on Redis. You would have to install Redis locally on your dev box. To start the redis worker locally use the following command
 ```redis-server /usr/local/etc/redis.conf```
@@ -123,8 +123,8 @@ docker-compose build --build-arg USER_ID=0
 You have to create a .env file with the environments variables for the controller:
 ```
 # .env contents:
-ANSIBLE_CATALOG_CONTROLLER_TOKEN=secret-token
-ANSIBLE_CATALOG_CONTROLLER_URL="https://your-controller-host"
+AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN=secret-token
+AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL="https://your-controller-host"
 ```
 
 Run the application (this may take a while until the keycloak setup process has finished)
@@ -205,9 +205,9 @@ minikube image build -t localhost/ansible-catalog -f tools/docker/Dockerfile .
 ```
 ## Starting the app
 Once this has been setup you can start the deployments, services and ingress service in the directory tools/minikube/templates. A helper script creates a Kubernetes namespace called **catalog** and runs all the deployments in that namespace. The helper scripts requires 3 environment variables to locate the Automation Controller.
-  - **export ANSIBLE_CATALOG_CONTROLLER_URL="Your controller url"**
-  - **export ANSIBLE_CATALOG_CONTROLLER_TOKEN="Your Token"**
-  - **export ANSIBLE_CATALOG_CONTROLLER_VERIFY_SSL="False"**
+  - **export AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL="Your controller url"**
+  - **export AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN="Your Token"**
+  - **export AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL="False"**
 
 ```
 ./tools/minikube/scripts/start_pods.sh

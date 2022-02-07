@@ -1,16 +1,23 @@
 #!/bin/bash
 set -e
-if [[ -z "${ANSIBLE_CATALOG_SECRET_KEY}" ]]
+if [[ -z "${AUTOMATION_SERVICES_CATALOG_SECRET_KEY}" ]]
 then
-  echo "Please set the environment variable ANSIBLE_CATALOG_SECRET_KEY"
+  echo "Please set the environment variable AUTOMATION_SERVICES_CATALOG_SECRET_KEY"
   exit 1
 fi
 
-if [[ -z "${ANSIBLE_CATALOG_STATIC_ROOT}" ]]
+if [[ -z "${AUTOMATION_SERVICES_CATALOG_STATIC_ROOT}" ]]
 then
-  echo "Please set the environment variable ANSIBLE_CATALOG_STATIC_ROOT"
+  echo "Please set the environment variable AUTOMATION_SERVICES_CATALOG_STATIC_ROOT"
   exit 1
 fi
+
+if [[ -z "${AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL}" ]]
+then
+  echo "Please set the environment variable AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL"
+  exit 1
+fi
+
 
 echo -e "\e[34m >>> Seed Kaycloak data \e[97m"
 ansible-playbook -vvv tools/keycloak_setup/dev.yml
@@ -26,7 +33,7 @@ rm -rf ansible_catalog/ui/catalog
 mkdir -p ansible_catalog/ui/catalog
 tar -xf ui.tar.xz --directory ansible_catalog/ui/catalog
 
-rm -rf "$ANSIBLE_CATALOG_STATIC_ROOT"
+rm -rf "$AUTOMATION_SERVICES_CATALOG_STATIC_ROOT"
 
 echo -e "\e[34m >>> Collect static files \e[97m"
 python manage.py collectstatic
