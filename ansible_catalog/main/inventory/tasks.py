@@ -20,15 +20,6 @@ from ansible_catalog.main.models import Source
 logger = logging.getLogger("inventory")
 
 
-def check_all_source_status():
-    """Task to check source status"""
-    for source in Source.objects.all():
-        logger.info("Checking source %s", source.name)
-        svc = CheckSourceAvailability(source.tenant_id, source.id)
-        svc.process()
-    logger.info("Finished checking source status")
-
-
 def refresh_all_sources():
     """Task to refresh all sources, used by cron jobs"""
     for source in Source.objects.all():
@@ -38,14 +29,23 @@ def refresh_all_sources():
 
 def refresh_task(tenant_id, source_id):
     """Run the Refresh task"""
-    logger.info("Starting Inventory Refresh")
-    obj = RefreshInventory(tenant_id, source_id)
-    obj.process()
-    logger.info("Updating Service Plans")
-    upd_sp = UpdateServicePlans(tenant_id)
-    upd_sp.process()
-    logger.info(f"Updated {upd_sp.updated} Service Plans")
-    logger.info("Finished Inventory Refresh")
+    logger.info("First checking its availability")
+    svc = CheckSourceAvailability(tenant_id, source_id)
+    svc.process()
+
+    if svc.source.availability_status == "available":
+        logger.info("Starting Inventory Refresh")
+        obj = RefreshInventory(tenant_id, source_id)
+        obj.process()
+        logger.info("Updating Service Plans")
+        upd_sp = UpdateServicePlans(tenant_id)
+        upd_sp.process()
+        logger.info(f"Updated {upd_sp.updated} Service Plans")
+        logger.info("Finished Inventory Refresh")
+    else:
+        logger.error(
+            "Source %s is unavailable, cannot refresh it", svc.source.name
+        )
 
 
 def launch_tower_task(slug, body):

@@ -309,23 +309,15 @@ RQ_QUEUES = {
 STARTUP_RQ_JOBS = [
     "ansible_catalog.main.auth.tasks.sync_external_groups",
     "ansible_catalog.main.inventory.tasks.refresh_all_sources",
-    "ansible_catalog.main.inventory.tasks.check_all_source_status",
 ]
-REFRESH_CRONTAB = env.str(
-    "AUTOMATION_SERVICES_CATALOG_REFRESH_CRONTAB", default="*/30 * * * *"
-)
-AVAILABILITY_CRONTAB = env.str(
-    "AUTOMATION_SERVICES_CATALOG_AVAILABILITY_CRONTAB", default="*/15 * * * *"
+CRONTAB = env.str(
+    "AUTOMATION_SERVICES_CATALOG_CRONTAB", default="*/30 * * * *"
 )
 RQ_CRONJOBS = [
-    (REFRESH_CRONTAB, "ansible_catalog.main.auth.tasks.sync_external_groups"),
+    (CRONTAB, "ansible_catalog.main.auth.tasks.sync_external_groups"),
     (
-        REFRESH_CRONTAB,
+        CRONTAB,
         "ansible_catalog.main.inventory.tasks.refresh_all_sources",
-    ),
-    (
-        AVAILABILITY_CRONTAB,
-        "ansible_catalog.main.inventory.tasks.check_all_source_status",
     ),
 ]
 
