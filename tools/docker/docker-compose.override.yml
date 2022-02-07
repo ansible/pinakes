@@ -1,4 +1,26 @@
 version: '3'
+x-environment:
+  &catalog-env
+  - AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN=${AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN}
+  - AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL=${AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL:-https://10.0.153.78}
+  - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://localhost:8080/auth
+  - AUTOMATION_SERVICES_CATALOG_HTTPS_ENABLED=True
+  - AUTOMATION_SERVICES_CATALOG_CSRF_TRUSTED_ORIGINS=https://*,http://*
+  - AUTOMATION_SERVICES_CATALOG_STATIC_ROOT=/opt/app-root/src/staticfiles
+  - AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL=False
+  - AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT=/opt/app-root/src/media
+  - AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS=*
+  - AUTOMATION_SERVICES_CATALOG_DEBUG=True
+  - AUTOMATION_SERVICES_CATALOG_SECRET_KEY=django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5
+  - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_USER=admin
+  - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_PASSWORD=admin
+  - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
+  - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET=${AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET:-SOMESECRETVALUE}
+  - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
+  - AUTOMATION_SERVICES_CATALOG_REDIS_HOST=redis
+  - AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST=postgres
+  - AUTOMATION_SERVICES_CATALOG_POSTGRES_USER=admin
+  - AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD=admin
 
 services:
   frontend:
@@ -13,37 +35,18 @@ services:
     volumes:
       - 'media_files:/opt/app-root/src/media'
       - 'static_files:/opt/app-root/src/staticfiles'
-
   app:
     image: ansible-catalog:dev
+    environment: *catalog-env
     build:
       context: ../../
       dockerfile: tools/docker/Dockerfile
     ports:
       - '8000:8000'
     volumes:
-      - "../../:/opt/app-root/src:z"
-      - 'static_files:/opt/app-root/src/staticfiles'
+      - "../../:/opt/app-root/src/:z"
       - 'media_files:/opt/app-root/src/media'
-    environment:
-      - AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN=${AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN}
-      - AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL=${AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL}
-      - AUTOMATION_SERVICES_CATALOG_HTTPS_ENABLED=True
-      - AUTOMATION_SERVICES_CATALOG_CSRF_TRUSTED_ORIGINS=https://*,http://*
-      - AUTOMATION_SERVICES_CATALOG_STATIC_ROOT=/opt/app-root/src/staticfiles
-      - AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL=False
-      - AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST=postgres
-      - AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT=/opt/app-root/src/media
-      - AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS=*
-      - AUTOMATION_SERVICES_CATALOG_DEBUG=True
-      - AUTOMATION_SERVICES_CATALOG_SECRET_KEY=django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5
-      - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
-      - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://localhost:8080/auth
-      - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
-      - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
-      - AUTOMATION_SERVICES_CATALOG_REDIS_HOST=redis
-      - AUTOMATION_SERVICES_CATALOG_POSTGRES_USER=admin
-      - AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD=admin
+      - 'static_files:/opt/app-root/src/staticfiles'
     depends_on:
       - keycloak-setup
       - postgres
@@ -62,34 +65,14 @@ services:
     command: /opt/app-root/src/tools/docker/scripts/dev-server.sh
   keycloak-setup:
     image: ansible-catalog:dev
-    environment:
-      - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
-      - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_USER=admin
-      - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_PASSWORD=admin
-      - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
-      - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://localhost:8080/auth
-      - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
+    environment: *catalog-env
     depends_on:
       - keycloak-app
     command: /opt/app-root/src/tools/docker/scripts/keycloak-setup.sh
 
   worker:
     image: ansible-catalog:dev
-    environment:
-      - AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN=${AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN}
-      - AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL=${AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL}
-      - AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL=False
-      - AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST=postgres
-      - AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT=/opt/app-root/src/media
-      - AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS=*
-      - AUTOMATION_SERVICES_CATALOG_DEBUG=True
-      - AUTOMATION_SERVICES_CATALOG_SECRET_KEY=django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5
-      - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL=http://keycloak-app:8080/auth
-      - AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
-      - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
-      - AUTOMATION_SERVICES_CATALOG_REDIS_HOST=redis
-      - AUTOMATION_SERVICES_CATALOG_POSTGRES_USER=admin
-      - AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD=admin
+    environment: *catalog-env
     volumes:
       - "../../:/opt/app-root/src:z"
     depends_on:
@@ -100,10 +83,7 @@ services:
 
   scheduler:
     image: ansible-catalog:dev
-    environment:
-      - AUTOMATION_SERVICES_CATALOG_DEBUG=True
-      - AUTOMATION_SERVICES_CATALOG_REDIS_HOST=redis
-      - AUTOMATION_SERVICES_CATALOG_SECRET_KEY=django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5
+    environment: *catalog-env
     volumes:
       - "../../:/opt/app-root/src:z"
     depends_on:
@@ -114,18 +94,19 @@ services:
 
   keycloak-app:
     image: 'quay.io/keycloak/keycloak:15.0.2'
-    environment:
-      - 'DB_VENDOR=postgres'
-      - 'DB_ADDR=postgres'
-      - 'DB_DATABASE=keycloak'
-      - 'DB_USER=admin'
-      - 'DB_PASSWORD=admin'
-      - 'KEYCLOAK_USER=admin'
-      - 'KEYCLOAK_PASSWORD=admin'
     ports:
       - '8080:8080'
     depends_on:
       - 'postgres'
+    environment:
+      - DB_VENDOR=postgres
+      - DB_ADDR=postgres
+      - DB_DATABASE=keycloak
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+
 volumes:
   pg_data: {}
   media_files: {}
