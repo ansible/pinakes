@@ -2,6 +2,9 @@
 import logging
 from rq import get_current_job
 
+from ansible_catalog.main.inventory.task_utils.check_source_availability import (
+    CheckSourceAvailability,
+)
 from ansible_catalog.main.inventory.task_utils.refresh_inventory import (
     RefreshInventory,
 )
@@ -26,14 +29,23 @@ def refresh_all_sources():
 
 def refresh_task(tenant_id, source_id):
     """Run the Refresh task"""
-    logger.info("Starting Inventory Refresh")
-    obj = RefreshInventory(tenant_id, source_id)
-    obj.process()
-    logger.info("Updating Service Plans")
-    upd_sp = UpdateServicePlans(tenant_id)
-    upd_sp.process()
-    logger.info(f"Updated {upd_sp.updated} Service Plans")
-    logger.info("Finished Inventory Refresh")
+    logger.info("First checking its availability")
+    svc = CheckSourceAvailability(tenant_id, source_id)
+    svc.process()
+
+    if svc.source.availability_status == "available":
+        logger.info("Starting Inventory Refresh")
+        obj = RefreshInventory(tenant_id, source_id)
+        obj.process()
+        logger.info("Updating Service Plans")
+        upd_sp = UpdateServicePlans(tenant_id)
+        upd_sp.process()
+        logger.info(f"Updated {upd_sp.updated} Service Plans")
+        logger.info("Finished Inventory Refresh")
+    else:
+        logger.error(
+            "Source %s is unavailable, cannot refresh it", svc.source.name
+        )
 
 
 def launch_tower_task(slug, body):

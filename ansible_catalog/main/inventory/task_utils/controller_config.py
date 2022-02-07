@@ -7,8 +7,10 @@ class ControllerConfig:
 
     def __init__(self, tower):
         self.tower = tower
+        self.tower_info = None
 
     def process(self):
-        """Get the Controller Config Information as a dict"""
-        for data in self.tower.get("/api/v2/config", ("version")):
-            return data
+        for data in self.tower.get("/api/v2/config", ["version"]):
+            self.tower_info = data
+
+        return self

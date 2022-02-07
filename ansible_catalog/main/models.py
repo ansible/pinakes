@@ -127,6 +127,11 @@ class Source(models.Model):
         default="Unavailable",
         help_text="The message about the source availability",
     )
+    info = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="The information about the source",
+    )
 
     def __str__(self):
         return self.name

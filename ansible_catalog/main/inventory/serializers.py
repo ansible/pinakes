@@ -28,6 +28,7 @@ class SourceSerializer(serializers.ModelSerializer):
             "last_checked_at",
             "availability_status",
             "availability_message",
+            "info",
             "created_at",
             "updated_at",
         )
