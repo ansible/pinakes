@@ -3,7 +3,9 @@
 import re
 
 
-NAME_PATTERN = "^Copy \((\d+)\) of"  # pattern of "Copy (2) of original_name"
+NAME_PATTERN = (
+    "^Copy \\((\\d+)\\) of"  # pattern of "Copy (2) of original_name"
+)
 MAX_LENGTH = 64
 
 
