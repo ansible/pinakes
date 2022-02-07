@@ -23,17 +23,17 @@ services:
     ports:
       - '8000:8000'
     volumes:
-      - 'media_files:/home/appuser/catalog/media_files'
-      - 'static_files:/home/appuser/catalog/staticfiles'
+      - 'media_files:/opt/app-root/src/media'
+      - 'static_files:/opt/app-root/src/staticfiles'
     environment:
       - AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN=${AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN}
       - AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL=${AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL}
       - AUTOMATION_SERVICES_CATALOG_HTTPS_ENABLED=True
       - AUTOMATION_SERVICES_CATALOG_CSRF_TRUSTED_ORIGINS=https://*,http://*
-      - AUTOMATION_SERVICES_CATALOG_STATIC_ROOT=/home/appuser/catalog/staticfiles
+      - AUTOMATION_SERVICES_CATALOG_STATIC_ROOT=/opt/app-root/src/staticfiles
       - AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL=False
       - AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST=postgres
-      - AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT=/home/appuser/catalog/media
+      - AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT=/opt/app-root/src/media
       - AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS=*
       - AUTOMATION_SERVICES_CATALOG_DEBUG=False
       - AUTOMATION_SERVICES_CATALOG_SECRET_KEY=django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5
@@ -71,7 +71,7 @@ services:
       - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
     depends_on:
       - keycloak-app
-    command: /home/appuser/catalog/tools/docker/scripts/keycloak-setup.sh
+    command: /opt/app-root/src/tools/docker/scripts/keycloak-setup.sh
 
   worker:
     image: ansible-catalog:dev
@@ -81,7 +81,7 @@ services:
       - AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL=${AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL}
       - AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL=False
       - AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST=postgres
-      - AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT=/home/appuser/catalog/media
+      - AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT=opt/app-root/src/media
       - AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS=*
       - AUTOMATION_SERVICES_CATALOG_DEBUG=False
       - AUTOMATION_SERVICES_CATALOG_SECRET_KEY=django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5
@@ -92,12 +92,12 @@ services:
       - AUTOMATION_SERVICES_CATALOG_POSTGRES_USER=admin
       - AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD=admin
     volumes:
-      - 'media_files:/home/appuser/catalog/media_files'
+      - 'media_files:/opt/app-root/src/media'
     depends_on:
       - app
       - redis
       - keycloak-setup
-    command: /home/appuser/catalog/tools/docker/scripts/worker.sh
+    command: /opt/app-root/src/tools/docker/scripts/worker.sh
 
   scheduler:
     image: ansible-catalog:dev

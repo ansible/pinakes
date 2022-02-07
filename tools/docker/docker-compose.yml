@@ -22,7 +22,7 @@ services:
     image: ansible-catalog:dev
     depends_on:
       - keycloak-app
-    command: /home/appuser/catalog/tools/docker/scripts/keycloak-setup.sh
+    command: /opt/app-root/src/tools/docker/scripts/keycloak-setup.sh
 
   worker:
     image: ansible-catalog:dev
@@ -30,7 +30,7 @@ services:
       - app
       - redis
       - keycloak-setup
-    command: /home/appuser/catalog/tools/docker/scripts/worker.sh
+    command: /opt/app-root/src/tools/docker/scripts/worker.sh
 
   scheduler:
     image: ansible-catalog:dev

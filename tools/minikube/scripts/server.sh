@@ -2,20 +2,20 @@
 set -e
 if [[ -z "${AUTOMATION_SERVICES_CATALOG_SECRET_KEY}" ]]
 then
-  echo "Please set the environment variable AUTOMATION_SERVICES_CATALOG_SECRET_KEY"
-  exit 1
+    echo "Please set the environment variable AUTOMATION_SERVICES_CATALOG_SECRET_KEY"
+    exit 1
 fi
 
 if [[ -z "${AUTOMATION_SERVICES_CATALOG_STATIC_ROOT}" ]]
 then
-  echo "Please set the environment variable AUTOMATION_SERVICES_CATALOG_STATIC_ROOT"
-  exit 1
+    echo "Please set the environment variable AUTOMATION_SERVICES_CATALOG_STATIC_ROOT"
+    exit 1
 fi
 
 if [[ -z "${AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL}" ]]
 then
-  echo "Please set the environment variable AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL"
-  exit 1
+    echo "Please set the environment variable AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL"
+    exit 1
 fi
 
 
@@ -40,4 +40,4 @@ python manage.py collectstatic
 
 echo -e "\e[34m >>> Start gunicorn server \e[97m"
 #python manage.py runserver 0.0.0.0:8000
-/home/appuser/.local/bin/gunicorn --workers=3 --bind 0.0.0.0:8000 ansible_catalog.wsgi --log-level=debug
+gunicorn --workers=3 --bind 0.0.0.0:8000 ansible_catalog.wsgi --log-level=debug
