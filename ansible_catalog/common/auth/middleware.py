@@ -3,7 +3,7 @@ from typing import Optional
 from django.contrib import auth as django_auth
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpRequest
 
 from rest_framework import status
 from social_django.models import UserSocialAuth
@@ -11,6 +11,7 @@ from social_django.utils import load_strategy
 
 import requests
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -31,10 +32,11 @@ class KeycloakAuthMiddleware:
         try:
             request.keycloak_user = self._process_keycloak_user(request.user)
         except TokenRefreshError:
-            # NOTE(cutwater): Not sure about correctness of this one
-            logger.debug("Token expired, sending back a 401")
+            logger.debug(
+                "Keycloak refresh token for "
+                "user '{name}' is expired.".format(name=request.user.username)
+            )
             django_auth.logout(request)
-            return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
         return self.get_response(request)
 
     def _process_keycloak_user(self, user: User) -> Optional[UserSocialAuth]:
