@@ -29,7 +29,7 @@ class TestRefreshInventory:
         """Test the process method"""
         tenant = TenantFactory()
         source_instance = SourceFactory(tenant=tenant)
-        refresh_inventory = RefreshInventory(tenant.id, source_instance.id)
+        refresh_inventory = RefreshInventory(source_instance.id)
         refresh_inventory.process()
         assert (mock1.return_value.process.call_count) == 1
         assert (mock2.return_value.process.call_count) == 1
@@ -46,7 +46,7 @@ class TestRefreshInventory:
     def test_last_refresh_message(self, mocker):
         tenant = TenantFactory()
         source_instance = SourceFactory(tenant=tenant)
-        refresh_inventory = RefreshInventory(tenant.id, source_instance.id)
+        refresh_inventory = RefreshInventory(source_instance.id)
 
         mock1 = mock.Mock()
         mock2 = mock.Mock()
@@ -140,7 +140,7 @@ class TestRefreshInventory:
         tenant = TenantFactory()
         source_instance = SourceFactory(tenant=tenant)
 
-        refresh_inventory = RefreshInventory(tenant.id, source_instance.id)
+        refresh_inventory = RefreshInventory(source_instance.id)
         refresh_inventory.process()
 
         source_instance.refresh_from_db()

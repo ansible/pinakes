@@ -1,9 +1,9 @@
 """ Task to Refresh Inventory from the Tower """
 import logging
-from django.conf import settings
+from django.db import transaction
 from django.utils import timezone
 
-from automation_services_catalog.main.models import Source, Tenant
+from automation_services_catalog.main.models import Source
 
 from automation_services_catalog.main.inventory.task_utils.controller_config import (
     ControllerConfig,
@@ -17,12 +17,18 @@ logger = logging.getLogger("inventory")
 class CheckSourceAvailability:
     """Check the availability of a given source"""
 
-    def __init__(self, tenant_id, source_id):
+    def __init__(self, source_id):
         self.tower = TowerAPI()
-        self.source = Source.objects.get(pk=source_id)
-        self.tenant = Tenant.objects.get(pk=tenant_id)
+        self.source_id = source_id
 
+    @transaction.atomic()
     def process(self):
+        self.source = (
+            Source.objects.filter(pk=self.source_id)
+            .select_for_update(nowait=True)
+            .get()
+        )
+
         self.source.last_checked_at = timezone.now()
         try:
             svc = ControllerConfig(self.tower).process()

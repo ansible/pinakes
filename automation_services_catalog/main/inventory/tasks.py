@@ -30,12 +30,12 @@ def refresh_all_sources():
 def refresh_task(tenant_id, source_id):
     """Run the Refresh task"""
     logger.info("First checking its availability")
-    svc = CheckSourceAvailability(tenant_id, source_id)
+    svc = CheckSourceAvailability(source_id)
     svc.process()
 
     if svc.source.availability_status == "available":
         logger.info("Starting Inventory Refresh")
-        obj = RefreshInventory(tenant_id, source_id)
+        obj = RefreshInventory(source_id)
         obj.process()
         logger.info("Updating Service Plans")
         upd_sp = UpdateServicePlans(tenant_id)
