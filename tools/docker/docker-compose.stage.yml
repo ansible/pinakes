@@ -28,11 +28,12 @@ services:
     build:
       context: frontend/
     ports:
-      - "9080:9080"
-      - '8443:8443'
+      - "${FRONTEND_HTTP_PORT:-9080}:9080"
+      - "${FRONTEND_HTTPS_PORT:-8443}:8443"
     volumes:
       - 'media_files:/opt/app-root/src/media'
       - 'static_files:/opt/app-root/src/staticfiles'
+      - '${FRONTEND_CONF_PATH:-./frontend/nginx.conf}:/opt/app-root/etc/nginx.d/nginx.conf:z'
     depends_on:
       - app
 
@@ -108,7 +109,7 @@ services:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
   postgres:
-    image: 'postgres:13-alpine'
+    image: 'docker.io/postgres:13-alpine'
     volumes:
       - 'pg_data:/var/lib/postgresql/data'
       - "../docker/initdb:/docker-entrypoint-initdb.d:z"
@@ -126,7 +127,7 @@ services:
       - POSTGRES_MULTIPLE_DATABASES=keycloak,catalog
 
   redis:
-    image: redis:alpine
+    image: "docker.io/redis:alpine"
 
 volumes:
   pg_data: {}

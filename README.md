@@ -138,8 +138,9 @@ docker-compose logs -f
 ```
 (You will see errors in the worker until keycloak is properly configured)
 
-Once is finished you can try to open http://localhost:8000/api/ansible-catalog/v1/
-You can do log in with http://localhost:8000/login/keycloak/
+Once is finished you can try to open https://localhost:8443/api/ansible-catalog/v1/
+You can do log in with https://localhost:8443/login/keycloak/
+You can open the UI with https://localhost:8443/ui/catalog/index.html
 The project path is mounted in the pod and you can edit it in real time from outside the container.
 
 You can get an interactive shell inside the application pod with the command:
@@ -147,17 +148,31 @@ You can get an interactive shell inside the application pod with the command:
 docker-compose exec app bash
 ```
 
-Remove the deployment (add `-v` to remove the volumes as well)
+Remove the deployment (add `-v` flag to remove the volumes as well)
 ```
 docker-compose down
 ```
 
 
-Deploy catalog in a production-like setup:
+### Deploy catalog in a production-like setup:
+There is an alternative docker-compose file to deploy the application in a more production-like setup:
+
 ```
+docker-compose build
 docker-compose -f docker-compose.stage.yml up -d
 ```
 
+You can change the exposed port for stage environment adding the `FRONTEND_HTTPS_PORT` environment variable. Note that using ports under 1024 requires root privileges. In order to use the standard https port (443) you have to add more variables in your `.env` file:
+
+```
+FRONTEND_HTTPS_PORT=443
+FRONTEND_CONF_PATH=./frontend/nginx-443.conf
+```
+
+Deploy it as root (if you work with podman, you have to build the images as root also)
+```
+sudo docker-compose -f docker-compose.stage.yml up -d
+```
 
 
 ### Things to do manually the first time

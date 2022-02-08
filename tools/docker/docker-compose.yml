@@ -46,10 +46,10 @@ services:
       - 'postgres'
 
   redis:
-    image: redis:alpine
+    image: "docker.io/redis:alpine"
 
   postgres:
-    image: 'postgres:13-alpine'
+    image: 'docker.io/postgres:13-alpine'
     environment:
       - 'POSTGRES_USER=admin'
       - 'POSTGRES_PASSWORD=admin'
