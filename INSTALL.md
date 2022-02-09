@@ -96,7 +96,7 @@ git clone https://github.com/ansible/ansible-catalog.git
 pip3 install -r requirements.txt
 ```
 
-_Note_: _All application settings are defined in `ansible_catalog/settings/defaults.py`. If you prefer to use a configuration file instead of environment variables you can modify this file. Also you can create your own file but you have to configure the environment variable `DJANGO_SETTINGS_MODULE`._
+_Note_: _All application settings are defined in `automation_services_catalog/settings/defaults.py`. If you prefer to use a configuration file instead of environment variables you can modify this file. Also you can create your own file but you have to configure the environment variable `DJANGO_SETTINGS_MODULE`._
 
 
 - The following environment variables must to be configured:
@@ -134,7 +134,7 @@ export AUTOMATION_SERVICES_CATALOG_REDIS_PORT=6379
 export AUTOMATION_SERVICES_CATALOG_REDIS_DB=0
 
 # use it to define a custom configuration file as python module syntax 
-export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.defaults
+export DJANGO_SETTINGS_MODULE=automation_services_catalog.settings.defaults
 
 # comma separated allowed public hostnames for the backend
 export AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS=*
@@ -157,7 +157,7 @@ python manage.py migrate
 python manage.py collectstatic
 
 # run the backend
-gunicorn --workers=3 --bind 0.0.0.0:8000 ansible_catalog.wsgi --log-level=info
+gunicorn --workers=3 --bind 0.0.0.0:8000 automation_services_catalog.wsgi --log-level=info
 ```
 
 - Run the worker

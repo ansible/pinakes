@@ -1,6 +1,6 @@
 ---
 - hosts: localhost
   vars:
-    settings_dir: "/opt/app-root/src/ansible_catalog/settings/"
+    settings_dir: "/opt/app-root/src/automation_services_catalog/settings/"
   roles:
     - mkanoor.catalog_keycloak.setup

@@ -18,4 +18,4 @@ echo -e "\e[34m >>> Collecting static files \e[97m"
 python manage.py collectstatic --no-input
 
 echo -e "\e[34m >>> Starting production server \e[97m"
-gunicorn --workers=3 --bind 0.0.0.0:8000 ansible_catalog.wsgi --log-level=debug
+gunicorn --workers=3 --bind 0.0.0.0:8000 automation_services_catalog.wsgi --log-level=debug

@@ -17,7 +17,7 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
  2. Approval, deals with the Approval process and notifications
  3. Inventory, deals with connecting to the Ansible Controller using REST API to fetch objects and launch Ansible Controller Jobs.
 
-![Alt UsingUploadService](./docs/ansible_catalog.png?raw=true)
+![Alt UsingUploadService](./docs/automation_services_catalog.png?raw=true)
 
 
 **Developer Setup**
@@ -34,17 +34,17 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
      ```
  * Install all the dependencies
      ```pip install -r requirements.txt```
- * Prep the Database (Sqlite by default ansible_catalog/catalog.db)
+ * Prep the Database (Sqlite by default automation_services_catalog/catalog.db)
  ```
       python3 manage.py migrate
       python3 manage.py createsuperuser
 ```
 * Setup the development settings file
 ```
-export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
+export DJANGO_SETTINGS_MODULE=automation_services_catalog.settings.development
 ```
    You can override the Database and Tower information in your local development settings file.
-   This settings file should not be checked into github, local settings file name should have a prefix of  **local_** e.g.   **ansible_catalog/settings/local_info.py**
+   This settings file should not be checked into github, local settings file name should have a prefix of  **local_** e.g.   **automation_services_catalog/settings/local_info.py**
 
    To store tower info use the following keys
 
@@ -75,7 +75,7 @@ export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
   ```
   #!/bin/sh
   export CATALOG_ROOT_URL=/tmp
-  export DJANGO_SETTINGS_MODULE=ansible_catalog.settings.development
+  export DJANGO_SETTINGS_MODULE=automation_services_catalog.settings.development
   # This is needed only on Mac OS
   export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
   python3 manage.py rqworker default

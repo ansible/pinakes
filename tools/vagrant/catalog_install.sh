@@ -59,8 +59,8 @@ python3 manage.py migrate
 
 # Fetch the UI Tar
 curl -o ui.tar.xz -L https://github.com/RedHatInsights/catalog-ui/releases/download/latest/catalog-ui.tar.gz
-mkdir -p ansible_catalog/ui/catalog
-tar -xf ui.tar.xz --directory ansible_catalog/ui/catalog
+mkdir -p automation_services_catalog/ui/catalog
+tar -xf ui.tar.xz --directory automation_services_catalog/ui/catalog
 
 # Clear out the old static and media directories, if we run
 # the provision multiple times

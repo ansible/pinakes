@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     env:
-      DJANGO_SETTINGS_MODULE: ansible_catalog.settings.development
+      DJANGO_SETTINGS_MODULE: automation_services_catalog.settings.development
       AUTOMATION_SERVICES_CATALOG_SECRET_KEY: test
     runs-on: ubuntu-latest
     strategy:
