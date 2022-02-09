@@ -56,6 +56,17 @@ kubectl apply --namespace=catalog -f ./tools/minikube/templates/postgres-deploym
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/postgres-service.yaml
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/keycloak-deployment.yaml
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/keycloak-service.yaml
+
+kubectl apply --namespace=catalog -f ./tools/minikube/templates/keycloak-setup.yml
+
+kubectl -n catalog wait --for=condition=complete --timeout=8m job/keycloak-setup
+
+if [ $? -ne 0 ]; then
+	echo "Could not wait for keycloak setup"
+	echo "run delete_pods.sh -d"
+	exit 1
+fi
+
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/app-claim0-persistentvolumeclaim.yaml
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/app-deployment.yaml
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/app-service.yaml

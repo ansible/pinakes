@@ -39,14 +39,8 @@ spec:
               value: http://keycloak:8080/auth
             - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET
               value: SOMESECRETVALUE
-            - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_USER
-              value: admin
-            - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_PASSWORD
-              value: admin
             - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_REALM_FRONTEND_URL
               value: http://keycloak.k8s.local/auth
-            - name: REDIRECT_URIS_STR
-              value: http://app:8000,http://app:8000/*,*
             - name: CONTROLLER_VERIFY_SSL
               value: "False"
             - name: AUTOMATION_SERVICES_CATALOG_REDIS_HOST
