@@ -9,6 +9,7 @@ from automation_services_catalog.main.approval.tasks import process_root_task
 from automation_services_catalog.main.approval.services.link_workflow import (
     FindWorkflows,
 )
+from automation_services_catalog.main.approval import validations
 
 logger = logging.getLogger("approval")
 
@@ -24,6 +25,9 @@ class CreateRequest:
     def process(self):
         tag_resources = self.data.pop("tag_resources", list())
         workflows = FindWorkflows(tag_resources).process().workflows
+        for workflow in workflows:
+            validations.validate_and_update_approver_groups(workflow)
+
         workflow_ids = [workflow.id for workflow in workflows]
 
         content = self.data.pop("content")

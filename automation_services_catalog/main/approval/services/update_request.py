@@ -10,6 +10,7 @@ from automation_services_catalog.main.approval.services.send_event import (
 from automation_services_catalog.main.approval.services.create_action import (
     CreateAction,
 )
+from automation_services_catalog.main.approval import validations
 
 logger = logging.getLogger("approval")
 AUTO_APPROVED_REASON = _("Auto-approved")
@@ -173,7 +174,7 @@ class UpdateRequest:
 
     # start the external approval process if configured
     def _run_request(self):
-        pass
+        validations.runtime_validate_group(self.request)
 
     def _notify_request(self):
         # notify if this is an internal processing

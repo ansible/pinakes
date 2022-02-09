@@ -16,6 +16,7 @@ from automation_services_catalog.main.approval.services.create_request import (
 from automation_services_catalog.main.approval.services.create_action import (
     CreateAction,
 )
+from automation_services_catalog.main.approval import validations
 
 
 class TemplateSerializer(serializers.ModelSerializer):
@@ -70,7 +71,7 @@ class WorkflowSerializer(serializers.ModelSerializer):
     def validate_group_refs(self, value):
         serializer = GroupRefSerializer(many=True, data=value)
         serializer.is_valid(raise_exception=True)
-        return value
+        return validations.validate_approver_groups(value)
 
 
 class TagResourceSerializer(serializers.Serializer):
