@@ -27,8 +27,8 @@ cp -R /src /opt/ansible-catalog
 cd /opt/ansible-catalog/
 
 # In some of the dev env they might have their own venv which we should
-# delete from this vm 
-if [ -d "venv" ] 
+# delete from this vm
+if [ -d "venv" ]
 then
     rm -rf venv
 fi
@@ -59,8 +59,12 @@ python3 manage.py migrate
 
 # Fetch the UI Tar
 curl -o ui.tar.xz -L https://github.com/RedHatInsights/catalog-ui/releases/download/latest/catalog-ui.tar.gz
+curl -o approval.tar.xz -L https://github.com/RedHatInsights/approval-ui/releases/download/latest/approval-ui.tar.gz
 mkdir -p ansible_catalog/ui/catalog
 tar -xf ui.tar.xz --directory ansible_catalog/ui/catalog
+mkdir -p ansible_catalog/ui/catalog/approval
+tar -xf approval.tar.xz --directory ansible_catalog/ui/catalog/approval
+
 
 # Clear out the old static and media directories, if we run
 # the provision multiple times

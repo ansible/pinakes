@@ -3,6 +3,7 @@ ARG SOURCE_NGINX_CONF=nginx.conf
 
 ENV CERT_PATH="${NGINX_CONFIGURATION_PATH}/certs"
 ENV CATALOG_UI_SRC="ui/catalog"
+ENV APPROVAL_UI_SRC="ui/catalog/approval"
 RUN mkdir -p ${CERT_PATH}
 
 ADD ${SOURCE_NGINX_CONF} ${NGINX_CONFIGURATION_PATH}
@@ -15,6 +16,10 @@ ADD --chown=1001:1001 certs/*.key ${CERT_PATH}
 RUN mkdir -p ${CATALOG_UI_SRC}
 ADD --chown=1001:1001 https://github.com/RedHatInsights/catalog-ui/releases/download/latest/catalog-ui.tar.gz ${CATALOG_UI_SRC}/
 RUN cd ${CATALOG_UI_SRC} && tar -xf catalog-ui.tar.gz && rm -rf catalog-ui.tar.gz
+
+RUN mkdir -p ${APPROVAL_UI_SRC}
+ADD --chown=1001:1001 https://github.com/RedHatInsights/approval-ui/releases/download/latest/approval-ui.tar.gz ${APPROVAL_UI_SRC}/
+RUN cd ${APPROVAL_UI_SRC} && tar -xf approval-ui.tar.gz && rm -rf approval-ui.tar.gz
 
 
 CMD /usr/libexec/s2i/run
