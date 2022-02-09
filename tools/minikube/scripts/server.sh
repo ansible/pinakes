@@ -19,9 +19,6 @@ then
 fi
 
 
-echo -e "\e[34m >>> Seed Kaycloak data \e[97m"
-ansible-playbook -vvv tools/keycloak_setup/dev.yml
-
 echo -e "\e[34m >>> Migrating changes \e[97m"
 python manage.py migrate
 echo -e "\e[32m >>> migration completed \e[97m"
@@ -39,5 +36,4 @@ echo -e "\e[34m >>> Collect static files \e[97m"
 python manage.py collectstatic
 
 echo -e "\e[34m >>> Start gunicorn server \e[97m"
-#python manage.py runserver 0.0.0.0:8000
 gunicorn --workers=3 --bind 0.0.0.0:8000 ansible_catalog.wsgi --log-level=debug

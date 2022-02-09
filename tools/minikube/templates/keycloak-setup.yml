@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: keycloak-setup
+spec:
+  template:
+    spec:
+      containers:
+      - name: keycloak-setup
+        image: localhost/ansible-catalog
+        imagePullPolicy: Never
+        env:
+           - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL
+             value: http://keycloak:8080/auth
+           - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET
+             value: SOMESECRETVALUE
+           - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_USER
+             value: admin
+           - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_PASSWORD
+             value: admin
+           - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_REALM_FRONTEND_URL
+             value: http://keycloak.k8s.local/auth
+           - name: REDIRECT_URIS_STR
+             value: http://app:8000,http://app:8000/*,*
+        command:  [/opt/app-root/src/tools/docker/scripts/keycloak-setup.sh]
+      restartPolicy: Never
+  backoffLimit: 1
