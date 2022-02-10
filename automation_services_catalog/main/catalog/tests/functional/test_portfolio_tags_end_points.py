@@ -12,7 +12,7 @@ def test_portfolio_tag_add(api_request):
     """Test adding a tag on portfolio"""
     portfolio = PortfolioFactory()
     response = api_request(
-        "post", "portfolio-tag", portfolio.id, {"name": "test_tag"}
+        "post", "catalog:portfolio-tag", portfolio.id, {"name": "test_tag"}
     )
 
     assert response.status_code == 201
@@ -27,10 +27,12 @@ def test_portfolio_tags_list(api_request):
     portfolio = PortfolioFactory()
 
     # Add tag first
-    api_request("post", "portfolio-tag", portfolio.id, {"name": "test_tag"})
+    api_request(
+        "post", "catalog:portfolio-tag", portfolio.id, {"name": "test_tag"}
+    )
 
     # List tags
-    response = api_request("get", "portfolio-tags", portfolio.id)
+    response = api_request("get", "catalog:portfolio-tags", portfolio.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -45,11 +47,13 @@ def test_portfolio_tags_remove(api_request):
     portfolio = PortfolioFactory()
 
     # Add tag first
-    api_request("post", "portfolio-tag", portfolio.id, {"name": "test_tag"})
+    api_request(
+        "post", "catalog:portfolio-tag", portfolio.id, {"name": "test_tag"}
+    )
 
     # Remove tag
     response = api_request(
-        "post", "portfolio-untag", portfolio.id, {"name": "test_tag"}
+        "post", "catalog:portfolio-untag", portfolio.id, {"name": "test_tag"}
     )
 
     assert response.status_code == 204

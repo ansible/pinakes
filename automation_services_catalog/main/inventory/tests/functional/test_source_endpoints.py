@@ -16,7 +16,7 @@ def test_source_list(api_request):
     """Test to list Source endpoint"""
 
     SourceFactory()
-    response = api_request("get", "source-list")
+    response = api_request("get", "inventory:source-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -29,7 +29,7 @@ def test_source_retrieve(api_request):
     """Test to retrieve Source endpoint"""
 
     source = SourceFactory()
-    response = api_request("get", "source-detail", source.id)
+    response = api_request("get", "inventory:source-detail", source.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -45,7 +45,7 @@ def test_source_refresh(mocker, api_request):
     mocker.patch("django_rq.enqueue", return_value=job_mock)
 
     source = SourceFactory()
-    response = api_request("patch", "source-refresh", source.id)
+    response = api_request("patch", "inventory:source-refresh", source.id)
 
     assert response.status_code == 202
     assert response.data == {
@@ -61,7 +61,7 @@ def test_source_patch(api_request):
     source = SourceFactory()
     response = api_request(
         "patch",
-        "source-detail",
+        "inventory:source-detail",
         source.id,
         {"name": "update"},
     )
@@ -74,7 +74,7 @@ def test_source_delete_not_supported(api_request):
     """Test to delete Source endpoint"""
 
     source = SourceFactory()
-    response = api_request("delete", "source-detail", source.id)
+    response = api_request("delete", "inventory:source-detail", source.id)
 
     assert response.status_code == 405
 
@@ -86,7 +86,7 @@ def test_source_put_not_supported(api_request):
     source = SourceFactory()
     response = api_request(
         "put",
-        "source-detail",
+        "inventory:source-detail",
         source.id,
         {"name": "update"},
     )
@@ -104,7 +104,9 @@ def test_source_service_inventory_list(api_request):
     ServiceInventoryFactory(source=source1)
     service_inventory = ServiceInventoryFactory(source=source2)
 
-    response = api_request("get", "source-service_inventory-list", source2.id)
+    response = api_request(
+        "get", "inventory:source-service_inventory-list", source2.id
+    )
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -123,7 +125,9 @@ def test_source_service_plan_list(api_request):
     InventoryServicePlanFactory(source=source1)
     InventoryServicePlanFactory(source=source2)
 
-    response = api_request("get", "source-service_plan-list", source1.id)
+    response = api_request(
+        "get", "inventory:source-service_plan-list", source1.id
+    )
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -140,7 +144,9 @@ def test_source_service_offering_list(api_request):
     ServiceOfferingFactory(source=source1)
     ServiceOfferingFactory(source=source1)
     ServiceOfferingFactory(source=source2)
-    response = api_request("get", "source-service_offering-list", source2.id)
+    response = api_request(
+        "get", "inventory:source-service_offering-list", source2.id
+    )
 
     assert response.status_code == 200
     content = json.loads(response.content)

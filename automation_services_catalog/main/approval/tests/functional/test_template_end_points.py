@@ -12,7 +12,7 @@ from automation_services_catalog.main.approval.tests.factories import (
 def test_template_list(api_request):
     """Get a list of templates"""
     TemplateFactory()
-    response = api_request("get", "template-list")
+    response = api_request("get", "approval:template-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -23,7 +23,7 @@ def test_template_list(api_request):
 def test_template_retrieve(api_request):
     """RETRIEVE a template by its id"""
     template = TemplateFactory()
-    response = api_request("get", "template-detail", template.id)
+    response = api_request("get", "approval:template-detail", template.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -33,7 +33,7 @@ def test_template_retrieve(api_request):
 @pytest.mark.django_db
 def test_template_delete(api_request):
     template = TemplateFactory()
-    response = api_request("delete", "template-detail", template.id)
+    response = api_request("delete", "approval:template-detail", template.id)
 
     assert response.status_code == 204
 
@@ -42,7 +42,7 @@ def test_template_delete(api_request):
 def test_template_patch(api_request):
     template = TemplateFactory()
     response = api_request(
-        "patch", "template-detail", template.id, {"title": "update"}
+        "patch", "approval:template-detail", template.id, {"title": "update"}
     )
 
     assert response.status_code == 200
@@ -55,7 +55,7 @@ def test_portfolio_put_not_supported(api_request):
     """PUT on a template should fail"""
     template = TemplateFactory()
     response = api_request(
-        "put", "template-detail", template.id, {"title": "update"}
+        "put", "approval:template-detail", template.id, {"title": "update"}
     )
 
     assert response.status_code == 405
@@ -66,7 +66,9 @@ def test_template_workflows_get(api_request):
     """Fetch workflows for a template"""
     template = TemplateFactory()
     workflow = WorkflowFactory(template=template)
-    response = api_request("get", "template-workflow-list", template.id)
+    response = api_request(
+        "get", "approval:template-workflow-list", template.id
+    )
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -79,7 +81,9 @@ def test_template_workflows_get(api_request):
 def test_template_post(api_request):
     TenantFactory()
     response = api_request(
-        "post", "template-list", data={"title": "abcdef", "description": "abc"}
+        "post",
+        "approval:template-list",
+        data={"title": "abcdef", "description": "abc"},
     )
 
     assert response.status_code == 201

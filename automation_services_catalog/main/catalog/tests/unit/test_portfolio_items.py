@@ -41,7 +41,7 @@ class TestPortfolioItems:
 
         api_request(
             "post",
-            "portfolioitem-tag",
+            "catalog:portfolioitem-tag",
             portfolio_item.id,
             {"name": "test_tag"},
         )

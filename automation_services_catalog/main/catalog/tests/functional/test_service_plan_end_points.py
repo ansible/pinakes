@@ -54,7 +54,7 @@ def test_list_portfolio_item_service_plans(api_request):
 
     response = api_request(
         "get",
-        "portfolioitem-serviceplan-list",
+        "catalog:portfolioitem-serviceplan-list",
         portfolio_item.id,
         {"extra": True},
     )
@@ -79,7 +79,7 @@ def test_service_plan_retrieve(api_request):
     )
 
     response = api_request(
-        "get", "serviceplan-detail", service_plan.id, {"extra": True}
+        "get", "catalog:serviceplan-detail", service_plan.id, {"extra": True}
     )
 
     assert response.status_code == 200
@@ -115,7 +115,7 @@ def test_service_plan_patch(api_request):
 
     response = api_request(
         "patch",
-        "serviceplan-detail",
+        "catalog:serviceplan-detail",
         service_plan.id,
         {"modified": TEST_SCHEMA},
     )
@@ -165,7 +165,7 @@ def _test_service_plan_reset(api_request, remote_schema, remote_sha):
 
     response = api_request(
         "post",
-        "serviceplan-reset",
+        "catalog:serviceplan-reset",
         catalog_service_plan.id,
     )
 

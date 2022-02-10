@@ -18,7 +18,7 @@ from automation_services_catalog.main.inventory.tests.factories import (
 def test_order_list(api_request):
     """Get List of Orders"""
     OrderFactory()
-    response = api_request("get", "order-list")
+    response = api_request("get", "catalog:order-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -31,7 +31,7 @@ def test_order_list(api_request):
 def test_order_list_extra(api_request):
     """Get List of Orders with param extra=true"""
     OrderFactory()
-    response = api_request("get", "order-list", data={"extra": "true"})
+    response = api_request("get", "catalog:order-list", data={"extra": "true"})
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -44,7 +44,7 @@ def test_order_list_extra(api_request):
 def test_order_retrieve(api_request):
     """Retrieve a single order by id"""
     order = OrderFactory()
-    response = api_request("get", "order-detail", order.id)
+    response = api_request("get", "catalog:order-detail", order.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -59,7 +59,7 @@ def test_order_retrieve_extra(api_request):
     order = OrderFactory()
     order_item = OrderItemFactory(order=order)
     response = api_request(
-        "get", "order-detail", order.id, data={"extra": "true"}
+        "get", "catalog:order-detail", order.id, data={"extra": "true"}
     )
 
     assert response.status_code == 200
@@ -73,7 +73,7 @@ def test_order_retrieve_extra(api_request):
 def test_order_delete(api_request):
     """Delete a single order by id"""
     order = OrderFactory()
-    response = api_request("delete", "order-detail", order.id)
+    response = api_request("delete", "catalog:order-detail", order.id)
 
     assert response.status_code == 204
 
@@ -94,7 +94,7 @@ def test_order_submit(api_request, mocker):
 
     assert (order.state) == "Created"
 
-    response = api_request("post", "order-submit", order.id)
+    response = api_request("post", "catalog:order-submit", order.id)
     order.refresh_from_db()
 
     assert response.status_code == 200
@@ -111,7 +111,7 @@ def test_order_submit_without_service_offering(api_request):
     order = OrderFactory()
     OrderItemFactory(order=order, portfolio_item=portfolio_item)
 
-    response = api_request("post", "order-submit", order.id)
+    response = api_request("post", "catalog:order-submit", order.id)
 
     assert response.status_code == 400
     content = json.loads(response.content)
@@ -129,7 +129,7 @@ def test_order_submit_without_order_item(api_request):
     PortfolioItemFactory(portfolio=portfolio)
     order = OrderFactory()
 
-    response = api_request("post", "order-submit", order.id)
+    response = api_request("post", "catalog:order-submit", order.id)
 
     assert response.status_code == 400
     content = json.loads(response.content)
@@ -144,7 +144,7 @@ def test_order_patch_not_supported(api_request):
     """Patch a single order by id"""
     order = OrderFactory()
     data = {"name": "update"}
-    response = api_request("patch", "order-detail", order.id, data)
+    response = api_request("patch", "catalog:order-detail", order.id, data)
 
     assert response.status_code == 405
 
@@ -154,7 +154,7 @@ def test_order_put_not_supported(api_request):
     """PUT is not supported"""
     order = OrderFactory()
     data = {"name": "update"}
-    response = api_request("put", "order-detail", order.id, data)
+    response = api_request("put", "catalog:order-detail", order.id, data)
 
     assert response.status_code == 405
 
@@ -163,7 +163,7 @@ def test_order_put_not_supported(api_request):
 def test_order_post(api_request):
     """Create a Order"""
     data = {"name": "abcdef", "description": "abc"}
-    response = api_request("post", "order-list", data=data)
+    response = api_request("post", "catalog:order-list", data=data)
     content = json.loads(response.content)
 
     assert response.status_code == 201
@@ -179,7 +179,7 @@ def test_order_order_items_get(api_request):
     OrderItemFactory(order=order1)
     order_item = OrderItemFactory(order=order2)
 
-    response = api_request("get", "order-orderitem-list", order2.id)
+    response = api_request("get", "catalog:order-orderitem-list", order2.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -202,7 +202,9 @@ def test_order_order_item_post(api_request):
     data = {
         "portfolio_item": portfolio_item.id,
     }
-    response = api_request("post", "order-orderitem-list", order.id, data)
+    response = api_request(
+        "post", "catalog:order-orderitem-list", order.id, data
+    )
     content = json.loads(response.content)
     assert response.status_code == 201
     assert content["name"] == portfolio_item.name

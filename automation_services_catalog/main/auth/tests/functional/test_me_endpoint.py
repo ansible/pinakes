@@ -15,7 +15,7 @@ def test_current_me_authenticated(api_request):
         last_name="Flintstone",
     )
     fred.save()
-    response = api_request("get", "me", None, None, fred)
+    response = api_request("get", "auth:me", None, None, fred)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -36,6 +36,6 @@ def test_current_me_unauthenticated(api_request):
         last_name="Flintstone",
     )
     fred.save()
-    response = api_request("get", "me", None, None, fred, "json", False)
+    response = api_request("get", "auth:me", None, None, fred, "json", False)
 
     assert response.status_code == 403

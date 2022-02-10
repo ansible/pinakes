@@ -25,7 +25,7 @@ from automation_services_catalog.main.inventory.tests.factories import (
 def test_portfolio_item_list(api_request):
     """Get list of Portfolio Items"""
     PortfolioItemFactory()
-    response = api_request("get", "portfolioitem-list")
+    response = api_request("get", "catalog:portfolioitem-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -37,7 +37,9 @@ def test_portfolio_item_list(api_request):
 def test_portfolio_item_retrieve(api_request):
     """Retrieve a single portfolio item by id"""
     portfolio_item = PortfolioItemFactory()
-    response = api_request("get", "portfolioitem-detail", portfolio_item.id)
+    response = api_request(
+        "get", "catalog:portfolioitem-detail", portfolio_item.id
+    )
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -48,7 +50,9 @@ def test_portfolio_item_retrieve(api_request):
 def test_portfolio_item_delete(api_request):
     """Delete a PortfolioItem by id"""
     portfolio_item = PortfolioItemFactory()
-    response = api_request("delete", "portfolioitem-detail", portfolio_item.id)
+    response = api_request(
+        "delete", "catalog:portfolioitem-detail", portfolio_item.id
+    )
 
     assert response.status_code == 204
 
@@ -60,7 +64,7 @@ def test_portfolio_item_patch(api_request):
     data = {"name": "update"}
     response = api_request(
         "patch",
-        "portfolioitem-detail",
+        "catalog:portfolioitem-detail",
         portfolio_item.id,
         data,
     )
@@ -74,7 +78,7 @@ def test_portfolio_item_put(api_request):
     portfolio_item = PortfolioItemFactory()
     data = {"name": "update"}
     response = api_request(
-        "put", "portfolioitem-detail", portfolio_item.id, data
+        "put", "catalog:portfolioitem-detail", portfolio_item.id, data
     )
 
     assert response.status_code == 405
@@ -89,7 +93,7 @@ def test_portfolio_item_post(api_request):
         "portfolio": portfolio.id,
         "service_offering_ref": str(service_offering.id),
     }
-    response = api_request("post", "portfolioitem-list", data=data)
+    response = api_request("post", "catalog:portfolioitem-list", data=data)
     assert response.status_code == 201
 
 
@@ -101,7 +105,7 @@ def test_portfolio_item_post_with_exception(api_request):
         "portfolio": portfolio.id,
     }
 
-    response = api_request("post", "portfolioitem-list", data=data)
+    response = api_request("post", "catalog:portfolioitem-list", data=data)
 
     assert response.status_code == 400
     assert "service_offering_ref" in response.data["errors"]
@@ -120,7 +124,7 @@ def test_portfolio_item_icon_post(api_request, small_image, media_dir):
 
     response = api_request(
         "post",
-        "portfolioitem-icon",
+        "catalog:portfolioitem-icon",
         portfolio_item.id,
         data,
         format="multipart",
@@ -150,7 +154,7 @@ def test_portfolio_item_icon_patch(
 
     response = api_request(
         "post",
-        "portfolioitem-icon",
+        "catalog:portfolioitem-icon",
         portfolio_item.id,
         data,
         format="multipart",
@@ -162,7 +166,7 @@ def test_portfolio_item_icon_patch(
 
     response = api_request(
         "patch",
-        "portfolioitem-icon",
+        "catalog:portfolioitem-icon",
         portfolio_item.id,
         data,
         format="multipart",
@@ -189,7 +193,7 @@ def test_portfolio_item_icon_delete(api_request, small_image, media_dir):
 
     api_request(
         "post",
-        "portfolioitem-icon",
+        "catalog:portfolioitem-icon",
         portfolio_item.id,
         data,
         format="multipart",
@@ -198,7 +202,7 @@ def test_portfolio_item_icon_delete(api_request, small_image, media_dir):
 
     response = api_request(
         "delete",
-        "portfolioitem-icon",
+        "catalog:portfolioitem-icon",
         portfolio_item.id,
     )
 
@@ -219,7 +223,7 @@ def test_portfolio_item_copy(api_request, mocker):
     assert PortfolioItem.objects.count() == 1
     response = api_request(
         "post",
-        "portfolioitem-copy",
+        "catalog:portfolioitem-copy",
         portfolio_item.id,
     )
 
@@ -237,7 +241,7 @@ def test_next_name_in_same_portfolio(api_request):
 
     response = api_request(
         "get",
-        "portfolioitem-next-name",
+        "catalog:portfolioitem-next-name",
         portfolio_item.id,
     )
 
@@ -258,7 +262,7 @@ def test_next_name_in_different_portfolio(api_request):
 
     response = api_request(
         "get",
-        "portfolioitem-next-name",
+        "catalog:portfolioitem-next-name",
         portfolio_item.id,
         data,
     )
