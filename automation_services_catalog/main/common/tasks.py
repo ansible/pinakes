@@ -4,7 +4,7 @@ from automation_services_catalog.common.auth import keycloak_django
 from automation_services_catalog.common.auth.keycloak_django import (
     AbstractKeycloakResource,
 )
-from automation_services_catalog.main.auth.models import Group
+from automation_services_catalog.main.common.models import Group
 
 
 def add_group_permissions(

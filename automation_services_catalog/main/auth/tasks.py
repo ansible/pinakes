@@ -11,7 +11,7 @@ from automation_services_catalog.common.auth import keycloak_django
 from automation_services_catalog.common.auth.keycloak import (
     models as keycloak_models,
 )
-from automation_services_catalog.main.auth.models import Group, Role
+from automation_services_catalog.main.common.models import Role, Group
 
 
 logger = logging.getLogger("approval")

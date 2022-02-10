@@ -30,7 +30,7 @@ from automation_services_catalog.common.image_mixin import ImageMixin
 from automation_services_catalog.common.queryset_mixin import QuerySetMixin
 
 from automation_services_catalog.main.models import Tenant
-from automation_services_catalog.main.auth.models import Group
+from automation_services_catalog.main.common.models import Group
 from automation_services_catalog.main.catalog.exceptions import (
     BadParamsException,
     InvalidSurveyException,

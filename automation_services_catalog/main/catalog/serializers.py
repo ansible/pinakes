@@ -3,7 +3,7 @@ from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 from automation_services_catalog.main.models import Tenant, Image
-from automation_services_catalog.main.auth.models import Group
+from automation_services_catalog.main.common.models import Group
 from automation_services_catalog.main.catalog.models import (
     ApprovalRequest,
     ServicePlan,

@@ -20,7 +20,7 @@ from drf_spectacular.utils import (
     OpenApiTypes,
 )
 
-from automation_services_catalog.main.auth import models
+from automation_services_catalog.main.common import models
 from automation_services_catalog.main.auth import tasks
 from automation_services_catalog.main.auth import serializers
 from automation_services_catalog.common.serializers import TaskSerializer
