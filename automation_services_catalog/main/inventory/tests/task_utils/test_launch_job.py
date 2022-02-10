@@ -1,7 +1,9 @@
 """ Module to Test Launching of Job """
 import pytest
 from unittest.mock import patch
-from automation_services_catalog.main.inventory.task_utils.launch_job import LaunchJob
+from automation_services_catalog.main.inventory.task_utils.launch_job import (
+    LaunchJob,
+)
 
 from automation_services_catalog.main.inventory.models import (
     InventoryServicePlan,

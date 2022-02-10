@@ -3,9 +3,15 @@
 import pytest
 
 from automation_services_catalog.main.approval.models import Request, Action
-from automation_services_catalog.main.approval.services.create_action import CreateAction
-from automation_services_catalog.main.approval.tests.factories import RequestFactory
-from automation_services_catalog.main.approval.services.update_request import UpdateRequest
+from automation_services_catalog.main.approval.services.create_action import (
+    CreateAction,
+)
+from automation_services_catalog.main.approval.tests.factories import (
+    RequestFactory,
+)
+from automation_services_catalog.main.approval.services.update_request import (
+    UpdateRequest,
+)
 from automation_services_catalog.main.approval.exceptions import (
     InvalidStateTransitionException,
     BlankParameterException,

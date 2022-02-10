@@ -1,6 +1,8 @@
 import pytest
 
-from automation_services_catalog.main.approval.tests.factories import RequestFactory
+from automation_services_catalog.main.approval.tests.factories import (
+    RequestFactory,
+)
 
 from automation_services_catalog.main.approval.models import Request
 

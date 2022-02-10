@@ -13,7 +13,9 @@ from automation_services_catalog.main.catalog.tests.factories import (
     OrderFactory,
     OrderItemFactory,
 )
-from automation_services_catalog.main.inventory.tests.factories import SourceFactory
+from automation_services_catalog.main.inventory.tests.factories import (
+    SourceFactory,
+)
 
 
 @pytest.mark.django_db

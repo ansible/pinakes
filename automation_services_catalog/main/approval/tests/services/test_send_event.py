@@ -5,7 +5,9 @@ from automation_services_catalog.main.approval.tests.factories import (
     RequestFactory,
     WorkflowFactory,
 )
-from automation_services_catalog.main.approval.services.send_event import SendEvent
+from automation_services_catalog.main.approval.services.send_event import (
+    SendEvent,
+)
 from automation_services_catalog.main.catalog.services.handle_approval_events import (
     HandleApprovalEvents,
 )

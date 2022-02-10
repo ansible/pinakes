@@ -12,7 +12,9 @@ from automation_services_catalog.main.inventory.tests.factories import (
     ServiceOfferingFactory,
     ServiceOfferingNodeFactory,
 )
-from automation_services_catalog.main.inventory.models import ServiceOfferingNode
+from automation_services_catalog.main.inventory.models import (
+    ServiceOfferingNode,
+)
 
 
 class TestServiceOfferingNodeImport:

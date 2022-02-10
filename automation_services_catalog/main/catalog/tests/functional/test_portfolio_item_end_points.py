@@ -9,8 +9,12 @@ from automation_services_catalog.main.catalog.models import PortfolioItem
 from automation_services_catalog.main.catalog.services.copy_portfolio_item import (
     CopyPortfolioItem,
 )
-from automation_services_catalog.main.catalog.tests.factories import PortfolioFactory
-from automation_services_catalog.main.catalog.tests.factories import PortfolioItemFactory
+from automation_services_catalog.main.catalog.tests.factories import (
+    PortfolioFactory,
+)
+from automation_services_catalog.main.catalog.tests.factories import (
+    PortfolioItemFactory,
+)
 
 from automation_services_catalog.main.inventory.tests.factories import (
     ServiceOfferingFactory,

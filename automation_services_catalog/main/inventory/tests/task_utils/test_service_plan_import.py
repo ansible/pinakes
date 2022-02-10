@@ -10,7 +10,9 @@ from automation_services_catalog.main.inventory.tests.factories import (
     ServiceOfferingFactory,
     InventoryServicePlanFactory,
 )
-from automation_services_catalog.main.inventory.models import InventoryServicePlan
+from automation_services_catalog.main.inventory.models import (
+    InventoryServicePlan,
+)
 from automation_services_catalog.main.inventory.task_utils.service_plan_import import (
     ServicePlanImport,
 )

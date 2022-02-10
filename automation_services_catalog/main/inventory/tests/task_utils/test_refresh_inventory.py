@@ -3,7 +3,9 @@ from unittest.mock import patch
 from unittest import mock
 import pytest
 from automation_services_catalog.main.tests.factories import TenantFactory
-from automation_services_catalog.main.inventory.tests.factories import SourceFactory
+from automation_services_catalog.main.inventory.tests.factories import (
+    SourceFactory,
+)
 from automation_services_catalog.main.inventory.task_utils.refresh_inventory import (
     RefreshInventory,
 )

@@ -2,7 +2,9 @@
 import json
 import pytest
 
-from automation_services_catalog.main.catalog.tests.factories import PortfolioFactory
+from automation_services_catalog.main.catalog.tests.factories import (
+    PortfolioFactory,
+)
 
 
 @pytest.mark.django_db

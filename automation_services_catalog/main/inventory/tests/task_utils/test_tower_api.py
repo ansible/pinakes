@@ -2,7 +2,9 @@
 import pytest
 import responses
 import requests
-from automation_services_catalog.main.inventory.task_utils.tower_api import TowerAPI
+from automation_services_catalog.main.inventory.task_utils.tower_api import (
+    TowerAPI,
+)
 
 
 class TestTowerAPI:

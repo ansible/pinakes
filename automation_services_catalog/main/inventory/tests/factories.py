@@ -7,9 +7,16 @@ from automation_services_catalog.main.inventory.models import (
     ServiceInstance,
     ServiceInventory,
 )
-from automation_services_catalog.main.inventory.models import ServiceOffering, OfferingKind
-from automation_services_catalog.main.inventory.models import InventoryServicePlan
-from automation_services_catalog.main.inventory.models import ServiceOfferingNode
+from automation_services_catalog.main.inventory.models import (
+    ServiceOffering,
+    OfferingKind,
+)
+from automation_services_catalog.main.inventory.models import (
+    InventoryServicePlan,
+)
+from automation_services_catalog.main.inventory.models import (
+    ServiceOfferingNode,
+)
 
 
 class SourceFactory(factory.django.DjangoModelFactory):

@@ -1,7 +1,9 @@
 """ Background tasks for inventory """
 import logging
 from rq import get_current_job
-from automation_services_catalog.main.approval.services.create_action import CreateAction
+from automation_services_catalog.main.approval.services.create_action import (
+    CreateAction,
+)
 from automation_services_catalog.main.approval.services.process_root_request import (
     ProcessRootRequest,
 )

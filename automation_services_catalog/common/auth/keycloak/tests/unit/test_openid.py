@@ -3,8 +3,12 @@ from unittest import mock
 import pytest
 from requests.models import Response
 
-from automation_services_catalog.common.auth.keycloak.models import OpenIDConfiguration
-from automation_services_catalog.common.auth.keycloak.openid import OpenIdConnect
+from automation_services_catalog.common.auth.keycloak.models import (
+    OpenIDConfiguration,
+)
+from automation_services_catalog.common.auth.keycloak.openid import (
+    OpenIdConnect,
+)
 
 
 SERVER_URL = "https://keycloak.example.com/auth"

@@ -4,7 +4,9 @@ from django.apps import apps
 from enum import Enum
 
 from automation_services_catalog.main.approval.models import TagLink, Workflow
-from automation_services_catalog.main.catalog.services.operate_tag import OperateTag
+from automation_services_catalog.main.catalog.services.operate_tag import (
+    OperateTag,
+)
 
 logger = logging.getLogger("approval")
 

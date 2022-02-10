@@ -5,7 +5,9 @@ from django.conf import settings
 from django.utils import timezone as django_tz
 import pytest
 
-from automation_services_catalog.common.auth.keycloak import models as keycloak_models
+from automation_services_catalog.common.auth.keycloak import (
+    models as keycloak_models,
+)
 from automation_services_catalog.main.auth import models
 from automation_services_catalog.main.auth import tasks
 from automation_services_catalog.main.auth.tests import factories

@@ -80,14 +80,17 @@ def api_request(admin):
 @pytest.fixture
 def media_dir():
     base_dir = os.path.dirname(__file__)
-    return os.path.join(base_dir, "automation_services_catalog/main/catalog/tests/data")
+    return os.path.join(
+        base_dir, "automation_services_catalog/main/catalog/tests/data"
+    )
 
 
 @pytest.fixture
 def small_image():
     base_dir = os.path.dirname(__file__)
     image_path = os.path.join(
-        base_dir, "automation_services_catalog/main/catalog/tests/data/redhat_icon.png"
+        base_dir,
+        "automation_services_catalog/main/catalog/tests/data/redhat_icon.png",
     )
 
     with open(image_path, "rb") as f:
@@ -99,7 +102,8 @@ def small_image():
 def another_image():
     base_dir = os.path.dirname(__file__)
     image_path = os.path.join(
-        base_dir, "automation_services_catalog/main/catalog/tests/data/ansible_icon.png"
+        base_dir,
+        "automation_services_catalog/main/catalog/tests/data/ansible_icon.png",
     )
 
     with open(image_path, "rb") as f:

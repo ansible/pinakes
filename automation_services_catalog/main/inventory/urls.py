@@ -1,5 +1,7 @@
 """URLs for Inventory"""
-from automation_services_catalog.common.nested_router import NestedDefaultRouter
+from automation_services_catalog.common.nested_router import (
+    NestedDefaultRouter,
+)
 from automation_services_catalog.main.inventory.views import (
     ServiceInstanceViewSet,
     ServiceInventoryViewSet,

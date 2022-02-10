@@ -1,8 +1,12 @@
 from typing import Optional, Sequence
 
 from automation_services_catalog.common.auth.keycloak.uma import UmaClient
-from automation_services_catalog.common.auth.keycloak import exceptions as keycloak_exc
-from automation_services_catalog.common.auth.keycloak import models as keycloak_models
+from automation_services_catalog.common.auth.keycloak import (
+    exceptions as keycloak_exc,
+)
+from automation_services_catalog.common.auth.keycloak import (
+    models as keycloak_models,
+)
 
 from .models import AbstractKeycloakResource
 from .utils import make_permission_name, make_scope

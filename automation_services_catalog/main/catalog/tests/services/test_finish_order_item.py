@@ -1,6 +1,8 @@
 """ Test module for finishing an OrderItem """
 import pytest
-from automation_services_catalog.main.catalog.tests.factories import OrderItemFactory
+from automation_services_catalog.main.catalog.tests.factories import (
+    OrderItemFactory,
+)
 from automation_services_catalog.main.catalog.models import OrderItem
 from automation_services_catalog.main.catalog.services.finish_order_item import (
     FinishOrderItem,

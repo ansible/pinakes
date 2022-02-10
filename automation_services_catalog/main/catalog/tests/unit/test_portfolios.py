@@ -4,7 +4,10 @@ from automation_services_catalog.main.catalog.tests.factories import (
     PortfolioFactory,
     PortfolioItemFactory,
 )
-from automation_services_catalog.main.tests.factories import TenantFactory, UserFactory
+from automation_services_catalog.main.tests.factories import (
+    TenantFactory,
+    UserFactory,
+)
 
 
 class TestPortfolios:

@@ -7,7 +7,9 @@
 import logging
 from django.core.exceptions import ObjectDoesNotExist
 
-from automation_services_catalog.main.inventory.models import InventoryServicePlan
+from automation_services_catalog.main.inventory.models import (
+    InventoryServicePlan,
+)
 from automation_services_catalog.main.catalog.models import ServicePlan
 from automation_services_catalog.main.catalog.services.refresh_service_plan import (
     RefreshServicePlan,

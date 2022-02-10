@@ -7,7 +7,9 @@ from automation_services_catalog.main.inventory.models import (
     ServiceInstance,
     ServiceOffering,
 )
-from automation_services_catalog.main.inventory.task_utils.tower_api import TowerAPI
+from automation_services_catalog.main.inventory.task_utils.tower_api import (
+    TowerAPI,
+)
 
 logger = logging.getLogger("inventory")
 

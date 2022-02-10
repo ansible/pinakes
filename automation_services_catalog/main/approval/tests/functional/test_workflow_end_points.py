@@ -1,9 +1,15 @@
 """ Module to test approval workflows """
 import json
 import pytest
-from automation_services_catalog.main.approval.tests.factories import TemplateFactory
-from automation_services_catalog.main.approval.tests.factories import WorkflowFactory
-from automation_services_catalog.main.catalog.tests.factories import PortfolioFactory
+from automation_services_catalog.main.approval.tests.factories import (
+    TemplateFactory,
+)
+from automation_services_catalog.main.approval.tests.factories import (
+    WorkflowFactory,
+)
+from automation_services_catalog.main.catalog.tests.factories import (
+    PortfolioFactory,
+)
 from automation_services_catalog.main.approval.tests.services.test_link_workflow import (
     create_and_link,
 )

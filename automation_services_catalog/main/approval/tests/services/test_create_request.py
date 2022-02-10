@@ -2,9 +2,15 @@
 from unittest.mock import Mock
 import pytest
 from automation_services_catalog.main.tests.factories import default_tenant
-from automation_services_catalog.main.approval.tests.factories import WorkflowFactory
-from automation_services_catalog.main.approval.services.create_request import CreateRequest
-from automation_services_catalog.main.approval.services.link_workflow import FindWorkflows
+from automation_services_catalog.main.approval.tests.factories import (
+    WorkflowFactory,
+)
+from automation_services_catalog.main.approval.services.create_request import (
+    CreateRequest,
+)
+from automation_services_catalog.main.approval.services.link_workflow import (
+    FindWorkflows,
+)
 from automation_services_catalog.main.approval.tasks import process_root_task
 
 

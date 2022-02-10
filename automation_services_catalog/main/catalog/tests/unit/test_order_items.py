@@ -2,9 +2,15 @@
 import pytest
 from django.db import IntegrityError
 
-from automation_services_catalog.main.catalog.models import OrderItem, ProgressMessage
+from automation_services_catalog.main.catalog.models import (
+    OrderItem,
+    ProgressMessage,
+)
 
-from automation_services_catalog.main.tests.factories import TenantFactory, UserFactory
+from automation_services_catalog.main.tests.factories import (
+    TenantFactory,
+    UserFactory,
+)
 from automation_services_catalog.main.catalog.tests.factories import (
     OrderFactory,
     OrderItemFactory,

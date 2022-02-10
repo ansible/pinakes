@@ -6,7 +6,9 @@ from automation_services_catalog.main.approval.tests.factories import (
     RequestFactory,
     ActionFactory,
 )
-from automation_services_catalog.main.approval.services.send_event import SendEvent
+from automation_services_catalog.main.approval.services.send_event import (
+    SendEvent,
+)
 
 
 @pytest.mark.django_db

@@ -1,6 +1,9 @@
 """ Module to start a Tower Job using Django_rq """
 import django_rq
-from automation_services_catalog.main.inventory.models import ServiceOffering, OfferingKind
+from automation_services_catalog.main.inventory.models import (
+    ServiceOffering,
+    OfferingKind,
+)
 from automation_services_catalog.main.inventory.tasks import launch_tower_task
 
 

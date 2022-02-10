@@ -2,7 +2,9 @@
 from unittest.mock import Mock
 from unittest.mock import patch
 import pytest
-from automation_services_catalog.main.catalog.tests.factories import OrderItemFactory
+from automation_services_catalog.main.catalog.tests.factories import (
+    OrderItemFactory,
+)
 from automation_services_catalog.main.catalog.models import OrderItem
 from automation_services_catalog.main.catalog.services.provision_order_item import (
     ProvisionOrderItem,

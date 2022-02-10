@@ -36,7 +36,9 @@ from automation_services_catalog.main.approval.serializers import (
     ActionSerializer,
     ResourceObjectSerializer,
 )
-from automation_services_catalog.main.approval.services.link_workflow import LinkWorkflow
+from automation_services_catalog.main.approval.services.link_workflow import (
+    LinkWorkflow,
+)
 from automation_services_catalog.main.approval.exceptions import (
     InsufficientParamsException,
 )

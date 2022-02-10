@@ -7,7 +7,9 @@ import logging
 import hashlib
 
 from django.utils import timezone
-from automation_services_catalog.main.inventory.models import InventoryServicePlan
+from automation_services_catalog.main.inventory.models import (
+    InventoryServicePlan,
+)
 
 logger = logging.getLogger("inventory")
 

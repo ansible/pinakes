@@ -19,7 +19,9 @@ from automation_services_catalog.main.catalog.tests.factories import (
 )
 
 from automation_services_catalog.main.auth.tests.factories import GroupFactory
-from automation_services_catalog.common.auth.keycloak.models import UmaPermission
+from automation_services_catalog.common.auth.keycloak.models import (
+    UmaPermission,
+)
 from automation_services_catalog.common.auth.keycloak_django.utils import (
     make_permission_name,
     make_scope,
