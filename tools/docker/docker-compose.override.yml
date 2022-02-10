@@ -57,7 +57,7 @@ services:
           "CMD",
           "curl",
           "-f",
-          "http://localhost:8000/api/ansible-catalog/v1/"
+          "http://localhost:8000/api/automation-services-catalog/v1/"
         ]
       interval: 5s
       timeout: 10s
