@@ -55,7 +55,7 @@ export DJANGO_SETTINGS_MODULE=automation_services_catalog.settings.development
 * Start the Server using development settings
       ```python3 manage.py runserver```
 
-      Open your browser and open http://127.0.0.1:8000/api/ansible-catalog/v1/portfolios/
+      Open your browser and open http://127.0.0.1:8000/api/automation-services-catalog/v1/portfolios/
 
       When prompted provide the userid/password from the createsuperuser step
 
@@ -138,7 +138,7 @@ docker-compose logs -f
 ```
 (You will see errors in the worker until keycloak is properly configured)
 
-Once is finished you can try to open https://localhost:8443/api/ansible-catalog/v1/
+Once is finished you can try to open https://localhost:8443/api/automation-services-catalog/v1/
 You can do log in with https://localhost:8443/login/keycloak/
 You can open the UI with https://localhost:8443/ui/catalog/index.html
 The project path is mounted in the pod and you can edit it in real time from outside the container.
@@ -178,15 +178,15 @@ sudo docker-compose -f docker-compose.stage.yml up -d
 ### Things to do manually the first time
 
 - refresh the controller
-open in your browser: http://localhost:8000/api/ansible-catalog/v1/sources/1/refresh/
+open in your browser: http://localhost:8000/api/automation-services-catalog/v1/sources/1/refresh/
 and execute a patch with empty body. (this may take a while)
 
 ### Download the open api schema
-http://localhost:8000/api/ansible-catalog/v1/schema/openapi.json
+http://localhost:8000/api/automation-services-catalog/v1/schema/openapi.json
 
 
 ### Try with swagger UI
-http://localhost:8000/api/ansible-catalog/v1/schema/swagger-ui/
+http://localhost:8000/api/automation-services-catalog/v1/schema/swagger-ui/
 
 
 ## Using minikube for development
@@ -238,8 +238,8 @@ When prompted enter the userid/password (barney/barney)
 
 To access the catalog app use
 
-https://catalog.k8s.local/api/ansible-catalog/v1/schema/openapi.json
-https://catalog.k8s.local/api/ansible-catalog/v1/portfolios/ (You wont be able to get to this link without logging in first)
+https://catalog.k8s.local/api/automation-services-catalog/v1/schema/openapi.json
+https://catalog.k8s.local/api/automation-services-catalog/v1/portfolios/ (You wont be able to get to this link without logging in first)
 
 ### Applying local code changes for testing
 To deploy your code changes that you have made locally before creating a PR you can redeploy the app using
