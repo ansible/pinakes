@@ -1,8 +1,9 @@
 """ Task to Refresh Inventory from the Tower """
 import logging
+from django.db import transaction
 from django.utils import timezone
 
-from automation_services_catalog.main.models import Source, Tenant
+from automation_services_catalog.main.models import Source
 from automation_services_catalog.main.inventory.task_utils.service_inventory_import import (
     ServiceInventoryImport,
 )
@@ -30,33 +31,39 @@ class RefreshInventory:
     """RefreshInventory imports objects from the tower"""
 
     # default constructor
-    def __init__(self, tenant_id, source_id):
+    def __init__(self, source_id):
         self.tower = TowerAPI()
-        self.source = Source.objects.get(pk=source_id)
-        self.tenant = Tenant.objects.get(pk=tenant_id)
+        self.source_id = source_id
 
-    # start processing
+    @transaction.atomic()
     def process(self):
-        self.source.refresh_started_at = timezone.now()
+        self.source = (
+            Source.objects.filter(pk=self.source_id)
+            .select_for_update(nowait=True)
+            .get()
+        )
 
+        self.source.refresh_started_at = timezone.now()
         try:
             """Run the import process"""
             spec_converter = SpecToDDF()
             plan_importer = ServicePlanImport(
-                self.tenant, self.source, self.tower, spec_converter
+                self.source.tenant, self.source, self.tower, spec_converter
             )
-            sii = ServiceInventoryImport(self.tenant, self.source, self.tower)
+            sii = ServiceInventoryImport(
+                self.source.tenant, self.source, self.tower
+            )
             logger.info("Fetching Inventory")
             sii.process()
 
             soi = ServiceOfferingImport(
-                self.tenant, self.source, self.tower, sii, plan_importer
+                self.source.tenant, self.source, self.tower, sii, plan_importer
             )
             logger.info("Fetching Job Templates & Workflows")
             soi.process()
 
             son = ServiceOfferingNodeImport(
-                self.tenant, self.source, self.tower, sii, soi
+                self.source.tenant, self.source, self.tower, sii, soi
             )
             logger.info("Fetching Workflow Template Nodes")
             son.process()

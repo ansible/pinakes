@@ -26,7 +26,7 @@ def test_process(mocker):
     )
     mocker.patch.object(ControllerConfig, "process", return_value=config)
 
-    svc = CheckSourceAvailability(tenant.id, source_instance.id)
+    svc = CheckSourceAvailability(source_instance.id)
     svc.process()
 
     source_instance.refresh_from_db()
@@ -52,7 +52,7 @@ def test_process_with_exception(mocker):
         side_effect=Exception("Failed to get controller config"),
     )
 
-    svc = CheckSourceAvailability(tenant.id, source_instance.id)
+    svc = CheckSourceAvailability(source_instance.id)
     svc.process()
 
     source_instance.refresh_from_db()
