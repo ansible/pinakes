@@ -24,6 +24,7 @@ from drf_spectacular.views import (
 )
 
 from automation_services_catalog.main.auth import urls as auth_urls
+from automation_services_catalog.main.common import urls as common_urls
 from automation_services_catalog.main.catalog.urls import (
     router as catalog_router,
     urls_views as catalog_views,
@@ -80,6 +81,7 @@ urlpatterns = [
     path(api_prefix, include((approval_urls, "api"), namespace="approval")),
     path(api_prefix, include((catalog_urls, "api"), namespace="catalog")),
     path(api_prefix, include((inventory_urls, "api"), namespace="inventory")),
+    path(api_prefix, include((common_urls, "api"), namespace="common")),
     path(api_prefix, include((auth_urls, "api"), namespace="auth")),
     path("", include("social_django.urls", namespace="social")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

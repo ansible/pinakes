@@ -6,14 +6,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from drf_spectacular.utils import extend_schema_field
 
-from automation_services_catalog.main.common import models
-
-
-class GroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Group
-        fields = ("id", "name", "parent_id")
-
 
 class CurrentUserSerializer(serializers.ModelSerializer):
     roles = serializers.SerializerMethodField("get_roles")

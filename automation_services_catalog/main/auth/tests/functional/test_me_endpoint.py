@@ -1,6 +1,8 @@
-""" Module to test CurrentUser end points """
+"""Module to test CurrentUser end points"""
 import json
+
 import pytest
+
 from django.contrib.auth.models import User
 
 
