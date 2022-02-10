@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
@@ -8,12 +9,16 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from rest_framework_extensions.mixins import NestedViewSetMixin
+import rq.job as rq_job
 import django_rq
 
 from automation_services_catalog.common.tag_mixin import TagMixin
 from automation_services_catalog.common.queryset_mixin import QuerySetMixin
 from automation_services_catalog.common.serializers import TaskSerializer
 from automation_services_catalog.main.models import Source
+from automation_services_catalog.main.inventory.exceptions import (
+    RefreshAlreadyRegisteredException,
+)
 from automation_services_catalog.main.inventory.serializers import (
     InventoryServicePlanSerializer,
     ServiceInstanceSerializer,
@@ -64,8 +69,41 @@ class SourceViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     @action(methods=["patch"], detail=True)
     def refresh(self, request, pk):
         source = get_object_or_404(Source, pk=pk)
+
+        if source.last_refresh_task_ref:
+            try:
+                job = rq_job.Job.fetch(
+                    source.last_refresh_task_ref,
+                    connection=django_rq.get_connection(),
+                )
+                job_status = job.get_status(refresh=True)
+
+                if job_status in ["queued", "started"]:
+                    logger.info(
+                        "Refresh job %s is already %s, please try again later",
+                        source.last_refresh_task_ref,
+                        job_status,
+                    )
+                    raise RefreshAlreadyRegisteredException(
+                        _(
+                            "Refresh job {} is already {}, please try again later"
+                        ).format(
+                            source.last_refresh_task_ref,
+                            job_status,
+                        )
+                    )
+
+            except rq_job.NoSuchJobError:
+                logger.info(
+                    "Refresh job %s not found, run refresh again",
+                    source.last_refresh_task_ref,
+                )
+
         result = django_rq.enqueue(refresh_task, source.tenant_id, source.id)
-        logger.info("Job Id is %s", result.id)
+        logger.info("Refresh job id is %s", result.id)
+
+        source.last_refresh_task_ref = result.id
+        source.save()
 
         serializer = TaskSerializer(result)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
