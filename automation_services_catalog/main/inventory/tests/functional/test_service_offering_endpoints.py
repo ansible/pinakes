@@ -13,7 +13,7 @@ from automation_services_catalog.main.inventory.tests.factories import (
 def test_service_offering_list(api_request):
     """Test to list ServiceOffering endpoint"""
     service_offering = ServiceOfferingFactory()
-    response = api_request("get", "serviceoffering-list")
+    response = api_request("get", "inventory:serviceoffering-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -28,7 +28,7 @@ def test_service_offering_retrieve(api_request):
 
     service_offering = ServiceOfferingFactory()
     response = api_request(
-        "get", "serviceoffering-detail", service_offering.id
+        "get", "inventory:serviceoffering-detail", service_offering.id
     )
 
     assert response.status_code == 200
@@ -53,7 +53,7 @@ def test_service_offering_patch_not_supported(api_request):
     service_offering = ServiceOfferingFactory()
     response = api_request(
         "patch",
-        "serviceoffering-detail",
+        "inventory:serviceoffering-detail",
         service_offering.id,
         {"name": "update"},
     )
@@ -67,7 +67,7 @@ def test_service_offering_delete_not_supported(api_request):
 
     service_offering = ServiceOfferingFactory()
     response = api_request(
-        "delete", "serviceoffering-detail", service_offering.id
+        "delete", "inventory:serviceoffering-detail", service_offering.id
     )
 
     assert response.status_code == 405
@@ -80,7 +80,7 @@ def test_service_offering_put_not_supported(api_request):
     service_offering = ServiceOfferingFactory()
     response = api_request(
         "put",
-        "serviceoffering-detail",
+        "inventory:serviceoffering-detail",
         service_offering.id,
         {"name": "update"},
     )
@@ -100,7 +100,7 @@ def test_service_offering_service_plan_list(api_request):
     InventoryServicePlanFactory(service_offering=service_offering2)
 
     response = api_request(
-        "get", "offering-service_plans-list", service_offering1.id
+        "get", "inventory:offering-service_plans-list", service_offering1.id
     )
 
     assert response.status_code == 200

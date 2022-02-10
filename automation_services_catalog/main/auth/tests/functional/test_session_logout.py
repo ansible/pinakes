@@ -7,5 +7,5 @@ import pytest
 def test_session_logout(api_request, mocker):
     """Logout an authenticated user from a single session"""
     mocker.patch("automation_services_catalog.main.auth.views.OpenIdConnect")
-    response = api_request("post", "logout")
+    response = api_request("post", "auth:logout")
     assert response.status_code == 200

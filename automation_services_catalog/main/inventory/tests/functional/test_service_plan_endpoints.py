@@ -11,7 +11,7 @@ def test_service_plan_list(api_request):
     """Test to list ServicePlan endpoint"""
 
     InventoryServicePlanFactory()
-    response = api_request("get", "inventoryserviceplan-list")
+    response = api_request("get", "inventory:inventoryserviceplan-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -25,7 +25,7 @@ def test_service_plan_retrieve(api_request):
 
     service_plan = InventoryServicePlanFactory()
     response = api_request(
-        "get", "inventoryserviceplan-detail", service_plan.id
+        "get", "inventory:inventoryserviceplan-detail", service_plan.id
     )
 
     assert response.status_code == 200
@@ -40,7 +40,7 @@ def test_service_plan_patch_not_supported(api_request):
     service_plan = InventoryServicePlanFactory()
     response = api_request(
         "patch",
-        "inventoryserviceplan-detail",
+        "inventory:inventoryserviceplan-detail",
         service_plan.id,
         {"name": "update"},
     )
@@ -54,7 +54,7 @@ def test_service_plan_delete_not_supported(api_request):
 
     service_plan = InventoryServicePlanFactory()
     response = api_request(
-        "delete", "inventoryserviceplan-detail", service_plan.id
+        "delete", "inventory:inventoryserviceplan-detail", service_plan.id
     )
 
     assert response.status_code == 405
@@ -67,7 +67,7 @@ def test_service_plan_put_not_supported(api_request):
     service_plan = InventoryServicePlanFactory()
     response = api_request(
         "put",
-        "inventoryserviceplan-detail",
+        "inventory:inventoryserviceplan-detail",
         service_plan.id,
         {"name": "update"},
     )

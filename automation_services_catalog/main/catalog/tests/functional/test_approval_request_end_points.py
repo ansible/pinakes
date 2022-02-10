@@ -13,7 +13,7 @@ def test_order_approval_request_get(api_request):
 
     response = api_request(
         "get",
-        "order-approvalrequests-list",
+        "catalog:order-approvalrequests-list",
         approval_request.order.id,
     )
 

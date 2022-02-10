@@ -11,7 +11,7 @@ def test_service_instance_list(api_request):
     """Test to list ServiceInstance endpoint"""
 
     ServiceInstanceFactory()
-    response = api_request("get", "serviceinstance-list")
+    response = api_request("get", "inventory:serviceinstance-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -26,7 +26,7 @@ def test_service_instance_retrieve(api_request):
     service_instance = ServiceInstanceFactory()
     response = api_request(
         "get",
-        "serviceinstance-detail",
+        "inventory:serviceinstance-detail",
         service_instance.id,
     )
 
@@ -45,7 +45,7 @@ def test_service_instance_patch_not_supported(api_request):
     service_instance = ServiceInstanceFactory()
     response = api_request(
         "patch",
-        "serviceinstance-detail",
+        "inventory:serviceinstance-detail",
         service_instance.id,
         {"name": "update"},
     )
@@ -60,7 +60,7 @@ def test_service_instance_delete_not_supported(api_request):
     service_instance = ServiceInstanceFactory()
     response = api_request(
         "delete",
-        "serviceinstance-detail",
+        "inventory:serviceinstance-detail",
         service_instance.id,
     )
 
@@ -74,7 +74,7 @@ def test_service_instance_put_not_supported(api_request):
     service_instance = ServiceInstanceFactory()
     response = api_request(
         "put",
-        "serviceinstance-detail",
+        "inventory:serviceinstance-detail",
         service_instance.id,
         {"name": "update"},
     )

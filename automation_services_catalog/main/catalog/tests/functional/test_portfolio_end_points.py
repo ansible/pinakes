@@ -32,7 +32,7 @@ from automation_services_catalog.common.auth.keycloak_django.utils import (
 def test_portfolio_list(api_request):
     """Get List of Portfolios"""
     PortfolioFactory()
-    response = api_request("get", "portfolio-list")
+    response = api_request("get", "catalog:portfolio-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -44,7 +44,7 @@ def test_portfolio_list(api_request):
 def test_portfolio_retrieve(api_request):
     """Retrieve a single portfolio by id"""
     portfolio = PortfolioFactory()
-    response = api_request("get", "portfolio-detail", portfolio.id)
+    response = api_request("get", "catalog:portfolio-detail", portfolio.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -55,7 +55,7 @@ def test_portfolio_retrieve(api_request):
 def test_portfolio_delete(api_request):
     """Delete a single portfolio by id"""
     portfolio = PortfolioFactory()
-    response = api_request("delete", "portfolio-detail", portfolio.id)
+    response = api_request("delete", "catalog:portfolio-detail", portfolio.id)
 
     assert response.status_code == 204
 
@@ -65,7 +65,9 @@ def test_portfolio_patch(api_request):
     """Patch a single portfolio by id"""
     portfolio = PortfolioFactory()
     data = {"name": "update"}
-    response = api_request("patch", "portfolio-detail", portfolio.id, data)
+    response = api_request(
+        "patch", "catalog:portfolio-detail", portfolio.id, data
+    )
 
     assert response.status_code == 200
 
@@ -76,7 +78,9 @@ def test_portfolio_copy(api_request):
     portfolio = PortfolioFactory()
     data = {"portfolio_name": "new_copied_name"}
 
-    response = api_request("post", "portfolio-copy", portfolio.id, data)
+    response = api_request(
+        "post", "catalog:portfolio-copy", portfolio.id, data
+    )
 
     assert response.status_code == 200
     assert Portfolio.objects.count() == 2
@@ -98,7 +102,9 @@ def test_portfolio_copy_with_portfolio_items(api_request):
     ) as mock:
         mock.return_value = True
 
-        response = api_request("post", "portfolio-copy", portfolio.id, {})
+        response = api_request(
+            "post", "catalog:portfolio-copy", portfolio.id, {}
+        )
 
     assert response.status_code == 200
     assert Portfolio.objects.count() == 2
@@ -117,7 +123,7 @@ def test_portfolio_copy_with_icon(api_request):
     assert Portfolio.objects.count() == 1
     assert Image.objects.count() == 1
 
-    response = api_request("post", "portfolio-copy", portfolio.id, {})
+    response = api_request("post", "catalog:portfolio-copy", portfolio.id, {})
 
     assert response.status_code == 200
     assert Portfolio.objects.count() == 2
@@ -131,7 +137,9 @@ def test_portfolio_put_not_supported(api_request):
     """PUT is not supported"""
     portfolio = PortfolioFactory()
     data = {"name": "update"}
-    response = api_request("put", "portfolio-detail", portfolio.id, data)
+    response = api_request(
+        "put", "catalog:portfolio-detail", portfolio.id, data
+    )
 
     assert response.status_code == 405
 
@@ -140,7 +148,7 @@ def test_portfolio_put_not_supported(api_request):
 def test_portfolio_post(api_request):
     """Create a Portfolio"""
     data = {"name": "abcdef", "description": "abc"}
-    response = api_request("post", "portfolio-list", data=data)
+    response = api_request("post", "catalog:portfolio-list", data=data)
 
     assert response.status_code == 201
 
@@ -155,7 +163,7 @@ def test_portfolio_portfolio_items_get(api_request):
     portfolio_item3 = PortfolioItemFactory(portfolio=portfolio2)
 
     response = api_request(
-        "get", "portfolio-portfolioitem-list", portfolio2.id
+        "get", "catalog:portfolio-portfolioitem-list", portfolio2.id
     )
 
     assert response.status_code == 200
@@ -168,7 +176,7 @@ def test_portfolio_portfolio_items_get(api_request):
 @pytest.mark.django_db
 def test_portfolio_portfolio_items_get_bad_id(api_request):
     """List PortfolioItems by non-existing id"""
-    response = api_request("get", "portfolio-portfolioitem-list", -1)
+    response = api_request("get", "catalog:portfolio-portfolioitem-list", -1)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -179,7 +187,9 @@ def test_portfolio_portfolio_items_get_bad_id(api_request):
 @pytest.mark.django_db
 def test_portfolio_portfolio_items_get_string_id(api_request):
     """List PortfolioItems by fake string id"""
-    response = api_request("get", "portfolio-portfolioitem-list", "abc")
+    response = api_request(
+        "get", "catalog:portfolio-portfolioitem-list", "abc"
+    )
 
     assert response.status_code == 404
 
@@ -197,7 +207,7 @@ def test_portfolio_icon_post(api_request, small_image, media_dir):
 
     response = api_request(
         "post",
-        "portfolio-icon",
+        "catalog:portfolio-icon",
         portfolio.id,
         data,
         format="multipart",
@@ -228,7 +238,7 @@ def test_portfolio_icon_patch(
 
     response = api_request(
         "post",
-        "portfolio-icon",
+        "catalog:portfolio-icon",
         portfolio.id,
         data,
         format="multipart",
@@ -240,7 +250,7 @@ def test_portfolio_icon_patch(
 
     response = api_request(
         "patch",
-        "portfolio-icon",
+        "catalog:portfolio-icon",
         portfolio.id,
         data,
         format="multipart",
@@ -267,7 +277,7 @@ def test_portfolio_icon_delete(api_request, small_image, media_dir):
 
     api_request(
         "post",
-        "portfolio-icon",
+        "catalog:portfolio-icon",
         portfolio.id,
         data,
         format="multipart",
@@ -276,7 +286,7 @@ def test_portfolio_icon_delete(api_request, small_image, media_dir):
 
     response = api_request(
         "delete",
-        "portfolio-icon",
+        "catalog:portfolio-icon",
         portfolio.id,
     )
 
@@ -309,7 +319,7 @@ def test_portfolio_share_info(api_request, mocker):
     )
     client_mock.find_permissions_by_resource.return_value = [permission]
 
-    response = api_request("get", "portfolio-share-info", portfolio.id)
+    response = api_request("get", "catalog:portfolio-share-info", portfolio.id)
 
     assert response.status_code == 200
     shares = json.loads(response.content)
@@ -330,7 +340,7 @@ def test_portfolio_share_info_empty(api_request, mocker):
     """Test Share Information of Portfolio without keycloak_id"""
     portfolio = PortfolioFactory()
 
-    response = api_request("get", "portfolio-share-info", portfolio.id)
+    response = api_request("get", "catalog:portfolio-share-info", portfolio.id)
 
     assert response.status_code == 200
     shares = json.loads(response.content)
@@ -367,7 +377,7 @@ def test_portfolio_share_info_consolidated(api_request, mocker):
         permission2,
     ]
 
-    response = api_request("get", "portfolio-share-info", portfolio.id)
+    response = api_request("get", "catalog:portfolio-share-info", portfolio.id)
 
     assert response.status_code == 200
     shares = json.loads(response.content)

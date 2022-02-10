@@ -15,7 +15,7 @@ from automation_services_catalog.main.approval.services.send_event import (
 def test_request_list(api_request):
     RequestFactory()
     RequestFactory()
-    response = api_request("get", "request-list")
+    response = api_request("get", "approval:request-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -26,7 +26,7 @@ def test_request_list(api_request):
 @pytest.mark.django_db
 def test_request_retrieve(api_request):
     request = RequestFactory()
-    response = api_request("get", "request-detail", request.id)
+    response = api_request("get", "approval:request-detail", request.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -38,7 +38,7 @@ def test_request_child_list(api_request):
     parent = RequestFactory()
     RequestFactory(parent=parent)
     RequestFactory(parent=parent)
-    response = api_request("get", "request-request-list", parent.id)
+    response = api_request("get", "approval:request-request-list", parent.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -51,7 +51,7 @@ def test_request_action_list(api_request):
     request = RequestFactory()
     ActionFactory(request=request, operation="start")
     ActionFactory(request=request, operation="complete")
-    response = api_request("get", "request-action-list", request.id)
+    response = api_request("get", "approval:request-action-list", request.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -65,7 +65,7 @@ def test_create_request(api_request, mocker):
     default_tenant()
     response = api_request(
         "post",
-        "request-list",
+        "approval:request-list",
         data={
             "name": "abcdef",
             "description": "abc",
@@ -89,7 +89,7 @@ def test_create_request_user_error(api_request, mocker):
     default_tenant()
     response = api_request(
         "post",
-        "request-list",
+        "approval:request-list",
         data={
             "name": "abcdef",
             "description": "abc",
@@ -112,7 +112,7 @@ def test_create_request_internal_error(api_request, mocker):
     default_tenant()
     response = api_request(
         "post",
-        "request-list",
+        "approval:request-list",
         data={
             "name": "abcdef",
             "description": "abc",
@@ -131,7 +131,7 @@ def test_create_action(api_request, mocker):
     request = RequestFactory(state="notified")
     response = api_request(
         "post",
-        "request-action-list",
+        "approval:request-action-list",
         request.id,
         {
             "operation": "deny",
@@ -146,18 +146,18 @@ def test_request_not_supported_methods(api_request):
     request = RequestFactory()
 
     response = api_request(
-        "put", "request-detail", request.id, {"name": "update"}
+        "put", "approval:request-detail", request.id, {"name": "update"}
     )
     assert response.status_code == 405
 
     response = api_request(
-        "patch", "request-detail", request.id, {"name": "update"}
+        "patch", "approval:request-detail", request.id, {"name": "update"}
     )
     assert response.status_code == 405
 
     response = api_request(
         "delete",
-        "request-detail",
+        "approval:request-detail",
         request.id,
     )
     assert response.status_code == 405
@@ -168,7 +168,7 @@ def test_request_request_not_create(api_request):
     request = RequestFactory()
     response = api_request(
         "post",
-        "request-request-list",
+        "approval:request-request-list",
         request.id,
         {
             "name": "child",
@@ -188,7 +188,7 @@ def test_request_extra_data(api_request):
     child_action = ActionFactory(request=child)
 
     response = api_request(
-        "get", "request-detail", parent.id, data={"extra": "true"}
+        "get", "approval:request-detail", parent.id, data={"extra": "true"}
     )
     content = json.loads(response.content)
     assert response.status_code == 200

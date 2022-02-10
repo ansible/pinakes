@@ -53,7 +53,7 @@ class TestPortfolios:
 
         PortfolioItemFactory(portfolio=portfolio)
         api_request(
-            "post", "portfolio-tag", portfolio.id, {"name": "test_tag"}
+            "post", "catalog:portfolio-tag", portfolio.id, {"name": "test_tag"}
         )
 
         assert portfolio.metadata["statistics"]["portfolio_items"] == 1

@@ -11,7 +11,7 @@ from automation_services_catalog.main.catalog.tests.factories import (
 def test_order_item_retrieve(api_request):
     """Retrieve a single order item by id"""
     order_item = OrderItemFactory()
-    response = api_request("get", "orderitem-detail", order_item.id)
+    response = api_request("get", "catalog:orderitem-detail", order_item.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -26,7 +26,10 @@ def test_order_item_retrieve_extra(api_request):
     portfolio_item = PortfolioItemFactory()
     order_item = OrderItemFactory(portfolio_item=portfolio_item)
     response = api_request(
-        "get", "orderitem-detail", order_item.id, data={"extra": "true"}
+        "get",
+        "catalog:orderitem-detail",
+        order_item.id,
+        data={"extra": "true"},
     )
 
     assert response.status_code == 200
@@ -42,7 +45,7 @@ def test_order_item_retrieve_extra(api_request):
 def test_order_item_delete(api_request):
     """Delete a OrderItem by id"""
     order_item = OrderItemFactory()
-    response = api_request("delete", "orderitem-detail", order_item.id)
+    response = api_request("delete", "catalog:orderitem-detail", order_item.id)
 
     assert response.status_code == 204
 
@@ -54,7 +57,7 @@ def test_order_item_patch(api_request):
     data = {"name": "update"}
     response = api_request(
         "patch",
-        "orderitem-detail",
+        "catalog:orderitem-detail",
         order_item.id,
         data,
     )
@@ -67,6 +70,8 @@ def test_order_item_put(api_request):
     """PUT on order item is not supported"""
     order_item = OrderItemFactory()
     data = {"name": "update"}
-    response = api_request("put", "orderitem-detail", order_item.id, data)
+    response = api_request(
+        "put", "catalog:orderitem-detail", order_item.id, data
+    )
 
     assert response.status_code == 405

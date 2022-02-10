@@ -12,7 +12,7 @@ def test_service_inventory_list(api_request):
     """Test to list ServiceInventory endpoint"""
 
     ServiceInventoryFactory()
-    response = api_request("get", "serviceinventory-list")
+    response = api_request("get", "inventory:serviceinventory-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
@@ -26,7 +26,7 @@ def test_service_inventory_retrieve(api_request):
 
     service_inventory = ServiceInventoryFactory(name="fred")
     response = api_request(
-        "get", "serviceinventory-detail", service_inventory.id
+        "get", "inventory:serviceinventory-detail", service_inventory.id
     )
 
     assert response.status_code == 200
@@ -41,7 +41,7 @@ def test_service_inventory_tags(api_request):
 
     service_inventory = ServiceInventoryFactory()
     response = api_request(
-        "get", "serviceinventory-tags", service_inventory.id
+        "get", "inventory:serviceinventory-tags", service_inventory.id
     )
 
     assert response.status_code == 200
@@ -54,7 +54,7 @@ def test_service_inventory_tag(api_request):
     service_inventory = ServiceInventoryFactory()
     response = api_request(
         "post",
-        "serviceinventory-tag",
+        "inventory:serviceinventory-tag",
         service_inventory.id,
         {"name": "fred"},
     )
@@ -69,7 +69,7 @@ def test_service_inventory_untag(api_request):
     service_inventory = ServiceInventoryFactory()
     response = api_request(
         "post",
-        "serviceinventory-untag",
+        "inventory:serviceinventory-untag",
         service_inventory.id,
         {"name": "fred"},
     )
@@ -84,7 +84,7 @@ def test_service_inventory_delete_not_supported(api_request):
     service_inventory = ServiceInventoryFactory()
     response = api_request(
         "delete",
-        "serviceinventory-detail",
+        "inventory:serviceinventory-detail",
         service_inventory.id,
     )
 
@@ -98,7 +98,7 @@ def test_service_inventory_put_not_supported(api_request):
     service_inventory = ServiceInventoryFactory()
     response = api_request(
         "put",
-        "serviceinventory-detail",
+        "inventory:serviceinventory-detail",
         service_inventory.id,
         {"name": "update"},
     )
@@ -112,7 +112,7 @@ def test_service_inventory_post_not_supported(api_request):
 
     response = api_request(
         "post",
-        "serviceinventory-list",
+        "inventory:serviceinventory-list",
         data={"name": "update"},
     )
 
