@@ -41,7 +41,7 @@ ALLOWED_HOSTS = env.list(
 
 CATALOG_API_PATH_PREFIX = env.str(
     "AUTOMATION_SERVICES_CATALOG_API_PATH_PREFIX",
-    default="/api/ansible-catalog",
+    default="/api/automation-services-catalog",
 )
 
 # Application definition
