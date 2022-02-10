@@ -26,9 +26,9 @@ echo -e "\e[32m >>> migration completed \e[97m"
 echo -e "\e[32m >>> Fetch UI tar\e[97m"
 
 curl -o ui.tar.xz -L https://github.com/RedHatInsights/catalog-ui/releases/download/latest/catalog-ui.tar.gz
-rm -rf ansible_catalog/ui/catalog
-mkdir -p ansible_catalog/ui/catalog
-tar -xf ui.tar.xz --directory ansible_catalog/ui/catalog
+rm -rf automation_services_catalog/ui/catalog
+mkdir -p automation_services_catalog/ui/catalog
+tar -xf ui.tar.xz --directory automation_services_catalog/ui/catalog
 
 rm -rf "$AUTOMATION_SERVICES_CATALOG_STATIC_ROOT"
 
@@ -36,4 +36,4 @@ echo -e "\e[34m >>> Collect static files \e[97m"
 python manage.py collectstatic
 
 echo -e "\e[34m >>> Start gunicorn server \e[97m"
-gunicorn --workers=3 --bind 0.0.0.0:8000 ansible_catalog.wsgi --log-level=debug
+gunicorn --workers=3 --bind 0.0.0.0:8000 automation_services_catalog.wsgi --log-level=debug
