@@ -23,8 +23,8 @@ systemctl enable --now postgresql-13
 sudo -u postgres psql -c "ALTER USER $AUTOMATION_SERVICES_CATALOG_POSTGRES_USER PASSWORD '$AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD';"
 
 
-cp -R /src /opt/ansible-catalog
-cd /opt/ansible-catalog/
+cp -R /src /opt/automation-services-catalog
+cd /opt/automation-services-catalog/
 
 # In some of the dev env they might have their own venv which we should
 # delete from this vm 
@@ -35,7 +35,7 @@ fi
 
 export PATH="$PATH:/usr/pgsql-13/bin"
 python3 -m venv venv
-source /opt/ansible-catalog/venv/bin/activate
+source /opt/automation-services-catalog/venv/bin/activate
 pip3 install -U pip
 pip3 install -r requirements.txt
 
@@ -81,7 +81,7 @@ python3 /vagrant_data/scripts/apply_env.py /vagrant_data/catalog/services/catalo
 python3 /vagrant_data/scripts/apply_env.py /vagrant_data/catalog/services/catalog_worker.service.j2 /etc/systemd/system/catalog_worker.service
 
 adduser "$AUTOMATION_SERVICES_CATALOG_SERVICE_USER"
-chown "$AUTOMATION_SERVICES_CATALOG_SERVICE_USER"."$AUTOMATION_SERVICES_CATALOG_SERVICE_USER" -R /opt/ansible-catalog
+chown "$AUTOMATION_SERVICES_CATALOG_SERVICE_USER"."$AUTOMATION_SERVICES_CATALOG_SERVICE_USER" -R /opt/automation-services-catalog
 # Catalog should be able to write to the media directory
 chown "$AUTOMATION_SERVICES_CATALOG_SERVICE_USER"."$AUTOMATION_SERVICES_CATALOG_SERVICE_USER" -R $AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT
 
