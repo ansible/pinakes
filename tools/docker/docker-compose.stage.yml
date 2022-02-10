@@ -1,4 +1,5 @@
-version: '3'
+version: '3.9'
+
 x-environment:
   &catalog-env
   - AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN=${AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN}
