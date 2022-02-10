@@ -107,6 +107,9 @@ class Source(models.Model):
         default="",
         help_text="The message for the last source refresh",
     )
+    last_refresh_task_ref = models.CharField(
+        max_length=64, null=True, help_text="The last refresh task id"
+    )
     availability_status = models.TextField(
         blank=True,
         default="unavailable",

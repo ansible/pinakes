@@ -24,6 +24,7 @@ class SourceSerializer(serializers.ModelSerializer):
             "refresh_finished_at",
             "last_successful_refresh_at",
             "last_refresh_message",
+            "last_refresh_task_ref",
             "last_available_at",
             "last_checked_at",
             "availability_status",

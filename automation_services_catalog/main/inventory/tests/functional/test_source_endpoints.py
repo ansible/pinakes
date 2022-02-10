@@ -2,7 +2,6 @@
 from unittest.mock import Mock
 import json
 import pytest
-import rq
 from automation_services_catalog.main.inventory.tests.factories import (
     InventoryServicePlanFactory,
     SourceFactory,
@@ -52,6 +51,27 @@ def test_source_refresh(mocker, api_request):
         "id": job_id,
         "status": "queued",
     }
+
+
+@pytest.mark.django_db
+def test_multiple_source_refreshes(mocker, api_request):
+    """Test multiple source refreshes at the same time"""
+    job_id = "uuid1"
+    job_status = "queued"
+    job_mock = Mock(id=job_id)
+    job_mock.get_status.return_value = job_status
+    mocker.patch("rq.job.Job.fetch", return_value=job_mock)
+
+    source = SourceFactory(last_refresh_task_ref=job_id)
+    response = api_request("patch", "inventory:source-refresh", source.id)
+
+    assert response.status_code == 429
+    content = json.loads(response.content)
+    assert content[
+        "detail"
+    ] == "Refresh job {} is already {}, please try again later".format(
+        job_id, job_status
+    )
 
 
 @pytest.mark.django_db
