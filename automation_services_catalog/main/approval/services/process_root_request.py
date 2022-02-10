@@ -1,7 +1,8 @@
 """ Process a root request """
 import django_rq
 import logging
-from automation_services_catalog.common import tasks
+
+from automation_services_catalog.main.common import tasks
 from automation_services_catalog.main.approval.models import (
     Request,
     Workflow,
@@ -13,6 +14,7 @@ from automation_services_catalog.main.approval.services.link_workflow import (
 from automation_services_catalog.main.approval.services.create_action import (
     CreateAction,
 )
+
 
 logger = logging.getLogger("approval")
 

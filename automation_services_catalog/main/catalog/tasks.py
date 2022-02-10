@@ -1,4 +1,4 @@
-from automation_services_catalog.common.tasks import (
+from automation_services_catalog.main.common.tasks import (
     add_group_permissions,
     remove_group_permissions,
 )
