@@ -21,7 +21,9 @@ from drf_spectacular.utils import (
 )
 
 from automation_services_catalog.common.auth import keycloak_django
-from automation_services_catalog.common.auth.keycloak_django.utils import parse_scope
+from automation_services_catalog.common.auth.keycloak_django.utils import (
+    parse_scope,
+)
 from automation_services_catalog.common.serializers import TaskSerializer
 from automation_services_catalog.common.tag_mixin import TagMixin
 from automation_services_catalog.common.image_mixin import ImageMixin

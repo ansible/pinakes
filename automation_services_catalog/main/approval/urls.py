@@ -1,5 +1,7 @@
 """URLs for approval"""
-from automation_services_catalog.common.nested_router import NestedDefaultRouter
+from automation_services_catalog.common.nested_router import (
+    NestedDefaultRouter,
+)
 from automation_services_catalog.main.approval.views import (
     TemplateViewSet,
     WorkflowViewSet,

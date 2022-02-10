@@ -12,7 +12,10 @@ from automation_services_catalog.main.catalog.models import (
     PortfolioItem,
     ProgressMessage,
 )
-from automation_services_catalog.main.tests.factories import UserFactory, default_tenant
+from automation_services_catalog.main.tests.factories import (
+    UserFactory,
+    default_tenant,
+)
 
 
 class PortfolioFactory(factory.django.DjangoModelFactory):

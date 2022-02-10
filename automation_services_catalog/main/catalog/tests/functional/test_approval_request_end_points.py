@@ -1,7 +1,9 @@
 """ Test order end points """
 import pytest
 
-from automation_services_catalog.main.catalog.tests.factories import ApprovalRequestFactory
+from automation_services_catalog.main.catalog.tests.factories import (
+    ApprovalRequestFactory,
+)
 
 
 @pytest.mark.django_db

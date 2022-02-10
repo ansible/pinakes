@@ -313,7 +313,10 @@ CRONTAB = env.str(
     "AUTOMATION_SERVICES_CATALOG_CRONTAB", default="*/30 * * * *"
 )
 RQ_CRONJOBS = [
-    (CRONTAB, "automation_services_catalog.main.auth.tasks.sync_external_groups"),
+    (
+        CRONTAB,
+        "automation_services_catalog.main.auth.tasks.sync_external_groups",
+    ),
     (
         CRONTAB,
         "automation_services_catalog.main.inventory.tasks.refresh_all_sources",

@@ -15,8 +15,12 @@ from automation_services_catalog.main.inventory.task_utils.service_plan_import i
 from automation_services_catalog.main.inventory.task_utils.service_offering_node_import import (
     ServiceOfferingNodeImport,
 )
-from automation_services_catalog.main.inventory.task_utils.tower_api import TowerAPI
-from automation_services_catalog.main.inventory.task_utils.spec_to_ddf import SpecToDDF
+from automation_services_catalog.main.inventory.task_utils.tower_api import (
+    TowerAPI,
+)
+from automation_services_catalog.main.inventory.task_utils.spec_to_ddf import (
+    SpecToDDF,
+)
 
 
 logger = logging.getLogger("inventory")

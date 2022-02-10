@@ -9,7 +9,9 @@ from automation_services_catalog.main.catalog.models import (
 from automation_services_catalog.main.catalog.services.compute_runtime_parameters import (
     ComputeRuntimeParameters,
 )
-from automation_services_catalog.main.catalog.services.finish_order import FinishOrder
+from automation_services_catalog.main.catalog.services.finish_order import (
+    FinishOrder,
+)
 from automation_services_catalog.main.catalog.services.finish_order_item import (
     FinishOrderItem,
 )

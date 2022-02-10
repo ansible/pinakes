@@ -1,9 +1,14 @@
 """ Create an approval request """
 import django_rq
 import logging
-from automation_services_catalog.main.approval.models import Request, RequestContext
+from automation_services_catalog.main.approval.models import (
+    Request,
+    RequestContext,
+)
 from automation_services_catalog.main.approval.tasks import process_root_task
-from automation_services_catalog.main.approval.services.link_workflow import FindWorkflows
+from automation_services_catalog.main.approval.services.link_workflow import (
+    FindWorkflows,
+)
 
 logger = logging.getLogger("approval")
 

@@ -1,6 +1,8 @@
 import pytest
 import json
-from automation_services_catalog.main.inventory.task_utils.spec_to_ddf import SpecToDDF
+from automation_services_catalog.main.inventory.task_utils.spec_to_ddf import (
+    SpecToDDF,
+)
 
 
 class TestSpecToDDF:

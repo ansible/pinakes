@@ -10,8 +10,12 @@ from automation_services_catalog.main.approval.models import (
     Action,
     TagLink,
 )
-from automation_services_catalog.main.approval.services.create_request import CreateRequest
-from automation_services_catalog.main.approval.services.create_action import CreateAction
+from automation_services_catalog.main.approval.services.create_request import (
+    CreateRequest,
+)
+from automation_services_catalog.main.approval.services.create_action import (
+    CreateAction,
+)
 
 
 class TemplateSerializer(serializers.ModelSerializer):

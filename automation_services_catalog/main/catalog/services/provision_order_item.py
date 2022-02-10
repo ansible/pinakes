@@ -3,7 +3,10 @@
 from automation_services_catalog.main.inventory.services.start_tower_job import (
     StartTowerJob,
 )
-from automation_services_catalog.main.catalog.models import OrderItem, ProgressMessage
+from automation_services_catalog.main.catalog.models import (
+    OrderItem,
+    ProgressMessage,
+)
 
 
 class ProvisionOrderItem:

@@ -24,7 +24,9 @@ from automation_services_catalog.main.auth import models
 from automation_services_catalog.main.auth import tasks
 from automation_services_catalog.main.auth import serializers
 from automation_services_catalog.common.serializers import TaskSerializer
-from automation_services_catalog.common.auth.keycloak.openid import OpenIdConnect
+from automation_services_catalog.common.auth.keycloak.openid import (
+    OpenIdConnect,
+)
 
 
 @extend_schema_view(

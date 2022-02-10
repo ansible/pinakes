@@ -8,7 +8,9 @@ from django.conf import settings
 from django.utils import timezone as django_tz
 
 from automation_services_catalog.common.auth import keycloak_django
-from automation_services_catalog.common.auth.keycloak import models as keycloak_models
+from automation_services_catalog.common.auth.keycloak import (
+    models as keycloak_models,
+)
 from automation_services_catalog.main.auth.models import Group, Role
 
 

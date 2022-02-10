@@ -2,9 +2,17 @@
 import django_rq
 import logging
 from automation_services_catalog.common import tasks
-from automation_services_catalog.main.approval.models import Request, Workflow, Action
-from automation_services_catalog.main.approval.services.link_workflow import FindWorkflows
-from automation_services_catalog.main.approval.services.create_action import CreateAction
+from automation_services_catalog.main.approval.models import (
+    Request,
+    Workflow,
+    Action,
+)
+from automation_services_catalog.main.approval.services.link_workflow import (
+    FindWorkflows,
+)
+from automation_services_catalog.main.approval.services.create_action import (
+    CreateAction,
+)
 
 logger = logging.getLogger("approval")
 
@@ -68,7 +76,9 @@ class ProcessRootRequest:
         self.request.save()
 
     def _start_leaves(self):
-        from automation_services_catalog.main.approval.tasks import start_request_task
+        from automation_services_catalog.main.approval.tasks import (
+            start_request_task,
+        )
 
         first_leaves = (self.request,)
         if self.request.is_parent():

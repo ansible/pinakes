@@ -12,8 +12,12 @@ from automation_services_catalog.main.catalog.models import (
 from automation_services_catalog.main.catalog.services.remove_approval_tags import (
     RemoveApprovalTags,
 )
-from automation_services_catalog.main.catalog.services.start_order import StartOrder
-from automation_services_catalog.main.catalog.services.finish_order import FinishOrder
+from automation_services_catalog.main.catalog.services.start_order import (
+    StartOrder,
+)
+from automation_services_catalog.main.catalog.services.finish_order import (
+    FinishOrder,
+)
 
 logger = logging.getLogger("catalog")
 

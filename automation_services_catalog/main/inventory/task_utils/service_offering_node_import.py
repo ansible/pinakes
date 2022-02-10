@@ -1,7 +1,9 @@
 """ Import Workflow Job template nodes from Tower """
 
 import dateutil.parser
-from automation_services_catalog.main.inventory.models import ServiceOfferingNode
+from automation_services_catalog.main.inventory.models import (
+    ServiceOfferingNode,
+)
 
 
 class ServiceOfferingNodeImport:

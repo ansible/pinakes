@@ -8,7 +8,9 @@ from automation_services_catalog.main.inventory.task_utils.check_source_availabi
 from automation_services_catalog.main.inventory.task_utils.refresh_inventory import (
     RefreshInventory,
 )
-from automation_services_catalog.main.inventory.task_utils.launch_job import LaunchJob
+from automation_services_catalog.main.inventory.task_utils.launch_job import (
+    LaunchJob,
+)
 from automation_services_catalog.main.catalog.services.finish_order_item import (
     FinishOrderItem,
 )

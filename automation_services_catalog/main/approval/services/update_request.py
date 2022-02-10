@@ -4,8 +4,12 @@ import logging
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from automation_services_catalog.main.approval.models import Request, Action
-from automation_services_catalog.main.approval.services.send_event import SendEvent
-from automation_services_catalog.main.approval.services.create_action import CreateAction
+from automation_services_catalog.main.approval.services.send_event import (
+    SendEvent,
+)
+from automation_services_catalog.main.approval.services.create_action import (
+    CreateAction,
+)
 
 logger = logging.getLogger("approval")
 AUTO_APPROVED_REASON = _("Auto-approved")

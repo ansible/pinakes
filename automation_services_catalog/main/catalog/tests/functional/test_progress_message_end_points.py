@@ -2,8 +2,12 @@
 import json
 import pytest
 
-from automation_services_catalog.main.catalog.tests.factories import OrderFactory
-from automation_services_catalog.main.catalog.tests.factories import OrderItemFactory
+from automation_services_catalog.main.catalog.tests.factories import (
+    OrderFactory,
+)
+from automation_services_catalog.main.catalog.tests.factories import (
+    OrderItemFactory,
+)
 
 
 @pytest.mark.django_db

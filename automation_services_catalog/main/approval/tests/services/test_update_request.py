@@ -11,7 +11,9 @@ from automation_services_catalog.main.approval.services.update_request import (
     UpdateRequest,
     AUTO_APPROVED_REASON,
 )
-from automation_services_catalog.main.approval.services.send_event import SendEvent
+from automation_services_catalog.main.approval.services.send_event import (
+    SendEvent,
+)
 
 
 @skip("until notification is implemented")

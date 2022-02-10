@@ -2,13 +2,17 @@
 
 import pytest
 
-from automation_services_catalog.main.approval.tests.factories import RequestFactory
+from automation_services_catalog.main.approval.tests.factories import (
+    RequestFactory,
+)
 
 from automation_services_catalog.main.catalog.models import (
     ApprovalRequest,
     ProgressMessage,
 )
-from automation_services_catalog.main.catalog.services.start_order import StartOrder
+from automation_services_catalog.main.catalog.services.start_order import (
+    StartOrder,
+)
 from automation_services_catalog.main.catalog.tests.factories import (
     ApprovalRequestFactory,
     OrderFactory,

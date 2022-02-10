@@ -7,9 +7,13 @@ from automation_services_catalog.main.approval.services.link_workflow import (
     LinkWorkflow,
     FindWorkflows,
 )
-from automation_services_catalog.main.approval.tests.factories import WorkflowFactory
+from automation_services_catalog.main.approval.tests.factories import (
+    WorkflowFactory,
+)
 
-from automation_services_catalog.main.catalog.tests.factories import PortfolioFactory
+from automation_services_catalog.main.catalog.tests.factories import (
+    PortfolioFactory,
+)
 
 
 @pytest.mark.django_db

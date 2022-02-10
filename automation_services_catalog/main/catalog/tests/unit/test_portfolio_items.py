@@ -1,7 +1,11 @@
 import pytest
 
-from automation_services_catalog.main.catalog.tests.factories import PortfolioFactory
-from automation_services_catalog.main.catalog.tests.factories import PortfolioItemFactory
+from automation_services_catalog.main.catalog.tests.factories import (
+    PortfolioFactory,
+)
+from automation_services_catalog.main.catalog.tests.factories import (
+    PortfolioItemFactory,
+)
 from automation_services_catalog.main.tests.factories import TenantFactory
 
 

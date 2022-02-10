@@ -2,8 +2,12 @@ import pytest
 from decimal import Decimal
 
 from automation_services_catalog.main.tests.factories import TenantFactory
-from automation_services_catalog.main.approval.tests.factories import TemplateFactory
-from automation_services_catalog.main.approval.tests.factories import WorkflowFactory
+from automation_services_catalog.main.approval.tests.factories import (
+    TemplateFactory,
+)
+from automation_services_catalog.main.approval.tests.factories import (
+    WorkflowFactory,
+)
 
 
 class TestWorkflows:
