@@ -59,6 +59,8 @@ kubectl apply --namespace=catalog -f ./tools/minikube/templates/keycloak-service
 
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/keycloak-setup.yml
 
+echo "We are adding roles, groups, users, permissions into Keycloak"
+echo "Waiting for Keycloak setup job to end, this could take a couple of minutes ....."
 kubectl -n catalog wait --for=condition=complete --timeout=8m job/keycloak-setup
 
 if [ $? -ne 0 ]; then
