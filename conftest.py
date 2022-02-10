@@ -1,5 +1,7 @@
 """ pytest fixtures """
 import urllib.parse
+import warnings
+
 import pytest
 import os
 import re
@@ -51,11 +53,21 @@ def api_request(admin):
         format="json",
         authenticated=True,
     ):
-        curframe = inspect.currentframe()
-        call_path = inspect.getouterframes(curframe, 2)[1][1]
-        regex = "[/\\\\]main[/\\\\](.+)[/\\\\]tests[/\\\\]"
-        namespace = re.search(regex, call_path).groups()[0]
-        url = reverse(f"{namespace}:{pattern}", args=((id,) if id else None))
+        if ":" not in pattern:
+            warnings.warn(
+                "Implicit route namespace detection is obscure and relies "
+                "on the package structure. It will be removed in future. "
+                "You should use explicit route namespace "
+                '(e.g. "namespace:route-name")',
+                DeprecationWarning,
+            )
+            curframe = inspect.currentframe()
+            call_path = inspect.getouterframes(curframe, 2)[1][1]
+            regex = "[/\\\\]main[/\\\\](.+)[/\\\\]tests[/\\\\]"
+            namespace = re.search(regex, call_path).groups()[0]
+            pattern = f"{namespace}:{pattern}"
+
+        url = reverse(pattern, args=((id,) if id else None))
         view, view_args, view_kwargs = resolve(urllib.parse.urlparse(url)[2])
         request = getattr(APIRequestFactory(), verb)(
             url, data=data, format=format
