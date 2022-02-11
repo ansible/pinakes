@@ -46,7 +46,9 @@ def refresh_task(tenant_id, source_id):
         logger.info("Finished Inventory Refresh")
     else:
         logger.error(
-            "Source %s is unavailable, cannot refresh it", svc.source.name
+            "Source %s[%s] is unavailable, cannot refresh it",
+            svc.source.name,
+            svc.tower.url,
         )
 
 
