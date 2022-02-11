@@ -324,7 +324,7 @@ RQ_CRONJOBS = [
 # Auto generation of openapi spec using Spectacular
 SPECTACULAR_SETTINGS = {
     "TITLE": "Catalog API",
-    "DESCRIPTION": "A set of APIs to create and manage Ansible catalogs and order from them.",
+    "DESCRIPTION": "A set of APIs to create and manage Automation Services Catalogs and order from them.",
     "VERSION": "0.1.0",
     "CONTACT": {
         "email": "support@redhat.com",
@@ -354,6 +354,7 @@ SPECTACULAR_SETTINGS = {
         },
     ],
     "COMPONENT_SPLIT_REQUEST": True,
+    "SCHEMA_PATH_PREFIX": "/{}/v1".format(CATALOG_API_PATH_PREFIX.strip("/")),
 }
 
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
