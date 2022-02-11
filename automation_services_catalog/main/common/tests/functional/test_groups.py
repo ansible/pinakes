@@ -24,7 +24,9 @@ def test_groups_list_with_roles(api_request):
     role1 = factories.RoleFactory(name="approver")
     role2 = factories.RoleFactory(name="adjuster")
     group1.roles.add(role1, role2)
-    response = api_request("get", "common:group-list", data={"role": "approver"})
+    response = api_request(
+        "get", "common:group-list", data={"role": "approver"}
+    )
 
     assert response.status_code == 200
     assert response.data["count"] == 1
