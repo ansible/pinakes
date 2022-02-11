@@ -33,7 +33,9 @@ def test_process(mocker):
     assert source_instance.last_available_at is not None
     assert source_instance.last_checked_at is not None
     assert source_instance.availability_status == "available"
-    assert source_instance.availability_message == "Available"
+    assert (
+        source_instance.availability_message == "Check availability completed"
+    )
     assert source_instance.info == {
         "version": "4.1.0",
         "url": "http://tower.com",
@@ -45,11 +47,12 @@ def test_process_with_exception(mocker):
     """Test the process method"""
     tenant = TenantFactory()
     source_instance = SourceFactory(tenant=tenant)
+    err_msg = "Failed to get controller config"
 
     mocker.patch.object(
         ControllerConfig,
         "process",
-        side_effect=Exception("Failed to get controller config"),
+        side_effect=Exception(err_msg),
     )
 
     svc = CheckSourceAvailability(source_instance.id)
@@ -57,4 +60,9 @@ def test_process_with_exception(mocker):
 
     source_instance.refresh_from_db()
     assert source_instance.availability_status == "unavailable"
-    assert source_instance.availability_message == "Unavailable"
+    assert source_instance.availability_message == "Error: " + err_msg
+    assert source_instance.refresh_state == "Failed"
+    assert (
+        source_instance.last_refresh_message
+        == source_instance.name + " is unavailable, refresh skipped"
+    )

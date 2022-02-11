@@ -40,11 +40,21 @@ class CheckSourceAvailability:
             self.source.info["url"] = svc.tower.url
             self.source.last_available_at = timezone.now()
             self.source.availability_status = "available"
-            self.source.availability_message = "Available"
+            self.source.availability_message = "Check availability completed"
         except Exception as error:
             self.source.availability_status = "unavailable"
-            self.source.availability_message = "Unavailable"
-            logger.error("Check availability failed: %s", str(error))
+            self.source.availability_message = "Error: %s" % str(error)
+            logger.error(
+                "Check availability failed on %s: %s",
+                self.tower.url,
+                str(error),
+            )
+
+            # update refresh related fields in the same lock
+            self.source.refresh_state = Source.State.FAILED
+            self.source.last_refresh_message = (
+                "{} is unavailable, refresh skipped".format(self.source.name)
+            )
         finally:
             self.source.last_checked_at = timezone.now()
 
