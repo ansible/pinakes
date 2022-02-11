@@ -36,4 +36,4 @@ echo -e "\e[34m >>> Collect static files \e[97m"
 python manage.py collectstatic
 
 echo -e "\e[34m >>> Start gunicorn server \e[97m"
-gunicorn --workers=3 --bind 0.0.0.0:8000 automation_services_catalog.wsgi --log-level=debug
+gunicorn --workers=${AUTOMATION_SERVICES_CATALOG_NUM_PROCS:-3} --bind 0.0.0.0:8000 automation_services_catalog.wsgi --log-level=debug

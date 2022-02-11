@@ -157,6 +157,7 @@ python manage.py migrate
 python manage.py collectstatic
 
 # run the backend
+# number of workers is arbitrary. The recommended value is cpu_core * 2 + 1
 gunicorn --workers=3 --bind 0.0.0.0:8000 automation_services_catalog.wsgi --log-level=info
 ```
 
