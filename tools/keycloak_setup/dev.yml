@@ -18,7 +18,7 @@
       - username: fred
         firstName: Fred
         lastName: Flintstone
-        email: fred@slaterock.com
+        email: fred@example.com
         enabled: true
         credentials:
           - type: "password"
@@ -28,7 +28,7 @@
       - username: barney
         firstName: Barney
         lastName: Rubble
-        email: barney@slaterock.com
+        email: barney@example.com
         enabled: true
         credentials:
           - type: "password"
@@ -38,7 +38,7 @@
       - username: wilma
         firstName: Wilma
         lastName: Flintstone
-        email: wilma@bedrock.com
+        email: wilma@example.com
         enabled: true
         credentials:
           - type: "password"
