@@ -18,7 +18,9 @@ from automation_services_catalog.main.catalog.tests.factories import (
     PortfolioItemFactory,
 )
 
-from automation_services_catalog.main.auth.tests.factories import GroupFactory
+from automation_services_catalog.main.common.tests.factories import (
+    GroupFactory,
+)
 from automation_services_catalog.common.auth.keycloak.models import (
     UmaPermission,
 )

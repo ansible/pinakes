@@ -4,7 +4,7 @@ import uuid
 import factory
 from django.utils import timezone as django_tz
 
-from automation_services_catalog.main.auth.models import Group, Role
+from automation_services_catalog.main.common.models import Role, Group
 
 
 class GroupFactory(factory.django.DjangoModelFactory):

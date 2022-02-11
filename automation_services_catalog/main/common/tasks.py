@@ -1,6 +1,6 @@
 import logging
 from collections import deque
-from typing import Iterable
+from typing import Sequence, Iterable
 
 import rq
 from django.db import transaction
@@ -11,10 +11,37 @@ from automation_services_catalog.common.auth import keycloak_django
 from automation_services_catalog.common.auth.keycloak import (
     models as keycloak_models,
 )
-from automation_services_catalog.main.auth.models import Group, Role
-
+from automation_services_catalog.main.common.models import Role, Group
 
 logger = logging.getLogger("approval")
+
+
+def add_group_permissions(
+    obj: keycloak_django.AbstractKeycloakResource,
+    group_ids: Sequence[str],
+    permissions: Sequence[str],
+):
+    client = keycloak_django.get_uma_client()
+    keycloak_django.create_resource_if_not_exists(obj, client)
+
+    groups = Group.objects.filter(id__in=group_ids)
+    for group in groups:
+        keycloak_django.assign_group_permissions(
+            obj, group, permissions, client
+        )
+
+
+def remove_group_permissions(
+    obj: keycloak_django.AbstractKeycloakResource,
+    group_ids: Sequence[str],
+    permissions: Sequence[str],
+):
+    client = keycloak_django.get_uma_client()
+    groups = Group.objects.filter(id__in=group_ids)
+    for group in groups:
+        keycloak_django.remove_group_permissions(
+            obj, group, permissions, client
+        )
 
 
 def iter_groups(groups: Iterable[keycloak_models.Group]):
