@@ -26,8 +26,8 @@ Environment=AUTOMATION_SERVICES_CATALOG_HTTPS_ENABLED={{AUTOMATION_SERVICES_CATA
 Environment=AUTOMATION_SERVICES_CATALOG_UI_ALLOWED_ORIGINS={{AUTOMATION_SERVICES_CATALOG_UI_ALLOWED_ORIGINS}}
 Environment=AUTOMATION_SERVICES_CATALOG_CSRF_TRUSTED_ORIGINS={{AUTOMATION_SERVICES_CATALOG_CSRF_TRUSTED_ORIGINS}}
 User={{AUTOMATION_SERVICES_CATALOG_SERVICE_USER}}
-WorkingDirectory=/opt/ansible-catalog
-ExecStart=/bin/bash -c 'cd /opt/ansible-catalog/ && source /opt/ansible-catalog/venv/bin/activate && gunicorn --workers=3 --bind 0.0.0.0:8000 automation_services_catalog.wsgi --log-level=debug'
+WorkingDirectory=/opt/automation-services-catalog
+ExecStart=/bin/bash -c 'cd /opt/automation-services-catalog/ && source /opt/automation-services-catalog/venv/bin/activate && gunicorn --workers=3 --bind 0.0.0.0:8000 automation_services_catalog.wsgi --log-level=debug'
 
 [Install]
 WantedBy=multi-user.target
