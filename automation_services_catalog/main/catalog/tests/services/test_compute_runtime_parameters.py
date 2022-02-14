@@ -68,7 +68,7 @@ def schema(fields):
 @pytest.mark.django_db
 def test_process_without_service_plan_ref_in_order_item():
     portfolio_item = PortfolioItemFactory()
-    service_plan = ServicePlanFactory(
+    ServicePlanFactory(
         portfolio_item=portfolio_item,
     )
     order_item = OrderItemFactory(
@@ -85,7 +85,7 @@ def test_process_without_service_plan_ref_in_order_item():
 def test_process_without_service_parameters_in_order_item():
     inventory_service_plan_id = 1
     portfolio_item = PortfolioItemFactory()
-    service_plan = ServicePlanFactory(
+    ServicePlanFactory(
         base_schema=schema(fields_1()),
         inventory_service_plan_ref=str(inventory_service_plan_id),
         portfolio_item=portfolio_item,
@@ -105,7 +105,7 @@ def test_process_without_service_parameters_in_order_item():
 def test_process_without_schema_in_service_plan():
     inventory_service_plan_id = 1
     portfolio_item = PortfolioItemFactory()
-    service_plan = ServicePlanFactory(
+    ServicePlanFactory(
         base_schema=None,
         inventory_service_plan_ref=str(inventory_service_plan_id),
         portfolio_item=portfolio_item,
@@ -125,7 +125,7 @@ def test_process_without_schema_in_service_plan():
 def test_process_with_schema_in_service_plan():
     inventory_service_plan_id = 1
     portfolio_item = PortfolioItemFactory()
-    service_plan = ServicePlanFactory(
+    ServicePlanFactory(
         base_schema=schema(fields_1()),
         inventory_service_plan_ref=str(inventory_service_plan_id),
         portfolio_item=portfolio_item,
@@ -146,7 +146,7 @@ def test_process_with_schema_in_service_plan():
 def test_process_with_service_parameters_not_in_schema():
     inventory_service_plan_id = 1
     portfolio_item = PortfolioItemFactory()
-    service_plan = ServicePlanFactory(
+    ServicePlanFactory(
         base_schema=schema(fields_1()),
         inventory_service_plan_ref=str(inventory_service_plan_id),
         portfolio_item=portfolio_item,

@@ -45,7 +45,7 @@ TEST_SHA256 = "abc123"
 def test_list_portfolio_item_service_plans(api_request):
     """List ServicePlan by PortfolioItem id"""
     portfolio_item = PortfolioItemFactory()
-    service_plan = ServicePlanFactory(
+    ServicePlanFactory(
         portfolio_item=portfolio_item,
         service_offering_ref=portfolio_item.service_offering_ref,
         base_schema=TEST_SCHEMA,
@@ -94,7 +94,7 @@ def test_service_plan_patch(api_request):
     """Update the modified schema for a service plan by id"""
     base_schema = {"schemaType": "base"}
     service_offering = ServiceOfferingFactory(survey_enabled=True)
-    inventory_service_plan = InventoryServicePlanFactory(
+    InventoryServicePlanFactory(
         service_offering=service_offering,
         create_json_schema=base_schema,
         schema_sha256=TEST_SHA256,

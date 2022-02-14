@@ -18,7 +18,6 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
     OpenApiParameter,
-    OpenApiResponse,
 )
 from django.utils.translation import gettext_lazy as _
 
@@ -26,7 +25,6 @@ from automation_services_catalog.main.models import Tenant
 from automation_services_catalog.main.approval.models import (
     Template,
     Workflow,
-    Request,
 )
 from automation_services_catalog.main.approval.serializers import (
     TemplateSerializer,

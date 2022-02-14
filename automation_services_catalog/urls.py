@@ -43,7 +43,7 @@ from automation_services_catalog.main.inventory.urls import (
 def _filter_by_view(urls_views, pattern):
     name = pattern.name
     if name in urls_views:
-        if urls_views[name] == None:
+        if urls_views[name] is None:
             return False
         pattern.callback = urls_views[name]
     return True

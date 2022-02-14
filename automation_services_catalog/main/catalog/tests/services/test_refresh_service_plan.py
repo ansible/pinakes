@@ -1,10 +1,8 @@
 """ Test population json template with input parameters """
 import pytest
-import json
 import copy
 
 from automation_services_catalog.main.catalog.tests.factories import (
-    PortfolioItemFactory,
     ServicePlanFactory,
 )
 from automation_services_catalog.main.inventory.tests.factories import (
@@ -119,7 +117,6 @@ def test_refresh_service_plan_with_modified_base():
 
     remote_schema = copy.deepcopy(TEST_SCHEMA)
     remote_schema["schema"]["fields"][0]["initialValue"] = 10
-    remote_sha256 = "xyz123"
 
     remote_service_plan = InventoryServicePlanFactory(
         service_offering=service_offering,

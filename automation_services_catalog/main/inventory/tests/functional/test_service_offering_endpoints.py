@@ -2,7 +2,6 @@
 import json
 import pytest
 
-from automation_services_catalog.main.models import Source
 from automation_services_catalog.main.inventory.tests.factories import (
     InventoryServicePlanFactory,
     ServiceOfferingFactory,

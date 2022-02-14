@@ -1,14 +1,12 @@
 """Serializers for Approval Model."""
 from rest_framework import serializers
-from drf_spectacular.utils import extend_schema_field, OpenApiTypes
+from drf_spectacular.utils import extend_schema_field
 
 from automation_services_catalog.main.approval.models import (
     Template,
     Workflow,
     Request,
-    RequestContext,
     Action,
-    TagLink,
 )
 from automation_services_catalog.main.approval.services.create_request import (
     CreateRequest,

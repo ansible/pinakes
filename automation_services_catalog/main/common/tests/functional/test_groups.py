@@ -20,7 +20,7 @@ def test_groups_list(api_request):
 @pytest.mark.django_db
 def test_groups_list_with_roles(api_request):
     group1 = factories.GroupFactory()
-    group2 = factories.GroupFactory()
+    factories.GroupFactory()
     role1 = factories.RoleFactory(name="approver")
     role2 = factories.RoleFactory(name="adjuster")
     group1.roles.add(role1, role2)

@@ -1,15 +1,12 @@
 """ Process a root request """
-import django_rq
 import logging
+import django_rq
 
 from automation_services_catalog.main.common import tasks
 from automation_services_catalog.main.approval.models import (
     Request,
     Workflow,
     Action,
-)
-from automation_services_catalog.main.approval.services.link_workflow import (
-    FindWorkflows,
 )
 from automation_services_catalog.main.approval.services.create_action import (
     CreateAction,

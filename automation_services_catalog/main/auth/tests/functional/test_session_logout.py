@@ -1,5 +1,4 @@
 """ Module to test session logout end point """
-import json
 import pytest
 
 
