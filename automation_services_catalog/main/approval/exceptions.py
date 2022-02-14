@@ -16,3 +16,18 @@ class InvalidStateTransitionException(exceptions.APIException):
 class BlankParameterException(exceptions.APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _("Field cannot be blank")
+
+
+class DuplicatedUuidException(exceptions.APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _("Duplicated UUID for approver groups")
+
+
+class NoAppoverRoleException(exceptions.APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _("Group has no approver role")
+
+
+class GroupNotExistException(exceptions.APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _("Group does not exist")

@@ -42,6 +42,7 @@ from automation_services_catalog.main.approval.services.link_workflow import (
 from automation_services_catalog.main.approval.exceptions import (
     InsufficientParamsException,
 )
+from automation_services_catalog.main.approval import validations
 from automation_services_catalog.common.queryset_mixin import QuerySetMixin
 
 logger = logging.getLogger("approval")
@@ -161,6 +162,12 @@ class WorkflowViewSet(
     parent_field_names = ("template",)
     queryset_order_by = "internal_sequence"
 
+    def retrieve(self, request, *args, **kwargs):
+        workflow = self.get_object()
+        validations.validate_and_update_approver_groups(workflow, False)
+        serializer = self.get_serializer(workflow)
+        return Response(serializer.data)
+
     @extend_schema(
         request=ResourceObjectSerializer,
         responses={204: None},
@@ -173,6 +180,7 @@ class WorkflowViewSet(
         """
 
         workflow = get_object_or_404(Workflow, pk=pk)
+        validations.validate_and_update_approver_groups(workflow)
 
         LinkWorkflow(workflow, request.data).process(
             LinkWorkflow.Operation.ADD

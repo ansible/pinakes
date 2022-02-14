@@ -89,6 +89,10 @@ def test_process_request_workflows_groups(mocker):
         "automation_services_catalog.main.common.tasks.add_group_permissions",
         return_value=None,
     )
+    mocker.patch(
+        "automation_services_catalog.main.approval.validations.runtime_validate_group",
+        return_value=True,
+    )
     workflow1 = WorkflowFactory(group_refs=({"name": "n1", "uuid": "u1"},))
     workflow2 = WorkflowFactory()
     service = _prepare_service(mocker, [workflow1.id, workflow2.id])
