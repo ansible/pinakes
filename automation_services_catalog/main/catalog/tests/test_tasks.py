@@ -1,6 +1,6 @@
 """Test catalog tasks to add/remove permissions"""
 import pytest
-
+from django.core.exceptions import ObjectDoesNotExist
 from automation_services_catalog.main.catalog.tests.factories import (
     PortfolioFactory,
 )
@@ -46,3 +46,15 @@ def test_remove_portfolio_permissions(mocker):
     remove_portfolio_permissions(portfolio.id, group_ids, ["read"])
     portfolio.refresh_from_db()
     assert portfolio.share_count == 0
+
+
+@pytest.mark.django_db
+def test_remove_missing_portfolio_permissions(mocker):
+    """Test removing portfolio permissions from a missing portfolio"""
+    group_ids = ["1", "2", "3"]
+
+    mocker.patch(
+        "automation_services_catalog.main.catalog.tasks.remove_group_permissions"
+    )
+    with pytest.raises(ObjectDoesNotExist) as exc_info:
+        remove_portfolio_permissions(999999, group_ids, ["read"])

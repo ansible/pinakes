@@ -1,5 +1,6 @@
 import logging
 from django.db import transaction
+from django.db.models import F
 
 from automation_services_catalog.main.common.tasks import (
     add_group_permissions,
@@ -27,11 +28,6 @@ def remove_portfolio_permissions(portfolio_id, groups_ids, permissions):
 @transaction.atomic
 def _update_share_counter(portfolio_id, count):
     """Increment or decrement the share count."""
-    obj = Portfolio.objects.select_for_update().get(id=portfolio_id)
-    if obj:
-        obj.share_count += count
-        obj.save()
-    else:
-        logger.error(
-            "Portfolio {portfolio_id} not found", portfolio_id=portfolio_id
-        )
+    Portfolio.objects.filter(id=portfolio_id).update(
+        share_count=F("share_count") + count
+    )
