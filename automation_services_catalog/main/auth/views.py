@@ -22,6 +22,8 @@ from automation_services_catalog.common.auth.keycloak.openid import (
 @extend_schema_view(
     retrieve=extend_schema(
         description="Get the current login user",
+        tags=["auth"],
+        operation_id="me_retrieve",
     ),
 )
 class CurrentUserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
@@ -33,6 +35,13 @@ class CurrentUserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         return self.request.user
 
 
+@extend_schema_view(
+    post=extend_schema(
+        description="Logout current session",
+        tags=["auth"],
+        operation_id="logout_create",
+    ),
+)
 class SessionLogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
