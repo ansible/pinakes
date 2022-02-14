@@ -5,7 +5,6 @@ from automation_services_catalog.main.inventory.services.start_tower_job import 
 )
 from automation_services_catalog.main.catalog.models import (
     OrderItem,
-    ProgressMessage,
 )
 
 

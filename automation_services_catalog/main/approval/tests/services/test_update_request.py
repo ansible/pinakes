@@ -1,8 +1,8 @@
 """module to test updating request"""
 
-import pytest
 from unittest import skip
-from automation_services_catalog.main.approval.models import Request, Action
+import pytest
+from automation_services_catalog.main.approval.models import Request
 from automation_services_catalog.main.approval.tests.factories import (
     RequestFactory,
     WorkflowFactory,

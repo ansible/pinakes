@@ -1,7 +1,6 @@
 """ Module to test processing root requests """
 from unittest.mock import Mock, call
 import pytest
-from automation_services_catalog.main.tests.factories import default_tenant
 from automation_services_catalog.main.approval.tests.factories import (
     WorkflowFactory,
     RequestFactory,
