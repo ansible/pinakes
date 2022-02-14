@@ -4,6 +4,7 @@ import json
 from automation_services_catalog.main.tests.factories import default_tenant
 from automation_services_catalog.main.approval.tests.factories import (
     RequestFactory,
+    RequestContextFactory,
     ActionFactory,
 )
 from automation_services_catalog.main.approval.services.send_event import (
@@ -31,6 +32,18 @@ def test_request_retrieve(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == request.id
+
+
+@pytest.mark.django_db
+def test_request_content_retrieve(api_request):
+    """Test get request content"""
+    request_context = RequestContextFactory(content={"param1": "val1"})
+    request = RequestFactory(request_context=request_context)
+    response = api_request("get", "approval:request-content", request.id)
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["param1"] == "val1"
 
 
 @pytest.mark.django_db

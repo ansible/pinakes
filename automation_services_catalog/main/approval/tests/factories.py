@@ -6,6 +6,7 @@ from automation_services_catalog.main.approval.models import (
     Template,
     Workflow,
     Request,
+    RequestContext,
     Action,
 )
 from automation_services_catalog.main.tests.factories import default_tenant
@@ -43,6 +44,15 @@ class RequestFactory(factory.django.DjangoModelFactory):
 
     tenant = factory.LazyAttribute(lambda _: default_tenant())
     workflow = factory.SubFactory(WorkflowFactory)
+
+
+class RequestContextFactory(factory.django.DjangoModelFactory):
+    """RequestContext factory class"""
+
+    class Meta:
+        model = RequestContext
+
+    context = {}
 
 
 class ActionFactory(factory.django.DjangoModelFactory):

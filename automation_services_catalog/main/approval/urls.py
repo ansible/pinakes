@@ -44,6 +44,7 @@ requests.register(
 urls_views["request-action-detail"] = None  # disable
 urls_views["request-request-detail"] = None
 urls_views["request-request-full"] = None
+urls_views["request-request-content"] = None
 urls_views["request-request-list"] = RequestViewSet.as_view(
     {"get": "list"}
 )  # list only

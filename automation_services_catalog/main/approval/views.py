@@ -18,6 +18,7 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
     OpenApiParameter,
+    OpenApiTypes,
 )
 from django.utils.translation import gettext_lazy as _
 
@@ -25,6 +26,7 @@ from automation_services_catalog.main.models import Tenant
 from automation_services_catalog.main.approval.models import (
     Template,
     Workflow,
+    Request,
 )
 from automation_services_catalog.main.approval.serializers import (
     TemplateSerializer,
@@ -276,6 +278,17 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
             context=self.get_serializer_context(),
         )
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        description="Get the content of a request",
+        responses={200: OpenApiTypes.OBJECT},
+    )
+    @action(methods=["get"], detail=True)
+    def content(self, request, pk):
+        """Retrieve the content of a request"""
+
+        request = get_object_or_404(Request, pk=pk)
+        return Response(request.request_context.content)
 
 
 @extend_schema_view(
