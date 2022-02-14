@@ -56,5 +56,5 @@ def test_remove_missing_portfolio_permissions(mocker):
     mocker.patch(
         "automation_services_catalog.main.catalog.tasks.remove_group_permissions"
     )
-    with pytest.raises(ObjectDoesNotExist) as exc_info:
+    with pytest.raises(ObjectDoesNotExist):
         remove_portfolio_permissions(999999, group_ids, ["read"])
