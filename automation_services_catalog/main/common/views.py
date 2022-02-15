@@ -27,6 +27,7 @@ from automation_services_catalog.main.common import tasks
 )
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.GroupSerializer
+    ordering = ("name",)
 
     def get_queryset(self):
         roles = self.request.GET.getlist("role")
