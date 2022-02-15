@@ -139,14 +139,28 @@ def test_workflow_delete(api_request):
 
 
 @pytest.mark.django_db
-def test_workflow_patch(api_request):
+def test_workflow_patch(api_request, mocker):
     """PATCH a Workflow by its ID"""
     workflow = WorkflowFactory()
-    response = api_request(
-        "patch", "approval:workflow-detail", workflow.id, {"name": "update"}
+    group_refs = [{"name": "group1", "uuid": "uuid1"}]
+    args = (
+        "patch",
+        "approval:workflow-detail",
+        workflow.id,
+        {"name": "update", "group_refs": group_refs},
     )
 
+    assert api_request(*args).status_code == 400
+
+    mocker.patch(
+        "automation_services_catalog.main.approval.validations.validate_approver_groups",
+        return_value=group_refs,
+    )
+    response = api_request(*args)
     assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["name"] == "update"
+    assert content["group_refs"] == group_refs
 
 
 @pytest.mark.django_db
