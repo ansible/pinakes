@@ -1,4 +1,4 @@
-from typing import Protocol, Sequence
+from typing import Protocol, Sequence, Tuple
 
 
 class GroupProto(Protocol):
@@ -39,3 +39,38 @@ def parse_scope(obj: KeycloakResourceProto, scope: str):
         return scope[len(prefix) :]  # noqa: E203
     else:
         raise ValueError("Unexpected scope. Must begin with '{prefix}'.")
+
+
+def make_scope_name(resource_type: str, permission: str) -> str:
+    """Returns qualified Keycloak scope name."""
+    return _make_name(resource_type, permission)
+
+
+def make_resource_name(resource_type: str, resource_id: str) -> str:
+    """Returns qualified Keycloak resource name."""
+    return _make_name(resource_type, resource_id)
+
+
+def parse_scope_name(scope_name: str) -> Tuple[str, str]:
+    """Parses qualified Keycloak scope name.
+
+    :return: Tuple of resource type and permission.
+    """
+    return _parse_name(scope_name)
+
+
+def parse_resource_name(resource_name: str) -> Tuple[str, str]:
+    """Parses qualified Keycloak resource name.
+
+    :return: Tuple of resource type and resource ID.
+    """
+    return _parse_name(resource_name)
+
+
+def _make_name(prefix: str, suffix: str) -> str:
+    return f"{prefix}:{suffix}"
+
+
+def _parse_name(name: str) -> Tuple[str, str]:
+    prefix, _, suffix = name.rpartition(":")
+    return prefix, suffix
