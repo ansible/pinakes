@@ -23,7 +23,7 @@ class TagMixin:
         """
         model = self.get_serializer().Meta.model
         instance = get_object_or_404(model, pk=pk)
-        tags = instance.tags.all()
+        tags = instance.tags.all().order_by("name")
 
         page = self.paginate_queryset(tags)
         if page is not None:
