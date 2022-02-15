@@ -161,21 +161,28 @@ def test_workflow_put_not_supported(api_request):
 
 
 @pytest.mark.django_db
-def test_workflow_post(api_request):
+def test_workflow_post(api_request, mocker):
     """Create a new Workflow"""
     template = TemplateFactory()
-    response = api_request(
+    group_refs = [{"name": "group1", "uuid": "uuid1"}]
+    args = (
         "post",
         "approval:template-workflow-list",
         template.id,
         {
             "name": "abcdef",
             "description": "abc",
-            "group_refs": [{"name": "group1", "uuid": "uuid1"}],
+            "group_refs": group_refs,
         },
     )
 
-    assert response.status_code == 201
+    assert api_request(*args).status_code == 400
+
+    mocker.patch(
+        "automation_services_catalog.main.approval.validations.validate_approver_groups",
+        return_value=group_refs,
+    )
+    assert api_request(*args).status_code == 201
 
 
 @pytest.mark.django_db

@@ -1,4 +1,4 @@
-from django.db import migrations, models, transaction
+from django.db import migrations, transaction
 from automation_services_catalog.main.models import Tenant
 
 

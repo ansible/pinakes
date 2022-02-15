@@ -1,18 +1,22 @@
 from django.urls import path
-from rest_framework.routers import SimpleRouter
+from django.views.generic import RedirectView
 
 from automation_services_catalog.main.auth import views
 
-router = SimpleRouter()
-router.register("groups/sync", views.GroupSyncViewSet, basename="group-sync")
-router.register("groups", views.GroupViewSet, basename="group")
-router.register("tasks", views.TaskViewSet, basename="task")
+
+SOCIAL_AUTH_BACKEND = "keycloak-oidc"
 
 urlpatterns = [
     path(
         "me/", views.CurrentUserViewSet.as_view({"get": "retrieve"}), name="me"
     ),
+    path(
+        "login/",
+        RedirectView.as_view(
+            pattern_name="social:begin",
+        ),
+        name="login",
+        kwargs={"backend": SOCIAL_AUTH_BACKEND},
+    ),
     path("logout/", views.SessionLogoutView.as_view(), name="logout"),
 ]
-
-urlpatterns += router.urls

@@ -87,8 +87,6 @@ spec:
                   name: ansible-controller-env
                   key: AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL
           image: localhost/ansible-catalog
-          image: localhost/ansible-catalog
-          image: localhost/ansible-catalog
           imagePullPolicy: Never
           name: app
           ports:

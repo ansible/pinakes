@@ -1,7 +1,6 @@
 """ Module to test processing root requests """
 from unittest.mock import Mock, call
 import pytest
-from automation_services_catalog.main.tests.factories import default_tenant
 from automation_services_catalog.main.approval.tests.factories import (
     WorkflowFactory,
     RequestFactory,
@@ -41,7 +40,7 @@ def test_process_request_one_workflow_one_group(mocker):
     """Test to create a new request with one workflow and one group"""
 
     add_permissions = mocker.patch(
-        "automation_services_catalog.common.tasks.add_group_permissions",
+        "automation_services_catalog.main.common.tasks.add_group_permissions",
         return_value=None,
     )
 
@@ -59,7 +58,7 @@ def test_process_request_one_workflow_groups(mocker):
     """Test to create a new request with one workflow multiple groups"""
 
     add_permissions = mocker.patch(
-        "automation_services_catalog.common.tasks.add_group_permissions",
+        "automation_services_catalog.main.common.tasks.add_group_permissions",
         return_value=None,
     )
     enqueue = mocker.patch("django_rq.enqueue", return_value=Mock(id=123))
@@ -86,8 +85,12 @@ def test_process_request_workflows_groups(mocker):
     """Test to create a new request with workflows and groups"""
 
     add_permissions = mocker.patch(
-        "automation_services_catalog.common.tasks.add_group_permissions",
+        "automation_services_catalog.main.common.tasks.add_group_permissions",
         return_value=None,
+    )
+    mocker.patch(
+        "automation_services_catalog.main.approval.validations.runtime_validate_group",
+        return_value=True,
     )
     workflow1 = WorkflowFactory(group_refs=({"name": "n1", "uuid": "u1"},))
     workflow2 = WorkflowFactory()

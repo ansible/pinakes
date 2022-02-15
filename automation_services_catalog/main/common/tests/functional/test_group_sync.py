@@ -13,7 +13,7 @@ def test_group_sync_start(api_request, mocker):
     job_mock.get_status.return_value = "queued"
     mocker.patch("django_rq.enqueue", return_value=job_mock)
 
-    response = api_request("post", "auth:group-sync-list")
+    response = api_request("post", "common:group-sync-list")
     assert response.status_code == 202
     assert response.data == {
         "id": job_id,
@@ -30,7 +30,7 @@ def test_group_sync_job_status(api_request, mocker):
     job_mock.get_status.return_value = "finished"
     mocker.patch.object(rq_job.Job, "fetch", return_value=job_mock)
 
-    response = api_request("get", "auth:task-detail", job_id)
+    response = api_request("get", "common:task-detail", job_id)
 
     assert response.status_code == 200
     assert response.data == {
@@ -48,6 +48,6 @@ def test_group_sync_missing_job_status(api_request, mocker):
     job_mock.get_status.return_value = "finished"
     mocker.patch.object(rq_job.Job, "fetch", side_effect=rq_job.NoSuchJobError)
 
-    response = api_request("get", "auth:task-detail", job_id)
+    response = api_request("get", "common:task-detail", job_id)
 
     assert response.status_code == 404

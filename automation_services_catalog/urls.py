@@ -17,6 +17,7 @@ Including another URLconf
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from social_django import urls as social_urls
 from drf_spectacular.views import (
     SpectacularJSONAPIView,
     SpectacularRedocView,
@@ -24,6 +25,7 @@ from drf_spectacular.views import (
 )
 
 from automation_services_catalog.main.auth import urls as auth_urls
+from automation_services_catalog.main.common import urls as common_urls
 from automation_services_catalog.main.catalog.urls import (
     router as catalog_router,
     urls_views as catalog_views,
@@ -41,7 +43,7 @@ from automation_services_catalog.main.inventory.urls import (
 def _filter_by_view(urls_views, pattern):
     name = pattern.name
     if name in urls_views:
-        if urls_views[name] == None:
+        if urls_views[name] is None:
             return False
         pattern.callback = urls_views[name]
     return True
@@ -61,6 +63,12 @@ inventory_urls = [
     p for p in inventory_router.urls if _filter_by_view(inventory_views, p)
 ]
 
+site_auth_urls = [
+    path("", include((auth_urls, "api"), namespace="auth")),
+    path("", include(social_urls, namespace="social")),
+]
+
+
 urlpatterns = [
     path(
         f"{api_prefix}schema/openapi.json",
@@ -77,9 +85,9 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path(f"{API_PATH_PREFIX}/auth/", include(site_auth_urls)),
     path(api_prefix, include((approval_urls, "api"), namespace="approval")),
     path(api_prefix, include((catalog_urls, "api"), namespace="catalog")),
     path(api_prefix, include((inventory_urls, "api"), namespace="inventory")),
-    path(api_prefix, include((auth_urls, "api"), namespace="auth")),
-    path("", include("social_django.urls", namespace="social")),
+    path(api_prefix, include((common_urls, "api"), namespace="common")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

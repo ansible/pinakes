@@ -1,14 +1,12 @@
 """Serializers for Approval Model."""
 from rest_framework import serializers
-from drf_spectacular.utils import extend_schema_field, OpenApiTypes
+from drf_spectacular.utils import extend_schema_field
 
 from automation_services_catalog.main.approval.models import (
     Template,
     Workflow,
     Request,
-    RequestContext,
     Action,
-    TagLink,
 )
 from automation_services_catalog.main.approval.services.create_request import (
     CreateRequest,
@@ -16,6 +14,7 @@ from automation_services_catalog.main.approval.services.create_request import (
 from automation_services_catalog.main.approval.services.create_action import (
     CreateAction,
 )
+from automation_services_catalog.main.approval import validations
 
 
 class TemplateSerializer(serializers.ModelSerializer):
@@ -70,7 +69,7 @@ class WorkflowSerializer(serializers.ModelSerializer):
     def validate_group_refs(self, value):
         serializer = GroupRefSerializer(many=True, data=value)
         serializer.is_valid(raise_exception=True)
-        return value
+        return validations.validate_approver_groups(value)
 
 
 class TagResourceSerializer(serializers.Serializer):

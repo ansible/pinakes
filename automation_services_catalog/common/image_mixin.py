@@ -9,7 +9,6 @@ from drf_spectacular.utils import extend_schema
 from automation_services_catalog.main.catalog.serializers import (
     ImageSerializer,
 )
-from automation_services_catalog.main.models import Image
 
 
 class ImageMixin:

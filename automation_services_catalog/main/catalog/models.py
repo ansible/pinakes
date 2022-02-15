@@ -37,6 +37,10 @@ class Portfolio(AbstractKeycloakResource, ImageableModel, UserOwnedModel):
     enabled = models.BooleanField(
         default=False, help_text="Whether or not this portfolio is enabled"
     )
+    share_count = models.IntegerField(
+        default=0,
+        help_text="The number of different groups sharing this portfolio",
+    )
 
     tags = TaggableManager()
 
@@ -75,6 +79,7 @@ class Portfolio(AbstractKeycloakResource, ImageableModel, UserOwnedModel):
         return {
             "approval_processes": len(self.tag_resources),
             "portfolio_items": portfolio_item_number,
+            "shared_groups": self.share_count,
         }
 
     def __str__(self):

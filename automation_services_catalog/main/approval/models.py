@@ -2,7 +2,6 @@
 from django.db import models
 from django.db.models.functions import Length
 from django.contrib.auth.models import User
-from drf_spectacular.utils import OpenApiTypes
 
 from automation_services_catalog.main.models import BaseModel
 from automation_services_catalog.common.auth.keycloak_django import (

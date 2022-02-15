@@ -18,7 +18,7 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
     OpenApiParameter,
-    OpenApiResponse,
+    OpenApiTypes,
 )
 from django.utils.translation import gettext_lazy as _
 
@@ -42,6 +42,7 @@ from automation_services_catalog.main.approval.services.link_workflow import (
 from automation_services_catalog.main.approval.exceptions import (
     InsufficientParamsException,
 )
+from automation_services_catalog.main.approval import validations
 from automation_services_catalog.common.queryset_mixin import QuerySetMixin
 
 logger = logging.getLogger("approval")
@@ -161,6 +162,12 @@ class WorkflowViewSet(
     parent_field_names = ("template",)
     queryset_order_by = "internal_sequence"
 
+    def retrieve(self, request, *args, **kwargs):
+        workflow = self.get_object()
+        validations.validate_and_update_approver_groups(workflow, False)
+        serializer = self.get_serializer(workflow)
+        return Response(serializer.data)
+
     @extend_schema(
         request=ResourceObjectSerializer,
         responses={204: None},
@@ -173,6 +180,7 @@ class WorkflowViewSet(
         """
 
         workflow = get_object_or_404(Workflow, pk=pk)
+        validations.validate_and_update_approver_groups(workflow)
 
         LinkWorkflow(workflow, request.data).process(
             LinkWorkflow.Operation.ADD
@@ -270,6 +278,17 @@ class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
             context=self.get_serializer_context(),
         )
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        description="Get the content of a request",
+        responses={200: OpenApiTypes.OBJECT},
+    )
+    @action(methods=["get"], detail=True)
+    def content(self, request, pk):
+        """Retrieve the content of a request"""
+
+        request = get_object_or_404(Request, pk=pk)
+        return Response(request.request_context.content)
 
 
 @extend_schema_view(

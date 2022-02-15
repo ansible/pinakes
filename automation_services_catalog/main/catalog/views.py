@@ -8,16 +8,16 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+
 from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
     OpenApiParameter,
     OpenApiResponse,
-    OpenApiTypes,
 )
 
 from automation_services_catalog.common.auth import keycloak_django
@@ -30,10 +30,9 @@ from automation_services_catalog.common.image_mixin import ImageMixin
 from automation_services_catalog.common.queryset_mixin import QuerySetMixin
 
 from automation_services_catalog.main.models import Tenant
-from automation_services_catalog.main.auth.models import Group
+from automation_services_catalog.main.common.models import Group
 from automation_services_catalog.main.catalog.exceptions import (
     BadParamsException,
-    InvalidSurveyException,
 )
 from automation_services_catalog.main.catalog.models import (
     ApprovalRequest,
@@ -71,9 +70,6 @@ from automation_services_catalog.main.catalog.services.copy_portfolio import (
 )
 from automation_services_catalog.main.catalog.services.copy_portfolio_item import (
     CopyPortfolioItem,
-)
-from automation_services_catalog.main.catalog.services.create_portfolio_item import (
-    CreatePortfolioItem,
 )
 from automation_services_catalog.main.catalog.services import (
     name,

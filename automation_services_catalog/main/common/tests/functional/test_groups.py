@@ -2,13 +2,13 @@ import uuid
 
 import pytest
 
-from automation_services_catalog.main.auth.tests import factories
+from automation_services_catalog.main.common.tests import factories
 
 
 @pytest.mark.django_db
 def test_groups_list(api_request):
     group = factories.GroupFactory()
-    response = api_request("get", "auth:group-list")
+    response = api_request("get", "common:group-list")
 
     assert response.status_code == 200
     assert response.data["count"] == 1
@@ -20,11 +20,13 @@ def test_groups_list(api_request):
 @pytest.mark.django_db
 def test_groups_list_with_roles(api_request):
     group1 = factories.GroupFactory()
-    group2 = factories.GroupFactory()
+    factories.GroupFactory()
     role1 = factories.RoleFactory(name="approver")
     role2 = factories.RoleFactory(name="adjuster")
     group1.roles.add(role1, role2)
-    response = api_request("get", "auth:group-list", data={"role": "approver"})
+    response = api_request(
+        "get", "common:group-list", data={"role": "approver"}
+    )
 
     assert response.status_code == 200
     assert response.data["count"] == 1
@@ -36,7 +38,7 @@ def test_groups_list_with_roles(api_request):
 @pytest.mark.django_db
 def test_groups_retrieve(api_request):
     group = factories.GroupFactory()
-    response = api_request("get", "auth:group-detail", group.id)
+    response = api_request("get", "common:group-detail", group.id)
 
     assert response.status_code == 200
     assert response.data == {
@@ -48,6 +50,6 @@ def test_groups_retrieve(api_request):
 
 @pytest.mark.django_db
 def test_groups_retrieve_nonexist(api_request):
-    response = api_request("get", "auth:group-detail", str(uuid.uuid4()))
+    response = api_request("get", "common:group-detail", str(uuid.uuid4()))
 
     assert response.status_code == 404

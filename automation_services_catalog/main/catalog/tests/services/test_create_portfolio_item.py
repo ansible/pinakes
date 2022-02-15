@@ -1,6 +1,5 @@
 """Test create a portfolio item service"""
 import pytest
-from unittest import mock
 
 from automation_services_catalog.main.catalog.exceptions import (
     BadParamsException,
