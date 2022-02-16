@@ -78,4 +78,4 @@ class OpenIdConnect:
             "client_secret": self._client_secret,
             "refresh_token": refresh_token,
         }
-        self._client.request("POST", url, headers=headers, data=data)
+        return self._client.request("POST", url, headers=headers, data=data)
