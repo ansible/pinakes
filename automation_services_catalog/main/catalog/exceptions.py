@@ -8,6 +8,11 @@ class BadParamsException(exceptions.APIException):
     default_detail = _("Bad query parameters")
 
 
+class BadProvisionException(exceptions.APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _("Base provision")
+
+
 class InvalidSurveyException(exceptions.APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _("Invalid survey")
