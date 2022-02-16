@@ -10,6 +10,7 @@ from drf_spectacular.utils import extend_schema_field
 
 class CurrentUserSerializer(serializers.ModelSerializer):
     """Current user info to be sent to the caller"""
+
     roles = serializers.SerializerMethodField("get_roles")
 
     class Meta:
