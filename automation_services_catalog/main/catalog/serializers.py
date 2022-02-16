@@ -412,7 +412,7 @@ class SharingRequestSerializer(serializers.Serializer):
         invalid_scopes = set(value).difference(valid_scopes)
         if invalid_scopes:
             raise serializers.ValidationError(
-                f"Unexpected permissions: {', '.join(invalid_scopes)}"
+                "Unexpected permissions: {}".format(", ".join(invalid_scopes))
             )
         return value
 
