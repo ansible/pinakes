@@ -71,7 +71,7 @@ class SanitizeParameters:
         need_mask = False
 
         for param in self.FILTERED_PARAMS:
-            is_password = bool(field.get("type", None) == "password")
+            is_password = field.get("type") == "password"
             need_mask = (
                 need_mask
                 or is_password
