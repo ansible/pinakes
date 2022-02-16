@@ -1,6 +1,5 @@
 """Tasks to add/remove portfolio permissions"""
 import logging
-from django.db import transaction
 
 from automation_services_catalog.common.auth import keycloak_django
 from automation_services_catalog.main.common.tasks import (

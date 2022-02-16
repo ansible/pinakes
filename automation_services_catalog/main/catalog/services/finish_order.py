@@ -5,9 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from automation_services_catalog.main.catalog.models import (
     ApprovalRequest,
-    Order,
     OrderItem,
-    ProgressMessage,
 )
 
 logger = logging.getLogger("catalog")
