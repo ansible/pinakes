@@ -20,11 +20,11 @@ class UpdateServicePlans:
         self.updated = 0
 
     def process(self):
-        sps = ServicePlan.objects.filter(
+        service_plans = ServicePlan.objects.filter(
             tenant_id=self.tenant_id, outdated=False
         )
-        for sp in sps:
-            svc = RefreshServicePlan(sp).process()
+        for service_plan in service_plans:
+            svc = RefreshServicePlan(service_plan).process()
             if svc.is_updated:
                 self.updated += 1
 

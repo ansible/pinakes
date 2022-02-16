@@ -218,7 +218,7 @@ def test_portfolio_item_icon_delete(api_request, small_image, media_dir):
 def test_portfolio_item_copy(api_request, mocker):
     """Copy a PortfolioItem by id"""
     portfolio_item = PortfolioItemFactory()
-    mocker.patch.object(CopyPortfolioItem, "_is_orderable", return_value=True)
+    mocker.patch.object(CopyPortfolioItem, "is_orderable", return_value=True)
 
     assert PortfolioItem.objects.count() == 1
     response = api_request(
@@ -230,7 +230,7 @@ def test_portfolio_item_copy(api_request, mocker):
     assert response.status_code == 200
     assert PortfolioItem.objects.count() == 2
     assert (
-        PortfolioItem.objects.last().name == "Copy of %s" % portfolio_item.name
+        PortfolioItem.objects.last().name == f"Copy of {portfolio_item.name}"
     )
 
 
@@ -246,7 +246,7 @@ def test_next_name_in_same_portfolio(api_request):
     )
 
     assert response.status_code == 200
-    assert response.data["next_name"] == "Copy of " + portfolio_item.name
+    assert response.data["next_name"] == f"Copy of {portfolio_item.name}"
 
 
 @pytest.mark.django_db
@@ -268,4 +268,4 @@ def test_next_name_in_different_portfolio(api_request):
     )
 
     assert response.status_code == 200
-    assert response.data["next_name"] == "Copy (1) of " + portfolio_item.name
+    assert response.data["next_name"] == f"Copy (1) of {portfolio_item.name}"

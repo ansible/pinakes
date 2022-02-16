@@ -26,7 +26,7 @@ class FinishOrderItem:
         )
 
         if self.order_item is None:
-            logger.warn("Order item is not available")
+            logger.warning("Order item is not available")
             return self
 
         """Finish processing the order_item"""

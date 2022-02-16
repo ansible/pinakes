@@ -100,9 +100,9 @@ def test_portfolio_copy_with_portfolio_items(api_request):
     assert PortfolioItem.objects.count() == 2
 
     with patch(
-        "automation_services_catalog.main.catalog.services.copy_portfolio_item.CopyPortfolioItem._is_orderable"
-    ) as mock:
-        mock.return_value = True
+        "automation_services_catalog.main.catalog.services.copy_portfolio_item.CopyPortfolioItem.is_orderable"
+    ) as mocked:
+        mocked.return_value = True
 
         response = api_request(
             "post", "catalog:portfolio-copy", portfolio.id, {}
@@ -110,7 +110,7 @@ def test_portfolio_copy_with_portfolio_items(api_request):
 
     assert response.status_code == 200
     assert Portfolio.objects.count() == 2
-    assert Portfolio.objects.last().name == "Copy of %s" % portfolio.name
+    assert Portfolio.objects.last().name == f"Copy of {portfolio.name}"
     assert PortfolioItem.objects.count() == 4
     assert PortfolioItem.objects.filter(portfolio=portfolio).count() == 2
     assert PortfolioItem.objects.last().name == item.name
@@ -338,7 +338,7 @@ def test_portfolio_share_info(api_request, mocker):
 
 
 @pytest.mark.django_db
-def test_portfolio_share_info_empty(api_request, mocker):
+def test_portfolio_share_info_empty(api_request):
     """Test Share Information of Portfolio without keycloak_id"""
     portfolio = PortfolioFactory()
 

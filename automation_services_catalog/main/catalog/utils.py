@@ -25,17 +25,17 @@ def compare_schemas(source_schema, target_schema):
 
     if len(common_field_names) == 0:  # no same field
         if len(inventory_field_names) > 0:
-            changed_content += "fields added: %s; " % inventory_field_names
+            changed_content += f"fields added: {inventory_field_names}; "
 
         if len(base_field_names) > 0:
-            changed_content += "fields removed: %s" % base_field_names
+            changed_content += f"fields removed: {base_field_names}"
     # remote and local have same fields in names
     elif set(inventory_field_names) == set(base_field_names):
         changed_field_names = _changed_field_names(
             base_fields, inventory_fields, base_field_names
         )
         if len(changed_field_names) != 0:
-            changed_content += "fields changed: %s" % changed_field_names
+            changed_content += f"fields changed: {changed_field_names}"
     else:
         add_field_names = list(
             set(inventory_field_names) - set(common_field_names)
@@ -48,13 +48,13 @@ def compare_schemas(source_schema, target_schema):
         )
 
         if len(add_field_names) > 0:
-            changed_content += "fields added: %s; " % add_field_names
+            changed_content += f"fields added: {add_field_names}; "
 
         if len(removed_field_names) > 0:
-            changed_content += "fields removed: %s; " % removed_field_names
+            changed_content += f"fields removed: {removed_field_names}; "
 
         if len(changed_field_names) != 0:
-            changed_content += "fields changed: %s" % changed_field_names
+            changed_content += f"fields changed: {changed_field_names}"
 
     return (
         changed_content if changed_content == "" else message + changed_content

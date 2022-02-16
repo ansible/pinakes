@@ -39,7 +39,7 @@ def test_portfolio_copy_with_portfolio_items():
     PortfolioItemFactory(portfolio=portfolio)
 
     with patch(
-        "automation_services_catalog.main.catalog.services.copy_portfolio_item.CopyPortfolioItem._is_orderable"
+        "automation_services_catalog.main.catalog.services.copy_portfolio_item.CopyPortfolioItem.is_orderable"
     ) as mock:
         mock.return_value = True
         svc = CopyPortfolio(portfolio, {})
@@ -49,7 +49,7 @@ def test_portfolio_copy_with_portfolio_items():
     assert PortfolioItem.objects.count() == 2
     assert PortfolioItem.objects.first().portfolio == portfolio
     assert PortfolioItem.objects.last().portfolio == svc.new_portfolio
-    assert svc.new_portfolio.name == "Copy of %s" % portfolio.name
+    assert svc.new_portfolio.name == f"Copy of {portfolio.name}"
     assert (
         PortfolioItem.objects.first().name == PortfolioItem.objects.last().name
     )

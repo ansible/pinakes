@@ -28,7 +28,7 @@ class CopyImage:
             rad_sfx = "".join(
                 random.choices(string.ascii_letters + string.digits, k=6)
             )
-            new_name = "{}{}{}".format(names[0], rad_sfx, names[-1])
+            new_name = f"{names[0]}{rad_sfx}{names[-1]}"
             if new_name not in existing_image_names:
                 break
 
