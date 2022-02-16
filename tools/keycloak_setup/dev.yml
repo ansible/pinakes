@@ -3,47 +3,47 @@
   vars:
     seed_keycloak: true
     seed_groups:
-      - name: Development
+      - name: Information Technology - Sample
         clientRoles:
           - catalog-admin
           - approval-admin
-      - name: QE
+      - name: Marketing - Sample
         clientRoles:
           - catalog-user
           - approval-user
-      - name: Finance
+      - name: Finance - Sample
         clientRoles:
           - approval-approver
     seed_users:
-      - username: fred
+      - username: fred.sample
         firstName: Fred
-        lastName: Flintstone
+        lastName: Sample
         email: fred@example.com
         enabled: true
         credentials:
           - type: "password"
             value: "fred"
         groups:
-          - Development
-      - username: barney
+          - Information Technology - Sample
+      - username: barney.sample
         firstName: Barney
-        lastName: Rubble
+        lastName: Sample
         email: barney@example.com
         enabled: true
         credentials:
           - type: "password"
             value: "barney"
         groups:
-          - QE
-      - username: wilma
+          - Marketing - Sample
+      - username: wilma.sample
         firstName: Wilma
-        lastName: Flintstone
+        lastName: Sample
         email: wilma@example.com
         enabled: true
         credentials:
           - type: "password"
             value: "wilma"
         groups:
-          - Finance
+          - Finance - Sample
   roles:
     - mkanoor.catalog_keycloak.setup
