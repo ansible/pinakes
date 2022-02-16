@@ -1,5 +1,5 @@
-import pytest
 from decimal import Decimal
+import pytest
 
 from automation_services_catalog.main.tests.factories import TenantFactory
 from automation_services_catalog.main.approval.tests.factories import (

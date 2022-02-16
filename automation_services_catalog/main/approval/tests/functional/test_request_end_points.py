@@ -1,6 +1,6 @@
 """ Module to test approval requests and actions """
-import pytest
 import json
+import pytest
 from automation_services_catalog.main.tests.factories import default_tenant
 from automation_services_catalog.main.approval.tests.factories import (
     RequestFactory,
@@ -98,7 +98,7 @@ def test_create_request(api_request, mocker):
 
 
 @pytest.mark.django_db
-def test_create_request_user_error(api_request, mocker):
+def test_create_request_user_error(api_request):
     default_tenant()
     response = api_request(
         "post",

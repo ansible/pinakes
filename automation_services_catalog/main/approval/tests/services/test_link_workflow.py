@@ -23,9 +23,7 @@ def test_taglink_workflow_add_remove():
 
     assert TagLink.objects.count() == 1
     assert portfolio.tags.count() == 1
-    assert portfolio.tags.first().name == "/approval/workflows={}".format(
-        portfolio.id
-    )
+    assert portfolio.tags.first().name == f"/approval/workflows={portfolio.id}"
 
     LinkWorkflow(workflow, resource_obj).process(LinkWorkflow.Operation.REMOVE)
 

@@ -1,6 +1,6 @@
 """ Create an approval request """
-import django_rq
 import logging
+import django_rq
 from automation_services_catalog.main.approval.models import (
     Request,
     RequestContext,
@@ -23,7 +23,7 @@ class CreateRequest:
         self.job = None
 
     def process(self):
-        tag_resources = self.data.pop("tag_resources", list())
+        tag_resources = self.data.pop("tag_resources", [])
         workflows = FindWorkflows(tag_resources).process().workflows
         for workflow in workflows:
             validations.validate_and_update_approver_groups(workflow)
