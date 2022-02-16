@@ -112,9 +112,9 @@ class ActionSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("created_at", "request")
 
-    def create(self, validate_data):
-        request = validate_data.pop("request")
-        return CreateAction(request, validate_data).process().action
+    def create(self, validated_data):
+        request = validated_data.pop("request")
+        return CreateAction(request, validated_data).process().action
 
 
 class RequestFields:
@@ -250,8 +250,8 @@ class RequestInSerializer(serializers.Serializer):
         help_text="An array of resource tags that determine the workflows for the request",
     )
 
-    def create(self, validate_data):
-        return CreateRequest(validate_data).process().request
+    def create(self, validated_data):
+        return CreateRequest(validated_data).process().request
 
 
 class ResourceObjectSerializer(serializers.Serializer):

@@ -30,7 +30,10 @@ class UpdateRequest:
     def process(self):
         if self.options["state"] != self.request.state:
             logger.info(
-                f"Changing request({self.request.id}) state from {self.request.state} to {self.options['state']}"
+                "Changing request(%d) state from %s to %s",
+                self.request.id,
+                self.request.state,
+                self.options["state"],
             )
             state = self.options["state"].lower()
             getattr(self, f"_{state}")()

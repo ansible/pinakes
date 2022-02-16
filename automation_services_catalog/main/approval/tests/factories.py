@@ -1,6 +1,6 @@
 """Collection of factory classes for approval models"""
-import factory
 from decimal import Decimal
+import factory
 
 from automation_services_catalog.main.approval.models import (
     Template,
