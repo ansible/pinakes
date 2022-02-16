@@ -156,4 +156,4 @@ def test_modified_service_plan():
 
     service_plan.refresh_from_db()
     assert upd.updated == 1
-    assert service_plan.outdated == True
+    assert service_plan.outdated is True
