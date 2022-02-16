@@ -100,7 +100,7 @@ def test_portfolio_copy_with_portfolio_items(api_request):
     assert PortfolioItem.objects.count() == 2
 
     with patch(
-        "automation_services_catalog.main.catalog.services.copy_portfolio_item.CopyPortfolioItem.is_orderable"
+        "automation_services_catalog.main.catalog.services.copy_portfolio_item.CopyPortfolioItem._is_orderable"
     ) as mocked:
         mocked.return_value = True
 

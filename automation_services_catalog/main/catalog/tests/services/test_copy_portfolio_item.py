@@ -57,7 +57,7 @@ def test_is_orderable_with_null_service_offering():
     }
 
     svc = CopyPortfolioItem(portfolio_item, options)
-    orderable = svc.is_orderable()
+    orderable = svc._is_orderable()
 
     assert orderable is False
 
@@ -75,7 +75,7 @@ def test_is_orderable_with_empty_service_plans():
     }
 
     svc = CopyPortfolioItem(portfolio_item, options)
-    orderable = svc.is_orderable()
+    orderable = svc._is_orderable()
 
     assert orderable is True
 
@@ -98,7 +98,7 @@ def test_is_orderable_with_service_plans():
     }
 
     svc = CopyPortfolioItem(portfolio_item, options)
-    orderable = svc.is_orderable()
+    orderable = svc._is_orderable()
 
     assert orderable is True
 

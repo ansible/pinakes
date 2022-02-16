@@ -218,7 +218,7 @@ def test_portfolio_item_icon_delete(api_request, small_image, media_dir):
 def test_portfolio_item_copy(api_request, mocker):
     """Copy a PortfolioItem by id"""
     portfolio_item = PortfolioItemFactory()
-    mocker.patch.object(CopyPortfolioItem, "is_orderable", return_value=True)
+    mocker.patch.object(CopyPortfolioItem, "_is_orderable", return_value=True)
 
     assert PortfolioItem.objects.count() == 1
     response = api_request(

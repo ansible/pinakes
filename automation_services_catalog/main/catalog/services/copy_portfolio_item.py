@@ -44,7 +44,7 @@ class CopyPortfolioItem:
 
     @transaction.atomic
     def make_copy(self):
-        if not self.is_orderable():
+        if not self._is_orderable():
             raise RuntimeError(
                 _("{} is not orderable, and cannot be copied").format(
                     self.portfolio_item.name
@@ -73,7 +73,7 @@ class CopyPortfolioItem:
             new_plan.portfolio_item = self.new_portfolio_item
             new_plan.save()
 
-    def is_orderable(self):
+    def _is_orderable(self):
         service_offering_ref = self.portfolio_item.service_offering_ref
         if service_offering_ref is None:
             return False

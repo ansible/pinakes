@@ -39,7 +39,7 @@ def test_portfolio_copy_with_portfolio_items():
     PortfolioItemFactory(portfolio=portfolio)
 
     with patch(
-        "automation_services_catalog.main.catalog.services.copy_portfolio_item.CopyPortfolioItem.is_orderable"
+        "automation_services_catalog.main.catalog.services.copy_portfolio_item.CopyPortfolioItem._is_orderable"
     ) as mock:
         mock.return_value = True
         svc = CopyPortfolio(portfolio, {})
