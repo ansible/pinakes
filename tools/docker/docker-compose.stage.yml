@@ -59,7 +59,7 @@ services:
           "CMD",
           "curl",
           "-f",
-          "http://localhost:8000/api/automation-services-catalog/v1/"
+          "http://localhost:8000/api/pinakes/v1/"
         ]
       interval: 5s
       timeout: 10s
