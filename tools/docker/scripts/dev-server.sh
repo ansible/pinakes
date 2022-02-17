@@ -3,7 +3,7 @@ set -e
 
 while true; do
     echo -e "\e[34m >>> Waiting for postgres \e[97m"
-    if python -c "import socket; socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((\"$AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST\", 5432))"; then
+    if python -c "import socket; socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((\"$PINAKES_POSTGRES_HOST\", 5432))"; then
         echo -e "\e[34m >>> Postgres ready \e[97m"
         break
     fi

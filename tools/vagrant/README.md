@@ -24,9 +24,9 @@ We can run our dev environment in VirtualBox using Vagrant. We have 2 VMs runnin
 	    * RHN_USER
 	    * RHN_PASSWORD
     * Automation Controller information
-	    * AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL
-	    * AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN
-	    * AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL
+	    * PINAKES_CONTROLLER_URL
+	    * PINAKES_CONTROLLER_TOKEN
+	    * PINAKES_CONTROLLER_VERIFY_SSL
     * Modify the **/etc/hosts** file to have the following lines
 	    *  192.168.33.21 catalog.vm.local
 	    * 192.168.33.20 keycloak.vm.local

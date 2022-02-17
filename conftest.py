@@ -75,7 +75,7 @@ def api_request(admin):
 def media_dir():
     base_dir = os.path.dirname(__file__)
     return os.path.join(
-        base_dir, "automation_services_catalog/main/catalog/tests/data"
+        base_dir, "pinakes/main/catalog/tests/data"
     )
 
 
@@ -84,7 +84,7 @@ def small_image():
     base_dir = os.path.dirname(__file__)
     image_path = os.path.join(
         base_dir,
-        "automation_services_catalog/main/catalog/tests/data/redhat_icon.png",
+        "pinakes/main/catalog/tests/data/redhat_icon.png",
     )
 
     with open(image_path, "rb") as f:
@@ -96,7 +96,7 @@ def another_image():
     base_dir = os.path.dirname(__file__)
     image_path = os.path.join(
         base_dir,
-        "automation_services_catalog/main/catalog/tests/data/ansible_icon.png",
+        "pinakes/main/catalog/tests/data/ansible_icon.png",
     )
 
     with open(image_path, "rb") as f:

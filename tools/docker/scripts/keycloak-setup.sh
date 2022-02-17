@@ -3,7 +3,7 @@ set -e
 
 while true;
 do echo "Waiting for keycloak service to come up...";
-    wget $AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break;
+    wget $PINAKES_KEYCLOAK_URL -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break;
     sleep 3;
 done;
 echo "Service is up!"

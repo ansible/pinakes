@@ -12,8 +12,8 @@ on:
 jobs:
   build:
     env:
-      DJANGO_SETTINGS_MODULE: automation_services_catalog.settings.development
-      AUTOMATION_SERVICES_CATALOG_SECRET_KEY: test
+      DJANGO_SETTINGS_MODULE: pinakes.settings.development
+      PINAKES_SECRET_KEY: test
     runs-on: ubuntu-latest
     strategy:
       matrix:

@@ -20,7 +20,7 @@ ln -s python3.9 /usr/bin/python3
 # Initialize Postgres, set password
 /usr/pgsql-13/bin/postgresql-13-setup initdb
 systemctl enable --now postgresql-13
-sudo -u postgres psql -c "ALTER USER $AUTOMATION_SERVICES_CATALOG_POSTGRES_USER PASSWORD '$AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD';"
+sudo -u postgres psql -c "ALTER USER $PINAKES_POSTGRES_USER PASSWORD '$PINAKES_POSTGRES_PASSWORD';"
 
 
 cp -R /src /opt/automation-services-catalog
@@ -49,29 +49,29 @@ ansible-playbook tools/keycloak_setup/dev.yml
 
 
 # Create the Catalog Database
-sql="CREATE DATABASE "$AUTOMATION_SERVICES_CATALOG_DATABASE_NAME";"
+sql="CREATE DATABASE "$PINAKES_DATABASE_NAME";"
 echo $sql > /tmp/my.sql
-export PGPASSWORD=$AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD
-psql -v ON_ERROR_STOP=1 -h "$AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST" -U "$AUTOMATION_SERVICES_CATALOG_POSTGRES_USER" -f /tmp/my.sql
+export PGPASSWORD=$PINAKES_POSTGRES_PASSWORD
+psql -v ON_ERROR_STOP=1 -h "$PINAKES_POSTGRES_HOST" -U "$PINAKES_POSTGRES_USER" -f /tmp/my.sql
 
 # Run the migration
 python3 manage.py migrate
 
 # Fetch the UI Tar
 curl -o ui.tar.xz -L https://github.com/RedHatInsights/catalog-ui/releases/download/latest/catalog-ui.tar.gz
-mkdir -p automation_services_catalog/ui/catalog
-tar -xf ui.tar.xz --directory automation_services_catalog/ui/catalog
+mkdir -p pinakes/ui/catalog
+tar -xf ui.tar.xz --directory pinakes/ui/catalog
 
 # Clear out the old static and media directories, if we run
 # the provision multiple times
 # Both of these directories have to point to somewhere in
 # /var/lib so the nginx process can access it, else SELinux will
 # block it.
-rm -rf $AUTOMATION_SERVICES_CATALOG_STATIC_ROOT
-rm -rf $AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT
+rm -rf $PINAKES_STATIC_ROOT
+rm -rf $PINAKES_MEDIA_ROOT
 
-mkdir -p $AUTOMATION_SERVICES_CATALOG_STATIC_ROOT
-mkdir -p $AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT
+mkdir -p $PINAKES_STATIC_ROOT
+mkdir -p $PINAKES_MEDIA_ROOT
 
 python3 manage.py collectstatic --noinput
 
@@ -80,10 +80,10 @@ python3 /vagrant_data/scripts/apply_env.py /vagrant_data/catalog/services/catalo
 python3 /vagrant_data/scripts/apply_env.py /vagrant_data/catalog/services/catalog_scheduler.service.j2 /etc/systemd/system/catalog_scheduler.service
 python3 /vagrant_data/scripts/apply_env.py /vagrant_data/catalog/services/catalog_worker.service.j2 /etc/systemd/system/catalog_worker.service
 
-adduser "$AUTOMATION_SERVICES_CATALOG_SERVICE_USER"
-chown "$AUTOMATION_SERVICES_CATALOG_SERVICE_USER"."$AUTOMATION_SERVICES_CATALOG_SERVICE_USER" -R /opt/automation-services-catalog
+adduser "$PINAKES_SERVICE_USER"
+chown "$PINAKES_SERVICE_USER"."$PINAKES_SERVICE_USER" -R /opt/automation-services-catalog
 # Catalog should be able to write to the media directory
-chown "$AUTOMATION_SERVICES_CATALOG_SERVICE_USER"."$AUTOMATION_SERVICES_CATALOG_SERVICE_USER" -R $AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT
+chown "$PINAKES_SERVICE_USER"."$PINAKES_SERVICE_USER" -R $PINAKES_MEDIA_ROOT
 
 systemctl daemon-reload
 systemctl enable --now redis

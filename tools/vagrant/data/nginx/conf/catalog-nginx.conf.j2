@@ -4,7 +4,7 @@ error_log                   /var/log/nginx/catalog.error.log;
 
 server {
   listen                    443 ssl;
-  server_name               {{AUTOMATION_SERVICES_CATALOG_NGINX_HOST_NAME}};
+  server_name               {{PINAKES_NGINX_HOST_NAME}};
   ssl_certificate /etc/ssl/catalog.crt;
   ssl_certificate_key /etc/ssl/catalog.key;
 
@@ -12,7 +12,7 @@ server {
   ssl_prefer_server_ciphers on;
   ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
   location ~ ^/(api|login|complete)/ {
-    proxy_pass              {{AUTOMATION_SERVICES_CATALOG_NGINX_PROXY_URL}};
+    proxy_pass              {{PINAKES_NGINX_PROXY_URL}};
     proxy_set_header        Host $host;
     proxy_set_header        X-Forwarded-Proto $scheme;
     proxy_set_header        X-Forwarded-Host $host;
@@ -21,12 +21,12 @@ server {
   }
 
   location /ui {
-    alias {{AUTOMATION_SERVICES_CATALOG_STATIC_ROOT}};
+    alias {{PINAKES_STATIC_ROOT}};
     try_files $uri $uri/ /catalog/index.html =404;
   }
 
   location /media {
-    alias {{AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT}};
+    alias {{PINAKES_MEDIA_ROOT}};
   }
 
   location / {
