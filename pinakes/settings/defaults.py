@@ -41,7 +41,7 @@ ALLOWED_HOSTS = env.list(
 
 CATALOG_API_PATH_PREFIX = env.str(
     "PINAKES_API_PATH_PREFIX",
-    default="/api/automation-services-catalog",
+    default="/api/pinakes",
 )
 
 # Application definition
