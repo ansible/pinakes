@@ -30,7 +30,7 @@ spec:
           command:
           - sh
           - -c
-          - 'while true; do echo "Waiting for catalog app service to come up..."; wget http://app:8000/api/automation-services-catalog/v1/ -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break; sleep 1; done; echo "Service is up! Starting main container."'
+          - 'while true; do echo "Waiting for catalog app service to come up..."; wget http://app:8000/api/pinakes/v1/ -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break; sleep 1; done; echo "Service is up! Starting main container."'
       containers:
         - args:
             - "/opt/app-root/src/tools/minikube/scripts/scheduler.sh"
