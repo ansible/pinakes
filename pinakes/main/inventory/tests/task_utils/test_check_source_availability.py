@@ -21,7 +21,7 @@ def test_process(mocker):
     source_instance = SourceFactory(tenant=tenant)
 
     config = mock.Mock(
-        tower_info={"version": "4.1.0"},
+        tower_info={"version": "4.1.0", "install_uuid": "abcdef"},
         tower=mock.Mock(url="http://tower.com"),
     )
     mocker.patch.object(ControllerConfig, "process", return_value=config)
@@ -39,6 +39,7 @@ def test_process(mocker):
     assert source_instance.info == {
         "version": "4.1.0",
         "url": "http://tower.com",
+        "install_uuid": "abcdef",
     }
 
 
