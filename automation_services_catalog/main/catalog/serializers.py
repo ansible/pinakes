@@ -83,8 +83,8 @@ class PortfolioItemInSerializer(serializers.Serializer):
         required=True, help_text="ID of the portofolio"
     )
 
-    def create(self, validate_data):
-        return CreatePortfolioItem(validate_data).process().item
+    def create(self, validated_data):
+        return CreatePortfolioItem(validated_data).process().item
 
 
 class CopyPortfolioSerializer(serializers.Serializer):

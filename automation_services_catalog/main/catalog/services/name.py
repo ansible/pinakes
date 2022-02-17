@@ -16,11 +16,11 @@ def create_copy_name(original_name, existing_names, max_length=MAX_LENGTH):
 
 
 def copy(original_name, names):
-    copied_name = "Copy of %s" % original_name
+    copied_name = f"Copy of {original_name}"
 
     if copied_name in names:
         i = get_index(names)
-        copied_name = "Copy (%d) of %s" % (i + 1, original_name)
+        copied_name = f"Copy ({i+1}) of {original_name}"
 
     return copied_name
 

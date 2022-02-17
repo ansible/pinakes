@@ -117,8 +117,7 @@ def test_order_submit_without_service_offering(api_request):
     content = json.loads(response.content)
     assert (
         content["detail"]
-        == "Portfolio item %d does not have related service offering"
-        % portfolio_item.id
+        == f"Portfolio item {portfolio_item.id} does not have related service offering"
     )
 
 
@@ -135,7 +134,7 @@ def test_order_submit_without_order_item(api_request):
     content = json.loads(response.content)
     assert (
         content["detail"]
-        == "Order %d does not have related order items" % order.id
+        == f"Order {order.id} does not have related order items"
     )
 
 

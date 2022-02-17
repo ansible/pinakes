@@ -129,7 +129,7 @@ def test_copy_portfolio_items_to_the_same_portfolio():
 
     assert PortfolioItem.objects.count() == 2
     assert (
-        PortfolioItem.objects.last().name == "Copy of %s" % portfolio_item.name
+        PortfolioItem.objects.last().name == f"Copy of {portfolio_item.name}"
     )
     assert portfolio_item.portfolio == PortfolioItem.objects.last().portfolio
 
@@ -179,6 +179,6 @@ def test_copy_portfolio_items_to_raise_exception():
         svc.process()
 
     assert (
-        "%s is not orderable, and cannot be copied" % portfolio_item.name
+        f"{portfolio_item.name} is not orderable, and cannot be copied"
         in str(excinfo.value)
     )

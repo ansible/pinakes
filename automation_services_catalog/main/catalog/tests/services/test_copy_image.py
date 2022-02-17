@@ -13,7 +13,7 @@ from automation_services_catalog.main.catalog.services.copy_image import (
 
 
 @pytest.mark.django_db
-def test_copy_image(small_image):
+def test_copy_image():
     image = ImageFactory()
 
     assert Image.objects.count() == 1

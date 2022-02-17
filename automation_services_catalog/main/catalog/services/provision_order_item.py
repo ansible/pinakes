@@ -24,7 +24,7 @@ class ProvisionOrderItem:
         job = svc.job
 
         self.order_item.mark_ordered(
-            "Order Item {} is provisioned".format(self.order_item.id),
+            f"Order Item {self.order_item.id} is provisioned",
             inventory_task_ref=job.id,
         )
 
