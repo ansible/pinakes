@@ -103,21 +103,11 @@ WSGI_APPLICATION = "pinakes.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": env.str(
-            "PINAKES_DATABASE_NAME", default="catalog"
-        ),
-        "USER": env.str(
-            "PINAKES_POSTGRES_USER", default="catalog"
-        ),
-        "PASSWORD": env.str(
-            "PINAKES_POSTGRES_PASSWORD", default="password"
-        ),
-        "HOST": env.str(
-            "PINAKES_POSTGRES_HOST", default="localhost"
-        ),
-        "PORT": env.str(
-            "PINAKES_POSTGRES_PORT", default="5432"
-        ),
+        "NAME": env.str("PINAKES_DATABASE_NAME", default="catalog"),
+        "USER": env.str("PINAKES_POSTGRES_USER", default="catalog"),
+        "PASSWORD": env.str("PINAKES_POSTGRES_PASSWORD", default="password"),
+        "HOST": env.str("PINAKES_POSTGRES_HOST", default="localhost"),
+        "PORT": env.str("PINAKES_POSTGRES_PORT", default="5432"),
     }
 }
 
@@ -179,9 +169,7 @@ STATIC_URL = "/ui/"
 STATICFILES_DIRS = [
     BASE_DIR / "ui",
 ]
-STATIC_ROOT = env.str(
-    "PINAKES_STATIC_ROOT", default=BASE_DIR / "staticfiles"
-)
+STATIC_ROOT = env.str("PINAKES_STATIC_ROOT", default=BASE_DIR / "staticfiles")
 LOGIN_REDIRECT_URL = env.str(
     "PINAKES_LOGIN_REDIRECT_URL",
     default="/ui/catalog/index.html",
@@ -197,9 +185,7 @@ CONTROLLER_URL = env.str(
     "PINAKES_CONTROLLER_URL",
     default="https://Your_Controller_URL",
 )
-CONTROLLER_TOKEN = env.str(
-    "PINAKES_CONTROLLER_TOKEN", default="Secret Token"
-)
+CONTROLLER_TOKEN = env.str("PINAKES_CONTROLLER_TOKEN", default="Secret Token")
 CONTROLLER_VERIFY_SSL = env.str(
     "PINAKES_CONTROLLER_VERIFY_SSL", default="True"
 )
@@ -291,12 +277,8 @@ LOGIN_URL = "/login/keycloak/"
 # Django Redis Queue Information
 RQ_QUEUES = {
     "default": {
-        "HOST": env.str(
-            "PINAKES_REDIS_HOST", default="localhost"
-        ),
-        "PORT": env.int(
-            "PINAKES_REDIS_PORT", default=6379
-        ),
+        "HOST": env.str("PINAKES_REDIS_HOST", default="localhost"),
+        "PORT": env.int("PINAKES_REDIS_PORT", default=6379),
         "DB": env.int("PINAKES_REDIS_DB", default=0),
         "DEFAULT_TIMEOUT": 360,
     },
@@ -307,9 +289,7 @@ STARTUP_RQ_JOBS = [
     "pinakes.main.common.tasks.sync_external_groups",
     "pinakes.main.inventory.tasks.refresh_all_sources",
 ]
-CRONTAB = env.str(
-    "PINAKES_CRONTAB", default="*/30 * * * *"
-)
+CRONTAB = env.str("PINAKES_CRONTAB", default="*/30 * * * *")
 RQ_CRONJOBS = [
     (
         CRONTAB,
@@ -363,12 +343,8 @@ KEYCLOAK_URL = env.str(
     "PINAKES_KEYCLOAK_URL",
     default="http://localhost:8080/auth",
 ).rstrip("/")
-KEYCLOAK_REALM = env.str(
-    "PINAKES_KEYCLOAK_REALM", default="aap"
-)
-KEYCLOAK_CLIENT_ID = env.str(
-    "PINAKES_KEYCLOAK_CLIENT_ID", default="catalog"
-)
+KEYCLOAK_REALM = env.str("PINAKES_KEYCLOAK_REALM", default="aap")
+KEYCLOAK_CLIENT_ID = env.str("PINAKES_KEYCLOAK_CLIENT_ID", default="catalog")
 KEYCLOAK_CLIENT_SECRET = env.str(
     "PINAKES_KEYCLOAK_CLIENT_SECRET",
     default="secret-token",
@@ -383,11 +359,7 @@ SOCIAL_AUTH_REDIRECT_IS_HTTPS = env.bool(
 # CORS
 # Comma separated values list of :"SCHEME+HOST+[PORT]"
 # e.g.: PINAKES_UI_ALLOWED_ORIGINS="https://example.com,https://catalog.example.com:9090"
-CORS_ALLOWED_ORIGINS = env.list(
-    "PINAKES_UI_ALLOWED_ORIGINS", default=[]
-)
+CORS_ALLOWED_ORIGINS = env.list("PINAKES_UI_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_CREDENTIALS = False
-CSRF_TRUSTED_ORIGINS = env.list(
-    "PINAKES_CSRF_TRUSTED_ORIGINS", default=[]
-)
+CSRF_TRUSTED_ORIGINS = env.list("PINAKES_CSRF_TRUSTED_ORIGINS", default=[])
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

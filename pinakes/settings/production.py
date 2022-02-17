@@ -26,9 +26,7 @@ SQL_DEBUG = DEBUG
 
 # Load settings from any .py files in the global conf.d directory specified in
 # the environment, defaulting to /etc/pinakes/conf.d/.
-settings_dir = os.environ.get(
-    "CATALOG_SETTINGS_DIR", "/etc/pinakes/conf.d/"
-)
+settings_dir = os.environ.get("CATALOG_SETTINGS_DIR", "/etc/pinakes/conf.d/")
 settings_files = os.path.join(settings_dir, "*.py")
 
 # Load remaining settings from the global settings file specified in the

@@ -54,9 +54,7 @@ def test_add_portfolio_permissions(mocker):
     )
     client_mock.find_permissions_by_resource.return_value = [permission]
 
-    mocker.patch(
-        "pinakes.main.catalog.tasks.add_group_permissions"
-    )
+    mocker.patch("pinakes.main.catalog.tasks.add_group_permissions")
     add_portfolio_permissions(portfolio.id, group_ids, ["read"])
     portfolio.refresh_from_db()
     assert portfolio.share_count == 1
@@ -77,9 +75,7 @@ def test_remove_portfolio_permissions(mocker):
         return_value=client_mock,
     )
     client_mock.find_permissions_by_resource.return_value = []
-    mocker.patch(
-        "pinakes.main.catalog.tasks.remove_group_permissions"
-    )
+    mocker.patch("pinakes.main.catalog.tasks.remove_group_permissions")
     remove_portfolio_permissions(portfolio.id, ["1"], ["read"])
     portfolio.refresh_from_db()
     assert portfolio.share_count == 0
@@ -90,8 +86,6 @@ def test_remove_missing_portfolio_permissions(mocker):
     """Test removing portfolio permissions from a missing portfolio"""
     group_ids = ["1", "2", "3"]
 
-    mocker.patch(
-        "pinakes.main.catalog.tasks.remove_group_permissions"
-    )
+    mocker.patch("pinakes.main.catalog.tasks.remove_group_permissions")
     with pytest.raises(ObjectDoesNotExist):
         remove_portfolio_permissions(999999, group_ids, ["read"])
