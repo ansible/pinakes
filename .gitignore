@@ -66,7 +66,7 @@ db.sqlite3-journal
 apispec.json
 
 # Media default path
-automation_services_catalog/media/
+pinakes/media/
 
 # Flask stuff:
 instance/
@@ -145,7 +145,7 @@ dmypy.json
 cython_debug/
 
 # Local Developer settings files
-automation_services_catalog/settings/local_*.py
+pinakes/settings/local_*.py
 tools/vagrant/data/env_vars
 tools/vagrant/.vagrant
 

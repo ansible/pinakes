@@ -17,7 +17,7 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
  2. Approval, deals with the Approval process and notifications
  3. Inventory, deals with connecting to the Ansible Controller using REST API to fetch objects and launch Ansible Controller Jobs.
 
-![Alt UsingUploadService](./docs/automation_services_catalog.png?raw=true)
+![Alt UsingUploadService](./docs/pinakes.png?raw=true)
 
 
 **Developer Setup**
@@ -34,17 +34,17 @@ Ansible Catalog runs on-prem alongside the Ansible Controller and communicates w
      ```
  * Install all the dependencies
      ```pip install -r requirements.txt```
- * Prep the Database (Sqlite by default automation_services_catalog/catalog.db)
+ * Prep the Database (Sqlite by default pinakes/catalog.db)
  ```
       python3 manage.py migrate
       python3 manage.py createsuperuser
 ```
 * Setup the development settings file
 ```
-export DJANGO_SETTINGS_MODULE=automation_services_catalog.settings.development
+export DJANGO_SETTINGS_MODULE=pinakes.settings.development
 ```
    You can override the Database and Tower information in your local development settings file.
-   This settings file should not be checked into github, local settings file name should have a prefix of  **local_** e.g.   **automation_services_catalog/settings/local_info.py**
+   This settings file should not be checked into github, local settings file name should have a prefix of  **local_** e.g.   **pinakes/settings/local_info.py**
 
    To store tower info use the following keys
 
@@ -63,11 +63,11 @@ export DJANGO_SETTINGS_MODULE=automation_services_catalog.settings.development
 ```deactivate```
 * The default database for development is Postgres, you can configure the following environment variables to setup your Postgres DB information
 
-	* AUTOMATION_SERVICES_CATALOG_POSTGRES_USER (default: catalog)
-	* AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD (default: password)
-	* AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST (default: postgres)
-	* AUTOMATION_SERVICES_CATALOG_POSTGRES_PORT (default: 5432)
-	* AUTOMATION_SERVICES_CATALOG_DATABASE_NAME (default: catalog)
+	* PINAKES_POSTGRES_USER (default: catalog)
+	* PINAKES_POSTGRES_PASSWORD (default: password)
+	* PINAKES_POSTGRES_HOST (default: postgres)
+	* PINAKES_POSTGRES_PORT (default: 5432)
+	* PINAKES_DATABASE_NAME (default: catalog)
 
 * To run background tasks we use Django RQ, which has a dependency on Redis. You would have to install Redis locally on your dev box. To start the redis worker locally use the following command
 ```redis-server /usr/local/etc/redis.conf```
@@ -75,7 +75,7 @@ export DJANGO_SETTINGS_MODULE=automation_services_catalog.settings.development
   ```
   #!/bin/sh
   export CATALOG_ROOT_URL=/tmp
-  export DJANGO_SETTINGS_MODULE=automation_services_catalog.settings.development
+  export DJANGO_SETTINGS_MODULE=pinakes.settings.development
   # This is needed only on Mac OS
   export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
   python3 manage.py rqworker default
@@ -123,8 +123,8 @@ docker-compose build --build-arg USER_ID=0
 You have to create a .env file with the environments variables for the controller:
 ```
 # .env contents:
-AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN=secret-token
-AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL="https://your-controller-host"
+PINAKES_CONTROLLER_TOKEN=secret-token
+PINAKES_CONTROLLER_URL="https://your-controller-host"
 ```
 
 Run the application (this may take a while until the keycloak setup process has finished)
@@ -217,9 +217,9 @@ minikube image build -t localhost/ansible-catalog -f tools/docker/Dockerfile .
 ```
 ## Starting the app
 Once this has been setup you can start the deployments, services and ingress service in the directory tools/minikube/templates. A helper script creates a Kubernetes namespace called **catalog** and runs all the deployments in that namespace. The helper scripts requires 3 environment variables to locate the Automation Controller.
-  - **export AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL="Your controller url"**
-  - **export AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN="Your Token"**
-  - **export AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL="False"**
+  - **export PINAKES_CONTROLLER_URL="Your controller url"**
+  - **export PINAKES_CONTROLLER_TOKEN="Your Token"**
+  - **export PINAKES_CONTROLLER_VERIFY_SSL="False"**
 
 ```
 ./tools/minikube/scripts/start_pods.sh

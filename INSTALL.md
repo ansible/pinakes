@@ -60,19 +60,19 @@ ansible-galaxy collection install community.general mkanoor.catalog_keycloak
 - some environment variables are needed: 
 ```
 # internal keycloak url
-export AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL=http://keycloak:8080/auth
+export PINAKES_KEYCLOAK_URL=http://keycloak:8080/auth
 
 # keycloak client secret configured (see keycloak setup ahead)
-export AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
+export PINAKES_KEYCLOAK_CLIENT_SECRET=SOMESECRETVALUE
 
 # keycloak admin user
-export AUTOMATION_SERVICES_CATALOG_KEYCLOAK_USER=admin
+export PINAKES_KEYCLOAK_USER=admin
 
 # keycloak admin password
-export AUTOMATION_SERVICES_CATALOG_KEYCLOAK_PASSWORD=password
+export PINAKES_KEYCLOAK_PASSWORD=password
 
 # public keycloak url
-export AUTOMATION_SERVICES_CATALOG_KEYCLOAK_REALM_FRONTEND_URL=http://keycloak.k8s.local/auth
+export PINAKES_KEYCLOAK_REALM_FRONTEND_URL=http://keycloak.k8s.local/auth
 
 # comma separated values of the internal django urls that keycloak will use for internal redirects
 export REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
@@ -96,7 +96,7 @@ git clone https://github.com/ansible/ansible-catalog.git
 pip3 install -r requirements.txt
 ```
 
-_Note_: _All application settings are defined in `automation_services_catalog/settings/defaults.py`. If you prefer to use a configuration file instead of environment variables you can modify this file. Also you can create your own file but you have to configure the environment variable `DJANGO_SETTINGS_MODULE`._
+_Note_: _All application settings are defined in `pinakes/settings/defaults.py`. If you prefer to use a configuration file instead of environment variables you can modify this file. Also you can create your own file but you have to configure the environment variable `DJANGO_SETTINGS_MODULE`._
 
 
 - The following environment variables must to be configured:
@@ -106,44 +106,44 @@ _Note_: _All application settings are defined in `automation_services_catalog/se
 
 
 # postgres conf
-export AUTOMATION_SERVICES_CATALOG_DATABASE_NAME=dev_catalog
-export AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST=postgres
-export AUTOMATION_SERVICES_CATALOG_POSTGRES_USER=postgres
-export AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD=password
+export PINAKES_DATABASE_NAME=dev_catalog
+export PINAKES_POSTGRES_HOST=postgres
+export PINAKES_POSTGRES_USER=postgres
+export PINAKES_POSTGRES_PASSWORD=password
 
 # path where are stored the media files (basically images)
-export AUTOMATION_SERVICES_CATALOG_MEDIA_ROOT=/app/media
+export PINAKES_MEDIA_ROOT=/app/media
 
 # secret key for internal cryptographic tasks. You can generate it here: https://djecrety.ir/
-export AUTOMATION_SERVICES_CATALOG_SECRET_KEY="django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
+export PINAKES_SECRET_KEY="django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
 
 # internal ansible controller configuration
-export AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL=http://172.0.2.3
-export AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN=somesecrettoken
-export AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL=true
+export PINAKES_CONTROLLER_URL=http://172.0.2.3
+export PINAKES_CONTROLLER_TOKEN=somesecrettoken
+export PINAKES_CONTROLLER_VERIFY_SSL=true
 ```
 
 - The following environment variables are optional
 ```
 # enable debug mode for django
-export AUTOMATION_SERVICES_CATALOG_DEBUG=False
+export PINAKES_DEBUG=False
 
 # internal redis conf
-export AUTOMATION_SERVICES_CATALOG_REDIS_HOST=localhost
-export AUTOMATION_SERVICES_CATALOG_REDIS_PORT=6379
-export AUTOMATION_SERVICES_CATALOG_REDIS_DB=0
+export PINAKES_REDIS_HOST=localhost
+export PINAKES_REDIS_PORT=6379
+export PINAKES_REDIS_DB=0
 
 # use it to define a custom configuration file as python module syntax 
-export DJANGO_SETTINGS_MODULE=automation_services_catalog.settings.defaults
+export DJANGO_SETTINGS_MODULE=pinakes.settings.defaults
 
 # comma separated allowed public hostnames for the backend
-export AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS=*
+export PINAKES_ALLOWED_HOSTS=*
 
 # enable if the application is served under https (recommended)
-export AUTOMATION_SERVICES_CATALOG_HTTPS_ENABLED=True
+export PINAKES_HTTPS_ENABLED=True
 
 # public hostname [scheme]://[hostname] where the application is served, it can be a list of comma separated values
-export AUTOMATION_SERVICES_CATALOG_CSRF_TRUSTED_ORIGINS=https://[your-public-hostname]
+export PINAKES_CSRF_TRUSTED_ORIGINS=https://[your-public-hostname]
 ```
 
 - Run the backend:
@@ -158,7 +158,7 @@ python manage.py collectstatic
 
 # run the backend
 # number of workers is arbitrary. The recommended value is cpu_core * 2 + 1
-gunicorn --workers=3 --bind 0.0.0.0:8000 automation_services_catalog.wsgi --log-level=info
+gunicorn --workers=3 --bind 0.0.0.0:8000 pinakes.wsgi --log-level=info
 ```
 
 - Run the worker

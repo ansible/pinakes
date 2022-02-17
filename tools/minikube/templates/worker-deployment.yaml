@@ -35,47 +35,47 @@ spec:
         - args:
             - "/opt/app-root/src/tools/minikube/scripts/worker.sh"
           env:
-            - name: AUTOMATION_SERVICES_CATALOG_REDIS_HOST
+            - name: PINAKES_REDIS_HOST
               value: redis
-            - name: AUTOMATION_SERVICES_CATALOG_REDIS_PORT
+            - name: PINAKES_REDIS_PORT
               value: "6379"
-            - name: AUTOMATION_SERVICES_CATALOG_REDIS_DB
+            - name: PINAKES_REDIS_DB
               value: "0"
-            - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_URL
+            - name: PINAKES_KEYCLOAK_URL
               value: http://keycloak:8080/auth
-            - name: AUTOMATION_SERVICES_CATALOG_KEYCLOAK_CLIENT_SECRET
+            - name: PINAKES_KEYCLOAK_CLIENT_SECRET
               value: SOMESECRETVALUE
             - name: CONTROLLER_VERIFY_SSL
               value: "False"
-            - name: AUTOMATION_SERVICES_CATALOG_DATABASE_NAME
+            - name: PINAKES_DATABASE_NAME
               value: dev_catalog
-            - name: AUTOMATION_SERVICES_CATALOG_POSTGRES_HOST
+            - name: PINAKES_POSTGRES_HOST
               value: postgres
-            - name: AUTOMATION_SERVICES_CATALOG_POSTGRES_USER
+            - name: PINAKES_POSTGRES_USER
               value: keycloak
-            - name: AUTOMATION_SERVICES_CATALOG_POSTGRES_PASSWORD
+            - name: PINAKES_POSTGRES_PASSWORD
               value: password
-            - name: AUTOMATION_SERVICES_CATALOG_ALLOWED_HOSTS
+            - name: PINAKES_ALLOWED_HOSTS
               value: "*"
-            - name: AUTOMATION_SERVICES_CATALOG_DEBUG
+            - name: PINAKES_DEBUG
               value: "True"
-            - name: AUTOMATION_SERVICES_CATALOG_SECRET_KEY
+            - name: PINAKES_SECRET_KEY
               value: "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
-            - name: AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL
+            - name: PINAKES_CONTROLLER_URL
               valueFrom:
                 configMapKeyRef:
                   name: ansible-controller-env
-                  key: AUTOMATION_SERVICES_CATALOG_CONTROLLER_URL
-            - name: AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN
+                  key: PINAKES_CONTROLLER_URL
+            - name: PINAKES_CONTROLLER_TOKEN
               valueFrom:
                 configMapKeyRef:
                   name: ansible-controller-env
-                  key: AUTOMATION_SERVICES_CATALOG_CONTROLLER_TOKEN
-            - name: AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL
+                  key: PINAKES_CONTROLLER_TOKEN
+            - name: PINAKES_CONTROLLER_VERIFY_SSL
               valueFrom:
                 configMapKeyRef:
                   name: ansible-controller-env
-                  key: AUTOMATION_SERVICES_CATALOG_CONTROLLER_VERIFY_SSL
+                  key: PINAKES_CONTROLLER_VERIFY_SSL
           image: localhost/ansible-catalog
           imagePullPolicy: Never
           name: worker
