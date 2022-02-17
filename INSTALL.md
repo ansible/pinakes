@@ -1,5 +1,5 @@
 # INSTALL
-How to install ansible catalog in a production-like environment. This guide assumes a basic knowledge about networking and systems administration. 
+How to install Pinkaes in a production-like environment. This guide assumes a basic knowledge about networking and systems administration. 
 
 ## Components
 - Backend: django application for the REST api
@@ -13,7 +13,7 @@ How to install ansible catalog in a production-like environment. This guide assu
 ![arch overview](./docs/catalog-arch.png?raw=true)
 
 ## Dependencies
-Ansible Catalog acts as a client for the ansible controller (AKA ansible tower). It can work without connectivity to the controller with limited functionality. 
+Pinakes acts as a client for the ansible controller (AKA ansible tower). It can work without connectivity to the controller with limited functionality. 
 
 ## Requirements
 - Python >= 3.6
@@ -48,7 +48,7 @@ pip3 install -U pip
 ```
 
 ### Keycloak setup
-Several configurations must be done in keycloak in order to be used by ansible catalog as auth provider. There is an ansible collection to do it automatically. There are some variables that must be configured for the ansible collection in `tools/keycloak_setup/dev.yml`
+Several configurations must be done in keycloak in order to be used by Pinakes as auth provider. There is an ansible collection to do it automatically. There are some variables that must be configured for the ansible collection in `tools/keycloak_setup/dev.yml`
 Copy this file and modify `seed_users` according to your setup and needs. 
 
 - install ansible and the collection:
@@ -87,7 +87,7 @@ ansible-playbook [path to your custom conf, eg: tools/keycloak_setup/dev.yml]
 ### Backend, worker and scheduler
 - clone source code:
 ```
-git clone https://github.com/ansible/ansible-catalog.git
+git clone https://github.com/ansible/pinakes.git
 ```
 
 
