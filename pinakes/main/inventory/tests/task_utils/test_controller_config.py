@@ -16,6 +16,7 @@ class TestControllerConfig:
                 "time_zone": "UTC",
                 "version": "4.1.0",
                 "analytics_status": "off",
+                "install_uuid": "abcdef12-3456-7890-ad10-1234567890ab",
             }
         ]
         tower_mock = Mock()

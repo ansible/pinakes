@@ -37,6 +37,7 @@ class CheckSourceAvailability:
 
             self.source.info = {}
             self.source.info["version"] = svc.tower_info["version"]
+            self.source.info["install_uuid"] = svc.tower_info["install_uuid"]
             self.source.info["url"] = svc.tower.url
             self.source.last_available_at = timezone.now()
             self.source.availability_status = "available"

@@ -10,7 +10,9 @@ class ControllerConfig:
         self.tower_info = None
 
     def process(self):
-        for data in self.tower.get("/api/v2/config", ["version"]):
+        for data in self.tower.get(
+            "/api/v2/ping", ["version", "install_uuid"]
+        ):
             self.tower_info = data
 
         return self
