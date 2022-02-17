@@ -1,13 +1,28 @@
 """ pytest fixtures """
+import contextlib
 import os
 import urllib.parse
-from unittest.mock import Mock
+from unittest import mock
 
 import pytest
 
 from django.urls import resolve, reverse
 from django.contrib.auth.models import User
 from rest_framework.test import APIRequestFactory, force_authenticate
+
+from pinakes.common.auth.keycloak.models import (
+    AuthzResource,
+    AuthzPermission,
+)
+from pinakes.common.auth.keycloak_django.permissions import (
+    WILDCARD_RESOURCE_ID,
+)
+from pinakes.common.auth.keycloak_django.utils import (
+    parse_scope_name,
+    make_resource_name,
+)
+
+AUTHZ_CLIENT_CLASS = "pinakes.common.auth.keycloak_django.clients.AuthzClient"
 
 
 # FIXME(cutwater): Replace this base64 blob with human readable payload
@@ -48,24 +63,34 @@ def api_request(admin):
         user=admin,
         format="json",
         authenticated=True,
+        rbac_enabled=False,
     ):
         url = reverse(pattern, args=((id,) if id else None))
         view, view_args, view_kwargs = resolve(urllib.parse.urlparse(url)[2])
         request = getattr(APIRequestFactory(), verb)(
             url, data=data, format=format
         )
-        request.session = Mock()
+        request.session = mock.Mock()
         if user and authenticated:
             force_authenticate(request, user=user)
-        keycloak_mock = Mock()
+
+        keycloak_mock = mock.Mock()
         keycloak_mock.extra_data = {
             "id": "1",
             "access_token": DUMMY_ACCESS_TOKEN,
             "refresh_token": DUMMY_ACCESS_TOKEN,
         }
         request.keycloak_user = keycloak_mock
-        response = view(request, *view_args, **view_kwargs)
-        response.render()
+
+        if rbac_enabled:
+            authz_client_mock = contextlib.nullcontext()
+        else:
+            authz_client_mock = patch_authz_client()
+
+        with authz_client_mock:
+            response = view(request, *view_args, **view_kwargs)
+            response.render()
+
         return response
 
     return rf
@@ -99,3 +124,33 @@ def another_image():
 
     with open(image_path, "rb") as f:
         yield f
+
+
+class AuthzClientMock:
+    def get_permissions(self, permissions=None):
+        if permissions is None:
+            return []
+
+        if isinstance(permissions, AuthzPermission):
+            permissions = [permissions]
+
+        resources = []
+        for p in permissions:
+            resource_type, _ = parse_scope_name(p.scope)
+            resources.append(
+                AuthzResource(
+                    rsid="00000000-0000-0000-0000-000000000000",
+                    rsname=make_resource_name(
+                        resource_type, WILDCARD_RESOURCE_ID
+                    ),
+                    scopes=[p.scope],
+                )
+            )
+        return resources
+
+    def check_permissions(self, permissions=None) -> bool:
+        return True
+
+
+def patch_authz_client():
+    return mock.patch(AUTHZ_CLIENT_CLASS, return_value=AuthzClientMock())

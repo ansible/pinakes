@@ -45,7 +45,7 @@ class ImageMixin:
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        instance = get_object_or_404(model, pk=pk)
+        instance = self.get_object()
 
         if self.request.method == "DELETE":
             return self._delete_image(model=model, instance=instance, pk=pk)

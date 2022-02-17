@@ -24,10 +24,16 @@ from pinakes.common.auth import keycloak_django
 from pinakes.common.auth.keycloak_django.utils import (
     parse_scope,
 )
+from pinakes.common.auth.keycloak_django.views import (
+    KeycloakPermissionMixin,
+)
 from pinakes.common.serializers import TaskSerializer
 from pinakes.common.tag_mixin import TagMixin
 from pinakes.common.image_mixin import ImageMixin
 from pinakes.common.queryset_mixin import QuerySetMixin
+from pinakes.main.catalog.permissions import (
+    PortfolioPermission,
+)
 
 from pinakes.main.models import Tenant
 from pinakes.main.common.models import Group
@@ -136,6 +142,7 @@ class PortfolioViewSet(
     ImageMixin,
     TagMixin,
     NestedViewSetMixin,
+    KeycloakPermissionMixin,
     QuerySetMixin,
     viewsets.ModelViewSet,
 ):
@@ -143,7 +150,7 @@ class PortfolioViewSet(
 
     serializer_class = PortfolioSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, PortfolioPermission)
     ordering = ("-id",)
     filterset_fields = ("name", "description", "created_at", "updated_at")
     search_fields = ("name", "description")
@@ -160,7 +167,7 @@ class PortfolioViewSet(
     @action(methods=["post"], detail=True)
     def copy(self, request, pk):
         """Copy the specified pk portfolio."""
-        portfolio = get_object_or_404(Portfolio, pk=pk)
+        portfolio = self.get_object()
         options = {
             "portfolio": portfolio,
             "portfolio_name": request.data.get(

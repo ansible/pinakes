@@ -25,6 +25,9 @@ from pinakes.common.auth.keycloak import (
     models as keycloak_models,
 )
 from pinakes.common.auth.keycloak.authz import AuthzClient
+from pinakes.common.auth.keycloak_django import (
+    AbstractKeycloakResource,
+)
 from pinakes.common.auth.keycloak_django.utils import (
     make_scope_name,
     make_resource_name,
@@ -76,6 +79,50 @@ class BaseKeycloakPermission(_BasePermission):
             if policy.type == type_:
                 return policy.permission
         return None
+
+    def has_permission(self, request, view):
+        if is_drf_renderer_request(request, view):
+            return True
+        permission = self.get_permission(
+            KeycloakPolicy.Type.WILDCARD, request, view
+        )
+        if permission is None:
+            return True
+        return self.perform_check_permission(permission, request, view)
+
+    def has_object_permission(self, request, view, obj):
+        permission = self.get_permission(
+            KeycloakPolicy.Type.OBJECT, request, view
+        )
+        if permission is None:
+            return True
+        # Because DRF includes some hacky piece of code for HTML
+        # form rendering, which leads wrong objects being passed
+        # to has_object_permission method, additional checks are required.
+        # See https://github.com/encode/django-rest-framework/issues/2089
+        # for more details.
+        if not isinstance(obj, AbstractKeycloakResource):
+            return False
+        return self.perform_check_object_permission(
+            permission, request, view, obj
+        )
+
+    def scope_queryset(self, request, view, qs):
+        permission = self.get_permission(
+            KeycloakPolicy.Type.QUERYSET, request, view
+        )
+        if permission is None:
+            return qs
+        return self.perform_scope_queryset(permission, request, view, qs)
+
+    def perform_check_permission(self, permission, request, view):
+        return True
+
+    def perform_check_object_permission(self, permission, request, view, obj):
+        return True
+
+    def perform_scope_queryset(self, permission, request, view, qs):
+        return qs
 
 
 def is_drf_renderer_request(request: Request, view: Any):

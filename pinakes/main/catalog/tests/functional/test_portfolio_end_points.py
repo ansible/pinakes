@@ -7,6 +7,9 @@ from unittest.mock import patch
 from unittest import mock
 import pytest
 
+from pinakes.main.catalog.permissions import (
+    PortfolioPermission,
+)
 from pinakes.main.models import Image
 from pinakes.main.catalog.models import (
     Portfolio,
@@ -31,8 +34,10 @@ from pinakes.common.auth.keycloak_django.utils import (
 
 
 @pytest.mark.django_db
-def test_portfolio_list(api_request):
+def test_portfolio_list(api_request, mocker):
     """Get List of Portfolios"""
+    scope_queryset = mocker.spy(PortfolioPermission, "scope_queryset")
+
     PortfolioFactory()
     response = api_request("get", "catalog:portfolio-list")
 
@@ -40,6 +45,8 @@ def test_portfolio_list(api_request):
     content = json.loads(response.content)
 
     assert content["count"] == 1
+
+    scope_queryset.assert_called_once()
 
 
 @pytest.mark.django_db
@@ -75,8 +82,11 @@ def test_portfolio_patch(api_request):
 
 
 @pytest.mark.django_db
-def test_portfolio_copy(api_request):
+def test_portfolio_copy(api_request, mocker):
     """Copy a portfolio by id"""
+    has_object_permission = mocker.spy(
+        PortfolioPermission, "has_object_permission"
+    )
     portfolio = PortfolioFactory()
     data = {"portfolio_name": "new_copied_name"}
 
@@ -87,6 +97,9 @@ def test_portfolio_copy(api_request):
     assert response.status_code == 200
     assert Portfolio.objects.count() == 2
     assert Portfolio.objects.last().name == "new_copied_name"
+
+    has_object_permission.assert_called_once()
+    assert has_object_permission.call_args.args[3].id == portfolio.id
 
 
 @pytest.mark.django_db
@@ -197,8 +210,11 @@ def test_portfolio_portfolio_items_get_string_id(api_request):
 
 
 @pytest.mark.django_db
-def test_portfolio_icon_post(api_request, small_image, media_dir):
+def test_portfolio_icon_post(api_request, mocker, small_image, media_dir):
     """Create a icon image for a portfolio"""
+    has_object_permission = mocker.spy(
+        PortfolioPermission, "has_object_permission"
+    )
     image_path = os.path.join(media_dir, "*.png")
     orignal_images = glob.glob(image_path)
 
@@ -218,6 +234,9 @@ def test_portfolio_icon_post(api_request, small_image, media_dir):
     assert response.status_code == 200
     assert response.data["icon_url"]
 
+    has_object_permission.assert_called_once()
+    assert has_object_permission.call_args.args[3].id == portfolio.id
+
     portfolio.refresh_from_db()
     assert portfolio.icon is not None
 
@@ -229,7 +248,7 @@ def test_portfolio_icon_post(api_request, small_image, media_dir):
 
 @pytest.mark.django_db
 def test_portfolio_icon_patch(
-    api_request, small_image, another_image, media_dir
+    api_request, mocker, small_image, another_image, media_dir
 ):
     """Update a icon image for a portfolio"""
     image_path = os.path.join(media_dir, "*.png")
@@ -250,6 +269,10 @@ def test_portfolio_icon_patch(
 
     data = {"file": another_image}
 
+    has_object_permission = mocker.spy(
+        PortfolioPermission, "has_object_permission"
+    )
+
     response = api_request(
         "patch",
         "catalog:portfolio-icon",
@@ -260,6 +283,9 @@ def test_portfolio_icon_patch(
 
     assert response.status_code == 200
     assert response.data["icon_url"] != original_url
+
+    has_object_permission.assert_called_once()
+    assert has_object_permission.call_args.args[3].id == portfolio.id
 
     images = glob.glob(image_path)
     assert len(images) == len(orignal_images)
@@ -311,6 +337,9 @@ def test_portfolio_share_info(api_request, mocker):
         "pinakes.common.auth.keycloak_django.get_uma_client",
         return_value=client_mock,
     )
+    has_object_permission = mocker.spy(
+        PortfolioPermission, "has_object_permission"
+    )
     permission = UmaPermission(
         name=make_permission_name(portfolio, group),
         groups=[group.path],
@@ -336,6 +365,9 @@ def test_portfolio_share_info(api_request, mocker):
         ].sort()
     )
 
+    has_object_permission.assert_called_once()
+    assert has_object_permission.call_args.args[3].id == portfolio.id
+
 
 @pytest.mark.django_db
 def test_portfolio_share_info_empty(api_request):
@@ -346,7 +378,7 @@ def test_portfolio_share_info_empty(api_request):
 
     assert response.status_code == 200
     shares = json.loads(response.content)
-    assert (len(shares)) == 0
+    assert len(shares) == 0
 
 
 @pytest.mark.django_db
@@ -359,6 +391,9 @@ def test_portfolio_share_info_consolidated(api_request, mocker):
     mocker.patch(
         "pinakes.common.auth.keycloak_django.get_uma_client",
         return_value=client_mock,
+    )
+    has_object_permission = mocker.spy(
+        PortfolioPermission, "has_object_permission"
     )
     permission1 = UmaPermission(
         name=make_permission_name(portfolio, group),
@@ -393,3 +428,5 @@ def test_portfolio_share_info_consolidated(api_request, mocker):
             Portfolio.KEYCLOAK_ACTIONS[1],
         ].sort()
     )
+    has_object_permission.assert_called_once()
+    assert has_object_permission.call_args.args[3].id == portfolio.id
