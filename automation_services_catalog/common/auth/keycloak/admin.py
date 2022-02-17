@@ -6,9 +6,6 @@ from . import openid
 from .client import ApiClient
 
 
-GROUPS_PATH = "admin/realms/{realm}/groups"
-
-
 class AdminClient:
     def __init__(self, server_url: str, realm: str, token: str):
         self._server_url = server_url.rstrip("/")
@@ -19,7 +16,16 @@ class AdminClient:
     def list_groups(
         self, *, brief_representation: bool = True
     ) -> List[models.Group]:
-        path = GROUPS_PATH.format(realm=self._realm)
+        path = constants.GROUPS_PATH.format(realm=self._realm)
+        return self._client_list_groups(path, brief_representation)
+
+    def list_user_groups(
+        self, user_id: str, brief_representation: bool = True
+    ) -> List[models.Group]:
+        path = constants.USER_GROUPS_PATH.format(realm=self._realm, id=user_id)
+        return self._client_list_groups(path, brief_representation)
+
+    def _client_list_groups(self, path, brief_representation):
         params = {"briefRepresentation": brief_representation}
         url = f"{self._server_url}/{path}"
         items = self._client.request_json("GET", url, params=params)

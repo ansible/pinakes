@@ -88,6 +88,44 @@ def test_list_groups(api_client):
     ]
 
 
+def test_list_user_groups(api_client):
+    client = AdminClient(SERVER_URL, REALM, TOKEN)
+
+    api_client.request_json.return_value = [
+        {
+            "id": "87bd0889-2ae0-45c5-9d27-a58b7cb728f7",
+            "name": "test-group-01",
+            "path": "/test-group-01",
+        },
+        {
+            "id": "87bd0889-2ae0-45c5-9d27-a58b7cb728f7",
+            "name": "test-group-02",
+            "path": "/test-group-02",
+        },
+    ]
+
+    groups = client.list_user_groups("user-id", brief_representation=False)
+    params = {"briefRepresentation": False}
+    api_client.request_json.assert_called_with(
+        "GET",
+        f"{SERVER_URL}/admin/realms/{REALM}/users/user-id/groups",
+        params=params,
+    )
+
+    assert groups == [
+        models.Group(
+            id="87bd0889-2ae0-45c5-9d27-a58b7cb728f7",
+            name="test-group-01",
+            path="/test-group-01",
+        ),
+        models.Group(
+            id="87bd0889-2ae0-45c5-9d27-a58b7cb728f7",
+            name="test-group-02",
+            path="/test-group-02",
+        ),
+    ]
+
+
 def test_iter_group_members_invalid_id(api_client):
     client = AdminClient(SERVER_URL, REALM, TOKEN)
     group_id = "does-not-exist"

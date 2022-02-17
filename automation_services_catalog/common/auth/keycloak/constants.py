@@ -17,7 +17,9 @@ PASSWORD_GRANT = "password"
 CLIENT_CREDENTIALS_GRANT = "client_credentials"
 REFRESH_TOKEN_GRANT = "refresh_token"
 SESSION_LOGOUT_PATH = "realms/{realm}/protocol/openid-connect/logout"
+GROUPS_PATH = "admin/realms/{realm}/groups"
 GROUP_MEMBERS_PATH = "admin/realms/{realm}/groups/{id}/members"
+USER_GROUPS_PATH = "admin/realms/{realm}/users/{id}/groups"
 
 UMA_TICKET_GRANT = "urn:ietf:params:oauth:grant-type:uma-ticket"
 
