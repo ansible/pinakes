@@ -1,7 +1,7 @@
 """Models for Approval"""
 from django.db import models
 from django.db.models.functions import Length
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from pinakes.main.models import BaseModel
 from pinakes.common.auth.keycloak_django import (
@@ -178,7 +178,9 @@ class Request(AbstractKeycloakResource, BaseModel):
     request_context = models.ForeignKey(
         RequestContext, null=True, on_delete=models.SET_NULL
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, null=True
+    )
 
     @property
     def requester_name(self):
@@ -284,7 +286,9 @@ class Action(BaseModel):
         related_name="actions",
         help_text="ID of the request that the action belongs to",
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, null=True
+    )
 
     @property
     def processed_by(self):

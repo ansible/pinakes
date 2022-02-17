@@ -1,7 +1,7 @@
 from typing import Optional
 
 from django.contrib import auth as django_auth
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 
@@ -39,7 +39,9 @@ class KeycloakAuthMiddleware:
             django_auth.logout(request)
         return self.get_response(request)
 
-    def _process_keycloak_user(self, user: User) -> Optional[UserSocialAuth]:
+    def _process_keycloak_user(
+        self, user: AbstractUser
+    ) -> Optional[UserSocialAuth]:
         social_auth = getattr(user, "social_auth", None)
         if social_auth is None:
             return None

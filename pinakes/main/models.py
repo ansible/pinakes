@@ -2,7 +2,7 @@
 from django.db import models
 from django.db.utils import OperationalError
 from django.db.models.functions import Length
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 models.CharField.register_lookup(Length)
@@ -157,7 +157,7 @@ class UserOwnedModel(BaseModel):
     """User Owned Model"""
 
     user = models.ForeignKey(
-        User,
+        get_user_model(),
         null=True,
         on_delete=models.CASCADE,
         help_text="ID of the user who created this object",
