@@ -41,9 +41,10 @@ Pinakes runs on-prem alongside the [Automation Controller](https://www.ansible.c
       python3 manage.py migrate
       python3 manage.py createsuperuser
 ```
-* Setup the development settings file
+* Setup the development settings file, and a secret for the database
 ```
 export DJANGO_SETTINGS_MODULE=pinakes.settings.development
+export PINAKES_SECRET_KEY=abcdef
 ```
    You can override the Database and Tower information in your local development settings file.
    This settings file should not be checked into github, local settings file name should have a prefix of  **local_** e.g.   **pinakes/settings/local_info.py**
@@ -57,7 +58,7 @@ export DJANGO_SETTINGS_MODULE=pinakes.settings.development
 * Start the Server using development settings
       ```python3 manage.py runserver```
 
-      Open your browser and open http://127.0.0.1:8000/api/automation-services-catalog/v1/portfolios/
+      Open your browser and open http://127.0.0.1:8000/api/pinakes/v1/portfolios/
 
       When prompted provide the userid/password from the createsuperuser step
 
@@ -78,8 +79,6 @@ export DJANGO_SETTINGS_MODULE=pinakes.settings.development
   #!/bin/sh
   export CATALOG_ROOT_URL=/tmp
   export DJANGO_SETTINGS_MODULE=pinakes.settings.development
-  # This is needed only on Mac OS
-  export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
   python3 manage.py rqworker default
   ```
 * To run a scheduler to schedule the background tasks we need to run the scheduler separate from the server. 
@@ -140,7 +139,7 @@ docker-compose logs -f
 ```
 (You will see errors in the worker until keycloak is properly configured)
 
-Once is finished you can try to open https://localhost:8443/api/automation-services-catalog/v1/
+Once is finished you can try to open https://localhost:8443/api/pinakes/v1/
 You can do log in with https://localhost:8443/login/keycloak/
 You can open the UI with https://localhost:8443/ui/catalog/index.html
 The project path is mounted in the pod and you can edit it in real time from outside the container.
@@ -177,18 +176,12 @@ sudo docker-compose -f docker-compose.stage.yml up -d
 ```
 
 
-### Things to do manually the first time
-
-- refresh the controller
-open in your browser: http://localhost:8000/api/automation-services-catalog/v1/sources/1/refresh/
-and execute a patch with empty body. (this may take a while)
-
 ### Download the open api schema
-http://localhost:8000/api/automation-services-catalog/v1/schema/openapi.json
+http://localhost:8000/api/pinakes/v1/schema/openapi.json
 
 
 ### Try with swagger UI
-http://localhost:8000/api/automation-services-catalog/v1/schema/swagger-ui/
+http://localhost:8000/api/pinakes/v1/schema/swagger-ui/
 
 
 ## Using minikube for development
@@ -228,20 +221,20 @@ Once this has been setup you can start the deployments, services and ingress ser
 ```
 
 To login to the UI use
-https://catalog.k8s.local/
+https://catalog.k8s.local/api/pinakes/auth/login/
 
 To access the keycloak server running inside the cluster use the following URL
 http://keycloak.k8s.local/auth  (Default userid is admin password is admin)
 
 
 To login to the catalog app using API endpoint
-https://catalog.k8s.local/login/keycloak-oidc/
-When prompted enter the userid/password (barney/barney)
+https://catalog.k8s.local/api/pinakes/auth/login/
+When prompted enter the userid/password (barney.sample/barney)
 
-To access the catalog app use
+To access the api DRF pages use
 
-https://catalog.k8s.local/api/automation-services-catalog/v1/schema/openapi.json
-https://catalog.k8s.local/api/automation-services-catalog/v1/portfolios/ (You wont be able to get to this link without logging in first)
+https://catalog.k8s.local/api/pinakes/v1/schema/openapi.json
+https://catalog.k8s.local/api/pinakes/v1/portfolios/ (You wont be able to get to this link without logging in first)
 
 ### Applying local code changes for testing
 To deploy your code changes that you have made locally before creating a PR you can redeploy the app using
@@ -249,8 +242,8 @@ To deploy your code changes that you have made locally before creating a PR you 
 ./tools/minikube/scripts/redeploy_app.sh
 ```
 
-This will stop the app and worker pods, build the image with latest changes and
-start the app and worker pods.
+This will stop the app, worker and scheduler pods, build the image with latest changes and
+start the app, worker and scheduler pods.
 
 ### Starting a fresh with a clean env 
 To delete all the pods and reset the application, run the helper_script delete_pods.sh.
@@ -262,7 +255,7 @@ The -d option deletes the persistent volumes so you can a fresh start
 
 ## About credentials
 
-When the catalog-app starts up it creates the required roles, policies, scopes, permissions (optionally groups and users) by using an ansible collection. The roles, policies, scopes and permissions are defined in the collection. The optional group and user data is stored in tools/keycloak_setup/dev.yml
+When the pinakes starts up it creates the required roles, policies, scopes, permissions (optionally groups and users) by using an ansible collection. The roles, policies, scopes and permissions are defined in the collection. The optional group and user data is stored in tools/keycloak_setup/dev.yml
 
 For ease of development as part of the keycloak setup we create the following groups
 
@@ -272,12 +265,16 @@ For ease of development as part of the keycloak setup we create the following gr
  - **approval-user**
  - **approval-approver**
 
+The following greoups are created
+
+ - **Information Technology - Sample** (roles assigned catalog-admin, approval-admin)
+ - **Marketing - Sample** (roles assigned catalog-user, approval-user)
+ - **Finance - Sample** (roles assigned approval-approver)
+
 The following users are also created
 
- - **fred** (member of catalog-admin, approval-admin)
- - **barney** (member of catalog-user, approval-user)
- - **wilma** (member of approval-approver)
+ - **fred.sample** (member of Information Technology - Sample) password: fred
+ - **barney.sample** (member of Marketing - Sample) password: barney
+ - **wilma.sample** (member of Finance - Sample) password: wilma
 
-The default password is the same as the user name, they can be changed by modifying the file **tools/keycloak_setup/dev.yml**
-
-
+The default passwords can be changed by modifying the file **tools/keycloak_setup/dev.yml**
