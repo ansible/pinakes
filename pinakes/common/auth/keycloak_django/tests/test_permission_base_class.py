@@ -38,7 +38,9 @@ def test_get_permission_unexpected_action():
 
     permission = TestPermission()
     with pytest.raises(MethodNotAllowed) as exc:
-        permission.get_required_permission(KeycloakPolicy.Type.OBJECT, request, view)
+        permission.get_required_permission(
+            KeycloakPolicy.Type.OBJECT, request, view
+        )
 
     assert exc.match('Method "GET" not allowed.')
 

@@ -13,6 +13,7 @@ from typing import (
 )
 
 from django.conf import settings
+from django.db import models
 
 from rest_framework import exceptions
 from rest_framework.request import Request
@@ -57,15 +58,46 @@ KeycloakPoliciesMap = Dict[
 
 
 class BaseKeycloakPermission(_BasePermission):
+    """Base class for keycloak based permission classes.
+
+    To implement a permission class for Keycloak you should inherit this
+    permission class and define the `access_policies` class attribute.
+    Then override one or more of the following methods in order to
+    implement permission checks:
+      - `perform_check_permission`
+      - `perform_check_object_permission`
+      - `perform_scope_queryset`
+
+    These methods are called from the `has_permission`,
+    `has_object_permission` and `scope_queryset` methods of
+    the permission class respectively, that implement common logic for
+    access policies handling.
+
+    Normally you should not override `has_permission`, `has_object_permission`,
+    and `scope_queryset` methods directly.
+    """
 
     access_policies: ClassVar[KeycloakPoliciesMap] = {}
 
-    def get_access_policies(self, request: Request, view: Any):
+    def get_access_policies(
+        self, request: Request, view: Any
+    ) -> KeycloakPoliciesMap:
+        """Returns access policies map.
+
+        Returns `access_policies` attribute of a class by default.
+        Can be overridden if finer tuning is required.
+        """
         return self.access_policies
 
     def get_required_permission(
         self, type_: KeycloakPolicy.Type, request: Request, view: Any
     ) -> Optional[str]:
+        """Returns required permission for request and policy type.
+
+        Given access policies for permission class, this method returns
+        the permission for matched policy type and request (view action).
+        If no match found returns None.
+        """
         policies_map = self.get_access_policies(request, view)
         try:
             policies = policies_map[view.action]
@@ -80,7 +112,7 @@ class BaseKeycloakPermission(_BasePermission):
                 return policy.permission
         return None
 
-    def has_permission(self, request, view):
+    def has_permission(self, request: Request, view: Any) -> bool:
         if is_drf_renderer_request(request, view):
             return True
         permission = self.get_required_permission(
@@ -90,7 +122,9 @@ class BaseKeycloakPermission(_BasePermission):
             return True
         return self.perform_check_permission(permission, request, view)
 
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(
+        self, request: Request, view: Any, obj: models.Model
+    ) -> bool:
         permission = self.get_required_permission(
             KeycloakPolicy.Type.OBJECT, request, view
         )
@@ -107,7 +141,9 @@ class BaseKeycloakPermission(_BasePermission):
             permission, request, view, obj
         )
 
-    def scope_queryset(self, request, view, qs):
+    def scope_queryset(
+        self, request: Request, view: Any, qs: models.QuerySet
+    ) -> models.QuerySet:
         permission = self.get_required_permission(
             KeycloakPolicy.Type.QUERYSET, request, view
         )
@@ -115,13 +151,32 @@ class BaseKeycloakPermission(_BasePermission):
             return qs
         return self.perform_scope_queryset(permission, request, view, qs)
 
-    def perform_check_permission(self, permission, request, view):
+    def perform_check_permission(
+        self, permission: str, request: Request, view: Any
+    ) -> bool:
+        """Checks wildcard permissions.
+
+        Called for requests that match `WILDCARD` policy type."""
         return True
 
-    def perform_check_object_permission(self, permission, request, view, obj):
+    def perform_check_object_permission(
+        self,
+        permission: str,
+        request: Request,
+        view: Any,
+        obj: AbstractKeycloakResource,
+    ) -> bool:
+        """Checks object permissions.
+
+        Called for requests that match `OBJECT` policy type."""
         return True
 
-    def perform_scope_queryset(self, permission, request, view, qs):
+    def perform_scope_queryset(
+        self, permission: str, request: Request, view: Any, qs: models.QuerySet
+    ) -> models.QuerySet:
+        """Limits queryset to only permitted resources.
+
+        Called for requests that match `QUERYSET` policy type."""
         return qs
 
 
