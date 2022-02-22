@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import enum
+from dataclasses import dataclass
 from typing import (
     ClassVar,
     Dict,
@@ -8,11 +9,11 @@ from typing import (
     Sequence,
     Optional,
     Any,
-    NamedTuple,
     List,
 )
 
 from django.conf import settings
+from django.db import models
 
 from rest_framework import exceptions
 from rest_framework.request import Request
@@ -25,6 +26,9 @@ from pinakes.common.auth.keycloak import (
     models as keycloak_models,
 )
 from pinakes.common.auth.keycloak.authz import AuthzClient
+from pinakes.common.auth.keycloak_django import (
+    AbstractKeycloakResource,
+)
 from pinakes.common.auth.keycloak_django.utils import (
     make_scope_name,
     make_resource_name,
@@ -54,15 +58,46 @@ KeycloakPoliciesMap = Dict[
 
 
 class BaseKeycloakPermission(_BasePermission):
+    """Base class for keycloak based permission classes.
+
+    To implement a permission class for Keycloak you should inherit this
+    permission class and define the `access_policies` class attribute.
+    Then override one or more of the following methods in order to
+    implement permission checks:
+      - `perform_check_permission`
+      - `perform_check_object_permission`
+      - `perform_scope_queryset`
+
+    These methods are called from the `has_permission`,
+    `has_object_permission` and `scope_queryset` methods of
+    the permission class respectively, that implement common logic for
+    access policies handling.
+
+    Normally you should not override `has_permission`, `has_object_permission`,
+    and `scope_queryset` methods directly.
+    """
 
     access_policies: ClassVar[KeycloakPoliciesMap] = {}
 
-    def get_access_policies(self, request: Request, view: Any):
+    def get_access_policies(
+        self, request: Request, view: Any
+    ) -> KeycloakPoliciesMap:
+        """Returns access policies map.
+
+        Returns `access_policies` attribute of a class by default.
+        Can be overridden if finer tuning is required.
+        """
         return self.access_policies
 
-    def get_permission(
+    def get_required_permission(
         self, type_: KeycloakPolicy.Type, request: Request, view: Any
     ) -> Optional[str]:
+        """Returns required permission for request and policy type.
+
+        Given access policies for permission class, this method returns
+        the permission for matched policy type and request (view action).
+        If no match found returns None.
+        """
         policies_map = self.get_access_policies(request, view)
         try:
             policies = policies_map[view.action]
@@ -76,6 +111,73 @@ class BaseKeycloakPermission(_BasePermission):
             if policy.type == type_:
                 return policy.permission
         return None
+
+    def has_permission(self, request: Request, view: Any) -> bool:
+        if is_drf_renderer_request(request, view):
+            return True
+        permission = self.get_required_permission(
+            KeycloakPolicy.Type.WILDCARD, request, view
+        )
+        if permission is None:
+            return True
+        return self.perform_check_permission(permission, request, view)
+
+    def has_object_permission(
+        self, request: Request, view: Any, obj: models.Model
+    ) -> bool:
+        permission = self.get_required_permission(
+            KeycloakPolicy.Type.OBJECT, request, view
+        )
+        if permission is None:
+            return True
+        # Because DRF includes some hacky piece of code for HTML
+        # form rendering, which leads wrong objects being passed
+        # to has_object_permission method, additional checks are required.
+        # See https://github.com/encode/django-rest-framework/issues/2089
+        # for more details.
+        if not isinstance(obj, AbstractKeycloakResource):
+            return False
+        return self.perform_check_object_permission(
+            permission, request, view, obj
+        )
+
+    def scope_queryset(
+        self, request: Request, view: Any, qs: models.QuerySet
+    ) -> models.QuerySet:
+        permission = self.get_required_permission(
+            KeycloakPolicy.Type.QUERYSET, request, view
+        )
+        if permission is None:
+            return qs
+        return self.perform_scope_queryset(permission, request, view, qs)
+
+    def perform_check_permission(
+        self, permission: str, request: Request, view: Any
+    ) -> bool:
+        """Checks wildcard permissions.
+
+        Called for requests that match `WILDCARD` policy type."""
+        return True
+
+    def perform_check_object_permission(
+        self,
+        permission: str,
+        request: Request,
+        view: Any,
+        obj: AbstractKeycloakResource,
+    ) -> bool:
+        """Checks object permissions.
+
+        Called for requests that match `OBJECT` policy type."""
+        return True
+
+    def perform_scope_queryset(
+        self, permission: str, request: Request, view: Any, qs: models.QuerySet
+    ) -> models.QuerySet:
+        """Limits queryset to only permitted resources.
+
+        Called for requests that match `QUERYSET` policy type."""
+        return qs
 
 
 def is_drf_renderer_request(request: Request, view: Any):
@@ -121,9 +223,10 @@ def check_resource_permission(
     return client.check_permissions([wildcard_permission, object_permission])
 
 
-class PermittedResourcesResult(NamedTuple):
+@dataclass(frozen=True)
+class PermittedResourcesResult:
+    items: List[str]
     is_wildcard: bool
-    items: Optional[List[str]] = None
 
 
 def get_permitted_resources(
@@ -135,12 +238,16 @@ def get_permitted_resources(
         )
     )
 
+    is_wildcard = False
     resource_ids = []
     for item in permissions:
         type_, id_ = parse_resource_name(item.rsname)
         if resource_type != type_:
             continue
         if id_ == WILDCARD_RESOURCE_ID:
-            return PermittedResourcesResult(is_wildcard=True)
-        resource_ids.append(id_)
-    return PermittedResourcesResult(is_wildcard=False, items=resource_ids)
+            is_wildcard = True
+        else:
+            resource_ids.append(id_)
+    return PermittedResourcesResult(
+        items=resource_ids, is_wildcard=is_wildcard
+    )
