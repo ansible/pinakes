@@ -33,8 +33,22 @@ def authz_client(api_client):
         REALM,
         CLIENT_ID,
         TOKEN,
-        uma2_policy,
+        uma2_policy=uma2_policy,
     )
+
+
+def test_verify_ssl():
+    session_mock = mock.Mock()
+    with mock.patch("requests.Session", return_value=session_mock):
+        AuthzClient(
+            SERVER_URL,
+            REALM,
+            CLIENT_ID,
+            TOKEN,
+            verify_ssl="/path/to/ca/bundle",
+        )
+
+    assert session_mock.verify == "/path/to/ca/bundle"
 
 
 def test_get_permissions(api_client, authz_client):

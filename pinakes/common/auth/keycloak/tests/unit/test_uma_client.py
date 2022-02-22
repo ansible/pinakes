@@ -42,6 +42,19 @@ def uma_client(api_client):
     return client
 
 
+def test_verify_ssl():
+    session_mock = mock.Mock()
+    with mock.patch("requests.Session", return_value=session_mock):
+        UmaClient(
+            SERVER_URL,
+            REALM,
+            TOKEN,
+            verify_ssl="/path/to/ca/bundle",
+        )
+
+    assert session_mock.verify == "/path/to/ca/bundle"
+
+
 def test_uma2_configuration(api_client):
     openid_client = UmaClient(SERVER_URL, REALM, TOKEN)
 

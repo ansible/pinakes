@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Mapping, Optional
+from typing import Any, Mapping, Optional, Union
 
 import requests
 
@@ -8,10 +8,13 @@ from . import exceptions
 
 
 class ApiClient:
-    def __init__(self, token: Optional[str] = None):
+    def __init__(
+        self, token: Optional[str] = None, verify_ssl: Union[bool, str] = True
+    ):
         self.token = token
 
         self._session = requests.Session()
+        self._session.verify = verify_ssl
 
     def request(
         self,

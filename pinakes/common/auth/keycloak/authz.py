@@ -21,8 +21,10 @@ class AuthzClient:
         server_url: str,
         realm: str,
         client_id: str,
-        token: str,
+        token: Optional[str] = True,
+        *,
         uma2_policy: Optional[Uma2ConfigurationPolicyProto] = None,
+        verify_ssl: Union[bool, str] = True,
     ):
         self._server_url = server_url.rstrip("/")
         self._realm = realm
@@ -30,7 +32,7 @@ class AuthzClient:
 
         self._uma2_configuration = None
 
-        self._client = ApiClient(token=token)
+        self._client = ApiClient(token=token, verify_ssl=verify_ssl)
 
         if uma2_policy is None:
             uma2_policy = DefaultUma2ConfigurationPolicy(

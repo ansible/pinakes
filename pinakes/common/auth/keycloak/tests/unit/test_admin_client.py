@@ -28,6 +28,19 @@ def _check_model(obj, cls, **kwargs):
         assert getattr(obj, attr) == value
 
 
+def test_verify_ssl():
+    session_mock = mock.Mock()
+    with mock.patch("requests.Session", return_value=session_mock):
+        AdminClient(
+            SERVER_URL,
+            REALM,
+            TOKEN,
+            verify_ssl="/path/to/ca/bundle",
+        )
+
+    assert session_mock.verify == "/path/to/ca/bundle"
+
+
 def test_list_groups(api_client):
     client = AdminClient(SERVER_URL, REALM, TOKEN)
 

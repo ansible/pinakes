@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from . import exceptions
 from . import models
@@ -18,14 +18,16 @@ class UmaClient:
         server_url: str,
         realm: str,
         token: str,
+        *,
         uma2_policy: Optional[Uma2ConfigurationPolicyProto] = None,
+        verify_ssl: Union[bool, str] = True,
     ):
         self._server_url = server_url.rstrip("/")
         self._realm = realm
 
         self._uma2_configuration = None
 
-        self._client = ApiClient(token=token)
+        self._client = ApiClient(token=token, verify_ssl=verify_ssl)
 
         if uma2_policy is None:
             uma2_policy = DefaultUma2ConfigurationPolicy(
@@ -125,12 +127,18 @@ def create_uma_client(
     realm: str,
     client_id: str,
     client_secret: str,
+    *,
     uma2_policy: Optional[Uma2ConfigurationPolicyProto] = None,
+    verify_ssl: Union[bool, str] = True,
 ) -> UmaClient:
     oidc_client = openid.OpenIdConnect(
-        server_url, realm, client_id, client_secret
+        server_url, realm, client_id, client_secret, verify_ssl=verify_ssl
     )
     token_info = oidc_client.client_credentials_auth()
     return UmaClient(
-        server_url, realm, token_info["access_token"], uma2_policy
+        server_url,
+        realm,
+        token_info["access_token"],
+        uma2_policy=uma2_policy,
+        verify_ssl=verify_ssl,
     )
