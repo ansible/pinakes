@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
       - name: keycloak-setup
-        image: localhost/ansible-catalog
+        image: localhost/pinakes
         imagePullPolicy: Never
         env:
            - name: PINAKES_KEYCLOAK_URL

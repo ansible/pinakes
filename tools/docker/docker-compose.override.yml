@@ -25,7 +25,7 @@ x-environment:
 
 services:
   frontend:
-    image: ansible-catalog-ui:dev
+    image: pinakes-ui:dev
     build:
       context: frontend/
     ports:
@@ -37,7 +37,7 @@ services:
       - 'media_files:/opt/app-root/src/media'
       - 'static_files:/opt/app-root/src/staticfiles'
   app:
-    image: ansible-catalog:dev
+    image: pinakes:dev
     environment: *catalog-env
     build:
       context: ../../
@@ -65,14 +65,14 @@ services:
       start_period: 10s
     command: /opt/app-root/src/tools/docker/scripts/dev-server.sh
   keycloak-setup:
-    image: ansible-catalog:dev
+    image: pinakes:dev
     environment: *catalog-env
     depends_on:
       - keycloak-app
     command: /opt/app-root/src/tools/docker/scripts/keycloak-setup.sh
 
   worker:
-    image: ansible-catalog:dev
+    image: pinakes:dev
     environment: *catalog-env
     volumes:
       - "../../:/opt/app-root/src:z"
@@ -83,7 +83,7 @@ services:
     command: /opt/app-root/src/tools/docker/scripts/worker.sh
 
   scheduler:
-    image: ansible-catalog:dev
+    image: pinakes:dev
     environment: *catalog-env
     volumes:
       - "../../:/opt/app-root/src:z"
