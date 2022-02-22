@@ -26,8 +26,8 @@ Environment=PINAKES_HTTPS_ENABLED={{PINAKES_HTTPS_ENABLED}}
 Environment=PINAKES_UI_ALLOWED_ORIGINS={{PINAKES_UI_ALLOWED_ORIGINS}}
 Environment=PINAKES_CSRF_TRUSTED_ORIGINS={{PINAKES_CSRF_TRUSTED_ORIGINS}}
 User={{PINAKES_SERVICE_USER}}
-WorkingDirectory=/opt/automation-services-catalog
-ExecStart=/bin/bash -c 'cd /opt/automation-services-catalog/ && source /opt/automation-services-catalog/venv/bin/activate && gunicorn --workers=${PINAKES_NUM_PROCS:-3} --bind 0.0.0.0:8000 pinakes.wsgi --log-level=debug'
+WorkingDirectory=/opt/pinakes
+ExecStart=/bin/bash -c 'cd /opt/pinakes/ && source /opt/pinakes/venv/bin/activate && gunicorn --workers=${PINAKES_NUM_PROCS:-3} --bind 0.0.0.0:8000 pinakes.wsgi --log-level=debug'
 
 [Install]
 WantedBy=multi-user.target

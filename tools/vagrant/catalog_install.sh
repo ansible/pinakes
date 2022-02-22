@@ -23,8 +23,8 @@ systemctl enable --now postgresql-13
 sudo -u postgres psql -c "ALTER USER $PINAKES_POSTGRES_USER PASSWORD '$PINAKES_POSTGRES_PASSWORD';"
 
 
-cp -R /src /opt/automation-services-catalog
-cd /opt/automation-services-catalog/
+cp -R /src /opt/pinakes
+cd /opt/pinakes/
 
 # In some of the dev env they might have their own venv which we should
 # delete from this vm 
@@ -35,7 +35,7 @@ fi
 
 export PATH="$PATH:/usr/pgsql-13/bin"
 python3 -m venv venv
-source /opt/automation-services-catalog/venv/bin/activate
+source /opt/pinakes/venv/bin/activate
 pip3 install -U pip
 pip3 install -r requirements.txt
 
@@ -81,7 +81,7 @@ python3 /vagrant_data/scripts/apply_env.py /vagrant_data/catalog/services/catalo
 python3 /vagrant_data/scripts/apply_env.py /vagrant_data/catalog/services/catalog_worker.service.j2 /etc/systemd/system/catalog_worker.service
 
 adduser "$PINAKES_SERVICE_USER"
-chown "$PINAKES_SERVICE_USER"."$PINAKES_SERVICE_USER" -R /opt/automation-services-catalog
+chown "$PINAKES_SERVICE_USER"."$PINAKES_SERVICE_USER" -R /opt/pinakes
 # Catalog should be able to write to the media directory
 chown "$PINAKES_SERVICE_USER"."$PINAKES_SERVICE_USER" -R $PINAKES_MEDIA_ROOT
 
