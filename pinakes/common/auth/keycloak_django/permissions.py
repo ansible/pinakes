@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import enum
+from dataclasses import dataclass
 from typing import (
     ClassVar,
     Dict,
@@ -8,7 +9,6 @@ from typing import (
     Sequence,
     Optional,
     Any,
-    NamedTuple,
     List,
 )
 
@@ -223,9 +223,10 @@ def check_resource_permission(
     return client.check_permissions([wildcard_permission, object_permission])
 
 
-class PermittedResourcesResult(NamedTuple):
+@dataclass(frozen=True)
+class PermittedResourcesResult:
+    items: List[str]
     is_wildcard: bool
-    items: Optional[List[str]] = None
 
 
 def get_permitted_resources(
@@ -237,12 +238,16 @@ def get_permitted_resources(
         )
     )
 
+    is_wildcard = False
     resource_ids = []
     for item in permissions:
         type_, id_ = parse_resource_name(item.rsname)
         if resource_type != type_:
             continue
         if id_ == WILDCARD_RESOURCE_ID:
-            return PermittedResourcesResult(is_wildcard=True)
-        resource_ids.append(id_)
-    return PermittedResourcesResult(is_wildcard=False, items=resource_ids)
+            is_wildcard = True
+        else:
+            resource_ids.append(id_)
+    return PermittedResourcesResult(
+        items=resource_ids, is_wildcard=is_wildcard
+    )

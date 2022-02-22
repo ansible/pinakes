@@ -103,7 +103,7 @@ def test_has_object_permission(check_resource_permission):
 @pytest.mark.django_db
 @mock.patch(
     "pinakes.main.catalog.permissions.get_permitted_resources",
-    return_value=PermittedResourcesResult(is_wildcard=True),
+    return_value=PermittedResourcesResult(items=[], is_wildcard=True),
 )
 def test_scope_queryset_wildcard(get_permitted_resources):
     request = mock.Mock()
@@ -124,7 +124,7 @@ def test_scope_queryset_wildcard(get_permitted_resources):
 @pytest.mark.django_db
 @mock.patch(
     "pinakes.main.catalog.permissions.get_permitted_resources",
-    return_value=PermittedResourcesResult(is_wildcard=False, items=["1", "2"]),
+    return_value=PermittedResourcesResult(items=["1", "2"], is_wildcard=False),
 )
 def test_scope_queryset_filter(get_permitted_resources):
     request = mock.Mock()

@@ -65,7 +65,7 @@ def test_get_permitted_resources_wildcard():
     result = get_permitted_resources("myresource", "read", client)
 
     assert result.is_wildcard is True
-    assert result.items is None
+    assert result.items == ["1"]
 
     client.get_permissions.assert_called_once_with(
         AuthzPermission(scope="myresource:read")
