@@ -26,9 +26,6 @@ from pinakes.common.auth.keycloak import (
     models as keycloak_models,
 )
 from pinakes.common.auth.keycloak.authz import AuthzClient
-from pinakes.common.auth.keycloak_django import (
-    AbstractKeycloakResource,
-)
 from pinakes.common.auth.keycloak_django.utils import (
     make_scope_name,
     make_resource_name,
@@ -55,6 +52,13 @@ class KeycloakPolicy:
 KeycloakPoliciesMap = Dict[
     str, Union[KeycloakPolicy, Sequence[KeycloakPolicy]]
 ]
+
+
+# Because DRF includes some hacky piece of code for HTML
+# form rendering, which leads wrong objects being passed
+# to has_object_permission method, additional checks may be required.
+# See https://github.com/encode/django-rest-framework/issues/2089
+# for more details.
 
 
 class BaseKeycloakPermission(_BasePermission):
@@ -123,20 +127,13 @@ class BaseKeycloakPermission(_BasePermission):
         return self.perform_check_permission(permission, request, view)
 
     def has_object_permission(
-        self, request: Request, view: Any, obj: models.Model
+        self, request: Request, view: Any, obj: Any
     ) -> bool:
         permission = self.get_required_permission(
             KeycloakPolicy.Type.OBJECT, request, view
         )
         if permission is None:
             return True
-        # Because DRF includes some hacky piece of code for HTML
-        # form rendering, which leads wrong objects being passed
-        # to has_object_permission method, additional checks are required.
-        # See https://github.com/encode/django-rest-framework/issues/2089
-        # for more details.
-        if not isinstance(obj, AbstractKeycloakResource):
-            return False
         return self.perform_check_object_permission(
             permission, request, view, obj
         )
@@ -164,7 +161,7 @@ class BaseKeycloakPermission(_BasePermission):
         permission: str,
         request: Request,
         view: Any,
-        obj: AbstractKeycloakResource,
+        obj: Any,
     ) -> bool:
         """Checks object permissions.
 

@@ -1,4 +1,4 @@
-""" Module to test PortfolioItem end points """
+"""Module to test PortfolioItem end points."""
 import os
 import glob
 
@@ -6,6 +6,7 @@ import json
 import pytest
 
 from pinakes.main.catalog.models import PortfolioItem
+from pinakes.main.catalog.permissions import PortfolioItemPermission
 from pinakes.main.catalog.services.copy_portfolio_item import (
     CopyPortfolioItem,
 )
@@ -22,8 +23,12 @@ from pinakes.main.inventory.tests.factories import (
 
 
 @pytest.mark.django_db
-def test_portfolio_item_list(api_request):
+def test_portfolio_item_list(api_request, mocker):
     """Get list of Portfolio Items"""
+    scope_queryset = mocker.spy(
+        PortfolioItemPermission, "perform_scope_queryset"
+    )
+
     PortfolioItemFactory()
     response = api_request("get", "catalog:portfolioitem-list")
 
@@ -32,10 +37,16 @@ def test_portfolio_item_list(api_request):
 
     assert content["count"] == 1
 
+    scope_queryset.assert_called_once()
+
 
 @pytest.mark.django_db
-def test_portfolio_item_retrieve(api_request):
+def test_portfolio_item_retrieve(api_request, mocker):
     """Retrieve a single portfolio item by id"""
+    check_object_permission = mocker.spy(
+        PortfolioItemPermission, "perform_check_object_permission"
+    )
+
     portfolio_item = PortfolioItemFactory()
     response = api_request(
         "get", "catalog:portfolioitem-detail", portfolio_item.id
@@ -45,10 +56,16 @@ def test_portfolio_item_retrieve(api_request):
     content = json.loads(response.content)
     assert content["id"] == portfolio_item.id
 
+    check_object_permission.assert_called_once()
+
 
 @pytest.mark.django_db
-def test_portfolio_item_delete(api_request):
+def test_portfolio_item_delete(api_request, mocker):
     """Delete a PortfolioItem by id"""
+    check_object_permission = mocker.spy(
+        PortfolioItemPermission, "perform_check_object_permission"
+    )
+
     portfolio_item = PortfolioItemFactory()
     response = api_request(
         "delete", "catalog:portfolioitem-detail", portfolio_item.id
@@ -56,10 +73,16 @@ def test_portfolio_item_delete(api_request):
 
     assert response.status_code == 204
 
+    check_object_permission.assert_called_once()
+
 
 @pytest.mark.django_db
-def test_portfolio_item_patch(api_request):
+def test_portfolio_item_patch(api_request, mocker):
     """PATCH a portfolio item by ID"""
+    check_object_permission = mocker.spy(
+        PortfolioItemPermission, "perform_check_object_permission"
+    )
+
     portfolio_item = PortfolioItemFactory()
     data = {"name": "update"}
     response = api_request(
@@ -70,6 +93,8 @@ def test_portfolio_item_patch(api_request):
     )
 
     assert response.status_code == 200
+
+    check_object_permission.assert_called_once()
 
 
 @pytest.mark.django_db
@@ -85,8 +110,12 @@ def test_portfolio_item_put(api_request):
 
 
 @pytest.mark.django_db
-def test_portfolio_item_post(api_request):
+def test_portfolio_item_post(api_request, mocker):
     """Create a new portfolio item for a portfolio"""
+    check_object_permission = mocker.spy(
+        PortfolioItemPermission, "perform_check_object_permission"
+    )
+
     service_offering = ServiceOfferingFactory()
     portfolio = PortfolioFactory()
     data = {
@@ -95,6 +124,8 @@ def test_portfolio_item_post(api_request):
     }
     response = api_request("post", "catalog:portfolioitem-list", data=data)
     assert response.status_code == 201
+
+    check_object_permission.assert_called_once()
 
 
 @pytest.mark.django_db
@@ -112,8 +143,12 @@ def test_portfolio_item_post_with_exception(api_request):
 
 
 @pytest.mark.django_db
-def test_portfolio_item_icon_post(api_request, small_image, media_dir):
+def test_portfolio_item_icon_post(api_request, mocker, small_image, media_dir):
     """Create a icon image for a portfolio item"""
+    check_object_permission = mocker.spy(
+        PortfolioItemPermission, "perform_check_object_permission"
+    )
+
     image_path = os.path.join(media_dir, "*.png")
     orignal_images = glob.glob(image_path)
 
@@ -140,12 +175,18 @@ def test_portfolio_item_icon_post(api_request, small_image, media_dir):
 
     portfolio_item.delete()
 
+    check_object_permission.assert_called_once()
+
 
 @pytest.mark.django_db
 def test_portfolio_item_icon_patch(
-    api_request, small_image, another_image, media_dir
+    api_request, mocker, small_image, another_image, media_dir
 ):
     """Update a icon image for a portfolio item"""
+    check_object_permission = mocker.spy(
+        PortfolioItemPermission, "perform_check_object_permission"
+    )
+
     image_path = os.path.join(media_dir, "*.png")
 
     portfolio_item = PortfolioItemFactory()
@@ -181,10 +222,18 @@ def test_portfolio_item_icon_patch(
     assert portfolio_item.icon is not None
     portfolio_item.delete()
 
+    assert check_object_permission.call_count == 2
+
 
 @pytest.mark.django_db
-def test_portfolio_item_icon_delete(api_request, small_image, media_dir):
+def test_portfolio_item_icon_delete(
+    api_request, mocker, small_image, media_dir
+):
     """Update a icon image for a portfolio item"""
+    check_object_permission = mocker.spy(
+        PortfolioItemPermission, "perform_check_object_permission"
+    )
+
     image_path = os.path.join(media_dir, "*.png")
 
     portfolio_item = PortfolioItemFactory()
@@ -213,10 +262,16 @@ def test_portfolio_item_icon_delete(api_request, small_image, media_dir):
     portfolio_item.refresh_from_db()
     assert portfolio_item.icon is None
 
+    assert check_object_permission.call_count == 2
+
 
 @pytest.mark.django_db
 def test_portfolio_item_copy(api_request, mocker):
     """Copy a PortfolioItem by id"""
+    check_object_permission = mocker.spy(
+        PortfolioItemPermission, "perform_check_object_permission"
+    )
+
     portfolio_item = PortfolioItemFactory()
     mocker.patch.object(CopyPortfolioItem, "_is_orderable", return_value=True)
 
@@ -232,6 +287,8 @@ def test_portfolio_item_copy(api_request, mocker):
     assert (
         PortfolioItem.objects.last().name == f"Copy of {portfolio_item.name}"
     )
+
+    check_object_permission.assert_called_once()
 
 
 @pytest.mark.django_db

@@ -33,6 +33,9 @@ from pinakes.common.image_mixin import ImageMixin
 from pinakes.common.queryset_mixin import QuerySetMixin
 from pinakes.main.catalog.permissions import (
     PortfolioPermission,
+    PortfolioItemPermission,
+    OrderItemPermission,
+    OrderPermission,
 )
 
 from pinakes.main.models import Tenant
@@ -314,6 +317,7 @@ class PortfolioItemViewSet(
     ImageMixin,
     TagMixin,
     NestedViewSetMixin,
+    PermissionQuerySetMixin,
     QuerySetMixin,
     viewsets.ModelViewSet,
 ):
@@ -321,7 +325,7 @@ class PortfolioItemViewSet(
 
     serializer_class = PortfolioItemSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, PortfolioItemPermission)
     ordering = ("-id",)
     filterset_fields = (
         "name",
@@ -347,8 +351,9 @@ class PortfolioItemViewSet(
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        portfolio = request.data.get("portfolio")
-        get_object_or_404(Portfolio, pk=portfolio)
+        portfolio_id = request.data.get("portfolio")
+        portfolio = get_object_or_404(Portfolio, pk=portfolio_id)
+        self.check_object_permissions(request, portfolio)
 
         output_serializer = PortfolioItemSerializer(
             serializer.save(user=self.request.user),
@@ -370,7 +375,7 @@ class PortfolioItemViewSet(
     @action(methods=["post"], detail=True)
     def copy(self, request, pk):
         """Copy the specified pk portfolio item."""
-        portfolio_item = get_object_or_404(PortfolioItem, pk=pk)
+        portfolio_item = self.get_object()
         options = {
             "portfolio_item_id": portfolio_item.id,
             "portfolio_id": request.data.get(
@@ -460,12 +465,17 @@ class PortfolioItemViewSet(
         description="Delete an existing order",
     ),
 )
-class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
+class OrderViewSet(
+    NestedViewSetMixin,
+    PermissionQuerySetMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
+):
     """API endpoint for listing and creating orders."""
 
     serializer_class = OrderSerializer
     http_method_names = ["get", "post", "head", "delete"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, OrderPermission)
     ordering = ("-id",)
     filterset_fields = (
         "state",
@@ -484,8 +494,7 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     @action(methods=["post"], detail=True)
     def submit(self, request, pk):
         """Orders the specified pk order."""
-        order = get_object_or_404(Order, pk=pk)
-
+        order = self.get_object()
         if not order.product:
             raise BadParamsException(
                 _("Order {} does not have related order items").format(
@@ -560,13 +569,16 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     ),
 )
 class OrderItemViewSet(
-    NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
+    NestedViewSetMixin,
+    PermissionQuerySetMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
 ):
     """API endpoint for listing and creating order items."""
 
     serializer_class = OrderItemSerializer
     http_method_names = ["get", "post", "head", "delete"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, OrderItemPermission)
     ordering = ("-id",)
     filterset_fields = (
         "name",
