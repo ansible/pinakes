@@ -23,7 +23,7 @@ def _mock_autz_client(mocker):
 
 def _test_get_permissions(type_, action, expected):
     view = mock.Mock(action=action)
-    permission = PortfolioPermission().get_permission(type_, mock.Mock(), view)
+    permission = PortfolioPermission().get_required_permission(type_, mock.Mock(), view)
     assert permission == expected
 
 

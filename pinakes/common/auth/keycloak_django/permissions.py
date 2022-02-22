@@ -63,7 +63,7 @@ class BaseKeycloakPermission(_BasePermission):
     def get_access_policies(self, request: Request, view: Any):
         return self.access_policies
 
-    def get_permission(
+    def get_required_permission(
         self, type_: KeycloakPolicy.Type, request: Request, view: Any
     ) -> Optional[str]:
         policies_map = self.get_access_policies(request, view)
@@ -83,7 +83,7 @@ class BaseKeycloakPermission(_BasePermission):
     def has_permission(self, request, view):
         if is_drf_renderer_request(request, view):
             return True
-        permission = self.get_permission(
+        permission = self.get_required_permission(
             KeycloakPolicy.Type.WILDCARD, request, view
         )
         if permission is None:
@@ -91,7 +91,7 @@ class BaseKeycloakPermission(_BasePermission):
         return self.perform_check_permission(permission, request, view)
 
     def has_object_permission(self, request, view, obj):
-        permission = self.get_permission(
+        permission = self.get_required_permission(
             KeycloakPolicy.Type.OBJECT, request, view
         )
         if permission is None:
@@ -108,7 +108,7 @@ class BaseKeycloakPermission(_BasePermission):
         )
 
     def scope_queryset(self, request, view, qs):
-        permission = self.get_permission(
+        permission = self.get_required_permission(
             KeycloakPolicy.Type.QUERYSET, request, view
         )
         if permission is None:

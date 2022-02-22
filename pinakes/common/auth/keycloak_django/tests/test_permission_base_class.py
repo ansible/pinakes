@@ -27,7 +27,7 @@ def test_get_permission(action, tp, expected):
     view = mock.Mock(action=action)
     permission = TestPermission()
 
-    result = permission.get_permission(tp, request, view)
+    result = permission.get_required_permission(tp, request, view)
     assert result == expected
 
 
@@ -38,7 +38,7 @@ def test_get_permission_unexpected_action():
 
     permission = TestPermission()
     with pytest.raises(MethodNotAllowed) as exc:
-        permission.get_permission(KeycloakPolicy.Type.OBJECT, request, view)
+        permission.get_required_permission(KeycloakPolicy.Type.OBJECT, request, view)
 
     assert exc.match('Method "GET" not allowed.')
 
@@ -49,7 +49,7 @@ def test_get_permission_unexpected_type():
     view = mock.Mock(action="list")
 
     permission = TestPermission()
-    result = permission.get_permission(
+    result = permission.get_required_permission(
         KeycloakPolicy.Type.OBJECT, request, view
     )
 
