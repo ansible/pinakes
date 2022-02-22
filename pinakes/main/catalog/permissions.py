@@ -3,14 +3,10 @@ from typing import Any
 from django.db import models
 from rest_framework.request import Request
 
-from pinakes.common.auth.keycloak_django import (
-    AbstractKeycloakResource,
-)
 from pinakes.common.auth.keycloak_django.clients import (
     get_authz_client,
 )
 from pinakes.common.auth.keycloak_django.permissions import (
-    is_drf_renderer_request,
     KeycloakPolicy,
     BaseKeycloakPermission,
     check_wildcard_permission,
