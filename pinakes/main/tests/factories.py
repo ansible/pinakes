@@ -1,6 +1,6 @@
 """ Factory for catalog objects """
 import factory
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from pinakes.main.models import Tenant
 
@@ -9,7 +9,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     """Factory for User"""
 
     class Meta:
-        model = User
+        model = get_user_model()
 
     username = factory.Sequence(lambda n: f"user{n}")
 

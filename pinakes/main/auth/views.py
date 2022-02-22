@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.contrib.auth import logout
 
@@ -29,7 +29,7 @@ from pinakes.common.auth.keycloak.openid import (
 class CurrentUserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.CurrentUserSerializer
-    model = User
+    model = get_user_model()
 
     def get_object(self):
         return self.request.user
