@@ -76,7 +76,7 @@ spec:
                 configMapKeyRef:
                   name: ansible-controller-env
                   key: PINAKES_CONTROLLER_VERIFY_SSL
-          image: localhost/ansible-catalog
+          image: localhost/pinakes
           imagePullPolicy: Never
           name: scheduler
           resources: {}

@@ -2,14 +2,14 @@ version: '3.9'
 
 services:
   frontend:
-    image: ansible-catalog-ui:dev
+    image: pinakes-ui:dev
     build:
       context: frontend/
     depends_on:
       - app
 
   app:
-    image: ansible-catalog:dev
+    image: pinakes:dev
     build:
       context: ../../
       dockerfile: tools/docker/Dockerfile
@@ -19,13 +19,13 @@ services:
 
   # TODO: remove ansible-playbook from app image and use specific image for keycloak setup (affects minikube env)
   keycloak-setup:
-    image: ansible-catalog:dev
+    image: pinakes:dev
     depends_on:
       - keycloak-app
     command: /opt/app-root/src/tools/docker/scripts/keycloak-setup.sh
 
   worker:
-    image: ansible-catalog:dev
+    image: pinakes:dev
     depends_on:
       - app
       - redis
@@ -33,7 +33,7 @@ services:
     command: /opt/app-root/src/tools/docker/scripts/worker.sh
 
   scheduler:
-    image: ansible-catalog:dev
+    image: pinakes:dev
     depends_on:
       - app
       - redis
