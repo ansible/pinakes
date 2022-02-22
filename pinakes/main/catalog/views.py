@@ -25,7 +25,7 @@ from pinakes.common.auth.keycloak_django.utils import (
     parse_scope,
 )
 from pinakes.common.auth.keycloak_django.views import (
-    KeycloakPermissionMixin,
+    PermissionQuerySetMixin,
 )
 from pinakes.common.serializers import TaskSerializer
 from pinakes.common.tag_mixin import TagMixin
@@ -142,7 +142,7 @@ class PortfolioViewSet(
     ImageMixin,
     TagMixin,
     NestedViewSetMixin,
-    KeycloakPermissionMixin,
+    PermissionQuerySetMixin,
     QuerySetMixin,
     viewsets.ModelViewSet,
 ):
