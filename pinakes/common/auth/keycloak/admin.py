@@ -1,4 +1,4 @@
-from typing import Optional, List, Iterator
+from typing import Optional, List, Iterator, Union
 
 from . import constants
 from . import models
@@ -10,11 +10,18 @@ GROUPS_PATH = "admin/realms/{realm}/groups"
 
 
 class AdminClient:
-    def __init__(self, server_url: str, realm: str, token: str):
+    def __init__(
+        self,
+        server_url: str,
+        realm: str,
+        token: str,
+        *,
+        verify_ssl: Union[bool, str] = True,
+    ):
         self._server_url = server_url.rstrip("/")
         self._realm = realm
 
-        self._client = ApiClient(token=token)
+        self._client = ApiClient(token=token, verify_ssl=verify_ssl)
 
     def list_groups(
         self, *, brief_representation: bool = True
@@ -53,9 +60,13 @@ def create_admin_client(
     realm: str,
     client_id: str = constants.ADMIN_CLI_CLIENT_ID,
     client_secret: Optional[str] = None,
+    *,
+    verify_ssl: Union[str, bool] = True,
 ) -> AdminClient:
     oidc_client = openid.OpenIdConnect(
-        server_url, realm, client_id, client_secret
+        server_url, realm, client_id, client_secret, verify_ssl=verify_ssl
     )
     token_info = oidc_client.client_credentials_auth()
-    return AdminClient(server_url, realm, token_info["access_token"])
+    return AdminClient(
+        server_url, realm, token_info["access_token"], verify_ssl=verify_ssl
+    )

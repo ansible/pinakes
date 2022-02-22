@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from . import constants
 from . import models
@@ -14,6 +14,8 @@ class OpenIdConnect:
         realm: str,
         client_id: str,
         client_secret: Optional[str] = None,
+        *,
+        verify_ssl: Union[bool, str] = True,
     ):
         self._server_url = server_url.rstrip("/")
         self._realm = realm
@@ -22,7 +24,7 @@ class OpenIdConnect:
 
         self._openid_configuration = None
 
-        self._client = ApiClient()
+        self._client = ApiClient(verify_ssl=verify_ssl)
 
     def openid_configuration(
         self, force_reload=False
@@ -78,4 +80,5 @@ class OpenIdConnect:
             "client_secret": self._client_secret,
             "refresh_token": refresh_token,
         }
+        # REVIEW(cutwater): Why this method returns underlying Response object?
         return self._client.request("POST", url, headers=headers, data=data)

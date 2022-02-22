@@ -29,6 +29,20 @@ def api_client(mocker):
     return client_mock
 
 
+def test_verify_ssl():
+    session_mock = mock.Mock()
+    with mock.patch("requests.Session", return_value=session_mock):
+        OpenIdConnect(
+            SERVER_URL,
+            REALM,
+            CLIENT_ID,
+            CLIENT_SECRET,
+            verify_ssl="/path/to/ca/bundle",
+        )
+
+    assert session_mock.verify == "/path/to/ca/bundle"
+
+
 def test_openid_configuration(api_client):
     openid_client = OpenIdConnect(SERVER_URL, REALM, CLIENT_ID)
 
