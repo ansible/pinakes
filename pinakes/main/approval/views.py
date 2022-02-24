@@ -13,6 +13,7 @@ from rest_framework.filters import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     extend_schema,
@@ -20,7 +21,6 @@ from drf_spectacular.utils import (
     OpenApiParameter,
     OpenApiTypes,
 )
-from django.utils.translation import gettext_lazy as _
 
 from pinakes.main.models import Tenant
 from pinakes.main.approval.models import (
@@ -42,8 +42,11 @@ from pinakes.main.approval.services.link_workflow import (
 from pinakes.main.approval.exceptions import (
     InsufficientParamsException,
 )
-from pinakes.main.approval import validations
+from pinakes.main.approval import validations, permissions
 from pinakes.common.queryset_mixin import QuerySetMixin
+from pinakes.common.auth.keycloak_django.views import (
+    PermissionQuerySetMixin,
+)
 
 logger = logging.getLogger("approval")
 
@@ -98,7 +101,7 @@ class WorkflowFilterBackend(BaseFilterBackend):
         if num_of_nones == 3:
             return queryset
         # List workflows by query parameters
-        elif num_of_nones == 0:
+        if num_of_nones == 0:
             workflow_ids = (
                 LinkWorkflow(None, resource_params)
                 .process(LinkWorkflow.Operation.FIND)
@@ -245,19 +248,41 @@ class WorkflowViewSet(
                 enum=["true", "false"],
                 description="Include extra data such as subrequests and actions",
             ),
+            OpenApiParameter(
+                "persona",
+                required=False,
+                enum=["admin", "approver", "requester"],
+                description="List requests for the user desired persona, default requester",
+            ),
         ],
     ),
 )
-class RequestViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
+class RequestViewSet(
+    NestedViewSetMixin,
+    PermissionQuerySetMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
+):
     """API endpoint for listing and creating requests"""
 
     serializer_class = RequestSerializer
     http_method_names = ["get", "post"]
-    permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
     filterset_fields = "__all__"
     search_fields = ("name", "description", "state", "decision", "reason")
     parent_field_names = ("parent",)
+
+    def get_permissions(self):
+        """override get_permissions method"""
+        if self.action == "create":
+            self.permission_classes = (IsAuthenticated,)
+        else:
+            self.permission_classes = (
+                IsAuthenticated,
+                permissions.RequestPermission,
+            )
+
+        return super().get_permissions()
 
     @extend_schema(
         description="Create an approval request using given parameters, available to everyone",
