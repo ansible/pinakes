@@ -25,7 +25,7 @@ echo -e "\e[32m >>> migration completed \e[97m"
 
 echo -e "\e[32m >>> Fetch UI tar\e[97m"
 
-curl -o ui.tar.xz -L https://github.com/RedHatInsights/catalog-ui/releases/download/latest/catalog-ui.tar.gz
+curl -o ui.tar.xz -L https://github.com/ansible/pinakes-ui/releases/download/latest/catalog-ui.tar.gz
 rm -rf pinakes/ui/catalog
 mkdir -p pinakes/ui/catalog
 tar -xf ui.tar.xz --directory pinakes/ui/catalog

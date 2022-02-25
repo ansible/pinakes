@@ -13,7 +13,7 @@ ADD --chown=1001:1001 certs/*.key ${CERT_PATH}
 
 # ui files
 RUN mkdir -p ${CATALOG_UI_SRC}
-ADD --chown=1001:1001 https://github.com/RedHatInsights/catalog-ui/releases/download/latest/catalog-ui.tar.gz ${CATALOG_UI_SRC}/
+ADD --chown=1001:1001 https://github.com/ansible/pinakes-ui/releases/download/latest/catalog-ui.tar.gz ${CATALOG_UI_SRC}/
 RUN cd ${CATALOG_UI_SRC} && tar -xf catalog-ui.tar.gz && rm -rf catalog-ui.tar.gz
 
 

@@ -27,8 +27,8 @@ cp -R /src /opt/pinakes
 cd /opt/pinakes/
 
 # In some of the dev env they might have their own venv which we should
-# delete from this vm 
-if [ -d "venv" ] 
+# delete from this vm
+if [ -d "venv" ]
 then
     rm -rf venv
 fi
@@ -58,7 +58,7 @@ psql -v ON_ERROR_STOP=1 -h "$PINAKES_POSTGRES_HOST" -U "$PINAKES_POSTGRES_USER" 
 python3 manage.py migrate
 
 # Fetch the UI Tar
-curl -o ui.tar.xz -L https://github.com/RedHatInsights/catalog-ui/releases/download/latest/catalog-ui.tar.gz
+curl -o ui.tar.xz -L https://github.com/ansible/pinakes-ui/releases/download/latest/catalog-ui.tar.gz
 mkdir -p pinakes/ui/catalog
 tar -xf ui.tar.xz --directory pinakes/ui/catalog
 
