@@ -18,7 +18,7 @@ Hi there! We're excited to have you as a contributor.
 
 ## Setting up your development environment
 
-Please view the [developer installation guide](./docs/INSTALL.md)
+Please view the [developer installation guide](./DEV_INSTALL.md)
 
 ## What should I work on?
 

@@ -8,7 +8,7 @@ Pinakes in the future will also support editing of Survey Specs to create differ
 
 For more information about our architecture and services we depend on, see the [architecture doc](./docs/ARCHITECTURE.md)
 
-To install Pinakes, please view the [developer installation guide](./docs/INSTALL.md)
+To install Pinakes, please view the [installation guide](./INSTALL.md)
 
 
 Contributing
