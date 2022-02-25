@@ -7,4 +7,4 @@ Pinakes runs on-prem alongside the [Automation Controller](https://www.ansible.c
  2. Approval, deals with the Approval process and notifications
  3. Inventory, deals with connecting to the Automation Controller using REST API to fetch objects and launch Automation Controller Jobs.
 
-![Alt UsingUploadService](./pinakes.png?raw=true)
+![Pinakes Architecture Diagram](./pinakes.png?raw=true)
