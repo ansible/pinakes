@@ -85,6 +85,8 @@ from pinakes.main.catalog.services.validate_order_item import (
 )
 from pinakes.main.catalog.permissions import (
     PortfolioPermissions,
+    PortfolioItemPermissions,
+    ServicePlanPermissions,
 )
 
 from pinakes.main.catalog import tasks
@@ -317,7 +319,7 @@ class PortfolioItemViewSet(
 
     serializer_class = PortfolioItemSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, PortfolioItemPermissions)
     ordering = ("-id",)
     filterset_fields = (
         "name",

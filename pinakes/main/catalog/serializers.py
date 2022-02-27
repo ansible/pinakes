@@ -13,6 +13,10 @@ from pinakes.main.catalog.models import (
     PortfolioItem,
     ProgressMessage,
 )
+from pinakes.main.catalog.user_capabilities import (
+    PortfolioUserCapabilities,
+    PortfolioItemUserCapabilities,
+)
 from pinakes.main.catalog.services.create_portfolio_item import (
     CreatePortfolioItem,
 )
@@ -36,10 +40,8 @@ class PortfolioSerializer(serializers.ModelSerializer):
         "get_icon_url", allow_null=True
     )
 
-    metadata = serializers.JSONField(
-        read_only=True,
-        help_text="JSON Metadata about the portfolio",
-        default={},
+    metadata = serializers.SerializerMethodField(
+        "get_metadata", allow_null=True
     )
 
     class Meta:
@@ -55,7 +57,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
             "updated_at",
         )
         ordering = ["-created_at"]
-        read_only_fields = ("created_at", "updated_at")
+        read_only_fields = ("created_at", "updated_at", "metadata")
 
     def create(self, validated_data):
         user = self.context["request"].user
@@ -71,6 +73,26 @@ class PortfolioSerializer(serializers.ModelSerializer):
             if obj.icon is not None
             else None
         )
+
+    def get_metadata(self, obj):
+        request = self.context.get("request")
+        return {
+            "statistics": self._statistics_metadata(obj),
+            "user_capabilities": PortfolioUserCapabilities(
+                request.user, obj
+            ).get(),
+        }
+
+    def _statistics_metadata(self, obj):
+        portfolio_item_number = PortfolioItem.objects.filter(
+            portfolio=obj
+        ).count()
+
+        return {
+            "approval_processes": len(obj.tag_resources),
+            "portfolio_items": portfolio_item_number,
+            "shared_groups": obj.share_count,
+        }
 
 
 class PortfolioItemInSerializer(serializers.Serializer):
@@ -103,10 +125,8 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
         "get_icon_url", allow_null=True
     )
 
-    metadata = serializers.JSONField(
-        read_only=True,
-        help_text="JSON Metadata about the portfolio item",
-        default={},
+    metadata = serializers.SerializerMethodField(
+        "get_metadata", allow_null=True
     )
 
     class Meta:
@@ -135,6 +155,20 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
             if obj.icon is not None
             else None
         )
+
+    def get_metadata(self, obj):
+        request = self.context.get("request")
+        return {
+            "statistics": self._statistics_metadata(obj),
+            "user_capabilities": PortfolioItemUserCapabilities(
+                request.user, obj.portfolio
+            ).get(),
+        }
+
+    def _statistics_metadata(self, obj):
+        return {
+            "approval_processes": len(obj.tag_resources),
+        }
 
 
 class CopyPortfolioItemSerializer(serializers.Serializer):

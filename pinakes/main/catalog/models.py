@@ -45,6 +45,10 @@ class Portfolio(AbstractKeycloakResource, ImageableModel, UserOwnedModel):
     tags = TaggableManager()
 
     class Meta:
+        default_permissions = ()
+        permissions = (
+            ("can_order_portfolio", "Can order products in a portfolio"),
+        )
         constraints = [
             models.CheckConstraint(
                 name="%(app_label)s_%(class)s_name_empty",
@@ -67,27 +71,16 @@ class Portfolio(AbstractKeycloakResource, ImageableModel, UserOwnedModel):
     def tag_resources(self):
         return list(self.tags.all())
 
-    @property
-    def metadata(self):
-        return {"statistics": self._statistics_metadata()}
-
-    def _statistics_metadata(self):
-        portfolio_item_number = PortfolioItem.objects.filter(
-            portfolio=self
-        ).count()
-
-        return {
-            "approval_processes": len(self.tag_resources),
-            "portfolio_items": portfolio_item_number,
-            "shared_groups": self.share_count,
-        }
-
     def __str__(self):
         return self.name
 
 
 class PortfolioItem(ImageableModel, UserOwnedModel):
     """Portfolio Item represent a Job Template or a Workflow."""
+
+    KEYCLOAK_TYPE = "catalog:portfolio"
+    KEYCLOAK_ACTIONS = ["read", "update", "delete", "order"]
+    KEYCLOAK_PARENT_FIELD = "portfolio_id"
 
     favorite = models.BooleanField(
         default=False, help_text="Definition of a favorite portfolio item"
@@ -162,15 +155,6 @@ class PortfolioItem(ImageableModel, UserOwnedModel):
     @property
     def tag_resources(self):
         return list(self.tags.all())
-
-    @property
-    def metadata(self):
-        return {"statistics": self._statistics_metadata()}
-
-    def _statistics_metadata(self):
-        return {
-            "approval_processes": len(self.tag_resources),
-        }
 
     def __str__(self):
         return self.name
@@ -566,6 +550,9 @@ class ApprovalRequest(BaseModel):
 
 class ServicePlan(BaseModel):
     """Service Plan Model"""
+
+    KEYCLOAK_TYPE = "catalog:portfolio"
+    KEYCLOAK_ACTIONS = ["read", "partial_update", "reset"]
 
     name = models.CharField(
         max_length=255,
