@@ -21,13 +21,13 @@ except ImportError:
     sys.exit(1)
 
 # Use SQLite for unit tests instead of PostgreSQL
-if "pytest" in sys.modules:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "catalog_test.db",
-        },
-    }
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "catalog_test.db",
+    },
+}
 
 ALLOWED_HOSTS = ["*"]
 CONTROLLER_VERIFY_SSL = "False"
