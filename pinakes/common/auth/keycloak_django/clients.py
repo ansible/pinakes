@@ -5,6 +5,7 @@ from pinakes.common.auth.keycloak.admin import (
     AdminClient,
 )
 from pinakes.common.auth.keycloak.authz import AuthzClient
+from pinakes.common.auth.keycloak.openid import OpenIdConnect
 from pinakes.common.auth.keycloak.uma import (
     create_uma_client,
     UmaClient,
@@ -18,6 +19,7 @@ __all__ = (
     "get_admin_client",
     "get_uma_client",
     "get_authz_client",
+    "get_oidc_client",
 )
 
 
@@ -55,3 +57,14 @@ def get_authz_client(access_token: str) -> AuthzClient:
         uma2_policy=ManualUma2ConfigurationPolicy(server_url, realm),
         verify_ssl=settings.KEYCLOAK_VERIFY_SSL,
     )
+
+
+def get_oidc_client() -> OpenIdConnect:
+    oidc_client = OpenIdConnect(
+        settings.KEYCLOAK_URL,
+        settings.KEYCLOAK_REALM,
+        settings.KEYCLOAK_CLIENT_ID,
+        settings.KEYCLOAK_CLIENT_SECRET,
+        verify_ssl=settings.KEYCLOAK_VERIFY_SSL,
+    )
+    return oidc_client
