@@ -38,8 +38,8 @@ Here are a few things you can do to help the visibility of your change, and incr
 - Make the smallest change possible
 - Write good commit messages. See [How to write a Git commit message](https://chris.beams.io/posts/git-commit/).
 
-We like to keep our commit history clean, and will require resubmission of pull requests that contain merge commits. Use `git pull --rebase`, rather than
-`git pull`, and `git rebase`, rather than `git merge`.
+We like to keep our commit history clean, and will require resubmission of pull requests that contain merge commits. Use `git pull --rebase` over
+`git pull`, as well as `git rebase` over `git merge`.
 
 Sometimes it might take us a while to fully review your PR. We try to keep the `devel` branch in good working order, and so we review requests carefully. Please be patient.
 
@@ -47,4 +47,4 @@ All submitted PRs will have the linter and unit tests run against them via githu
 
 ## Reporting Issues
 
-We welcome your feedback, and encourage you to file an issue when you run into a problem. But before opening a new issues, we ask that you please view our [Issues guide](./ISSUES.md).
+We welcome your feedback, and encourage you to file an issue when you run into a problem.
