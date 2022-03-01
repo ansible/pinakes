@@ -1,0 +1,33 @@
+- include_tasks: keycloak_token.yml
+- ansible.builtin.debug:
+    msg: "Creating Role {{ role.key }}"
+  name: "Role Name"
+- community.general.keycloak_role:
+    validate_certs: false
+    auth_client_id: "{{ auth_client_id }}"
+    auth_keycloak_url: "{{ auth_keycloak_url }}"
+    auth_password: "{{ auth_password }}"
+    auth_realm: "{{ auth_realm }}"
+    auth_username: "{{ auth_username }}"
+    client_id: catalog
+    description: "{{ role.value.description }}"
+    name: "{{ role.key }}"
+    realm: "{{ realm_name }}"
+    state: present
+  name: "Create role"
+  register: role_created
+- name: "Set Policy ID"
+  set_fact:
+    role_id: "{{ role_created.end_state.id }}"
+- include_tasks: create_resource.yml
+  loop_control:
+    label: "{{ resource.name }}"
+    loop_var: resource
+  when: "role.value.resources is defined"
+  with_items: "{{ role.value.resources }}"
+- include_tasks: create_policy.yml
+  loop_control:
+    label: "{{ policy.name }}"
+    loop_var: policy
+  when: "role.value.policies is defined"
+  with_items: "{{ role.value.policies }}"

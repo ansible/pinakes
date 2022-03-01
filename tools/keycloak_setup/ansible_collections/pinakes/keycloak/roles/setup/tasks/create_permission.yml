@@ -1,0 +1,63 @@
+- ansible.builtin.debug:
+    msg: "Creating Permission {{ permission.name }}"
+  name: "Permission Name"
+- name: "Get scope if specified"
+  register: scope_access
+  uri:
+    validate_certs: false
+    headers:
+      Accept: application/json
+      Authorization: "Bearer {{ keycloak_token.json.access_token }}"
+      Content-type: application/json
+    method: GET
+    status_code:
+      - 200
+    url:
+      "{{ auth_keycloak_url }}/admin/realms/{{ realm_name }}/clients/{{ catalog_client['id']
+      }}/authz/resource-server/scope?deep=false&first=0&max=20&name={{ permission.scope_name
+      }}"
+  when: "permission.scope_name is defined"
+- name: "Set Scope ID"
+  set_fact:
+    scope_id: "{{ scope_access['json'][0].id }}"
+  when: "permission.scope_name is defined and scope_access is defined"
+- name: "Set Policy Value"
+  set_fact:
+    extra_values:
+      policies:
+        - "{{ policy_id }}"
+  when: "scope_id is not defined"
+- name: "Set Policy & Scope Value"
+  set_fact:
+    extra_values:
+      policies:
+        - "{{ policy_id }}"
+      scopes:
+        - "{{ scope_id }}"
+  when: "scope_id is defined"
+- loop_control:
+    loop_var: current_item
+  name: "create a permission without the scope_name"
+  set_fact:
+    pws: "{{ pws | default({}) | combine({current_item.key: current_item.value}) }}"
+  when: 'current_item.key|string != "scope_name"'
+  with_dict: "{{ permission }}"
+- name: "Create a permission item with policy or policy & scope values"
+  set_fact:
+    permission_item: "{{ pws | combine(extra_values) }}"
+- name: "Create permission"
+  uri:
+    validate_certs: false
+    body: "{{ permission_item | to_json }}"
+    body_format: json
+    headers:
+      Accept: application/json
+      Authorization: "Bearer {{ keycloak_token.json.access_token }}"
+      Content-type: application/json
+    method: POST
+    status_code:
+      - 201
+      - 409
+    url:
+      "{{ auth_keycloak_url }}/admin/realms/{{ realm_name }}/clients/{{ catalog_client['id']
+      }}/authz/resource-server/permission/resource"

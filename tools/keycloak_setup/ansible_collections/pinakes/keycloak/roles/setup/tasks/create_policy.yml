@@ -1,0 +1,72 @@
+- ansible.builtin.debug:
+    msg: "Creating Policy {{ policy.name }}"
+  name: "Policy Name"
+- ansible.builtin.debug:
+    msg: "Role ID {{ role_id }}"
+  name: "Role ID"
+- name: "Set Policy Object"
+  set_fact:
+    policy_item:
+      decisionStrategy: "{{ policy.decisionStrategy }}"
+      description: "{{ policy.description }}"
+      logic: "{{ policy.logic }}"
+      name: "{{ policy.name }}"
+      roles:
+        - id: "{{ role_id }}"
+          required: true
+      type: "{{ policy.type }}"
+- debug:
+    msg: "Policy Object {{ policy_item }}"
+  name: "Log the policy object"
+- name: "Add Policy"
+  register: create_policy
+  uri:
+    validate_certs: false
+    body: "{{ policy_item | to_json }}"
+    body_format: json
+    headers:
+      Accept: application/json
+      Authorization: "Bearer {{ keycloak_token.json.access_token }}"
+      Content-type: application/json
+    method: POST
+    status_code:
+      - 201
+      - 409
+    url:
+      "{{ auth_keycloak_url }}/admin/realms/{{ realm_name }}/clients/{{ catalog_client['id']
+      }}/authz/resource-server/policy/role"
+- name: "Set Policy ID if we created a new policy"
+  set_fact:
+    policy_id: "{{ create_policy.json.id }}"
+  when:
+    - "create_policy.status == 201"
+    - "create_policy.json is defined"
+    - "create_policy.json.id is defined"
+- name: "Get policy if we didn't create a new policy"
+  register: get_policy_list
+  uri:
+    validate_certs: false
+    headers:
+      Accept: application/json
+      Authorization: "Bearer {{ keycloak_token.json.access_token }}"
+      Content-type: application/json
+    method: GET
+    status_code:
+      - 200
+    url:
+      "{{ auth_keycloak_url }}/admin/realms/{{ realm_name }}/clients/{{ catalog_client['id']
+      }}/authz/resource-server/policy?first=0&max=20&name={{ policy.name }}&permission=false"
+  when:
+    - "create_policy.status != 201"
+- name: "Set policy_id from the retrived policy object"
+  set_fact:
+    policy_id: "{{ get_policy_list['json'][0].id }}"
+  when:
+    - "create_policy.status != 201"
+    - "get_policy_list.status == 200"
+- include_tasks: create_permission.yml
+  loop_control:
+    label: "{{ permission.name }}"
+    loop_var: permission
+  when: "policy.permissions is defined"
+  with_items: "{{ policy.permissions }}"

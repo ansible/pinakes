@@ -1,0 +1,277 @@
+description: 'Stores the default roles, scopes, permissions for catalog & approval'
+roles:
+  approval-admin:
+    description: 'The Approval Administrator has access to all approval objects'
+    name: 'Approval Administrator'
+    policies:
+      - decisionStrategy: UNANIMOUS
+        description: 'Approval Administrator Policy'
+        logic: POSITIVE
+        name: approval-admin-policy
+        permissions:
+          - decisionStrategy: UNANIMOUS
+            description: 'Administrator access to all requests'
+            logic: POSITIVE
+            name: approval-admin-all-request-permission
+            resourceType: approval:request
+            type: resource
+          - decisionStrategy: UNANIMOUS
+            description: 'Administrator access to all workflow'
+            logic: POSITIVE
+            name: approval-admin-all-workflow-permission
+            resourceType: approval:workflow
+            type: resource
+          - decisionStrategy: UNANIMOUS
+            description: 'Administrator access to all action'
+            logic: POSITIVE
+            name: approval-admin-all-action-permission
+            resourceType: approval:action
+            type: resource
+          - decisionStrategy: UNANIMOUS
+            description: 'Administrator access to all template'
+            logic: POSITIVE
+            name: approval-admin-all-template-permission
+            resourceType: approval:template
+            type: resource
+        type: role
+    resources:
+      - displayName: 'All Requests'
+        name: approval:request:all
+        scopes:
+          - displayName: 'Approval Request Create'
+            name: approval:request:create
+          - displayName: 'Approval Request Read'
+            name: approval:request:read
+          - displayName: 'Approval Request Update'
+            name: approval:request:update
+          - displayName: 'Approval Request Delete'
+            name: approval:request:delete
+        type: approval:request
+        uris:
+          - api/v1/requests/*
+      - displayName: 'All Approval Templates'
+        name: approval:template:all
+        scopes:
+          - displayName: 'Approval Template Create'
+            name: approval:template:create
+          - displayName: 'Approval Template Read'
+            name: approval:template:read
+          - displayName: 'Approval Template Update'
+            name: approval:template:update
+          - displayName: 'Approval Template Delete'
+            name: approval:template:delete
+        type: approval:template
+        uris:
+          - api/v1/templates/*
+      - displayName: 'All Approval Workflows'
+        name: approval:workflow:all
+        scopes:
+          - displayName: 'Approval Workflow Create'
+            name: approval:workflow:create
+          - displayName: 'Approval Workflow Read'
+            name: approval:workflow:read
+          - displayName: 'Approval Workflow Update'
+            name: approval:template:update
+          - displayName: 'Approval Workflow Delete'
+            name: approval:workflow:delete
+          - displayName: 'Approval Workflow Link'
+            name: approval:workflow:link
+          - displayName: 'Approval Workflow Unlink'
+            name: approval:workflow:unlink
+        type: approval:workflow
+        uris:
+          - api/v1/workflows/*
+      - displayName: 'All Approval Actions'
+        name: approval:action:all
+        scopes:
+          - displayName: 'Approval Action Create'
+            name: approval:action:create
+          - displayName: 'Approval Action Read'
+            name: approval:action:read
+          - displayName: 'Approval Action Update'
+            name: approval:action:update
+          - displayName: 'Approval Action Delete'
+            name: approval:action:delete
+        type: approval:action
+        uris:
+          - api/v1/actions/*
+  approval-approver:
+    description: 'The Approver can approve or deny requests'
+    name: Approver
+    policies:
+      - decisionStrategy: UNANIMOUS
+        description: 'Approval Approver Policy'
+        logic: POSITIVE
+        name: approval-approver-policy
+        permissions:
+          - decisionStrategy: UNANIMOUS
+            description: 'Approver access to Approval Automation Services Catalog'
+            logic: POSITIVE
+            name: approval-approver-access-permission
+            scope_name: approval:access
+            type: scope
+        type: role
+  approval-user:
+    description: 'The Approval User can look at the status of the Approval Requests'
+    name: 'Approval User'
+    policies:
+      - decisionStrategy: UNANIMOUS
+        description: 'Approval User Policy'
+        logic: POSITIVE
+        name: approval-user-policy
+        permissions:
+          - decisionStrategy: UNANIMOUS
+            description: 'User access to Approval Automation Services Catalog'
+            logic: POSITIVE
+            name: approval-user-access-permission
+            scope_name: approval:access
+            type: scope
+        type: role
+  catalog-admin:
+    description: 'The Catalog Administrator has access to all objects in catalog'
+    name: 'Catalog Administrator'
+    policies:
+      - decisionStrategy: UNANIMOUS
+        description: 'Catalog Administrator Policy'
+        logic: POSITIVE
+        name: catalog-admin-policy
+        permissions:
+          - decisionStrategy: UNANIMOUS
+            description: 'Administrator access to all portfolios'
+            logic: POSITIVE
+            name: catalog-admin-all-portfolio-permission
+            resourceType: catalog:portfolio
+            type: resource
+          - decisionStrategy: UNANIMOUS
+            description: 'Administrator access to all portfolio items'
+            logic: POSITIVE
+            name: catalog-admin-all-portfolio-item-permission
+            resourceType: catalog:portfolio_item
+            type: resource
+          - decisionStrategy: UNANIMOUS
+            description: 'Administrator access to all service plans'
+            logic: POSITIVE
+            name: catalog-admin-all-service-plan-permission
+            resourceType: catalog:service_plan
+            type: resource
+          - decisionStrategy: UNANIMOUS
+            description: 'Administrator access to all orders'
+            logic: POSITIVE
+            name: catalog-admin-all-order-permission
+            resourceType: catalog:order
+            type: resource
+          - decisionStrategy: UNANIMOUS
+            description: 'Administrator access to all order items'
+            logic: POSITIVE
+            name: catalog-admin-all-order-item-permission
+            resourceType: catalog:order_item
+            type: resource
+          - decisionStrategy: UNANIMOUS
+            description: 'Administrator access to all progress messages'
+            logic: POSITIVE
+            name: catalog-admin-all-progress-message-permission
+            resourceType: catalog:progress_message
+            type: resource
+        type: role
+    resources:
+      - displayName: 'All Portfolios'
+        name: catalog:portfolio:all
+        scopes:
+          - displayName: 'Catalog Portfolio Create'
+            name: catalog:portfolio:create
+          - displayName: 'Catalog Portfolio Read'
+            name: catalog:portfolio:read
+          - displayName: 'Catalog Portfolio Update'
+            name: catalog:portfolio:update
+          - displayName: 'Catalog Portfolio Delete'
+            name: catalog:portfolio:delete
+          - displayName: 'Catalog Portfolio Order'
+            name: catalog:portfolio:order
+        type: catalog:portfolio
+        uris:
+          - api/v1/portfolios/*
+      - displayName: 'All Portfolio Items'
+        name: catalog:portfolio_item:all
+        scopes:
+          - displayName: 'Catalog Portfolio Item Create'
+            name: catalog:portfolio_item:create
+          - displayName: 'Catalog Portfolio Item Read'
+            name: catalog:portfolio_item:read
+          - displayName: 'Catalog Portfolio Item Update'
+            name: catalog:portfolio_item:update
+          - displayName: 'Catalog Portfolio Item Delete'
+            name: catalog:portfolio_item:delete
+          - displayName: 'Catalog Portfolio Item Order'
+            name: catalog:portfolio_item:order
+        type: catalog:portfolio_item
+        uris:
+          - api/v1/portfolio_items/*
+      - displayName: 'All Service Plans'
+        name: catalog:service_plan:all
+        scopes:
+          - displayName: 'Catalog Service Plan Create'
+            name: catalog:service_plan:create
+          - displayName: 'Catalog Service Plan Read'
+            name: catalog:service_plan:read
+          - displayName: 'Catalog Service Plan Update'
+            name: catalog:service_plan:update
+          - displayName: 'Catalog Service Plan Delete'
+            name: catalog:service_plan:delete
+        type: catalog:service_plan
+        uris:
+          - api/v1/service_plans/*
+      - displayName: 'All Orders'
+        name: catalog:order:all
+        scopes:
+          - displayName: 'Catalog Order Read'
+            name: catalog:order:read
+          - displayName: 'Catalog Order Write'
+            name: catalog:order:write
+          - displayName: 'Catalog Order Order'
+            name: catalog:order:order
+        type: catalog:order
+        uris:
+          - api/v1/orders/*
+      - displayName: 'All Order Items'
+        name: catalog:order_item:all
+        scopes:
+          - displayName: 'Catalog Order Item Read'
+            name: catalog:order_item:read
+          - displayName: 'Catalog Order Item Write'
+            name: catalog:order_item:write
+          - displayName: 'Catalog Order Item Order'
+            name: catalog:order_item:order
+        type: catalog:order_item
+        uris:
+          - api/v1/order_items/*
+      - displayName: 'All Progress Messages'
+        name: catalog:progress_message:all
+        scopes:
+          - displayName: 'Catalog Order Item Read'
+            name: catalog:progress_message:read
+        type: catalog:progress_message
+        uris:
+          - api/v1/progress_messages/*
+  catalog-user:
+    description: 'The Catalog User has very limited access other than to the objects
+      he creates'
+    name: 'Catalog User'
+    policies:
+      - decisionStrategy: UNANIMOUS
+        description: 'Catalog User Policy'
+        logic: POSITIVE
+        name: catalog-user-policy
+        permissions:
+          - decisionStrategy: UNANIMOUS
+            description: 'User access to Automation Services Catalog'
+            logic: POSITIVE
+            name: catalog-user-access-permission
+            scope_name: catalog:access
+            type: scope
+        type: role
+scopes:
+  - displayName: 'Catalog Access'
+    name: catalog:access
+  - displayName: 'Approval Access'
+    name: catalog_approval:access
+version: 1.0

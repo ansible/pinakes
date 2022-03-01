@@ -1,0 +1,24 @@
+- include_tasks: create_scope.yml
+  loop_control:
+    loop_var: scope
+  when: 'rbac.scopes is defined'
+  with_items: '{{ rbac.scopes }}'
+- include_tasks: service_account_roles.yml
+- include_tasks: create_role.yml
+  loop_control:
+    label: '{{ role.key }}'
+    loop_var: role
+  when: 'rbac.roles is defined'
+  with_dict: '{{ rbac.roles }}'
+- include_tasks: create_group.yml
+  loop_control:
+    label: '{{ group.name }}'
+    loop_var: group
+  when: 'seed_groups is defined'
+  with_items: '{{ seed_groups }}'
+- include_tasks: create_user.yml
+  loop_control:
+    label: '{{ user.username }}'
+    loop_var: user
+  when: 'seed_users is defined'
+  with_items: '{{ seed_users }}'

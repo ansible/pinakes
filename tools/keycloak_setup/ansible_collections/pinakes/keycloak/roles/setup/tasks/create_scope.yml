@@ -1,0 +1,19 @@
+- ansible.builtin.debug:
+    msg: "Creating Scope {{ scope.name }}"
+  name: "Scope Name"
+- name: "Create scope"
+  uri:
+    validate_certs: false
+    body: "{{ scope | to_json }}"
+    body_format: json
+    headers:
+      Accept: application/json
+      Authorization: "Bearer {{ keycloak_token.json.access_token }}"
+      Content-type: application/json
+    method: POST
+    status_code:
+      - 201
+      - 409
+    url:
+      "{{ auth_keycloak_url }}/admin/realms/{{ realm_name }}/clients/{{ catalog_client['id']
+      }}/authz/resource-server/scope"

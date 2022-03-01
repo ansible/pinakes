@@ -1,0 +1,21 @@
+admin_url: http://app:8000/admin
+auth_client_id: admin-cli
+auth_keycloak_url:
+  "{{ lookup('env', 'PINAKES_KEYCLOAK_URL') | default('http://default_keycloak:8080/auth',
+  True) }}"
+auth_password:
+  "{{ lookup('env', 'PINAKES_KEYCLOAK_PASSWORD') | default('admin', True)
+  }}"
+auth_realm: "{{ lookup('env', 'PINAKES_KEYCLOAK_MASTER_REALM') | default('master', True) }}"
+auth_username: "{{ lookup('env', 'PINAKES_KEYCLOAK_USER') | default('admin', True) }}"
+client_guid: d8b127a3-31f6-44c8-a7e4-4ab9a3e78d95
+redirect_uris_str: "{{ lookup('env', 'REDIRECT_URIS_STR') | default('http://app:8000/,http://app:8000/*', True) }}"
+redirect_uris: "{{ redirect_uris_str.split(',') }}"
+root_url: "{{ lookup('env', 'ROOT_URL') | default('http://app:8000/', True) }}"
+social_auth_keycloak_secret: "{{ lookup('env', 'PINAKES_KEYCLOAK_CLIENT_SECRET') | default('REALLYWELLKEPTSECRET', True) }}"
+realm_frontend_url: "{{ lookup('env', 'PINAKES_KEYCLOAK_REALM_FRONTEND_URL') | default('http://keycloak/auth/', True) }}"
+realm_name: aap
+web_origins:
+  - http://app:8000/*
+realm_management_roles:
+  - view-users

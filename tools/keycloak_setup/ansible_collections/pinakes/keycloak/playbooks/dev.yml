@@ -46,4 +46,4 @@
         groups:
           - Finance - Sample
   roles:
-    - mkanoor.catalog_keycloak.setup
+    - setup
