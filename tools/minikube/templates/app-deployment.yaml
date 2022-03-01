@@ -36,13 +36,13 @@ spec:
             - "/opt/app-root/src/tools/minikube/scripts/server.sh"
           env:
             - name: PINAKES_KEYCLOAK_URL
-              value: https://catalog.k8s.local/auth
+              value: http://keycloak:8080/auth
             - name: PINAKES_KEYCLOAK_VERIFY_SSL
               value: "false"
             - name: PINAKES_KEYCLOAK_CLIENT_SECRET
               value: SOMESECRETVALUE
             - name: PINAKES_KEYCLOAK_REALM_FRONTEND_URL
-              value: https://catalog.k8s.local/auth
+              value: http://keycloak.k8s.local/auth
             - name: CONTROLLER_VERIFY_SSL
               value: "False"
             - name: PINAKES_REDIS_HOST
