@@ -21,7 +21,8 @@ from pinakes.main.catalog.tests.factories import (
 
 @pytest.mark.django_db
 def test_portfolio_copy():
-    portfolio = PortfolioFactory()
+    """Copy a portfolio without portfolio items."""
+    portfolio = PortfolioFactory(share_count=10, keycloak_id="gobbledegook")
     options = {
         "portfolio_name": "my test",
     }
@@ -31,10 +32,13 @@ def test_portfolio_copy():
 
     assert Portfolio.objects.count() == 2
     assert svc.new_portfolio.name == "my test"
+    assert svc.new_portfolio.keycloak_id is None
+    assert svc.new_portfolio.share_count == 0
 
 
 @pytest.mark.django_db
 def test_portfolio_copy_with_portfolio_items():
+    """Copy a portfolio with portfolio items."""
     portfolio = PortfolioFactory()
     PortfolioItemFactory(portfolio=portfolio)
 
@@ -57,6 +61,7 @@ def test_portfolio_copy_with_portfolio_items():
 
 @pytest.mark.django_db
 def test_portfolio_copy_with_icon():
+    """Copy a portfolio with icon."""
     image = ImageFactory()
     portfolio = PortfolioFactory(icon=image)
 

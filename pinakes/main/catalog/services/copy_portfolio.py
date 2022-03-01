@@ -31,12 +31,14 @@ class CopyPortfolio:
         self.new_portfolio = None
 
     def process(self):
+        """Start copy proces."""
         self.make_copy()
 
         return self
 
     @transaction.atomic
     def make_copy(self):
+        """Make a copy of the Portfolio."""
         new_icon = (
             CopyImage(self.portfolio.icon).process().new_icon
             if self.portfolio.icon
@@ -45,6 +47,8 @@ class CopyPortfolio:
 
         self.new_portfolio = copy.copy(self.portfolio)
         self.new_portfolio.id = None
+        self.new_portfolio.keycloak_id = None
+        self.new_portfolio.share_count = 0
         self.new_portfolio.name = self._new_portfolio_name()
         self.new_portfolio.icon = new_icon
         self.new_portfolio.save()
