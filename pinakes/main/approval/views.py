@@ -76,7 +76,7 @@ class TemplateViewSet(
     http_method_names = ["get", "post", "patch", "delete"]
     permission_classes = (IsAuthenticated,)
     serializer_class = TemplateSerializer
-    ordering_fields = "__all__"  # This line is optional, default
+    ordering_fields = ("title", "description")
     ordering = ("-id",)
     search_fields = ("title", "description")
 
@@ -268,7 +268,7 @@ class RequestViewSet(
     serializer_class = RequestSerializer
     http_method_names = ["get", "post"]
     ordering = ("-id",)
-    filterset_fields = "__all__"
+    filterset_fields = ("name", "description", "state", "decision", "reason")
     search_fields = ("name", "description", "state", "decision", "reason")
     parent_field_names = ("parent",)
 
@@ -345,7 +345,7 @@ class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
     http_method_names = ["get", "post"]
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
-    filterset_fields = "__all__"
+    filterset_fields = ("operation", "comments")
     search_fields = ("operation", "comments")
     parent_field_names = ("request",)
 
