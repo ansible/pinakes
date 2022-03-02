@@ -41,14 +41,7 @@ class RequestPermission(BaseKeycloakPermission):
     def perform_check_object_permission(
         self, permission, http_request: HttpRequest, _view: Any, obj: Request
     ) -> bool:
-        if obj.user == http_request.user:
-            return True
-        return check_resource_permission(
-            obj.keycloak_type(),
-            obj.keycloak_name(),
-            permission,
-            get_authz_client(http_request.keycloak_user.access_token),
-        )
+        return _request_has_permission(obj, http_request)
 
     def perform_scope_queryset(
         self,
@@ -73,3 +66,15 @@ class RequestPermission(BaseKeycloakPermission):
                 qs = qs.filter(parent=None)
             return qs
         return qs.filter(pk__in=resources.items)
+
+
+def _request_has_permission(request, http_request):
+    if request.user == http_request.user:
+        return True
+
+    return check_resource_permission(
+        request.keycloak_type(),
+        request.keycloak_name(),
+        "read",
+        get_authz_client(http_request.keycloak_user.access_token),
+    )
