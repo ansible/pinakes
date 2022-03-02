@@ -217,7 +217,7 @@ def check_resource_permission(
         scope=scope,
     )
     object_permission = keycloak_models.AuthzPermission(
-        resource=make_resource_name(resource_type, resource_name),
+        resource=resource_name,
         scope=scope,
     )
     return client.check_permissions([wildcard_permission, object_permission])

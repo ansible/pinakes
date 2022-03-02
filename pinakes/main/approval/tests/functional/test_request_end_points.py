@@ -10,28 +10,35 @@ from pinakes.main.approval.tests.factories import (
 from pinakes.main.approval.services.send_event import (
     SendEvent,
 )
+from pinakes.main.approval.permissions import RequestPermission
 
 
 @pytest.mark.django_db
-def test_request_list(api_request):
+def test_request_list(api_request, mocker):
+    scope_queryset = mocker.spy(RequestPermission, "scope_queryset")
     RequestFactory()
     RequestFactory()
-    response = api_request("get", "approval:request-list")
+    response = api_request(
+        "get", "approval:request-list", data={"persona": "admin"}
+    )
 
     assert response.status_code == 200
     content = json.loads(response.content)
 
     assert content["count"] == 2
+    scope_queryset.assert_called_once()
 
 
 @pytest.mark.django_db
-def test_request_retrieve(api_request):
+def test_request_retrieve(api_request, mocker):
+    obj_permission = mocker.spy(RequestPermission, "has_object_permission")
     request = RequestFactory()
     response = api_request("get", "approval:request-detail", request.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == request.id
+    obj_permission.assert_called_once()
 
 
 @pytest.mark.django_db
@@ -51,7 +58,12 @@ def test_request_child_list(api_request):
     parent = RequestFactory()
     RequestFactory(parent=parent)
     RequestFactory(parent=parent)
-    response = api_request("get", "approval:request-request-list", parent.id)
+    response = api_request(
+        "get",
+        "approval:request-request-list",
+        parent.id,
+        data={"persona": "admin"},
+    )
 
     assert response.status_code == 200
     content = json.loads(response.content)
