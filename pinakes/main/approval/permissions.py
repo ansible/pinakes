@@ -5,9 +5,8 @@ from typing import Any
 from django.db import models
 from rest_framework.request import Request as HttpRequest
 
-from pinakes.common.auth.keycloak_django.clients import (
-    get_authz_client,
-)
+from pinakes.common.auth.keycloak_django.clients import get_authz_client
+
 from pinakes.common.auth.keycloak_django.permissions import (
     KeycloakPolicy,
     BaseKeycloakPermission,
@@ -15,9 +14,12 @@ from pinakes.common.auth.keycloak_django.permissions import (
     check_resource_permission,
     get_permitted_resources,
 )
-from pinakes.main.approval.models import (
-    Request,
-)
+from pinakes.main.approval.models import Request
+
+
+PERSONA_ADMIN = "admin"
+PERSONA_USER = "requester"
+PERSONA_APPROVER = "approver"
 
 
 class RequestPermission(BaseKeycloakPermission):
@@ -50,8 +52,8 @@ class RequestPermission(BaseKeycloakPermission):
         view: Any,
         qs: models.QuerySet,
     ) -> models.QuerySet:
-        persona = http_request.GET.get("persona") or "requester"
-        if persona == "requester":
+        persona = http_request.GET.get("persona") or PERSONA_USER
+        if persona == PERSONA_USER:
             if not "parent_id" in view.kwargs:
                 qs = qs.filter(parent=None)
             return qs.filter(user=http_request.user)
@@ -61,7 +63,7 @@ class RequestPermission(BaseKeycloakPermission):
             permission,
             get_authz_client(http_request.keycloak_user.access_token),
         )
-        if persona == "admin" and resources.is_wildcard:
+        if persona == PERSONA_ADMIN and resources.is_wildcard:
             if not "parent_id" in view.kwargs:
                 qs = qs.filter(parent=None)
             return qs
