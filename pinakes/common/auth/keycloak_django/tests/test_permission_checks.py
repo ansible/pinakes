@@ -29,7 +29,9 @@ def test_check_resource_permission():
     client = mock.Mock()
     client.check_permissions.return_value = True
 
-    result = check_resource_permission("myresource", "1", "read", client)
+    result = check_resource_permission(
+        "myresource", "myresource:1", "read", client
+    )
 
     assert result is True
 
