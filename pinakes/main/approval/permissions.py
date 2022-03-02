@@ -3,7 +3,9 @@
 from typing import Any
 
 from django.db import models
+from django.shortcuts import get_object_or_404
 from rest_framework.request import Request as HttpRequest
+from rest_framework.permissions import BasePermission
 
 from pinakes.common.auth.keycloak_django.clients import get_authz_client
 
@@ -14,7 +16,7 @@ from pinakes.common.auth.keycloak_django.permissions import (
     check_resource_permission,
     get_permitted_resources,
 )
-from pinakes.main.approval.models import Request
+from pinakes.main.approval.models import Request, Action
 
 
 PERSONA_ADMIN = "admin"
@@ -68,6 +70,27 @@ class RequestPermission(BaseKeycloakPermission):
                 qs = qs.filter(parent=None)
             return qs
         return qs.filter(pk__in=resources.items)
+
+
+class ActionPermission(BasePermission):
+    """Permission class for Action view"""
+
+    def has_permission(self, http_request: HttpRequest, view: Any) -> bool:
+        """override base has_permission()"""
+
+        if not "request_id" in view.kwargs:
+            return True
+
+        request = get_object_or_404(Request, pk=view.kwargs["request_id"])
+        return _request_has_permission(request, http_request)
+
+    def has_object_permission(
+        self, http_request: HttpRequest, view: Any, obj: Action
+    ) -> bool:
+        """override base has_object_permission()"""
+
+        request = obj.request
+        return _request_has_permission(request, http_request)
 
 
 def _request_has_permission(request, http_request):

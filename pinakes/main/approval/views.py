@@ -343,7 +343,7 @@ class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
 
     serializer_class = ActionSerializer
     http_method_names = ["get", "post"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, permissions.ActionPermission)
     ordering = ("-id",)
     filterset_fields = "__all__"
     search_fields = ("operation", "comments")
