@@ -16,6 +16,11 @@ class QuerySetMixin:
         parent_field_names = getattr(self, "parent_field_names", [])
         queryset_order_by = getattr(self, "queryset_order_by", None)
         serializer_class = self.get_serializer_class() or self.serializer_class
+
+        # If this is swagger return back the empty qs
+        if getattr(self, "swagger_fake_view", False):
+            return serializer_class.Meta.model.objects.none()
+
         queryset = serializer_class.Meta.model.objects.filter(
             tenant=Tenant.current()
         )
