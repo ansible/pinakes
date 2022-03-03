@@ -208,7 +208,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "format": "[{asctime}] [{process:d}] [{levelname}] {module} {thread:d} {message}",
             "style": "{",
         },
         "simple": {
@@ -227,7 +227,7 @@ LOGGING = {
         "console": {
             "level": LOG_LEVEL,
             "class": "logging.StreamHandler",
-            "formatter": "simple",
+            "formatter": "verbose",
         },
         "rq_console": {
             "level": LOG_LEVEL,
