@@ -78,7 +78,7 @@ class ActionPermission(BasePermission):
     def has_permission(self, http_request: HttpRequest, view: Any) -> bool:
         """override base has_permission()"""
 
-        if not "request_id" in view.kwargs:
+        if "request_id" not in view.kwargs:
             return True
 
         request = get_object_or_404(Request, pk=view.kwargs["request_id"])
