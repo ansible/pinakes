@@ -10,7 +10,10 @@ from pinakes.main.approval.tests.factories import (
 from pinakes.main.approval.services.send_event import (
     SendEvent,
 )
-from pinakes.main.approval.permissions import RequestPermission
+from pinakes.main.approval.permissions import (
+    RequestPermission,
+    ActionPermission,
+)
 
 
 @pytest.mark.django_db
@@ -72,7 +75,8 @@ def test_request_child_list(api_request):
 
 
 @pytest.mark.django_db
-def test_request_action_list(api_request):
+def test_request_action_list(api_request, mocker):
+    has_permission = mocker.spy(ActionPermission, "has_permission")
     request = RequestFactory()
     ActionFactory(request=request, operation="start")
     ActionFactory(request=request, operation="complete")
@@ -82,6 +86,7 @@ def test_request_action_list(api_request):
     content = json.loads(response.content)
 
     assert content["count"] == 2
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
@@ -152,6 +157,7 @@ def test_create_request_internal_error(api_request, mocker):
 
 @pytest.mark.django_db
 def test_create_action(api_request, mocker):
+    has_permission = mocker.spy(ActionPermission, "has_permission")
     mocker.patch.object(SendEvent, "process")
     request = RequestFactory(state="notified")
     response = api_request(
@@ -164,6 +170,23 @@ def test_create_action(api_request, mocker):
         },
     )
     assert response.status_code == 201
+    has_permission.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_retrieve_action(api_request, mocker):
+    has_permission = mocker.spy(ActionPermission, "has_object_permission")
+    request = RequestFactory()
+    action = ActionFactory(request=request)
+    response = api_request(
+        "get",
+        "approval:action-detail",
+        action.id,
+    )
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["id"] == action.id
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
