@@ -23,7 +23,8 @@ class CurrentUserSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         extra_data = request.keycloak_user.extra_data
         jot = jwt.decode(
-            extra_data["access_token"], options={"verify_signature": False}
+            extra_data["access_token"],
+            options={"verify_signature": False, "verify_aud": False},
         )
         roles = (
             jot.get("resource_access", {})
