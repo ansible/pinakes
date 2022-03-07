@@ -39,6 +39,7 @@ spec:
               value: admin
             - name: KEYCLOAK_USER
               value: admin
+          args: ['-Dkeycloak.frontendUrl=https://keycloak.k8s.local/auth']
           image: quay.io/keycloak/keycloak:15.0.2
           name: keycloak
           ports:
