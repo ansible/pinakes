@@ -13,11 +13,13 @@ from pinakes.main.catalog.tests.factories import (
 from pinakes.main.approval.tests.services.test_link_workflow import (
     create_and_link,
 )
+from pinakes.main.approval.permissions import WorkflowPermission
 
 
 @pytest.mark.django_db
-def test_workflow_list(api_request):
+def test_workflow_list(api_request, mocker):
     """GET a list of workflows"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     WorkflowFactory()
     response = api_request("get", "approval:workflow-list")
 
@@ -25,11 +27,13 @@ def test_workflow_list(api_request):
     content = json.loads(response.content)
 
     assert content["count"] == 1
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
-def test_searching(api_request):
+def test_searching(api_request, mocker):
     """Search by query parameter"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     WorkflowFactory(name="alpha", description="hello")
     WorkflowFactory(name="beta", description="world")
     response = api_request(
@@ -50,11 +54,13 @@ def test_searching(api_request):
     )
     content = json.loads(response.content)
     assert content["count"] == 0
+    assert has_permission.call_count == 3
 
 
 @pytest.mark.django_db
-def test_filtering(api_request):
+def test_filtering(api_request, mocker):
     """Filter by query parameter"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     WorkflowFactory(name="alpha", description="hello")
     WorkflowFactory(name="beta", description="world")
     response = api_request(
@@ -71,11 +77,13 @@ def test_filtering(api_request):
     )
     content = json.loads(response.content)
     assert content["count"] == 0
+    assert has_permission.call_count == 2
 
 
 @pytest.mark.django_db
-def test_ordering(api_request):
+def test_ordering(api_request, mocker):
     """Filter by query parameter"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     WorkflowFactory(name="alpha", description="hello")
     WorkflowFactory(name="beta", description="world")
     response = api_request("get", "approval:workflow-list")
@@ -96,6 +104,7 @@ def test_ordering(api_request):
     content = json.loads(response.content)
     assert content["results"][0]["name"] == "beta"
     assert content["results"][1]["name"] == "alpha"
+    assert has_permission.call_count == 3
 
 
 @pytest.mark.django_db
@@ -110,37 +119,45 @@ def test_list_by_external_object(api_request):
 
 
 @pytest.mark.django_db
-def test_workflow_link_bad(api_request):
+def test_workflow_link_bad(api_request, mocker):
+    """Linking a workflow fails when resource_obj parameters are incomplete"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     resource_obj = {"object_id": 1}
 
     response = api_request("get", "approval:workflow-list", data=resource_obj)
 
     assert response.status_code == 400
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
-def test_workflow_retrieve(api_request):
+def test_workflow_retrieve(api_request, mocker):
     """Retrieve a workflow by its ID"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     workflow = WorkflowFactory()
     response = api_request("get", "approval:workflow-detail", workflow.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == workflow.id
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
-def test_workflow_delete(api_request):
+def test_workflow_delete(api_request, mocker):
     """Delete a Workflow by its ID"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     workflow = WorkflowFactory()
     response = api_request("delete", "approval:workflow-detail", workflow.id)
 
     assert response.status_code == 204
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
 def test_workflow_patch(api_request, mocker):
     """PATCH a Workflow by its ID"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     workflow = WorkflowFactory()
     group_refs = [{"name": "group1", "uuid": "uuid1"}]
     args = (
@@ -161,6 +178,7 @@ def test_workflow_patch(api_request, mocker):
     content = json.loads(response.content)
     assert content["name"] == "update"
     assert content["group_refs"] == group_refs
+    assert has_permission.call_count == 2
 
 
 @pytest.mark.django_db
@@ -177,6 +195,7 @@ def test_workflow_put_not_supported(api_request):
 @pytest.mark.django_db
 def test_workflow_post(api_request, mocker):
     """Create a new Workflow"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     template = TemplateFactory()
     group_refs = [{"name": "group1", "uuid": "uuid1"}]
     args = (
@@ -197,11 +216,13 @@ def test_workflow_post(api_request, mocker):
         return_value=group_refs,
     )
     assert api_request(*args).status_code == 201
+    assert has_permission.call_count == 2
 
 
 @pytest.mark.django_db
-def test_workflow_post_bad(api_request):
+def test_workflow_post_bad(api_request, mocker):
     """Create a new Workflow but lack group uuid"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     template = TemplateFactory()
     response = api_request(
         "post",
@@ -215,10 +236,13 @@ def test_workflow_post_bad(api_request):
     )
 
     assert response.status_code == 400
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
-def test_workflow_link(api_request):
+def test_workflow_link(api_request, mocker):
+    """Add an approval tag to a resource object"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     workflow = WorkflowFactory()
     portfolio = PortfolioFactory()
     resource_obj = {
@@ -232,11 +256,13 @@ def test_workflow_link(api_request):
     )
 
     assert response.status_code == 204
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
-def test_workflow_unlink(api_request):
+def test_workflow_unlink(api_request, mocker):
     """Remove approval tag on a remote object"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     workflow, _portfolio, resource_obj = create_and_link()
 
     response = api_request(
@@ -244,3 +270,4 @@ def test_workflow_unlink(api_request):
     )
 
     assert response.status_code == 204
+    has_permission.assert_called_once()

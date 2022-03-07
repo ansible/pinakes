@@ -16,12 +16,60 @@ from pinakes.common.auth.keycloak_django.permissions import (
     check_resource_permission,
     get_permitted_resources,
 )
-from pinakes.main.approval.models import Request, Action
+from pinakes.main.approval.models import Request, Action, Template, Workflow
 
 
 PERSONA_ADMIN = "admin"
 PERSONA_USER = "requester"
 PERSONA_APPROVER = "approver"
+
+
+class TemplatePermission(BaseKeycloakPermission):
+    """Permission class for Template view"""
+
+    access_policies = {
+        "list": KeycloakPolicy("read", KeycloakPolicy.Type.WILDCARD),
+        "retrieve": KeycloakPolicy("read", KeycloakPolicy.Type.WILDCARD),
+        "create": KeycloakPolicy("create", KeycloakPolicy.Type.WILDCARD),
+        "partial_update": KeycloakPolicy(
+            "update", KeycloakPolicy.Type.WILDCARD
+        ),
+        "destroy": KeycloakPolicy("delete", KeycloakPolicy.Type.WILDCARD),
+    }
+
+    def perform_check_permission(
+        self, permission: str, http_request: HttpRequest, _view: Any
+    ) -> bool:
+        return check_wildcard_permission(
+            Template.keycloak_type(),
+            permission,
+            get_authz_client(http_request.keycloak_user.access_token),
+        )
+
+
+class WorkflowPermission(BaseKeycloakPermission):
+    """Permission class for Workflow view"""
+
+    access_policies = {
+        "list": KeycloakPolicy("read", KeycloakPolicy.Type.WILDCARD),
+        "retrieve": KeycloakPolicy("read", KeycloakPolicy.Type.WILDCARD),
+        "create": KeycloakPolicy("create", KeycloakPolicy.Type.WILDCARD),
+        "partial_update": KeycloakPolicy(
+            "update", KeycloakPolicy.Type.WILDCARD
+        ),
+        "destroy": KeycloakPolicy("delete", KeycloakPolicy.Type.WILDCARD),
+        "link": KeycloakPolicy("link", KeycloakPolicy.Type.WILDCARD),
+        "unlink": KeycloakPolicy("unlink", KeycloakPolicy.Type.WILDCARD),
+    }
+
+    def perform_check_permission(
+        self, permission: str, http_request: HttpRequest, _view: Any
+    ) -> bool:
+        return check_wildcard_permission(
+            Workflow.keycloak_type(),
+            permission,
+            get_authz_client(http_request.keycloak_user.access_token),
+        )
 
 
 class RequestPermission(BaseKeycloakPermission):

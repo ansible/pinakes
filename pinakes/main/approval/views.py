@@ -74,7 +74,10 @@ class TemplateViewSet(
     """API endpoint for listing and templates."""
 
     http_method_names = ["get", "post", "patch", "delete"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (
+        IsAuthenticated,
+        permissions.TemplatePermission,
+    )
     serializer_class = TemplateSerializer
     ordering_fields = ("title", "description")
     ordering = ("-id",)
@@ -147,7 +150,10 @@ class WorkflowViewSet(
 
     serializer_class = WorkflowSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (
+        IsAuthenticated,
+        permissions.WorkflowPermission,
+    )
     filter_backends = (
         WorkflowFilterBackend,
         DjangoFilterBackend,

@@ -6,40 +6,53 @@ from pinakes.main.approval.tests.factories import (
     TemplateFactory,
     WorkflowFactory,
 )
+from pinakes.main.approval.permissions import (
+    TemplatePermission,
+    WorkflowPermission,
+)
 
 
 @pytest.mark.django_db
-def test_template_list(api_request):
+def test_template_list(api_request, mocker):
     """Get a list of templates"""
+    has_permission = mocker.spy(TemplatePermission, "has_permission")
     TemplateFactory()
     response = api_request("get", "approval:template-list")
 
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["count"] == 2  # including the default
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
-def test_template_retrieve(api_request):
+def test_template_retrieve(api_request, mocker):
     """RETRIEVE a template by its id"""
+    has_permission = mocker.spy(TemplatePermission, "has_permission")
     template = TemplateFactory()
     response = api_request("get", "approval:template-detail", template.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == template.id
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
-def test_template_delete(api_request):
+def test_template_delete(api_request, mocker):
+    """Delete a template"""
+    has_permission = mocker.spy(TemplatePermission, "has_permission")
     template = TemplateFactory()
     response = api_request("delete", "approval:template-detail", template.id)
 
     assert response.status_code == 204
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
-def test_template_patch(api_request):
+def test_template_patch(api_request, mocker):
+    """Update a template"""
+    has_permission = mocker.spy(TemplatePermission, "has_permission")
     template = TemplateFactory()
     response = api_request(
         "patch", "approval:template-detail", template.id, {"title": "update"}
@@ -48,6 +61,7 @@ def test_template_patch(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["title"] == "update"
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
@@ -62,8 +76,9 @@ def test_portfolio_put_not_supported(api_request):
 
 
 @pytest.mark.django_db
-def test_template_workflows_get(api_request):
+def test_template_workflows_get(api_request, mocker):
     """Fetch workflows for a template"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
     template = TemplateFactory()
     workflow = WorkflowFactory(template=template)
     response = api_request(
@@ -75,10 +90,13 @@ def test_template_workflows_get(api_request):
 
     assert content["count"] == 1
     assert content["results"][0]["id"] == workflow.id
+    has_permission.assert_called_once()
 
 
 @pytest.mark.django_db
-def test_template_post(api_request):
+def test_template_post(api_request, mocker):
+    """Create a template"""
+    has_permission = mocker.spy(TemplatePermission, "has_permission")
     TenantFactory()
     response = api_request(
         "post",
@@ -90,3 +108,4 @@ def test_template_post(api_request):
     content = json.loads(response.content)
     assert content["title"] == "abcdef"
     assert content["description"] == "abc"
+    has_permission.assert_called_once()
