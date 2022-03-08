@@ -4,15 +4,16 @@ from django.db.models.functions import Length
 from django.contrib.auth import get_user_model
 
 from pinakes.main.models import BaseModel
-from pinakes.common.auth.keycloak_django import (
-    AbstractKeycloakResource,
-)
+from pinakes.common.auth.keycloak_django.models import KeycloakMixin
+from pinakes.common.auth.keycloak_django import AbstractKeycloakResource
 
 models.CharField.register_lookup(Length)
 
 
-class Template(BaseModel):
+class Template(KeycloakMixin, BaseModel):
     """Template model"""
+
+    KEYCLOAK_TYPE = "approval:template"
 
     title = models.CharField(max_length=255, help_text="Name of the template")
     description = models.TextField(
@@ -39,8 +40,10 @@ class Template(BaseModel):
         return self.title
 
 
-class Workflow(BaseModel):
+class Workflow(KeycloakMixin, BaseModel):
     """Workflow model"""
+
+    KEYCLOAK_TYPE = "approval:workflow"
 
     name = models.CharField(max_length=255, help_text="Name of the workflow")
     description = models.TextField(
