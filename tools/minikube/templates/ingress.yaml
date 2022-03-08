@@ -7,6 +7,9 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  tls:
+    - hosts:
+        - "keycloak.k8s.local"
   rules:
     - host: "keycloak.k8s.local"
       http:
@@ -30,6 +33,9 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/secure-backends: "true"
 spec:
+  tls:
+    - hosts:
+        - "catalog.k8s.local"
   rules:
     - host: "catalog.k8s.local"
       http:
