@@ -19,7 +19,7 @@ spec:
            - name: PINAKES_KEYCLOAK_PASSWORD
              value: admin
            - name: PINAKES_KEYCLOAK_REALM_FRONTEND_URL
-             value: http://keycloak.k8s.local/auth
+             value: https://keycloak.k8s.local/auth
            - name: REDIRECT_URIS_STR
              value: http://app:8000,http://app:8000/*,*
         command:  [/opt/app-root/src/tools/docker/scripts/keycloak-setup.sh]
