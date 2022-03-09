@@ -1,5 +1,6 @@
 import django_rq
 import yaml
+import importlib.resources
 from django.http import Http404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
@@ -92,9 +93,9 @@ class AboutView(APIView):
     def get(self, request, *args, **kwargs):
         """Returns product and version info"""
 
-        with open("about.yml") as file:
-            about = yaml.load(file, Loader=yaml.FullLoader)
-            return Response(
-                serializers.AboutSerializer(about).data,
-                status=status.HTTP_200_OK,
-            )
+        text = importlib.resources.read_text("pinakes", "about.yml")
+        about = yaml.safe_load(text)
+        return Response(
+            serializers.AboutSerializer(about).data,
+            status=status.HTTP_200_OK,
+        )
