@@ -305,8 +305,10 @@ class MessageableMixin:
         )
 
 
-class Order(UserOwnedModel, MessageableMixin):
+class Order(UserOwnedModel, MessageableMixin, KeycloakMixin):
     """Order object to wrap order items."""
+
+    KEYCLOAK_TYPE = "catalog:order"
 
     class State(models.TextChoices):
         """Available states for Order"""
