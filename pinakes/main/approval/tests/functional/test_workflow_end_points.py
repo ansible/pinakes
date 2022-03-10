@@ -108,6 +108,22 @@ def test_ordering(api_request, mocker):
 
 
 @pytest.mark.django_db
+def test_pagination(api_request, mocker):
+    """Accept query parameter for pagination"""
+    WorkflowFactory(name="alpha", description="hello")
+    WorkflowFactory(name="beta", description="world")
+    WorkflowFactory(name="gamma", description="!")
+
+    response = api_request(
+        "get", "approval:workflow-list", data={"page": 2, "page_size": 2}
+    )
+    assert response.data["count"] == 3
+    assert len(response.data["results"]) == 1
+    assert response.data["next"] is None
+    assert response.data["previous"] is not None
+
+
+@pytest.mark.django_db
 def test_list_by_external_object(api_request):
     """List workflows by linked external object"""
     _workflow, _portfolio, resource_obj = create_and_link()

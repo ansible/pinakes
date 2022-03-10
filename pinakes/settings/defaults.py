@@ -113,7 +113,7 @@ DATABASES = {
 
 # REST Framework configuration
 REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "pinakes.common.pagination.CatalogPageNumberPagination",
     "PAGE_SIZE": 25,
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
@@ -308,7 +308,7 @@ RQ_CRONJOBS = [
 # Auto generation of openapi spec using Spectacular
 SPECTACULAR_SETTINGS = {
     "TITLE": "Catalog API",
-    "DESCRIPTION": "A set of APIs to create and manage Automation Services Catalogs and order from them.",
+    "DESCRIPTION": "A set of APIs to create and manage Ansible catalogs and order from them.",
     "VERSION": "0.1.0",
     "CONTACT": {
         "email": "support@redhat.com",
