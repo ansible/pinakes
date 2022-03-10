@@ -36,7 +36,7 @@ def test_wildcard_permissions(action, expected):
     _test_get_permissions(KeycloakPolicy.Type.WILDCARD, action, expected)
 
 
-@pytest.mark.parametrize(("action", "expected"), [])
+@pytest.mark.parametrize(("action", "expected"), [("list", "read")])
 def test_queryset_permissions(action, expected):
     _test_get_permissions(KeycloakPolicy.Type.QUERYSET, action, expected)
 
