@@ -13,12 +13,7 @@ from pinakes.common.auth.keycloak_django.permissions import (
     check_resource_permission,
     get_permitted_resources,
 )
-from pinakes.main.catalog.models import (
-    Portfolio,
-)
-
-# FIXME(cutwater): Permission classes share a lot of common code and must be
-#   refactored
+from pinakes.main.catalog.models import Portfolio
 
 
 class PortfolioPermission(BaseKeycloakPermission):
@@ -58,8 +53,10 @@ class PortfolioPermission(BaseKeycloakPermission):
         )
 
     def perform_check_object_permission(
-        self, permission, request: Request, view: Any, obj: Portfolio
+        self, permission, request: Request, view: Any, obj: Any
     ) -> bool:
+        if not isinstance(obj, Portfolio):
+            return False
         return check_resource_permission(
             obj.keycloak_type(),
             obj.keycloak_name(),
