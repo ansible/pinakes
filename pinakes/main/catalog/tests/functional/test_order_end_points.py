@@ -2,7 +2,10 @@
 import json
 import pytest
 
-from pinakes.main.catalog.permissions import OrderPermission
+from pinakes.main.catalog.permissions import (
+    OrderPermission,
+    OrderItemPermission,
+)
 from pinakes.main.catalog.tests.factories import (
     OrderFactory,
     OrderItemFactory,
@@ -203,6 +206,7 @@ def test_order_post(api_request, mocker):
 @pytest.mark.django_db
 def test_order_order_items_get(api_request, mocker):
     """List OrderItems by order id"""
+    scope_queryset = mocker.spy(OrderItemPermission, "perform_scope_queryset")
     order1 = OrderFactory()
     order2 = OrderFactory()
     OrderItemFactory(order=order1)
@@ -216,11 +220,15 @@ def test_order_order_items_get(api_request, mocker):
 
     assert content["count"] == 1
     assert content["results"][0]["id"] == order_item.id
+    scope_queryset.assert_called_once()
 
 
 @pytest.mark.django_db
 def test_order_order_item_post(api_request, mocker):
     """Create a new order item from an order"""
+    perform_check_permission = mocker.spy(
+        OrderItemPermission, "perform_check_permission"
+    )
     order = OrderFactory()
     service_offering = ServiceOfferingFactory()
     portfolio_item = PortfolioItemFactory(
@@ -240,3 +248,4 @@ def test_order_order_item_post(api_request, mocker):
     assert content["name"] == portfolio_item.name
     assert content["order"] == str(order.id)
     assert content["inventory_service_plan_ref"] == str(service_plan.id)
+    perform_check_permission.assert_called_once()
