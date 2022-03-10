@@ -26,7 +26,6 @@ from pinakes.common.auth.keycloak import (
     models as keycloak_models,
 )
 from pinakes.common.auth.keycloak.authz import AuthzClient
-from pinakes.common.auth.keycloak_django.models import KeycloakMixin
 from pinakes.common.auth.keycloak_django.utils import (
     make_scope_name,
     make_resource_name,
@@ -55,6 +54,11 @@ KeycloakPoliciesMap = Dict[
 ]
 
 
+# Because DRF includes some hacky piece of code for HTML
+# form rendering, which leads wrong objects being passed
+# to has_object_permission method, additional type checks may be required.
+# See https://github.com/encode/django-rest-framework/issues/2089
+# for more details.
 class BaseKeycloakPermission(_BasePermission):
     """Base class for keycloak based permission classes.
 
@@ -128,13 +132,6 @@ class BaseKeycloakPermission(_BasePermission):
         )
         if permission is None:
             return True
-        # Because DRF includes some hacky piece of code for HTML
-        # form rendering, which leads wrong objects being passed
-        # to has_object_permission method, additional checks are required.
-        # See https://github.com/encode/django-rest-framework/issues/2089
-        # for more details.
-        if not isinstance(obj, KeycloakMixin):
-            return False
         return self.perform_check_object_permission(
             permission, request, view, obj
         )
