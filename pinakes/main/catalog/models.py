@@ -10,6 +10,7 @@ from taggit.managers import TaggableManager
 from pinakes.common.auth.keycloak_django import (
     AbstractKeycloakResource,
 )
+from pinakes.common.auth.keycloak_django.models import KeycloakMixin
 from pinakes.main.models import (
     BaseModel,
     Image,
@@ -86,8 +87,10 @@ class Portfolio(AbstractKeycloakResource, ImageableModel, UserOwnedModel):
         return self.name
 
 
-class PortfolioItem(ImageableModel, UserOwnedModel):
+class PortfolioItem(KeycloakMixin, ImageableModel, UserOwnedModel):
     """Portfolio Item represent a Job Template or a Workflow."""
+
+    KEYCLOAK_TYPE = "catalog:portfolio"
 
     favorite = models.BooleanField(
         default=False, help_text="Definition of a favorite portfolio item"
