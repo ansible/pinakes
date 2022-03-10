@@ -31,9 +31,6 @@ from pinakes.common.serializers import TaskSerializer
 from pinakes.common.tag_mixin import TagMixin
 from pinakes.common.image_mixin import ImageMixin
 from pinakes.common.queryset_mixin import QuerySetMixin
-from pinakes.main.catalog.permissions import (
-    PortfolioPermission,
-)
 
 from pinakes.main.models import Tenant
 from pinakes.main.common.models import Group
@@ -48,6 +45,7 @@ from pinakes.main.catalog.models import (
     PortfolioItem,
     ProgressMessage,
 )
+from pinakes.main.catalog import permissions
 from pinakes.main.catalog.serializers import (
     ApprovalRequestSerializer,
     ServicePlanSerializer,
@@ -150,7 +148,7 @@ class PortfolioViewSet(
 
     serializer_class = PortfolioSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
-    permission_classes = (IsAuthenticated, PortfolioPermission)
+    permission_classes = (IsAuthenticated, permissions.PortfolioPermission)
     ordering = ("-id",)
     filterset_fields = ("name", "description", "created_at", "updated_at")
     search_fields = ("name", "description")
