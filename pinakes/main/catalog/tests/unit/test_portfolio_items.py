@@ -39,11 +39,12 @@ class TestPortfolioItems:
 
         assert portfolio_item.metadata["statistics"]["approval_processes"] == 0
 
-        api_request(
+        response = api_request(
             "post",
             "catalog:portfolioitem-tag",
             portfolio_item.id,
             {"name": "test_tag"},
         )
+        assert response.status_code == 201
 
         assert portfolio_item.metadata["statistics"]["approval_processes"] == 1
