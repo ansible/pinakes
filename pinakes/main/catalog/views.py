@@ -460,12 +460,17 @@ class PortfolioItemViewSet(
         description="Delete an existing order",
     ),
 )
-class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
+class OrderViewSet(
+    NestedViewSetMixin,
+    PermissionQuerySetMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
+):
     """API endpoint for listing and creating orders."""
 
     serializer_class = OrderSerializer
     http_method_names = ["get", "post", "head", "delete"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, permissions.OrderPermission)
     ordering = ("-id",)
     filterset_fields = (
         "state",
@@ -484,8 +489,7 @@ class OrderViewSet(NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet):
     @action(methods=["post"], detail=True)
     def submit(self, request, pk):
         """Orders the specified pk order."""
-        order = get_object_or_404(Order, pk=pk)
-
+        order = self.get_object()
         if not order.product:
             raise BadParamsException(
                 _("Order {} does not have related order items").format(

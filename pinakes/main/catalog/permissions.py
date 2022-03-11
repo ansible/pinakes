@@ -16,6 +16,7 @@ from pinakes.common.auth.keycloak_django.permissions import (
 from pinakes.main.catalog.models import (
     Portfolio,
     PortfolioItem,
+    Order,
 )
 
 
@@ -145,3 +146,51 @@ class PortfolioItemPermission(BaseKeycloakPermission):
             return qs
         else:
             return qs.filter(portfolio__in=resources.items)
+
+
+class OrderPermission(BaseKeycloakPermission):
+    access_policies = {
+        "list": KeycloakPolicy("read", KeycloakPolicy.Type.QUERYSET),
+        "create": KeycloakPolicy("create", KeycloakPolicy.Type.WILDCARD),
+        "retrieve": KeycloakPolicy("read", KeycloakPolicy.Type.OBJECT),
+        "destroy": KeycloakPolicy("delete", KeycloakPolicy.Type.OBJECT),
+        # Custom actions
+        # TODO(cutwater): Define policies for `submit` and `cancel` actions.
+        "submit": KeycloakPolicy("order", KeycloakPolicy.Type.OBJECT),
+        "cancel": KeycloakPolicy("order", KeycloakPolicy.Type.OBJECT),
+    }
+
+    def perform_check_permission(
+        self, permission: str, request: Request, view: Any
+    ) -> bool:
+        return check_wildcard_permission(
+            Order.keycloak_type(),
+            permission,
+            get_authz_client(request.keycloak_user.access_token),
+        )
+
+    def perform_check_object_permission(
+        self,
+        permission: str,
+        request: Request,
+        view: Any,
+        obj: Any,
+    ) -> bool:
+        if check_wildcard_permission(
+            obj.keycloak_type(),
+            permission,
+            get_authz_client(request.keycloak_user.access_token),
+        ):
+            return True
+        return obj.user == request.user
+
+    def perform_scope_queryset(
+        self, permission: str, request: Request, view: Any, qs: models.QuerySet
+    ) -> models.QuerySet:
+        if check_wildcard_permission(
+            Order.keycloak_type(),
+            permission,
+            get_authz_client(request.keycloak_user.access_token),
+        ):
+            return qs
+        return qs.filter(user=request.user)
