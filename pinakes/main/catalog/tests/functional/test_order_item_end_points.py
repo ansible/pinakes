@@ -1,15 +1,22 @@
 """ Module to test OrderItem end points """
 import json
 import pytest
+
+from pinakes.main.catalog.permissions import OrderItemPermission
 from pinakes.main.catalog.tests.factories import (
     OrderItemFactory,
     PortfolioItemFactory,
 )
 
+# FIXME(cutwater): Add unit tests for `catalog:orderitem-list` endpoint.
+
 
 @pytest.mark.django_db
-def test_order_item_retrieve(api_request):
+def test_order_item_retrieve(api_request, mocker):
     """Retrieve a single order item by id"""
+    has_object_permission = mocker.spy(
+        OrderItemPermission, "has_object_permission"
+    )
     order_item = OrderItemFactory()
     response = api_request("get", "catalog:orderitem-detail", order_item.id)
 
@@ -19,10 +26,15 @@ def test_order_item_retrieve(api_request):
     assert content["owner"] == order_item.owner
     assert content["extra_data"] is None
 
+    has_object_permission.assert_called_once()
+
 
 @pytest.mark.django_db
-def test_order_item_retrieve_extra(api_request):
+def test_order_item_retrieve_extra(api_request, mocker):
     """Retrieve a single order item by id with param extra=true"""
+    has_object_permission = mocker.spy(
+        OrderItemPermission, "has_object_permission"
+    )
     portfolio_item = PortfolioItemFactory()
     order_item = OrderItemFactory(portfolio_item=portfolio_item)
     response = api_request(
@@ -39,15 +51,20 @@ def test_order_item_retrieve_extra(api_request):
     assert (
         content["extra_data"]["portfolio_item"]["name"] == portfolio_item.name
     )
+    has_object_permission.assert_called_once()
 
 
 @pytest.mark.django_db
-def test_order_item_delete(api_request):
+def test_order_item_delete(api_request, mocker):
     """Delete a OrderItem by id"""
+    has_object_permission = mocker.spy(
+        OrderItemPermission, "has_object_permission"
+    )
     order_item = OrderItemFactory()
     response = api_request("delete", "catalog:orderitem-detail", order_item.id)
 
     assert response.status_code == 204
+    has_object_permission.assert_called_once()
 
 
 @pytest.mark.django_db

@@ -564,13 +564,16 @@ class OrderViewSet(
     ),
 )
 class OrderItemViewSet(
-    NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
+    NestedViewSetMixin,
+    PermissionQuerySetMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
 ):
     """API endpoint for listing and creating order items."""
 
     serializer_class = OrderItemSerializer
     http_method_names = ["get", "post", "head", "delete"]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, permissions.OrderItemPermission)
     ordering = ("-id",)
     filterset_fields = (
         "name",
