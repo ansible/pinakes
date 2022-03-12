@@ -11,15 +11,10 @@ from pinakes.common.auth.keycloak_django.permissions import (
     KeycloakPolicy,
     BaseKeycloakPermission,
     check_wildcard_permission,
-    check_resource_permission,
+    check_object_permission,
     get_permitted_resources,
 )
-from pinakes.main.catalog.models import (
-    Portfolio,
-    PortfolioItem,
-    Order,
-    OrderItem,
-)
+from pinakes.main.catalog.models import Portfolio, PortfolioItem, Order
 
 
 class PortfolioPermission(BaseKeycloakPermission):
@@ -62,9 +57,8 @@ class PortfolioPermission(BaseKeycloakPermission):
     ) -> bool:
         if not isinstance(obj, Portfolio):
             return False
-        return check_resource_permission(
-            obj.keycloak_type(),
-            obj.keycloak_name(),
+        return check_object_permission(
+            obj,
             permission,
             get_authz_client(request.keycloak_user.access_token),
         )
@@ -125,9 +119,8 @@ class PortfolioItemPermission(BaseKeycloakPermission):
             obj = obj.portfolio
         elif not isinstance(obj, Portfolio):
             return False
-        return check_resource_permission(
-            obj.keycloak_type(),
-            obj.keycloak_name(),
+        return check_object_permission(
+            obj,
             permission,
             get_authz_client(request.keycloak_user.access_token),
         )

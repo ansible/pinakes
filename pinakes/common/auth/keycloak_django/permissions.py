@@ -26,6 +26,7 @@ from pinakes.common.auth.keycloak import (
     models as keycloak_models,
 )
 from pinakes.common.auth.keycloak.authz import AuthzClient
+from pinakes.common.auth.keycloak_django import AbstractKeycloakResource
 from pinakes.common.auth.keycloak_django.utils import (
     make_scope_name,
     make_resource_name,
@@ -216,6 +217,21 @@ def check_resource_permission(
         scope=scope,
     )
     return client.check_permissions([wildcard_permission, object_permission])
+
+
+def check_object_permission(
+    obj: AbstractKeycloakResource,
+    permission: str,
+    client: AuthzClient,
+):
+    if obj.keycloak_id:
+        return check_resource_permission(
+            obj.keycloak_type(), obj.keycloak_name(), permission, client
+        )
+    else:
+        return check_wildcard_permission(
+            obj.keycloak_type(), permission, client
+        )
 
 
 @dataclass(frozen=True)
