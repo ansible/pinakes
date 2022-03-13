@@ -81,10 +81,10 @@ def test_has_permission(check_wildcard_permission):
 
 @pytest.mark.django_db
 @mock.patch(
-    "pinakes.main.catalog.permissions.check_resource_permission",
+    "pinakes.main.catalog.permissions.check_object_permission",
     return_value=True,
 )
-def test_has_object_permission(check_resource_permission):
+def test_has_object_permission(check_object_permission):
     request = mock.Mock()
     view = mock.Mock(action="retrieve")
     portfolio = PortfolioFactory()
@@ -92,9 +92,8 @@ def test_has_object_permission(check_resource_permission):
     permission = PortfolioPermission()
     assert permission.has_object_permission(request, view, portfolio) is True
 
-    check_resource_permission.assert_called_once_with(
-        "catalog:portfolio",
-        f"catalog:portfolio:{portfolio.id}",
+    check_object_permission.assert_called_once_with(
+        portfolio,
         "read",
         mock.ANY,
     )
