@@ -292,6 +292,7 @@ RQ_QUEUES = {
 STARTUP_RQ_JOBS = [
     "pinakes.main.common.tasks.sync_external_groups",
     "pinakes.main.inventory.tasks.refresh_all_sources",
+    "pinakes.main.analytics.tasks.gather_analytics",
 ]
 CRONTAB = env.str("PINAKES_CRONTAB", default="*/30 * * * *")
 RQ_CRONJOBS = [
@@ -302,6 +303,10 @@ RQ_CRONJOBS = [
     (
         CRONTAB,
         "pinakes.main.inventory.tasks.refresh_all_sources",
+    ),
+    (
+        CRONTAB,
+        "pinakes.main.analytics.tasks.gather_analytics",
     ),
 ]
 
@@ -375,3 +380,12 @@ CORS_ALLOWED_ORIGINS = env.list("PINAKES_UI_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_CREDENTIALS = False
 CSRF_TRUSTED_ORIGINS = env.list("PINAKES_CSRF_TRUSTED_ORIGINS", default=[])
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Metrics Collections
+# Last gather date for Analytics
+AUTOMATION_ANALYTICS_LAST_GATHER = None
+# Last gathered entries for expensive Analytics
+AUTOMATION_ANALYTICS_LAST_ENTRIES = None
+PINAKES_INSIGHTS_TRACKING_STATE = env.bool("PINAKES_INSIGHTS_TRACKING_STATE", True)
+PINAKES_INSIGHTS_USERNAME = env.str("PINAKES_INSIGHTS_USERNAME", default="catalog")
+PINAKES_INSIGHTS_PASSWORD = env.str("PINAKES_INSIGHTS_PASSWORD", default="password")
