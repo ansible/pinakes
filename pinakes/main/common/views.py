@@ -1,4 +1,6 @@
 import django_rq
+import yaml
+import importlib.resources
 from django.http import Http404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
@@ -7,6 +9,7 @@ from drf_spectacular.utils import (
     OpenApiParameter,
 )
 from rest_framework import viewsets, status
+from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rq import job as rq_job
@@ -57,7 +60,7 @@ class GroupSyncViewSet(viewsets.ViewSet):
 @extend_schema_view(
     retrieve=extend_schema(
         description="Get the status of a background task",
-        responses={status.HTTP_202_ACCEPTED: TaskSerializer},
+        responses={status.HTTP_200_OK: TaskSerializer},
         parameters=[
             OpenApiParameter(
                 "id",
@@ -76,3 +79,23 @@ class TaskViewSet(viewsets.ViewSet):
         except rq_job.NoSuchJobError:
             raise Http404
         return Response(TaskSerializer(job).data, status=status.HTTP_200_OK)
+
+
+@extend_schema_view(
+    get=extend_schema(
+        description="Get product and version info",
+        responses={status.HTTP_200_OK: serializers.AboutSerializer},
+    ),
+)
+class AboutView(APIView):
+    """View class for About"""
+
+    def get(self, request, *args, **kwargs):
+        """Returns product and version info"""
+
+        text = importlib.resources.read_text("pinakes", "about.yml")
+        about = yaml.safe_load(text)
+        return Response(
+            serializers.AboutSerializer(about).data,
+            status=status.HTTP_200_OK,
+        )
