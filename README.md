@@ -1,4 +1,5 @@
 # Pinakes
+<img src="./docs/Map_symbol_museum.png" width="150">
 
 Pinakes is the upstream community project for RedHat's [Automation Services Catalog product.](https://www.ansible.com/products/automation-services-catalog?hsLang=en-us)
 
@@ -28,4 +29,12 @@ If you're experiencing a problem that you feel is a bug in Pinakes or have ideas
 Code of Conduct
 ---------------
 
-We ask all of our community members and contributors to adhere to the [Ansible code of conduct](http://docs.ansible.com/ansible/latest/community/code_of_conduct.html). If you have questions or need assistance, please reach out to our community team at [codeofconduct@ansible.com](mailto:codeofconduct@ansible.com But before opening a new issue, we ask that you please take a look at our [Issues guide](./ISSUES.md).)
+We ask all of our community members and contributors to adhere to the [Ansible code of conduct](http://docs.ansible.com/ansible/latest/community/code_of_conduct.html). If you have questions or need assistance, please reach out to our community team at [codeofconduct@ansible.com](mailto:codeofconduct@ansible.com) But before opening a new issue, we ask that you please take a look at our [Issues guide](./ISSUES.md).)
+
+
+Meaning/Pronounciation
+----------------------
+
+Pinakes is a bibliographic work widely considered to be the first library catalog, with its contents being based upon the holdings of the Library of Alexandria.
+
+Pinakes is pronounced: /ˈpi.na.kes/
