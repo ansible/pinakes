@@ -4,7 +4,8 @@ x-environment:
   &catalog-env
   - PINAKES_CONTROLLER_TOKEN=${PINAKES_CONTROLLER_TOKEN}
   - PINAKES_CONTROLLER_URL=${PINAKES_CONTROLLER_URL:-https://10.0.153.78}
-  - PINAKES_KEYCLOAK_REALM_FRONTEND_URL=${PINAKES_KEYCLOAK_REALM_FRONTEND_URL:-http://localhost:8080/auth}
+  - PINAKES_KEYCLOAK_REALM_FRONTEND_URL=${PINAKES_KEYCLOAK_REALM_FRONTEND_URL:-https://localhost:9443/auth}
+  - PINAKES_KEYCLOAK_VERIFY_SSL=false
   - PINAKES_HTTPS_ENABLED=True
   - PINAKES_CSRF_TRUSTED_ORIGINS=${PINAKES_CSRF_TRUSTED_ORIGINS:-https://*,http://*}
   - PINAKES_STATIC_ROOT=/opt/app-root/src/staticfiles
@@ -15,7 +16,7 @@ x-environment:
   - PINAKES_SECRET_KEY=django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5
   - PINAKES_KEYCLOAK_USER=admin
   - PINAKES_KEYCLOAK_PASSWORD=admin
-  - PINAKES_KEYCLOAK_URL=http://keycloak-app:8080/auth
+  - PINAKES_KEYCLOAK_URL=https://keycloak-app:8443/auth
   - PINAKES_KEYCLOAK_CLIENT_SECRET=${PINAKES_KEYCLOAK_CLIENT_SECRET:-SOMESECRETVALUE}
   - REDIRECT_URIS_STR=http://app:8000,http://app:8000/*,*
   - PINAKES_REDIS_HOST=redis
@@ -99,6 +100,7 @@ services:
     image: 'quay.io/keycloak/keycloak:15.0.2'
     ports:
       - '8080:8080'
+      - '9443:8443'
     depends_on:
       - 'postgres'
     environment:
@@ -109,6 +111,9 @@ services:
       - DB_PASSWORD=admin
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
+    volumes:
+      - ./frontend/certs/wildcard.crt:/etc/x509/https/tls.crt:z
+      - ./frontend/certs/wildcard.key:/etc/x509/https/tls.key:z
   postgres:
     image: 'docker.io/postgres:13-alpine'
     volumes:

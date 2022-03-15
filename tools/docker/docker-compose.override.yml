@@ -107,7 +107,6 @@ services:
       - DB_PASSWORD=admin
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
-
 volumes:
   pg_data: {}
   media_files: {}
