@@ -149,17 +149,9 @@ class OrderPermission(BaseKeycloakPermission):
         "create": KeycloakPolicy("create", KeycloakPolicy.Type.WILDCARD),
         "retrieve": KeycloakPolicy("read", KeycloakPolicy.Type.OBJECT),
         "destroy": KeycloakPolicy("delete", KeycloakPolicy.Type.OBJECT),
-        # Custom actions
-        # TODO(cutwater): Define policies for `submit` and `cancel` actions.
         "submit": KeycloakPolicy("update", KeycloakPolicy.Type.OBJECT),
         "cancel": KeycloakPolicy("update", KeycloakPolicy.Type.OBJECT),
     }
-
-    def perform_check_permission(
-        self, permission: str, request: Request, view: Any
-    ) -> bool:
-        # If the user is authenticated they are allowed to create an order
-        return True
 
     def perform_check_object_permission(
         self,
