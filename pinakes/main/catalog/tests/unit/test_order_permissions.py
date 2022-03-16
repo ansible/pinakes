@@ -38,8 +38,8 @@ def test_queryset_permissions(action, expected):
     [
         ("retrieve", "read"),
         ("destroy", "delete"),
-        ("submit", "order"),
-        ("cancel", "order"),
+        ("submit", "update"),
+        ("cancel", "update"),
     ],
 )
 def test_object_permissions(action, expected):
@@ -56,12 +56,6 @@ def test_has_permission(check_wildcard_permission):
 
     permission = OrderPermission()
     assert permission.has_permission(request, view) is True
-
-    check_wildcard_permission.assert_called_once_with(
-        "catalog:order",
-        "create",
-        mock.ANY,
-    )
 
 
 @pytest.mark.django_db
