@@ -166,6 +166,7 @@ http://localhost:8000/api/pinakes/v1/schema/swagger-ui/
 Start minikube
 Since the catalog, keycloak, postgres, redis all run inside the minikube cluster we need to expose the catalog and keycloak services from the cluster to your local dev machine using ingress. We need to enable ingress on the minikube cluster
 
+(for macos use hyperkit driver ONLY "minikube start --driver=hyperkit")
 ```
 minikube addons enable ingress
 ```
