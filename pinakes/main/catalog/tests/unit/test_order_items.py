@@ -141,7 +141,9 @@ def test_sanitized_params():
     order = OrderFactory(tenant=tenant, user=user)
     portfolio_item = PortfolioItemFactory()
     service_plan = ServicePlanFactory(
-        portfolio_item=portfolio_item, base_schema=base
+        portfolio_item=portfolio_item,
+        base_schema=base,
+        inventory_service_plan_ref="1",
     )
 
     service_parameters = {
@@ -165,4 +167,5 @@ def test_sanitized_params():
         "Totally not a pass": "$protected$",
         "token idea": "$protected$",
     }
+    order_item.refresh_from_db()
     assert order_item.service_parameters_raw == service_parameters

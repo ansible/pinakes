@@ -2,12 +2,12 @@
 import logging
 from django.utils.translation import gettext_lazy as _
 
-from pinakes.main.catalog.models import (
-    OrderItem,
-    ProgressMessage,
-)
+from pinakes.main.catalog.models import OrderItem, ProgressMessage, ServicePlan
 from pinakes.main.catalog.services.compute_runtime_parameters import (
     ComputeRuntimeParameters,
+)
+from pinakes.main.catalog.services.sanitize_parameters import (
+    SanitizeParameters,
 )
 from pinakes.main.catalog.services.finish_order import (
     FinishOrder,
@@ -55,6 +55,21 @@ class StartOrderItem:
             )
 
             ValidateOrderItem(item).process()
+
+            svc = ComputeRuntimeParameters(item).process()
+            if svc.substituted:
+                service_plan = ServicePlan.objects.get(
+                    inventory_service_plan_ref=item.inventory_service_plan_ref
+                )
+                item.service_parameters = (
+                    SanitizeParameters(service_plan, svc.runtime_parameters)
+                    .process()
+                    .sanitized_parameters
+                )
+                if item.service_parameters != svc.runtime_parameters:
+                    item.service_parameters_raw = svc.runtime_parameters
+                item.save()
+
             ProvisionOrderItem(item).process()
 
             logger.info(
@@ -66,8 +81,3 @@ class StartOrderItem:
             logger.error("Error Submitting Order Item: %s", str(error))
 
             FinishOrderItem(order_item=item, error_msg=str(error)).process()
-        finally:
-            svc = ComputeRuntimeParameters(item).process()
-            if bool(svc.runtime_parameters):
-                item.service_parameters = svc.runtime_parameters
-                item.save()

@@ -15,7 +15,10 @@ class ProvisionOrderItem:
         """Process a single order item"""
         portfolio_item = self.order_item.portfolio_item
         params = {}
-        params["service_parameters"] = self.order_item.service_parameters
+        params["service_parameters"] = (
+            self.order_item.service_parameters_raw
+            or self.order_item.service_parameters
+        )
         params["service_plan_id"] = None
 
         svc = StartTowerJob(

@@ -369,23 +369,26 @@ class OrderItemManager(models.Manager):
             portfolio_item=portfolio_item
         ).first()
 
-        if service_plan:
-            kwargs["inventory_service_plan_ref"] = str(service_plan.id)
-
         kwargs["name"] = portfolio_item.name
 
-        order_item = super(OrderItemManager, self).create(*args, **kwargs)
+        if (
+            service_plan
+            and service_plan.inventory_service_plan_ref
+            and "service_parameters" in kwargs
+        ):
+            kwargs[
+                "inventory_service_plan_ref"
+            ] = service_plan.inventory_service_plan_ref
+            sanitized_parameters = (
+                SanitizeParameters(service_plan, kwargs["service_parameters"])
+                .process()
+                .sanitized_parameters
+            )
+            if kwargs["service_parameters"] != sanitized_parameters:
+                kwargs["service_parameters_raw"] = kwargs["service_parameters"]
+                kwargs["service_parameters"] = sanitized_parameters
 
-        sanitized_parameters = (
-            SanitizeParameters(order_item).process().sanitized_parameters
-        )
-        if order_item.service_parameters == sanitized_parameters:
-            return order_item
-
-        order_item.service_parameters_raw = order_item.service_parameters
-        order_item.service_parameters = sanitized_parameters
-
-        return order_item
+        return super(OrderItemManager, self).create(*args, **kwargs)
 
 
 class OrderItem(UserOwnedModel, MessageableMixin):

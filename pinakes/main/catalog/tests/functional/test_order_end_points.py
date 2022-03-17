@@ -234,12 +234,8 @@ def test_order_order_item_post(api_request, mocker):
     portfolio_item = PortfolioItemFactory(
         service_offering_ref=service_offering.id
     )
-    service_plan = ServicePlanFactory(
-        portfolio_item=portfolio_item,
-    )
-    data = {
-        "portfolio_item": portfolio_item.id,
-    }
+    service_plan = ServicePlanFactory(portfolio_item=portfolio_item)
+    data = {"portfolio_item": portfolio_item.id, "service_parameters": {}}
     response = api_request(
         "post", "catalog:order-orderitem-list", order.id, data
     )
@@ -247,5 +243,4 @@ def test_order_order_item_post(api_request, mocker):
     assert response.status_code == 201
     assert content["name"] == portfolio_item.name
     assert content["order"] == str(order.id)
-    assert content["inventory_service_plan_ref"] == str(service_plan.id)
     perform_check_permission.assert_called_once()

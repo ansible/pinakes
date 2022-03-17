@@ -10,6 +10,7 @@ class ComputeRuntimeParameters:
     def __init__(self, order_item):
         self.order_item = order_item
         self.runtime_parameters = {}
+        self.substituted = False
 
     def process(self):
         if self.order_item.inventory_service_plan_ref is None:
@@ -55,4 +56,5 @@ class ComputeRuntimeParameters:
 
     # TODO:
     def _substitution(self, value):
+        self.substituted = True
         return value

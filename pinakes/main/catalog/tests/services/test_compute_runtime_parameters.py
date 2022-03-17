@@ -194,3 +194,4 @@ def test_process_with_service_parameters_in_schema():
         "dev_null": "change in future",
         "flexible": "in schema fields",
     }
+    assert svc.substituted is True
