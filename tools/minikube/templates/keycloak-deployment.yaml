@@ -37,6 +37,8 @@ spec:
               value: postgres
             - name: KEYCLOAK_PASSWORD
               value: admin
+            - name: JDBC_PARAMS
+              value: sslmode=verify-ca&sslrootcert=/etc/ssl_config/root.crt
             - name: KEYCLOAK_USER
               value: admin
           args: ['-Dkeycloak.frontendUrl=https://keycloak.k8s.local/auth']
@@ -45,5 +47,16 @@ spec:
           ports:
             - containerPort: 8080
           resources: {}
+          volumeMounts:
+            - mountPath: /etc/ssl_config
+              name: ssl
       restartPolicy: Always
+      volumes:
+        - name: ssl
+          configMap:
+            name: postgresql
+            items:
+              - key: "root.crt"
+                path: "root.crt"
+                mode: 0640
 status: {}

@@ -34,17 +34,30 @@ spec:
               value: keycloak
             - name: PINAKES_DATABASE_NAME
               value: dev_catalog
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
           image: postgres:13-alpine
           name: postgres
+          args:
+            - -c
+            - hba_file=/etc/ssl_config/pg_hba.conf
+            - -c
+            - config_file=/etc/ssl_config/postgresql.conf
           ports:
             - containerPort: 5432
           resources: {}
           volumeMounts:
             - mountPath: /docker-entrypoint-initdb.d
               name: createdb
+            - mountPath: /etc/ssl_config
+              name: ssl
             - mountPath: /var/lib/postgresql/data
               name: pg-data
       restartPolicy: Always
+      securityContext:
+        runAsUser: 70
+        supplementalGroups: [999,1000]
+        fsGroup: 70
       volumes:
         - name: pg-data
           persistentVolumeClaim:
@@ -56,4 +69,23 @@ spec:
               - key: "create_db.sh"
                 path: "create_db.sh"
                 mode: 0777
+        - name: ssl
+          configMap:
+            name: postgresql
+            items:
+              - key: "server.key"
+                path: "server.key"
+                mode: 0640
+              - key: "server.crt"
+                path: "server.crt"
+                mode: 0640
+              - key: "root.crt"
+                path: "root.crt"
+                mode: 0640
+              - key: "postgresql.conf"
+                path: "postgresql.conf"
+                mode: 0640
+              - key: "pg_hba.conf"
+                path: "pg_hba.conf"
+                mode: 0640
 status: {}

@@ -19,6 +19,17 @@ ln -s python3.9 /usr/bin/python3
 
 # Initialize Postgres, set password
 /usr/pgsql-13/bin/postgresql-13-setup initdb
+
+# Setup SSL for Postgres
+ cp /src/tools/postgresql/postgresql.conf /var/lib/pgsql/13/data
+ cp /src/tools/postgresql/pg_hba.conf /var/lib/pgsql/13/data
+ mkdir /etc/ssl_config
+ cp /src/tools/postgresql/server.key /etc/ssl_config
+ cp /src/tools/postgresql/root.crt /etc/ssl_config
+ cp /src/tools/postgresql/server.crt /etc/ssl_config
+ chown postgres -R /etc/ssl_config
+ chmod 0600 /etc/ssl_config/*
+
 systemctl enable --now postgresql-13
 sudo -u postgres psql -c "ALTER USER $PINAKES_POSTGRES_USER PASSWORD '$PINAKES_POSTGRES_PASSWORD';"
 

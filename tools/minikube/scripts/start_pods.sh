@@ -42,6 +42,10 @@ if ! kubectl get configmap --namespace=catalog ssl &>/dev/null; then
         --from-file='./tools/minikube/nginx/catalog.k8s.local.crt'
 fi
 
+if ! kubectl get configmap --namespace=catalog postgresql &>/dev/null; then
+     kubectl create configmap postgresql --from-file=./tools/postgresql -n catalog
+fi
+
 if kubectl get configmap --namespace=catalog ansible-controller-env &>/dev/null; then
 	kubectl delete --namespace=catalog configmap ansible-controller-env
 fi
