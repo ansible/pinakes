@@ -108,6 +108,14 @@ DATABASES = {
         "PASSWORD": env.str("PINAKES_POSTGRES_PASSWORD", default="password"),
         "HOST": env.str("PINAKES_POSTGRES_HOST", default="localhost"),
         "PORT": env.str("PINAKES_POSTGRES_PORT", default="5432"),
+        "OPTIONS": {
+            "sslmode": env.str("PINAKES_POSTGRES_SSL_MODE", default="require"),
+            "sslcert": env.str("PINAKES_POSTGRES_SSL_CERT", default=""),
+            "sslkey": env.str("PINAKES_POSTGRES_SSL_KEY", default=""),
+            "sslrootcert": env.str(
+                "PINAKES_POSTGRES_SSL_ROOT_CERT", default=""
+            ),
+        },
     }
 }
 
