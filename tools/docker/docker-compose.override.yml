@@ -52,6 +52,7 @@ services:
       - "../../:/opt/app-root/src/:z"
       - 'media_files:/opt/app-root/src/media'
       - 'static_files:/opt/app-root/src/staticfiles'
+      - "control_startup:/startup"
     depends_on:
       - keycloak-setup
       - postgres
@@ -74,6 +75,8 @@ services:
     depends_on:
       - keycloak-app
     command: /opt/app-root/src/tools/docker/scripts/keycloak-setup.sh
+    volumes:
+      - "control_startup:/startup"
 
   worker:
     image: pinakes:dev
@@ -116,3 +119,4 @@ volumes:
   pg_data: {}
   media_files: {}
   static_files: {}
+  control_startup: {}

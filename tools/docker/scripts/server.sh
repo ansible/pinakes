@@ -2,9 +2,9 @@
 set -e
 
 while true; do
-    echo -e "\e[34m >>> Waiting for postgres \e[97m"
-    if python -c "import socket; socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((\"$PINAKES_POSTGRES_HOST\", 5432))"; then
-        echo -e "\e[34m >>> Postgres ready \e[97m"
+    echo -e "\e[34m >>> Waiting for keycloak setup \e[97m"
+    if grep -q finished /startup/status; then
+        echo -e "\e[34m >>> Keycloak configured \e[97m"
         break
     fi
     sleep 1
