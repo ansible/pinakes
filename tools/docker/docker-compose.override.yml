@@ -22,6 +22,7 @@ x-environment:
   - PINAKES_POSTGRES_HOST=postgres
   - PINAKES_POSTGRES_USER=admin
   - PINAKES_POSTGRES_PASSWORD=admin
+  - PINAKES_POSTGRES_SSL_MODE=disable
 
 services:
   frontend:
