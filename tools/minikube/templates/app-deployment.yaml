@@ -43,6 +43,10 @@ spec:
               value: SOMESECRETVALUE
             - name: PINAKES_KEYCLOAK_REALM_FRONTEND_URL
               value: https://keycloak.k8s.local/auth
+            - name: PINAKES_KEYCLOAK_REALM
+              value: pinakes
+            - name: PINAKES_KEYCLOAK_CLIENT_ID
+              value: pinakes
             - name: CONTROLLER_VERIFY_SSL
               value: "False"
             - name: PINAKES_REDIS_HOST

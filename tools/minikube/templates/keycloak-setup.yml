@@ -18,6 +18,12 @@ spec:
              value: admin
            - name: PINAKES_KEYCLOAK_PASSWORD
              value: admin
+           - name: PINAKES_KEYCLOAK_REALM
+             value: pinakes
+           - name: PINAKES_KEYCLOAK_CLIENT_ID
+             value: pinakes
+           - name: PINAKES_KEYCLOAK_DISPLAY_NAME
+             value: PINAKES
            - name: PINAKES_KEYCLOAK_REALM_FRONTEND_URL
              value: https://keycloak.k8s.local/auth
            - name: REDIRECT_URIS_STR

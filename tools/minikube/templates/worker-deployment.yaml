@@ -45,6 +45,10 @@ spec:
               value: http://keycloak:8080/auth
             - name: PINAKES_KEYCLOAK_CLIENT_SECRET
               value: SOMESECRETVALUE
+            - name: PINAKES_KEYCLOAK_REALM
+              value: pinakes
+            - name: PINAKES_KEYCLOAK_CLIENT_ID
+              value: pinakes
             - name: CONTROLLER_VERIFY_SSL
               value: "False"
             - name: PINAKES_DATABASE_NAME
