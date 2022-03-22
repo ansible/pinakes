@@ -230,7 +230,7 @@ roles:
           - displayName: 'Catalog Order Update'
             name: catalog:order:update
           - displayName: 'Catalog Order Delete'
-            name: catalog:order:create
+            name: catalog:order:delete
         type: catalog:order
         uris:
           - api/v1/orders/*
