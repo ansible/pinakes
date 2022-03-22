@@ -331,6 +331,7 @@ RQ_QUEUES["default"]["DEFAULT_TIMEOUT"] = 360
 STARTUP_RQ_JOBS = [
     "pinakes.main.common.tasks.sync_external_groups",
     "pinakes.main.inventory.tasks.refresh_all_sources",
+    "pinakes.main.analytics.tasks.gather_analytics",
 ]
 CRONTAB = env.str("PINAKES_CRONTAB", default="*/30 * * * *")
 RQ_CRONJOBS = [
@@ -341,6 +342,10 @@ RQ_CRONJOBS = [
     (
         CRONTAB,
         "pinakes.main.inventory.tasks.refresh_all_sources",
+    ),
+    (
+        CRONTAB,
+        "pinakes.main.analytics.tasks.gather_analytics",
     ),
     (
         "* 0 * * *",
