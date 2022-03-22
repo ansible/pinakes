@@ -47,4 +47,4 @@
         groups:
           - Finance - Sample
   roles:
-    - mkanoor.catalog_keycloak.setup
+    - pinakes.keycloak_setup.setup

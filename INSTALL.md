@@ -53,8 +53,10 @@ Copy this file and modify `seed_users` according to your setup and needs.
 
 - install ansible and the collection:
 ```
+KEYCLOAK_SETUP_VERSION=1.0.28
 pip3 install ansible
-ansible-galaxy collection install community.general mkanoor.catalog_keycloak
+ansible-galaxy collection build tools/keycloak_setup/collection
+ansible-galaxy collection install community.general pinakes-keycloak_setup-"$KEYCLOAK_SETUP_VERSION".tar.gz
 ```
 
 - some environment variables are needed: 
