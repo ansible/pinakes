@@ -7,6 +7,7 @@ from drf_spectacular.utils import (
     extend_schema_view,
     extend_schema,
     OpenApiParameter,
+    OpenApiExample,
 )
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
@@ -26,6 +27,19 @@ from pinakes.main.common import tasks
     ),
     list=extend_schema(
         description="List all groups",
+        parameters=[
+            OpenApiParameter(
+                "role",
+                type={"type": "array", "items": {"type": "string"}},
+                description="Any RBAC roles the groups belong to",
+                examples=[
+                    OpenApiExample(
+                        "Query by multiple roles",
+                        value="role=approval-admin&role=catalog-admin",
+                    )
+                ],
+            ),
+        ],
     ),
 )
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
