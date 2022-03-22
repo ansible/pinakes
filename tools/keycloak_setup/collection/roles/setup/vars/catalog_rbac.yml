@@ -71,7 +71,7 @@ roles:
           - displayName: 'Approval Workflow Read'
             name: approval:workflow:read
           - displayName: 'Approval Workflow Update'
-            name: approval:template:update
+            name: approval:workflow:update
           - displayName: 'Approval Workflow Delete'
             name: approval:workflow:delete
           - displayName: 'Approval Workflow Link'
