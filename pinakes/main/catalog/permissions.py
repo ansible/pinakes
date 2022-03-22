@@ -49,7 +49,7 @@ class PortfolioPermission(BaseKeycloakPermission):
         return check_wildcard_permission(
             Portfolio.keycloak_type(),
             permission,
-            get_authz_client(request.keycloak_user.access_token),
+            get_authz_client(request.auth),
         )
 
     def perform_check_object_permission(
@@ -60,7 +60,7 @@ class PortfolioPermission(BaseKeycloakPermission):
         return check_object_permission(
             obj,
             permission,
-            get_authz_client(request.keycloak_user.access_token),
+            get_authz_client(request.auth),
         )
 
     def perform_scope_queryset(
@@ -73,7 +73,7 @@ class PortfolioPermission(BaseKeycloakPermission):
         resources = get_permitted_resources(
             Portfolio.keycloak_type(),
             permission,
-            get_authz_client(request.keycloak_user.access_token),
+            get_authz_client(request.auth),
         )
         if resources.is_wildcard:
             return qs
@@ -122,7 +122,7 @@ class PortfolioItemPermission(BaseKeycloakPermission):
         return check_object_permission(
             obj,
             permission,
-            get_authz_client(request.keycloak_user.access_token),
+            get_authz_client(request.auth),
         )
 
     def perform_scope_queryset(
@@ -135,7 +135,7 @@ class PortfolioItemPermission(BaseKeycloakPermission):
         resources = get_permitted_resources(
             Portfolio.keycloak_type(),
             permission,
-            get_authz_client(request.keycloak_user.access_token),
+            get_authz_client(request.auth),
         )
         if resources.is_wildcard:
             return qs
@@ -163,7 +163,7 @@ class OrderPermission(BaseKeycloakPermission):
         if check_wildcard_permission(
             obj.keycloak_type(),
             permission,
-            get_authz_client(request.keycloak_user.access_token),
+            get_authz_client(request.auth),
         ):
             return True
         return obj.user == request.user
@@ -174,7 +174,7 @@ class OrderPermission(BaseKeycloakPermission):
         if check_wildcard_permission(
             Order.keycloak_type(),
             permission,
-            get_authz_client(request.keycloak_user.access_token),
+            get_authz_client(request.auth),
         ):
             return qs
         return qs.filter(user=request.user)
@@ -218,7 +218,7 @@ class OrderItemPermission(BaseKeycloakPermission):
         if check_wildcard_permission(
             Order.keycloak_type(),
             permission,
-            get_authz_client(request.keycloak_user.access_token),
+            get_authz_client(request.auth),
         ):
             return qs
         # NOTE(cutwater): OrderItem and Order models both have FK to user.
@@ -232,5 +232,5 @@ class OrderItemPermission(BaseKeycloakPermission):
         return check_wildcard_permission(
             order.keycloak_type(),
             permission,
-            get_authz_client(request.keycloak_user.access_token),
+            get_authz_client(request.auth),
         )
