@@ -35,12 +35,12 @@ def test_request_list(api_request, mocker):
 @pytest.mark.django_db
 def test_request_retrieve(api_request, mocker):
     obj_permission = mocker.spy(RequestPermission, "has_object_permission")
-    request = RequestFactory()
+    request = RequestFactory(group_name="group1")
     response = api_request("get", "approval:request-detail", request.id)
 
     assert response.status_code == 200
-    content = json.loads(response.content)
-    assert content["id"] == request.id
+    assert response.data["id"] == request.id
+    assert response.data["group_name"] == request.group_name
     obj_permission.assert_called_once()
 
 
