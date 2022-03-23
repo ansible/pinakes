@@ -1,4 +1,7 @@
 # Pinakes
+
+[![Python package](https://github.com/ansible/pinakes/actions/workflows/python-package.yml/badge.svg)](https://github.com/ansible/pinakes/actions/workflows/python-package.yml)
+
 <img src="./docs/Map_symbol_museum.png" width="150">
 
 Pinakes is the upstream community project for RedHat's [Automation Services Catalog product.](https://www.ansible.com/products/automation-services-catalog?hsLang=en-us)
