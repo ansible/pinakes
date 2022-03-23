@@ -30,7 +30,8 @@ class TestPortfolios:
         with pytest.raises(IntegrityError) as excinfo:
             PortfolioFactory(tenant=tenant, name=name)
         assert (
-            f"UNIQUE constraint failed: {portfolio._meta.app_label}_portfolio.name"
+            "UNIQUE constraint failed:"
+            f" {portfolio._meta.app_label}_portfolio.name"
             in str(excinfo.value)
         )
 

@@ -29,7 +29,8 @@ class TestPortfolioItems:
             PortfolioItemFactory(tenant=tenant, portfolio=portfolio, name="")
 
         assert (
-            f"CHECK constraint failed: {portfolio._meta.app_label}_portfolioitem_name_empty"
+            "CHECK constraint failed:"
+            f" {portfolio._meta.app_label}_portfolioitem_name_empty"
             in str(excinfo.value)
         )
 

@@ -42,7 +42,9 @@ class Migration(migrations.Migration):
             name="last_checked_at",
             field=models.DateTimeField(
                 editable=False,
-                help_text="The time at which the source was checked availability",
+                help_text=(
+                    "The time at which the source was checked availability"
+                ),
                 null=True,
             ),
         ),

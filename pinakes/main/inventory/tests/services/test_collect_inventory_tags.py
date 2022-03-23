@@ -57,7 +57,8 @@ def test_missing_service_offering():
 
 @pytest.mark.django_db
 def test_service_offering_with_no_inventory_tags():
-    """Test to collect inventory tags service offering with no attached inventory tags"""
+    """Test to collect inventory tags service offering
+    with no attached inventory tags"""
 
     service_inventory = ServiceInventoryFactory()
     service_offering = ServiceOfferingFactory(

@@ -1,4 +1,4 @@
-"""provides a common implementation of get_queryset method in viewset"""
+"""Provides a common implementation of get_queryset method in viewset."""
 
 from django.http import Http404
 
@@ -6,12 +6,11 @@ from pinakes.main.models import Tenant
 
 
 class QuerySetMixin:
-    """
-    A Mixin class to be inherited by a customer ViewSet class
-    """
+    """A Mixin class to be inherited by a customer ViewSet class."""
 
     def get_queryset(self):
-        """filter by current tenant and query_lookup_key, order by queryset_order_by"""
+        """Filter by current tenant and query_lookup_key,
+        order by queryset_order_by"""
 
         parent_field_names = getattr(self, "parent_field_names", [])
         queryset_order_by = getattr(self, "queryset_order_by", None)

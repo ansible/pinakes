@@ -54,15 +54,17 @@ class UpdateRequest:
         ):
             self._update_parent()
 
-        # Temporarily auto notify all requests until notification is implemented
+        # FIXME(bzwei): Temporarily auto notify all requests until
+        #  notification is implemented
         # if self._should_auto_approve():
         self._notify_request()
 
     def _notified(self):
         self._persist_request("notified_at")
 
+        # TODO(bzwei): Event not yet exist
         # if self.request.is_leaf():
-        #    SendEvent(self.request, SendEvent.EVENT_GROUP_NOTIFIED) # Event not yet exist
+        #    SendEvent(self.request, SendEvent.EVENT_GROUP_NOTIFIED)
 
         if self.request.is_child() and not self.request.parent.has_finished():
             self._update_parent()
@@ -96,7 +98,8 @@ class UpdateRequest:
         self._persist_request("finished_at")
         SendEvent(self.request, SendEvent.EVENT_REQUEST_CANCELED).process()
 
-    # Leaf only. skipped is caused by cancel or deny. This state will not propagate to root
+    # Leaf only. skipped is caused by cancel or deny.
+    # This state will not propagate to root
     def _skipped(self):
         self._persist_request("finished_at")
         self.request.parent.invalidate_number_of_finished_children()
@@ -111,7 +114,8 @@ class UpdateRequest:
     def _child_completed(self):
         # request.random_access_keys.destroy_all # TODO
         self._persist_request("finished_at")
-        # SendEvent(self.request, SendEvent.EVENT_GROUP_FINISHED) # event not yet exist
+        # TODO(bzwei): Event not yet exist:
+        # SendEvent(self.request, SendEvent.EVENT_GROUP_FINISHED)
 
         self.request.parent.invalidate_number_of_finished_children()
         self._update_parent()
@@ -129,8 +133,9 @@ class UpdateRequest:
         # request.random_access_keys.destroy_all # TODO
         self._persist_request("finished_at")
 
+        # TODO(bzwei): Event not yet exist
         # if request.is_leaf():
-        # SendEvent(self.request, SendEvent.Event_GROUP_FINISHED) # event not yet exist
+        # SendEvent(self.request, SendEvent.Event_GROUP_FINISHED)
 
         SendEvent(self.request, SendEvent.EVENT_REQUEST_FINISHED).process()
 

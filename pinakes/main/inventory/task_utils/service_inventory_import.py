@@ -17,11 +17,13 @@ class ServiceInventoryImport:
         self.tower = tower
 
     def source_ref_to_id(self, source_ref):
-        """Given a Source Ref, get the ID of the object from the local database."""
+        """Given a Source Ref, get the ID of the object
+        from the local database."""
         return self.service_inventory_objects[source_ref]
 
     def get_stats(self):
-        """Get the stats of the process, the number of adds, updates and deletes."""
+        """Get the stats of the process, the number of adds,
+        updates and deletes."""
         return self.stats
 
     def process(self):
@@ -80,9 +82,11 @@ class ServiceInventoryImport:
             db_obj.save()
 
     def _get_old_ids(self):
-        """Private method to collect existing inventory objects for a quick lookup.
-        The updates are compared by looking at the modified attribute from tower
-        with the source_updated_at in the local db.
+        """Private method to collect existing inventory
+        objects for a quick lookup.
+
+        The updates are compared by looking at the modified attribute
+        from tower with the source_updated_at in the local db.
         """
         old_ids = {}
         for info in ServiceInventory.objects.filter(

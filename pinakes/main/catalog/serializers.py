@@ -245,7 +245,8 @@ class OrderExtraSerializer(serializers.Serializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    """Order which groups an order item and its before and after processes (To be added)"""
+    """Order which groups an order item and its before
+    and after processes (To be added)"""
 
     owner = serializers.ReadOnlyField()
     extra_data = serializers.SerializerMethodField(
@@ -299,7 +300,8 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class ApprovalRequestSerializer(serializers.ModelSerializer):
-    """ApprovalRequest which keeps track of the approval progress of an order"""
+    """ApprovalRequest which keeps track of the approval
+    progress of an order"""
 
     class Meta:
         model = ApprovalRequest
@@ -314,7 +316,8 @@ class ApprovalRequestSerializer(serializers.ModelSerializer):
 
 
 class ProgressMessageSerializer(serializers.ModelSerializer):
-    """ProgressMessage which wraps a message describing the progress of an order or order item"""
+    """ProgressMessage which wraps a message describing
+    the progress of an order or order item"""
 
     class Meta:
         model = ProgressMessage
@@ -346,12 +349,17 @@ class ServicePlanSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(
         read_only=True,
         allow_null=True,
-        help_text="ID of the service plan. Can be null if the service plan has not been imported for editing",
+        help_text=(
+            "ID of the service plan. Can be null if the service plan has not"
+            " been imported for editing"
+        ),
     )
     schema = serializers.JSONField(
         read_only=True,
         allow_null=True,
-        help_text="The active schema of parameters for provisioning a portfolio item",
+        help_text=(
+            "The active schema of parameters for provisioning a portfolio item"
+        ),
     )
     modified = serializers.BooleanField(
         read_only=True,
@@ -396,7 +404,8 @@ class ModifiedServicePlanInSerializer(serializers.Serializer):
 
 
 class SharingRequestSerializer(serializers.Serializer):
-    """SharingRequest which defines groups and permissions that the object can be shared to"""
+    """SharingRequest which defines groups and permissions
+    that the object can be shared to"""
 
     permissions = serializers.ListField(
         child=serializers.CharField(),

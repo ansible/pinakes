@@ -142,9 +142,9 @@ def test_order_submit_without_service_offering(api_request, mocker):
 
     assert response.status_code == 400
     content = json.loads(response.content)
-    assert content["detail"] == (
-        f"Portfolio item {portfolio_item.id} does not"
-        f" have related service offering"
+    assert (
+        content["detail"] == f"Portfolio item {portfolio_item.id} does not"
+        " have related service offering"
     )
     check_object_permission.assert_called_once()
 

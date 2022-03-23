@@ -95,7 +95,10 @@ class Migration(migrations.Migration):
                 ],
                 default="undecided",
                 editable=False,
-                help_text="The state of the approval request (approved, denied, undecided, canceled, error)",
+                help_text=(
+                    "The state of the approval request (approved, denied,"
+                    " undecided, canceled, error)"
+                ),
                 max_length=10,
             ),
         ),
@@ -147,7 +150,10 @@ class Migration(migrations.Migration):
             name="imported",
             field=models.BooleanField(
                 default=True,
-                help_text="Whether or not the service plan has been imported for editing",
+                help_text=(
+                    "Whether or not the service plan has been imported for"
+                    " editing"
+                ),
             ),
         ),
         migrations.AlterField(
@@ -155,7 +161,9 @@ class Migration(migrations.Migration):
             name="modified",
             field=models.BooleanField(
                 default=False,
-                help_text="Whether or not the service plan has a modified schema",
+                help_text=(
+                    "Whether or not the service plan has a modified schema"
+                ),
             ),
         ),
         migrations.AlterField(
@@ -250,7 +258,10 @@ class Migration(migrations.Migration):
             name="order_request_sent_at",
             field=models.DateTimeField(
                 editable=False,
-                help_text="The time at which the order request was sent to the catalog inventory service",
+                help_text=(
+                    "The time at which the order request was sent to the"
+                    " catalog inventory service"
+                ),
                 null=True,
             ),
         ),
@@ -305,7 +316,10 @@ class Migration(migrations.Migration):
             name="artifacts",
             field=models.JSONField(
                 blank=True,
-                help_text="Contains a prefix-stripped key/value object that contains all of the information exposed from product provisioning",
+                help_text=(
+                    "Contains a prefix-stripped key/value object that contains"
+                    " all of the information exposed from product provisioning"
+                ),
                 null=True,
             ),
         ),
@@ -338,7 +352,10 @@ class Migration(migrations.Migration):
             name="external_url",
             field=models.URLField(
                 blank=True,
-                help_text="The external url of the service instance used with relation to this order item",
+                help_text=(
+                    "The external url of the service instance used with"
+                    " relation to this order item"
+                ),
             ),
         ),
         migrations.AlterField(
@@ -372,7 +389,10 @@ class Migration(migrations.Migration):
             name="order_request_sent_at",
             field=models.DateTimeField(
                 editable=False,
-                help_text="The time at which the order request was sent to the catalog inventory service",
+                help_text=(
+                    "The time at which the order request was sent to the"
+                    " catalog inventory service"
+                ),
                 null=True,
             ),
         ),
@@ -390,7 +410,10 @@ class Migration(migrations.Migration):
             name="provider_control_parameters",
             field=models.JSONField(
                 blank=True,
-                help_text="The provider specific parameters needed to provision this service. This might include namespaces, special keys.",
+                help_text=(
+                    "The provider specific parameters needed to provision this"
+                    " service. This might include namespaces, special keys."
+                ),
                 null=True,
             ),
         ),
@@ -617,7 +640,10 @@ class Migration(migrations.Migration):
             name="orphan",
             field=models.BooleanField(
                 default=False,
-                help_text="Boolean if an associated service offering no longer exists",
+                help_text=(
+                    "Boolean if an associated service offering no longer"
+                    " exists"
+                ),
             ),
         ),
         migrations.AlterField(
@@ -633,7 +659,9 @@ class Migration(migrations.Migration):
             model_name="portfolioitem",
             name="service_offering_ref",
             field=models.CharField(
-                help_text="The service offering this portfolio item was created from",
+                help_text=(
+                    "The service offering this portfolio item was created from"
+                ),
                 max_length=64,
                 null=True,
             ),
@@ -644,7 +672,9 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 blank=True,
                 default="",
-                help_text="The source reference this portfolio item was created from",
+                help_text=(
+                    "The source reference this portfolio item was created from"
+                ),
                 max_length=64,
             ),
         ),
@@ -725,7 +755,9 @@ class Migration(migrations.Migration):
             model_name="progressmessage",
             name="messageable_type",
             field=models.CharField(
-                help_text="Identify order or order item that this message belongs to",
+                help_text=(
+                    "Identify order or order item that this message belongs to"
+                ),
                 max_length=64,
                 null=True,
             ),

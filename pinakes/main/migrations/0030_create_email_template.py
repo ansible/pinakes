@@ -10,7 +10,10 @@ def create_template(apps, schema_editor):
         tenant = Tenant.current()
         Template.objects.using(db_alias).create(
             title="Built-in Email Notification",
-            description="Notify approvers by HTML emails with ebedded links for actions",
+            description=(
+                "Notify approvers by HTML emails with ebedded links for"
+                " actions"
+            ),
             tenant_id=tenant.id,
         )
 

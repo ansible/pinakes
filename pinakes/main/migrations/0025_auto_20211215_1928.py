@@ -28,7 +28,10 @@ class Migration(migrations.Migration):
             field=models.BooleanField(
                 default=False,
                 editable=False,
-                help_text="Whether or not the base schema is outdated. The portfolio item is not orderable if the base schema is outdated.",
+                help_text=(
+                    "Whether or not the base schema is outdated. The portfolio"
+                    " item is not orderable if the base schema is outdated."
+                ),
             ),
         ),
         migrations.AddField(
@@ -38,7 +41,9 @@ class Migration(migrations.Migration):
                 blank=True,
                 default="",
                 editable=False,
-                help_text="Changes of the base schema from inventory since last edit",
+                help_text=(
+                    "Changes of the base schema from inventory since last edit"
+                ),
             ),
         ),
         migrations.AddField(

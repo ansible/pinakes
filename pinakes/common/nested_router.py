@@ -3,7 +3,8 @@ from rest_framework_extensions import utils
 
 
 def parent_pk_kwarg_name(value):
-    """more meaningful parent path variable name and compatible with drf-spectacular"""
+    """More meaningful parent path variable name
+    and compatible with drf-spectacular."""
     return f"{value}_id"
 
 

@@ -23,8 +23,8 @@ class TestTemplate:
         with pytest.raises(IntegrityError) as excinfo:
             TemplateFactory(tenant=tenant, title=title)
         assert (
-            f"UNIQUE constraint failed: {template._meta.app_label}_template.title"
-            in str(excinfo.value)
+            "UNIQUE constraint failed:"
+            f" {template._meta.app_label}_template.title" in str(excinfo.value)
         )
 
     @pytest.mark.django_db

@@ -29,7 +29,8 @@ class TestWorkflows:
             WorkflowFactory(tenant=tenant, template=template, name="")
 
         assert (
-            f"CHECK constraint failed: {template._meta.app_label}_workflow_name_empty"
+            "CHECK constraint failed:"
+            f" {template._meta.app_label}_workflow_name_empty"
             in str(excinfo.value)
         )
 
@@ -45,8 +46,8 @@ class TestWorkflows:
             WorkflowFactory(tenant=tenant, template=template, name=name)
 
         assert (
-            f"UNIQUE constraint failed: {template._meta.app_label}_workflow.name"
-            in str(excinfo.value)
+            "UNIQUE constraint failed:"
+            f" {template._meta.app_label}_workflow.name" in str(excinfo.value)
         )
 
     @pytest.mark.django_db
@@ -64,6 +65,7 @@ class TestWorkflows:
             )
 
         assert (
-            f"UNIQUE constraint failed: {template._meta.app_label}_workflow.internal_sequence"
+            "UNIQUE constraint failed:"
+            f" {template._meta.app_label}_workflow.internal_sequence"
             in str(excinfo.value)
         )

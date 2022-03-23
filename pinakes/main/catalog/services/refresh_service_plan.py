@@ -19,7 +19,11 @@ EMPTY_SCHEMA = {
             {
                 "component": "plain-text",
                 "name": "empty-service-plan",
-                "label": "This product requires no user input and is fully configured by the system.\nClick submit to order this item.",
+                "label": (
+                    "This product requires no user input and is fully"
+                    " configured by the system.\nClick submit to order this"
+                    " item."
+                ),
             }
         ]
     },

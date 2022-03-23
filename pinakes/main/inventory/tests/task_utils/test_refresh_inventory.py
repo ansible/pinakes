@@ -15,15 +15,18 @@ class TestRefreshInventory:
     """Refresh Inventory Class."""
 
     @patch(
-        "pinakes.main.inventory.task_utils.refresh_inventory.ServiceOfferingNodeImport",
+        "pinakes.main.inventory.task_utils.refresh_inventory."
+        "ServiceOfferingNodeImport",
         autoSpec=True,
     )
     @patch(
-        "pinakes.main.inventory.task_utils.refresh_inventory.ServiceInventoryImport",
+        "pinakes.main.inventory.task_utils.refresh_inventory."
+        "ServiceInventoryImport",
         autoSpec=True,
     )
     @patch(
-        "pinakes.main.inventory.task_utils.refresh_inventory.ServiceOfferingImport",
+        "pinakes.main.inventory.task_utils.refresh_inventory."
+        "ServiceOfferingImport",
         autoSpec=True,
     )
     @pytest.mark.django_db
@@ -33,9 +36,9 @@ class TestRefreshInventory:
         source_instance = SourceFactory(tenant=tenant)
         refresh_inventory = RefreshInventory(source_instance.id)
         refresh_inventory.process()
-        assert (mock1.return_value.process.call_count) == 1
-        assert (mock2.return_value.process.call_count) == 1
-        assert (mock3.return_value.process.call_count) == 1
+        assert mock1.return_value.process.call_count == 1
+        assert mock2.return_value.process.call_count == 1
+        assert mock3.return_value.process.call_count == 1
 
         source_instance.refresh_from_db()
         assert source_instance.refresh_started_at is not None
@@ -54,15 +57,18 @@ class TestRefreshInventory:
         mock2 = mock.Mock()
         mock3 = mock.Mock()
         mocker.patch(
-            "pinakes.main.inventory.task_utils.refresh_inventory.ServiceInventoryImport",
+            "pinakes.main.inventory.task_utils.refresh_inventory."
+            "ServiceInventoryImport",
             return_value=mock1,
         )
         mocker.patch(
-            "pinakes.main.inventory.task_utils.refresh_inventory.ServiceOfferingImport",
+            "pinakes.main.inventory.task_utils.refresh_inventory."
+            "ServiceOfferingImport",
             return_value=mock2,
         )
         mocker.patch(
-            "pinakes.main.inventory.task_utils.refresh_inventory.ServiceOfferingNodeImport",
+            "pinakes.main.inventory.task_utils.refresh_inventory."
+            "ServiceOfferingNodeImport",
             return_value=mock3,
         )
         test_suites = [
@@ -118,7 +124,9 @@ class TestRefreshInventory:
                     "updated": 0,
                     "deleted": 3,
                 },  # ServiceOfferingNodeImport
-                "Service Inventories: {'added': 1};\nJob Templates & Workflows: {'updated': 2};\nWorkflow Template Nodes: {'deleted': 3}",  # last refresh message
+                "Service Inventories: {'added': 1};\nJob Templates &"
+                " Workflows: {'updated': 2};\nWorkflow Template Nodes:"
+                " {'deleted': 3}",  # last refresh message
             ],
         ]
 
@@ -133,7 +141,8 @@ class TestRefreshInventory:
             assert source_instance.last_refresh_message == suite[3]
 
     @patch(
-        "pinakes.main.inventory.task_utils.refresh_inventory.ServiceInventoryImport",
+        "pinakes.main.inventory.task_utils.refresh_inventory."
+        "ServiceInventoryImport",
         side_effect=Exception("Failed to import inventory"),
     )
     @pytest.mark.django_db

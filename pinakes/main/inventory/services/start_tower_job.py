@@ -25,7 +25,10 @@ class StartTowerJob:
                 f"/api/v2/workflows/{self.service_offering.source_ref}/launch/"
             )
         else:
-            slug = f"/api/v2/job_templates/{self.service_offering.source_ref}/launch/"
+            slug = (
+                "/api/v2/job_templates/"
+                f"{self.service_offering.source_ref}/launch/"
+            )
 
         self.job = django_rq.enqueue(launch_tower_task, slug, self.params)
         return self

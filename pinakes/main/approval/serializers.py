@@ -50,7 +50,10 @@ class WorkflowSerializer(serializers.ModelSerializer):
 
     group_refs = GroupRefsField(
         required=False,
-        help_text="Array of RBAC groups associated with workflow. The groups need to have approval permission",
+        help_text=(
+            "Array of RBAC groups associated with workflow. The groups need to"
+            " have approval permission"
+        ),
     )
 
     class Meta:
@@ -247,7 +250,10 @@ class RequestInSerializer(serializers.Serializer):
     tag_resources = serializers.ListField(
         child=TagResourceSerializer(many=False),
         required=False,
-        help_text="An array of resource tags that determine the workflows for the request",
+        help_text=(
+            "An array of resource tags that determine the workflows for the"
+            " request"
+        ),
     )
 
     def create(self, validated_data):

@@ -7,7 +7,7 @@ from pinakes.main.inventory.models import (
 
 
 class ServiceOfferingNodeImport:
-    "ServiceOfferingNode maps to Workflow Job Template Nodes in Tower" ""
+    "ServiceOfferingNode maps to Workflow Job Template Nodes in Tower"
 
     # default constructor
     def __init__(self, tenant, source, tower, inventory, service_offerings):

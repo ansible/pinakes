@@ -12,7 +12,10 @@ SCHEMA = {
             {
                 "component": "plain-text",
                 "name": "empty-service-plan",
-                "label": "This product requires no user input and is fully configured by the system.",
+                "label": (
+                    "This product requires no user input and is fully"
+                    " configured by the system."
+                ),
             }
         ]
     },
@@ -120,12 +123,15 @@ def test_compare_schemas():
 
     assert (
         changed_info
-        == "Schema fields changes have been detected: fields added: ['dev_null']; fields removed: ['state']; fields changed: ['empty-service-plan']"
+        == "Schema fields changes have been detected: fields added:"
+        " ['dev_null']; fields removed: ['state']; fields changed:"
+        " ['empty-service-plan']"
     )
 
     changed_info = compare_schemas(SCHEMA_3, SCHEMA_2)
 
     assert (
         changed_info
-        == "Schema fields changes have been detected: fields changed: ['empty-service-plan', 'dev_null']"
+        == "Schema fields changes have been detected: fields changed:"
+        " ['empty-service-plan', 'dev_null']"
     )

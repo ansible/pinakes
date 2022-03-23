@@ -110,7 +110,8 @@ class HandleApprovalEvents:
             self.approval_request.order.update_message(
                 ProgressMessage.Level.INFO,
                 _(
-                    "Approval Request finished with status '{}' and reason '{}'"
+                    "Approval Request finished with status '{}' and reason"
+                    " '{}'"
                 ).format(state, approval_reason),
             )
             logger.info(

@@ -113,7 +113,8 @@ def test_portfolio_copy_with_portfolio_items(api_request):
     assert PortfolioItem.objects.count() == 2
 
     with patch(
-        "pinakes.main.catalog.services.copy_portfolio_item.CopyPortfolioItem._is_orderable"
+        "pinakes.main.catalog.services.copy_portfolio_item."
+        "CopyPortfolioItem._is_orderable"
     ) as mocked:
         mocked.return_value = True
 

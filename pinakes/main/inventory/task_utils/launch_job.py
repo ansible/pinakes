@@ -88,7 +88,8 @@ class LaunchJob:
             "started": self.output.get("started", None),
             "finished": self.output.get("finished", None),
             "extra_vars": self.output.get("extra_vars", None),
-            # TODO: need to add filtering with prefix: expose_to_cloud_redhat_come
+            # TODO(hsong-rh): need to add filtering with prefix:
+            #  expose_to_cloud_redhat_come
             "artifacts": self.output.get("artifacts", None),
         }
 

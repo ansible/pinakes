@@ -1,4 +1,4 @@
-""" Test module for starting a TowerJob given a service offering with params """
+"""Test module for starting a TowerJob given a service offering with params."""
 from unittest.mock import patch, Mock
 import pytest
 from pinakes.main.inventory.tests.factories import (
@@ -27,7 +27,7 @@ def test_starting_a_workflow(mock):
     obj = StartTowerJob(service_offering.id, params).process()
     assert obj.job_id() == job_id
 
-    assert (mock.call_count) == 1
+    assert mock.call_count == 1
     assert (
         mock.call_args.args[1]
         == f"/api/v2/workflows/{service_offering.source_ref}/launch/"

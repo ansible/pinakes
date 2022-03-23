@@ -21,7 +21,8 @@ env = environ.Env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Django gettext files path: locale/<lang-code>/LC_MESSAGES/django.po, django.mo
+# Django gettext files path:
+# locale/<lang-code>/LC_MESSAGES/django.po, django.mo
 LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
 # Quick-start development settings - unsuitable for production
@@ -121,7 +122,9 @@ DATABASES = {
 
 # REST Framework configuration
 REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "pinakes.common.pagination.CatalogPageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": (
+        "pinakes.common.pagination.CatalogPageNumberPagination"
+    ),
     "PAGE_SIZE": 25,
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
@@ -132,7 +135,9 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "EXCEPTION_HANDLER": "pinakes.common.exception_handler.custom_exception_handler",
+    "EXCEPTION_HANDLER": (
+        "pinakes.common.exception_handler.custom_exception_handler"
+    ),
 }
 
 # Password validation
@@ -140,16 +145,25 @@ REST_FRAMEWORK = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "UserAttributeSimilarityValidator"
+        ),
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation.MinimumLengthValidator"
+        ),
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation.CommonPasswordValidator"
+        ),
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation.NumericPasswordValidator"
+        ),
     },
 ]
 
@@ -216,7 +230,10 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "[{asctime}] [{process:d}] [{levelname}] {module} {thread:d} {message}",
+            "format": (
+                "[{asctime}] [{process:d}] [{levelname}] {module} {thread:d}"
+                " {message}"
+            ),
             "style": "{",
         },
         "simple": {
@@ -316,7 +333,10 @@ RQ_CRONJOBS = [
 # Auto generation of openapi spec using Spectacular
 SPECTACULAR_SETTINGS = {
     "TITLE": "Catalog API",
-    "DESCRIPTION": "A set of APIs to create and manage Ansible catalogs and order from them.",
+    "DESCRIPTION": (
+        "A set of APIs to create and manage Ansible catalogs and order from"
+        " them."
+    ),
     "VERSION": "0.1.0",
     "CONTACT": {
         "email": "support@redhat.com",
@@ -377,8 +397,9 @@ SOCIAL_AUTH_REDIRECT_IS_HTTPS = env.bool(
     "PINAKES_HTTPS_ENABLED", default=False
 )
 # CORS
-# Comma separated values list of :"SCHEME+HOST+[PORT]"
-# e.g.: PINAKES_UI_ALLOWED_ORIGINS="https://example.com,https://catalog.example.com:9090"
+# Comma separated values list of :"SCHEME+HOST+[PORT]", e.g.
+# PINAKES_UI_ALLOWED_ORIGINS = \
+#   "https://example.com,https://catalog.example.com:9090"
 CORS_ALLOWED_ORIGINS = env.list("PINAKES_UI_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_CREDENTIALS = False
 CSRF_TRUSTED_ORIGINS = env.list("PINAKES_CSRF_TRUSTED_ORIGINS", default=[])

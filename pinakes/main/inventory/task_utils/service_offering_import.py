@@ -109,7 +109,8 @@ class ServiceOfferingImport:
     def _create_db_obj(self, new_obj, source_ref, kind, inventory):
         """Create a new object in the local DB."""
         logger.info(
-            f"Creating {new_obj['url']}, survey enabled {new_obj['survey_enabled']}"
+            f"Creating {new_obj['url']}, survey enabled"
+            f" {new_obj['survey_enabled']}"
         )
 
         self.stats["adds"] += 1
@@ -149,7 +150,8 @@ class ServiceOfferingImport:
                 ).first().delete()
 
             logger.info(
-                f"Updating {new_obj['url']}, survey enabled {new_obj['survey_enabled']}"
+                f"Updating {new_obj['url']}, survey enabled"
+                f" {new_obj['survey_enabled']}"
             )
             db_obj.name = new_obj["name"]
             db_obj.description = new_obj["description"]
@@ -162,7 +164,8 @@ class ServiceOfferingImport:
                     (new_obj["related.survey_spec"], db_obj.id, source_ref)
                 )
         else:
-            # TODO: Since Survey Specs don't have an update timestamp force to check every time
+            # TODO: Since Survey Specs don't have an update timestamp
+            #  force to check every time
             db_obj = ServiceOffering.objects.get(pk=info[0])
             if new_obj["survey_enabled"] is True:
                 self.survey_objects.append(

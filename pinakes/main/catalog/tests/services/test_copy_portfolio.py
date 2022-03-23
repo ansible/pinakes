@@ -43,7 +43,8 @@ def test_portfolio_copy_with_portfolio_items():
     PortfolioItemFactory(portfolio=portfolio)
 
     with patch(
-        "pinakes.main.catalog.services.copy_portfolio_item.CopyPortfolioItem._is_orderable"
+        "pinakes.main.catalog.services.copy_portfolio_item."
+        "CopyPortfolioItem._is_orderable"
     ) as mock:
         mock.return_value = True
         svc = CopyPortfolio(portfolio, {})

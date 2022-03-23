@@ -33,8 +33,9 @@ class KeycloakAuthMiddleware:
             request.keycloak_user = self._process_keycloak_user(request.user)
         except TokenRefreshError:
             logger.debug(
-                "Keycloak refresh token for "
-                "user '{name}' is expired.".format(name=request.user.username)
+                "Keycloak refresh token for user '{name}' is expired.".format(
+                    name=request.user.username
+                )
             )
             django_auth.logout(request)
         return self.get_response(request)
