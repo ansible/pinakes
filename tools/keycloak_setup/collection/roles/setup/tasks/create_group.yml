@@ -1,0 +1,23 @@
+- ansible.builtin.debug:
+    msg: "Creating Group {{ group.name }}"
+  name: "Group Name"
+- community.general.keycloak_group:
+    validate_certs: "{{ verify_keycloak_ssl }}"
+    auth_client_id: "{{ auth_client_id }}"
+    auth_keycloak_url: "{{ auth_keycloak_url }}"
+    auth_password: "{{ auth_password }}"
+    auth_realm: "{{ auth_realm }}"
+    auth_username: "{{ auth_username }}"
+    name: "{{ group.name }}"
+    realm: "{{ realm_name }}"
+    state: present
+  name: "Create a Keycloak group, authentication with credentials"
+  register: group_created
+- name: "Set Group ID"
+  set_fact:
+    group_id: "{{ group_created.group.id }}"
+- include_tasks: create_group_role.yml
+  loop_control:
+    loop_var: group_role
+  when: "group.clientRoles is defined"
+  with_items: "{{ group.clientRoles }}"

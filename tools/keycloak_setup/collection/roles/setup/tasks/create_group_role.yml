@@ -1,0 +1,17 @@
+- ansible.builtin.debug:
+    msg: "Creating Group {{ group_role }}"
+  name: "Client Role Name"
+- community.general.keycloak_client_rolemapping:
+    validate_certs: "{{ verify_keycloak_ssl }}"
+    auth_client_id: "{{ auth_client_id }}"
+    auth_keycloak_url: "{{ auth_keycloak_url }}"
+    auth_password: "{{ auth_password }}"
+    auth_realm: "{{ auth_realm }}"
+    auth_username: "{{ auth_username }}"
+    client_id: "{{ client_name }}"
+    group_name: "{{ group.name }}"
+    realm: "{{ realm_name }}"
+    roles:
+      - name: "{{ group_role }}"
+    state: present
+  name: "Map a client role to a group, authentication with credentials"

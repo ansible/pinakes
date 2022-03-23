@@ -1,0 +1,73 @@
+- debug:
+    msg: "Preparing Keycloak setup ..."
+  name: "Get started"
+- include_vars:
+    file: catalog_rbac.yml
+    name: rbac
+  name: "Include Catalog & Approval RBAC Setup vars"
+- community.general.keycloak_realm:
+    auth_client_id: "{{ auth_client_id }}"
+    auth_keycloak_url: "{{ auth_keycloak_url }}"
+    auth_password: "{{ auth_password }}"
+    auth_realm: "{{ auth_realm }}"
+    auth_username: "{{ auth_username }}"
+    display_name: "{{ display_name }}"
+    enabled: true
+    attributes:
+      frontendUrl: "{{ realm_frontend_url }}"
+    id: "{{ realm_name }}"
+    realm: "{{ realm_name }}"
+    state: present
+    validate_certs: "{{ verify_keycloak_ssl }}"
+  name: "Create or update AAP Keycloak realm"
+  register: my_realm
+- community.general.keycloak_client:
+    validate_certs: "{{ verify_keycloak_ssl }}"
+    admin_url: "{{ admin_url }}"
+    auth_client_id: "{{ auth_client_id }}"
+    auth_keycloak_url: "{{ auth_keycloak_url }}"
+    auth_password: "{{ auth_password }}"
+    auth_realm: "{{ auth_realm }}"
+    auth_username: "{{ auth_username }}"
+    authorization_services_enabled: true
+    bearer_only: false
+    client_authenticator_type: client-secret
+    client_id: "{{ client_name }}"
+    consent_required: false
+    description: "Client ID for Pinakes"
+    direct_access_grants_enabled: false
+    enabled: true
+    frontchannel_logout: false
+    implicit_flow_enabled: false
+    name: "{{ client_name }}"
+    protocol: openid-connect
+    public_client: false
+    realm: "{{ realm_name }}"
+    redirect_uris: "{{ redirect_uris }}"
+    root_url: "{{ root_url }}"
+    secret: "{{ social_auth_keycloak_secret }}"
+    service_accounts_enabled: true
+    standard_flow_enabled: true
+    state: present
+    web_origins: "{{ web_origins }}"
+    authorization_settings:
+      decisionStrategy: AFFIRMATIVE
+  name: "Create or update a Keycloak client for Catalog"
+- include_tasks: keycloak_token.yml
+- name: "Get Clients"
+  register: keycloak_clients
+  uri:
+    validate_certs: "{{ verify_keycloak_ssl }}"
+    headers:
+      Accept: application/json
+      Authorization: "Bearer {{ keycloak_token.json.access_token }}"
+      Content-type: application/json
+    method: GET
+    status_code:
+      - 200
+    url: "{{ auth_keycloak_url }}/admin/realms/{{ realm_name }}/clients?clientId={{ client_name }}&first=0&max=20&search=true"
+- name: "Save catalog client"
+  set_fact:
+    catalog_client: "{{ keycloak_clients['json'][0]  }}"
+- include_tasks: keycloak_seed.yml
+  when: seed_keycloak

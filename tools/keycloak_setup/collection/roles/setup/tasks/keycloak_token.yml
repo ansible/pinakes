@@ -1,0 +1,12 @@
+- name: "Create Token for service Keycloak"
+  register: keycloak_token
+  uri:
+    validate_certs: "{{ verify_keycloak_ssl }}"
+    body:
+      client_id: "{{ auth_client_id }}"
+      grant_type: password
+      password: "{{ auth_password }}"
+      username: "{{ auth_username }}"
+    body_format: form-urlencoded
+    method: POST
+    url: "{{ auth_keycloak_url }}/realms/master/protocol/openid-connect/token"

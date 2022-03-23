@@ -1,7 +1,7 @@
 #! /bin/sh
 set -e
 source /vagrant_data/env_vars
-
+KEYCLOAK_SETUP_VERSION=1.0.28
 # Register the VM with Red Hat
 subscription-manager register --username $RHN_USER --password $RHN_PASSWORD --auto-attach
 dnf update -y
@@ -55,7 +55,10 @@ pip3 install jinja2
 
 # Configure Catalog Settings for Keycloak
 dnf install -y ansible
-ansible-galaxy collection install community.general mkanoor.catalog_keycloak
+
+rm -rf pinakes-keycloak_setup-"$KEYCLOAK_SETUP_VERSION".tar.gz
+ansible-galaxy collection build tools/keycloak_setup/collection
+ansible-galaxy collection install community.general pinakes-keycloak_setup-"$KEYCLOAK_SETUP_VERSION".tar.gz
 ansible-playbook tools/keycloak_setup/dev.yml
 
 

@@ -1,6 +1,0 @@
----
-- hosts: localhost
-  vars:
-    settings_dir: "/opt/app-root/src/pinakes/settings/"
-  roles:
-    - mkanoor.catalog_keycloak.setup

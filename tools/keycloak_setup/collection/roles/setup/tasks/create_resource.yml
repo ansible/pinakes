@@ -1,0 +1,17 @@
+- ansible.builtin.debug:
+    msg: "Creating Resource {{ resource.name }}"
+  name: "Resource Name"
+- name: "Add resource"
+  uri:
+    validate_certs: "{{ verify_keycloak_ssl }}"
+    body: "{{ resource | to_json }}"
+    body_format: json
+    headers:
+      Accept: application/json
+      Authorization: "Bearer {{ keycloak_token.json.access_token }}"
+      Content-type: application/json
+    method: POST
+    status_code:
+      - 201
+      - 409
+    url: "{{ auth_keycloak_url }}/admin/realms/{{ realm_name }}/clients/{{ catalog_client['id'] }}/authz/resource-server/resource"
