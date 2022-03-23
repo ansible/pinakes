@@ -40,7 +40,6 @@ from pinakes.main.catalog.exceptions import (
 from pinakes.main.catalog.models import (
     ApprovalRequest,
     ServicePlan,
-    Order,
     Portfolio,
     PortfolioItem,
     ProgressMessage,

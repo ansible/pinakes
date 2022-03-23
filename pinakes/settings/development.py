@@ -2,6 +2,7 @@
     When running pytest SQLite is used as Database
     Supports local settings in pinakes/settings/local*.py
 """
+# flake8: noqa
 import sys
 import traceback
 
