@@ -21,9 +21,8 @@ class CurrentUserSerializer(serializers.ModelSerializer):
     def get_roles(self, _obj):
         """Get the current users roles from the request"""
         request = self.context.get("request")
-        extra_data = request.keycloak_user.extra_data
         jot = jwt.decode(
-            extra_data["access_token"],
+            request.auth,
             options={"verify_signature": False, "verify_aud": False},
         )
         roles = (

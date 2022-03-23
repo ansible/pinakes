@@ -43,7 +43,7 @@ class TemplatePermission(BaseKeycloakPermission):
         return check_wildcard_permission(
             Template.keycloak_type(),
             permission,
-            get_authz_client(http_request.keycloak_user.access_token),
+            get_authz_client(http_request.auth),
         )
 
 
@@ -68,7 +68,7 @@ class WorkflowPermission(BaseKeycloakPermission):
         return check_wildcard_permission(
             Workflow.keycloak_type(),
             permission,
-            get_authz_client(http_request.keycloak_user.access_token),
+            get_authz_client(http_request.auth),
         )
 
 
@@ -87,7 +87,7 @@ class RequestPermission(BaseKeycloakPermission):
         return check_wildcard_permission(
             Request.keycloak_type(),
             permission,
-            get_authz_client(http_request.keycloak_user.access_token),
+            get_authz_client(http_request.auth),
         )
 
     def perform_check_object_permission(
@@ -111,7 +111,7 @@ class RequestPermission(BaseKeycloakPermission):
         resources = get_permitted_resources(
             Request.keycloak_type(),
             permission,
-            get_authz_client(http_request.keycloak_user.access_token),
+            get_authz_client(http_request.auth),
         )
         if persona == PERSONA_ADMIN and resources.is_wildcard:
             if "parent_id" not in view.kwargs:
@@ -149,5 +149,5 @@ def _request_has_permission(request, http_request):
         request.keycloak_type(),
         request.keycloak_name(),
         "read",
-        get_authz_client(http_request.keycloak_user.access_token),
+        get_authz_client(http_request.auth),
     )

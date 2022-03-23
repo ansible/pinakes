@@ -72,7 +72,6 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "pinakes.common.auth.middleware.KeycloakAuthMiddleware",
 ]
 
 ROOT_URLCONF = "pinakes.urls"
@@ -127,7 +126,14 @@ REST_FRAMEWORK = {
     ),
     "PAGE_SIZE": 25,
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
+        (
+            "pinakes.common.auth.keycloak_django.authentication."
+            "KeycloakSessionAuthentication"
+        ),
+        (
+            "pinakes.common.auth.keycloak_django.authentication."
+            "KeycloakBearerOnlineAuthentication"
+        ),
     ),
     "DEFAULT_FILTER_BACKENDS": (
         "django_filters.rest_framework.DjangoFilterBackend",
