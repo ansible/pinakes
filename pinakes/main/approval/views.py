@@ -128,6 +128,23 @@ class WorkflowFilterBackend(BaseFilterBackend):
     ),
     list=extend_schema(
         description="List workflows, available to admin only",
+        parameters=[
+            OpenApiParameter(
+                "object_type",
+                type=str,
+                description="Object type. Used jointly with object_id and app_name to find workflows linked to a resource object",
+            ),
+            OpenApiParameter(
+                "object_id",
+                type=int,
+                description="ID of the object. Used jointly with object_type and app_name to find workflows linked to a resource object",
+            ),
+            OpenApiParameter(
+                "app_name",
+                type=str,
+                description="Name of the application the object belongs to. Used jointly with object_type and object_id to find workflows linked to a resource object",
+            ),
+        ],
     ),
     create=extend_schema(
         tags=(
