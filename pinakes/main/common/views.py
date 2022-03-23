@@ -2,6 +2,7 @@ import django_rq
 import yaml
 import importlib.resources
 from django.http import Http404
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
     extend_schema_view,
@@ -10,6 +11,11 @@ from drf_spectacular.utils import (
     OpenApiExample,
 )
 from rest_framework import viewsets, status
+from rest_framework.filters import (
+    BaseFilterBackend,
+    OrderingFilter,
+    SearchFilter,
+)
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -19,6 +25,18 @@ from pinakes.common.serializers import TaskSerializer
 from pinakes.main.common import models
 from pinakes.main.common import serializers
 from pinakes.main.common import tasks
+
+
+class GroupFilterBackend(BaseFilterBackend):
+    """
+    Filter that selects groups by roles.
+    """
+
+    def filter_queryset(self, request, queryset, _view):
+        roles = request.GET.getlist("role")
+        if roles:
+            return queryset.filter(roles__name__in=roles).distinct()
+        return queryset
 
 
 @extend_schema_view(
@@ -44,17 +62,16 @@ from pinakes.main.common import tasks
 )
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.GroupSerializer
+    queryset = models.Group.objects.all()
+    filter_backends = (
+        GroupFilterBackend,
+        DjangoFilterBackend,
+        OrderingFilter,
+        SearchFilter,
+    )
     ordering = ("name",)
-
-    def get_queryset(self):
-        roles = self.request.GET.getlist("role")
-        if roles:
-            queryset = models.Group.objects.filter(
-                roles__name__in=roles
-            ).distinct()
-        else:
-            queryset = models.Group.objects.all()
-        return queryset
+    filterset_fields = ("name",)
+    search_fields = ("name",)
 
 
 @extend_schema_view(

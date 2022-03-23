@@ -6,9 +6,10 @@ from pinakes.main.common.tests import factories
 
 
 @pytest.mark.django_db
-def test_groups_list(api_request):
-    group = factories.GroupFactory()
-    response = api_request("get", "common:group-list")
+def test_groups_list_with_search(api_request):
+    factories.GroupFactory(name="approver")
+    group = factories.GroupFactory(name="adjuster")
+    response = api_request("get", "common:group-list", data={"search": "just"})
 
     assert response.status_code == 200
     assert response.data["count"] == 1
