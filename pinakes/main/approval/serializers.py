@@ -124,6 +124,7 @@ class RequestFields:
     FIELDS = (
         "id",
         "requester_name",
+        "group_name",
         "owner",
         "name",
         "description",
