@@ -11,8 +11,8 @@ utils.compose_parent_pk_kwarg_name = parent_pk_kwarg_name
 
 
 # Do NOT move the following from to top of the file
-from rest_framework_extensions.routers import NestedRouterMixin
-from rest_framework.routers import DefaultRouter
+from rest_framework_extensions.routers import NestedRouterMixin  # noqa: E402
+from rest_framework.routers import DefaultRouter  # noqa: E402
 
 
 class NestedDefaultRouter(NestedRouterMixin, DefaultRouter):

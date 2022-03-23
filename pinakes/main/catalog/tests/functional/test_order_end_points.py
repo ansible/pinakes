@@ -234,7 +234,7 @@ def test_order_order_item_post(api_request, mocker):
     portfolio_item = PortfolioItemFactory(
         service_offering_ref=service_offering.id
     )
-    service_plan = ServicePlanFactory(portfolio_item=portfolio_item)
+    ServicePlanFactory(portfolio_item=portfolio_item)
     data = {"portfolio_item": portfolio_item.id, "service_parameters": {}}
     response = api_request(
         "post", "catalog:order-orderitem-list", order.id, data

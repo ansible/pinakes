@@ -104,7 +104,7 @@ class RequestPermission(BaseKeycloakPermission):
     ) -> models.QuerySet:
         persona = http_request.GET.get("persona") or PERSONA_USER
         if persona == PERSONA_USER:
-            if not "parent_id" in view.kwargs:
+            if "parent_id" not in view.kwargs:
                 qs = qs.filter(parent=None)
             return qs.filter(user=http_request.user)
 
@@ -114,7 +114,7 @@ class RequestPermission(BaseKeycloakPermission):
             get_authz_client(http_request.keycloak_user.access_token),
         )
         if persona == PERSONA_ADMIN and resources.is_wildcard:
-            if not "parent_id" in view.kwargs:
+            if "parent_id" not in view.kwargs:
                 qs = qs.filter(parent=None)
             return qs
         return qs.filter(pk__in=resources.items)
