@@ -53,7 +53,8 @@ class SubmitApprovalRequest:
             )
             raise BadParamsException(
                 _(
-                    "Failed to submit request to approval for Order {}, error: {}"
+                    "Failed to submit request to approval for Order {},"
+                    " error: {}"
                 ).format(
                     self.order.id,
                     str(error),

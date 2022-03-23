@@ -86,7 +86,8 @@ class SourceViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
                     )
                     raise RefreshAlreadyRegisteredException(
                         _(
-                            "Refresh job {} is already {}, please try again later"
+                            "Refresh job {} is already {}, please try again"
+                            " later"
                         ).format(
                             source.last_refresh_task_ref,
                             job_status,

@@ -53,7 +53,10 @@ class Workflow(KeycloakMixin, BaseModel):
     )
     group_refs = models.JSONField(
         default=list,
-        help_text="Array of RBAC groups associated with workflow. The groups need to have approval permission",
+        help_text=(
+            "Array of RBAC groups associated with workflow. The groups need to"
+            " have approval permission"
+        ),
     )
     internal_sequence = models.DecimalField(
         max_digits=16, decimal_places=6, db_index=True
@@ -124,7 +127,9 @@ class Request(AbstractKeycloakResource, BaseModel):
         choices=State.choices,
         default=State.PENDING,
         editable=False,
-        help_text="The state of the request, must be one of the predefined values",
+        help_text=(
+            "The state of the request, must be one of the predefined values"
+        ),
     )
     decision = models.CharField(
         max_length=10,
@@ -136,7 +141,10 @@ class Request(AbstractKeycloakResource, BaseModel):
     reason = models.TextField(
         blank=True,
         editable=False,
-        help_text="Optional reason for the decision, present normally when the decision is denied",
+        help_text=(
+            "Optional reason for the decision, present normally when the"
+            " decision is denied"
+        ),
     )
     process_ref = models.CharField(max_length=128, editable=False)
     group_name = models.CharField(
@@ -153,7 +161,10 @@ class Request(AbstractKeycloakResource, BaseModel):
     finished_at = models.DateTimeField(
         editable=False,
         null=True,
-        help_text="Time when the request was finished (skipped, canceled, or completed)",
+        help_text=(
+            "Time when the request was finished (skipped, canceled, or"
+            " completed)"
+        ),
     )
     number_of_children = models.SmallIntegerField(
         editable=False,
@@ -169,7 +180,10 @@ class Request(AbstractKeycloakResource, BaseModel):
         Workflow,
         null=True,
         on_delete=models.SET_NULL,
-        help_text="ID of the workflow that the request belongs to. Present only if the request is a leaf node",
+        help_text=(
+            "ID of the workflow that the request belongs to. Present only if"
+            " the request is a leaf node"
+        ),
     )
     parent = models.ForeignKey(
         "self",
@@ -278,7 +292,10 @@ class Action(BaseModel):
         max_length=10,
         choices=Operation.choices,
         default=Operation.MEMO,
-        help_text="Action type, must be one of the predefined values. The request state will be updated according to the operation.",
+        help_text=(
+            "Action type, must be one of the predefined values. The request"
+            " state will be updated according to the operation."
+        ),
     )
     comments = models.TextField(
         blank=True, help_text="Comments for the action"

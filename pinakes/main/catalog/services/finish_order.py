@@ -42,7 +42,8 @@ class FinishOrder:
 
         if self.order.approvalrequest.state == ApprovalRequest.State.CANCELED:
             self.order.mark_failed("Order Canceled")
-        # for both ApprovalRequest.State.DENIED and  ApprovalRequest.State.FAILED
+        # For both ApprovalRequest.State.DENIED
+        #   and ApprovalRequest.State.FAILED
         else:
             self.order.mark_failed("Order Failed")
 
@@ -50,7 +51,8 @@ class FinishOrder:
             if item.state not in OrderItem.FINISHED_STATES:
                 item.mark_failed(
                     _(
-                        "This order item has failed due to the entire order {} before it ran".format(
+                        "This order item has failed due to the entire order {}"
+                        " before it ran".format(
                             self.order.approvalrequest.state
                         )
                     )

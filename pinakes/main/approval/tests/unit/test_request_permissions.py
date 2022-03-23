@@ -60,7 +60,8 @@ def test_has_permission():
 
 @pytest.mark.django_db
 def test_has_object_permission_owner():
-    """Test has_object_permission method when user is the owner of the request"""
+    """Test has_object_permission method when user
+    is the owner of the request"""
     user = UserFactory()
     http_request = mock.Mock(user=user)
     view = mock.Mock(action="content")
@@ -78,7 +79,8 @@ def test_has_object_permission_owner():
     return_value=True,
 )
 def test_has_object_permission_other(check_resource_permission):
-    """Test has_object_permission method when user is not the owner of the request"""
+    """Test has_object_permission method when user
+    is not the owner of the request"""
     http_request = mock.Mock()
     view = mock.Mock(action="content")
     request = RequestFactory()

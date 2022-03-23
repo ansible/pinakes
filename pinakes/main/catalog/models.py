@@ -332,7 +332,10 @@ class Order(UserOwnedModel, MessageableMixin, KeycloakMixin):
     order_request_sent_at = models.DateTimeField(
         editable=False,
         null=True,
-        help_text="The time at which the order request was sent to the catalog inventory service",
+        help_text=(
+            "The time at which the order request was sent to the catalog"
+            " inventory service"
+        ),
     )
     completed_at = models.DateTimeField(
         editable=False,
@@ -427,7 +430,10 @@ class OrderItem(UserOwnedModel, MessageableMixin):
     order_request_sent_at = models.DateTimeField(
         editable=False,
         null=True,
-        help_text="The time at which the order request was sent to the catalog inventory service",
+        help_text=(
+            "The time at which the order request was sent to the catalog"
+            " inventory service"
+        ),
     )
     completed_at = models.DateTimeField(
         editable=False,
@@ -463,17 +469,26 @@ class OrderItem(UserOwnedModel, MessageableMixin):
     provider_control_parameters = models.JSONField(
         blank=True,
         null=True,
-        help_text="The provider specific parameters needed to provision this service. This might include namespaces, special keys.",
+        help_text=(
+            "The provider specific parameters needed to provision this"
+            " service. This might include namespaces, special keys."
+        ),
     )
     context = models.JSONField(blank=True, null=True)
     artifacts = models.JSONField(
         blank=True,
         null=True,
-        help_text="Contains a prefix-stripped key/value object that contains all of the information exposed from product provisioning",
+        help_text=(
+            "Contains a prefix-stripped key/value object that contains all of"
+            " the information exposed from product provisioning"
+        ),
     )
     external_url = models.URLField(
         blank=True,
-        help_text="The external url of the service instance used with relation to this order item",
+        help_text=(
+            "The external url of the service instance used with relation to"
+            " this order item"
+        ),
     )
 
     order = models.ForeignKey(
@@ -556,7 +571,10 @@ class ApprovalRequest(BaseModel):
         choices=State.choices,
         default=State.UNDECIDED,
         editable=False,
-        help_text="The state of the approval request (approved, denied, undecided, canceled, error)",
+        help_text=(
+            "The state of the approval request (approved, denied, undecided,"
+            " canceled, error)"
+        ),
     )
 
     order = models.OneToOneField(
@@ -600,7 +618,10 @@ class ServicePlan(BaseModel):
     outdated = models.BooleanField(
         default=False,
         editable=False,
-        help_text="Whether or not the base schema is outdated. The portfolio item is not orderable if the base schema is outdated.",
+        help_text=(
+            "Whether or not the base schema is outdated. The portfolio item is"
+            " not orderable if the base schema is outdated."
+        ),
     )
     outdated_changes = models.TextField(
         blank=True,

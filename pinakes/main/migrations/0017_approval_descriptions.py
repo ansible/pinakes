@@ -33,7 +33,11 @@ class Migration(migrations.Migration):
                     ("error", "Error"),
                 ],
                 default="memo",
-                help_text="Action type, must be one of the predefined values. The request state will be updated according to the operation.",
+                help_text=(
+                    "Action type, must be one of the predefined values. The"
+                    " request state will be updated according to the"
+                    " operation."
+                ),
                 max_length=10,
             ),
         ),
@@ -60,7 +64,9 @@ class Migration(migrations.Migration):
                 ],
                 default="undecided",
                 editable=False,
-                help_text="Approval decision, must be one of the predefined values",
+                help_text=(
+                    "Approval decision, must be one of the predefined values"
+                ),
                 max_length=10,
             ),
         ),
@@ -76,7 +82,10 @@ class Migration(migrations.Migration):
             name="finished_at",
             field=models.DateTimeField(
                 editable=False,
-                help_text="Time when the request was finished (skipped, canceled, or completed)",
+                help_text=(
+                    "Time when the request was finished (skipped, canceled, or"
+                    " completed)"
+                ),
                 null=True,
             ),
         ),
@@ -85,7 +94,10 @@ class Migration(migrations.Migration):
             name="group_name",
             field=models.CharField(
                 editable=False,
-                help_text="Name of approver group(s) assigned to approve this request",
+                help_text=(
+                    "Name of approver group(s) assigned to approve this"
+                    " request"
+                ),
                 max_length=128,
             ),
         ),
@@ -138,7 +150,10 @@ class Migration(migrations.Migration):
             field=models.TextField(
                 blank=True,
                 editable=False,
-                help_text="Optional reason for the decision, present normally when the decision is denied",
+                help_text=(
+                    "Optional reason for the decision, present normally when"
+                    " the decision is denied"
+                ),
             ),
         ),
         migrations.AlterField(
@@ -156,7 +171,10 @@ class Migration(migrations.Migration):
                 ],
                 default="pending",
                 editable=False,
-                help_text="The state of the request, must be one of the predefined values",
+                help_text=(
+                    "The state of the request, must be one of the predefined"
+                    " values"
+                ),
                 max_length=10,
             ),
         ),
@@ -164,7 +182,10 @@ class Migration(migrations.Migration):
             model_name="request",
             name="workflow",
             field=models.ForeignKey(
-                help_text="ID of the workflow that the request belongs to. Present only if the request is a leaf node",
+                help_text=(
+                    "ID of the workflow that the request belongs to. Present"
+                    " only if the request is a leaf node"
+                ),
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
                 to="main.workflow",
@@ -200,7 +221,10 @@ class Migration(migrations.Migration):
             name="group_refs",
             field=models.JSONField(
                 default=list,
-                help_text="Array of RBAC groups associated with workflow. The groups need to have approval permission",
+                help_text=(
+                    "Array of RBAC groups associated with workflow. The groups"
+                    " need to have approval permission"
+                ),
             ),
         ),
         migrations.AlterField(

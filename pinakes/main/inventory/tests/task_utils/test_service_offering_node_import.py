@@ -1,4 +1,4 @@
-""" Module to test import of service offering node """
+"""Module to test import of service offering node."""
 from unittest.mock import Mock
 import pytest
 
@@ -37,7 +37,9 @@ class TestServiceOfferingNodeImport:
             {
                 "url": "/api/v2/workflow_job_template_nodes/298/",
                 "id": 298,
-                "summary_fields.unified_job_template.unified_job_type": "workflow_job",
+                "summary_fields.unified_job_template.unified_job_type": (
+                    "workflow_job"
+                ),
                 "created": "2021-06-10T15:59:33.431827Z",
                 "modified": "2021-06-10T15:59:33.431850Z",
                 "inventory": int(inventory_source_ref),
@@ -137,9 +139,14 @@ class TestServiceOfferingNodeImport:
         tower_mock = Mock()
         objs = [
             {
-                "url": f"/api/v2/workflow_job_template_nodes/{service_offering_node.source_ref}/",
+                "url": (
+                    "/api/v2/workflow_job_template_nodes/"
+                    f"{service_offering_node.source_ref}/"
+                ),
                 "id": int(service_offering_node.source_ref),
-                "summary_fields.unified_job_template.unified_job_type": "workflow_job",
+                "summary_fields.unified_job_template.unified_job_type": (
+                    "workflow_job"
+                ),
                 "created": "2021-06-10T15:59:33.431827Z",
                 "modified": "2021-06-10T15:59:33.431850Z",
                 "inventory": int(inventory_source_ref),

@@ -24,7 +24,9 @@ class Migration(migrations.Migration):
             name="last_successful_refresh_at",
             field=models.DateTimeField(
                 editable=False,
-                help_text="The time at which the latest source refresh was succeeded",
+                help_text=(
+                    "The time at which the latest source refresh was succeeded"
+                ),
                 null=True,
             ),
         ),

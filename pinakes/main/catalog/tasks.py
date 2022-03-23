@@ -26,7 +26,8 @@ def remove_portfolio_permissions(portfolio_id, groups_ids, permissions):
 
 
 def _update_share_counter(keycloak_id):
-    """Set the share count based on the permission sets in keycloak for this resource."""
+    """Set the share count based on the permission sets
+    in keycloak for this resource."""
     client = keycloak_django.get_uma_client()
     count = len(client.find_permissions_by_resource(keycloak_id))
     Portfolio.objects.filter(keycloak_id=keycloak_id).update(share_count=count)

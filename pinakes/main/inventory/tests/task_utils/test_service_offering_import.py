@@ -41,7 +41,9 @@ class TestServiceOfferingImport:
                 "description": "Bedrock Template",
                 "created": "2021-05-19T17:21:37.130143Z",
                 "modified": "2021-06-10T20:06:35.234167Z",
-                "related.inventory": f"/api/v2/inventories/{inventory_source_ref}/",
+                "related.inventory": (
+                    f"/api/v2/inventories/{inventory_source_ref}/"
+                ),
                 "related.survey_spec": "/api/v2/survey_spec/298",
                 "survey_enabled": True,
                 "type": "job_template",
@@ -55,7 +57,9 @@ class TestServiceOfferingImport:
                 "description": "Barney Template",
                 "created": "2021-05-19T17:56:37.130143Z",
                 "modified": "2021-06-10T20:46:35.234167Z",
-                "related.inventory": f"/api/v2/inventories/{inventory_source_ref}/",
+                "related.inventory": (
+                    f"/api/v2/inventories/{inventory_source_ref}/"
+                ),
                 "survey_enabled": False,
                 "related.survey_spec": "/api/v2/survey_spec/299",
                 "type": "workflow_job_template",
@@ -118,8 +122,12 @@ class TestServiceOfferingImport:
                 "description": "Bedrock Template",
                 "created": "2021-05-19T17:21:37.130143Z",
                 "modified": "2021-06-10T20:06:35.234167Z",
-                "related.inventory": f"/api/v2/inventories/{inventory_source_ref}/",
-                "related.survey_spec": f"/api/v2/survey_spec/{service_offering_source_ref}",
+                "related.inventory": (
+                    f"/api/v2/inventories/{inventory_source_ref}/"
+                ),
+                "related.survey_spec": (
+                    f"/api/v2/survey_spec/{service_offering_source_ref}"
+                ),
                 "survey_enabled": True,
                 "type": "job_template",
             },
@@ -227,8 +235,12 @@ class TestServiceOfferingImport:
                 "description": "Bedrock Template",
                 "created": "2021-05-19T17:21:37.130143Z",
                 "modified": "2021-06-10T20:06:35.234167Z",
-                "related.inventory": f"/api/v2/inventories/{service_inventory.source_ref}/",
-                "related.survey_spec": f"/api/v2/survey_spec/{service_offering.source_ref}",
+                "related.inventory": (
+                    f"/api/v2/inventories/{service_inventory.source_ref}/"
+                ),
+                "related.survey_spec": (
+                    f"/api/v2/survey_spec/{service_offering.source_ref}"
+                ),
                 "survey_enabled": False,
                 "type": "job_template",
             },

@@ -60,7 +60,8 @@ class ServicePlanImport:
             )
         elif old_obj.schema_sha256 != new_sha:
             logger.info(
-                f"Updating existing InventoryServicePlan source_ref {source_ref}"
+                "Updating existing InventoryServicePlan source_ref"
+                f" {source_ref}"
             )
             self.stats["updates"] += 1
             ddf_data = self.spec_converter.process(data)

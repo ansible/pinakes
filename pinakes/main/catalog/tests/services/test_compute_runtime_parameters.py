@@ -17,7 +17,10 @@ def fields_1():
         {
             "component": "plain-text",
             "name": "empty-service-plan",
-            "label": "This product requires no user input and is fully configured by the system.",
+            "label": (
+                "This product requires no user input and is fully configured"
+                " by the system."
+            ),
         }
     ]
 

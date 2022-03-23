@@ -121,7 +121,11 @@ class TenantViewSet(viewsets.ReadOnlyModelViewSet):
         responses={
             200: OpenApiResponse(
                 response=PortfolioSerializer,
-                description="Return a list of portfolios. An empty list indicates either undefined portfolios in the system or inaccessibility to the caller.",
+                description=(
+                    "Return a list of portfolios. An empty list indicates"
+                    " either undefined portfolios in the system or"
+                    " inaccessibility to the caller."
+                ),
             )
         },
     ),
@@ -178,9 +182,7 @@ class PortfolioViewSet(
         return Response(serializer.data)
 
     @extend_schema(
-        description=(
-            "Share a portfolio with specified groups and permissions."
-        ),
+        description="Share a portfolio with specified groups and permissions.",
         request=SharingRequestSerializer,
         responses={status.HTTP_202_ACCEPTED: TaskSerializer},
     )
@@ -390,7 +392,10 @@ class PortfolioItemViewSet(
             OpenApiParameter(
                 "destination_portfolio_id",
                 required=False,
-                description="Retrieve next available portfolio item name from destination portfolio",
+                description=(
+                    "Retrieve next available portfolio item name from"
+                    " destination portfolio"
+                ),
             ),
         ],
         request=NextNameInSerializer,
@@ -531,26 +536,36 @@ class OrderViewSet(
                 "extra",
                 required=False,
                 enum=["true", "false"],
-                description="Include extra data such as portfolio item details",
+                description=(
+                    "Include extra data such as portfolio item details"
+                ),
             ),
         ],
     ),
     list=extend_schema(
         tags=("orders", "order_items"),
-        description="Get a list of order items associated with the logged in user.",
+        description=(
+            "Get a list of order items associated with the logged in user."
+        ),
         parameters=[
             OrderItemDocSerializer,
             OpenApiParameter(
                 "extra",
                 required=False,
                 enum=["true", "false"],
-                description="Include extra data such as portfolio item details",
+                description=(
+                    "Include extra data such as portfolio item details"
+                ),
             ),
         ],
         responses={
             200: OpenApiResponse(
                 OrderItemSerializer,
-                description="Return a list of order items. An empty list indicates either undefined orders in the system or inaccessibility to the caller.",
+                description=(
+                    "Return a list of order items. An empty list indicates"
+                    " either undefined orders in the system or inaccessibility"
+                    " to the caller."
+                ),
             ),
         },
     ),
@@ -597,7 +612,11 @@ class OrderItemViewSet(
 
 @extend_schema_view(
     list=extend_schema(
-        description="Get a list of approval requests associated with an order. As the order is being approved one can check the status of the approvals.",
+        description=(
+            "Get a list of approval requests associated with an order. As the"
+            " order is being approved one can check the status of the"
+            " approvals."
+        ),
     ),
 )
 class ApprovalRequestViewSet(
@@ -628,7 +647,11 @@ class ApprovalRequestViewSet(
 
 @extend_schema_view(
     list=extend_schema(
-        description="Get a list of progress messages associated with an order. As the order is being processed the provider can update the progress messages.",
+        description=(
+            "Get a list of progress messages associated with an order. As the"
+            " order is being processed the provider can update the progress"
+            " messages."
+        ),
     ),
 )
 class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
@@ -725,7 +748,10 @@ class ServicePlanViewSet(
         return Response(output_serializer.data)
 
     @extend_schema(
-        description="Reset the schema of the service plan. It deletes any user modifications and pulls in latest schema from inventory",
+        description=(
+            "Reset the schema of the service plan. It deletes any user"
+            " modifications and pulls in latest schema from inventory"
+        ),
         request=None,
         responses={200: ServicePlanSerializer},
     )

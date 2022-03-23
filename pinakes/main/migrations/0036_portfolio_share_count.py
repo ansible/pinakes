@@ -15,7 +15,9 @@ class Migration(migrations.Migration):
             name="share_count",
             field=models.IntegerField(
                 default=0,
-                help_text="The number of different groups sharing this portfolio",
+                help_text=(
+                    "The number of different groups sharing this portfolio"
+                ),
             ),
         ),
     ]

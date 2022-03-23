@@ -12,9 +12,9 @@ from split_settings.tools import optional, include
 # Load Default Settings
 from .defaults import *
 
-# If any local_*.py files are present in pinakes/settings/, use them to override
-# default settings for development.  If not present, we can still run using
-# only the defaults.
+# If any local_*.py files are present in pinakes/settings/,
+# use them to override default settings for development.
+# If not present, we can still run using only the defaults.
 try:
     include(optional("local_*.py"), scope=locals())
 except ImportError:

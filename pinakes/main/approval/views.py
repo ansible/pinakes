@@ -62,7 +62,10 @@ logger = logging.getLogger("approval")
         description="Create a template, available to admin only",
     ),
     partial_update=extend_schema(
-        description="Find a template by its id and update its attributes, available to admin only",
+        description=(
+            "Find a template by its id and update its attributes, available to"
+            " admin only"
+        ),
     ),
     destroy=extend_schema(
         description="Delete a template by its id, available to admin only",
@@ -124,7 +127,9 @@ class WorkflowFilterBackend(BaseFilterBackend):
 
 @extend_schema_view(
     retrieve=extend_schema(
-        description="Get an approval workflow by its id, available to admin only"
+        description=(
+            "Get an approval workflow by its id, available to admin only"
+        )
     ),
     list=extend_schema(
         description="List workflows, available to admin only",
@@ -132,17 +137,27 @@ class WorkflowFilterBackend(BaseFilterBackend):
             OpenApiParameter(
                 "object_type",
                 type=str,
-                description="Object type. Used jointly with object_id and app_name to find workflows linked to a resource object",
+                description=(
+                    "Object type. Used jointly with object_id and app_name to"
+                    " find workflows linked to a resource object"
+                ),
             ),
             OpenApiParameter(
                 "object_id",
                 type=int,
-                description="ID of the object. Used jointly with object_type and app_name to find workflows linked to a resource object",
+                description=(
+                    "ID of the object. Used jointly with object_type and"
+                    " app_name to find workflows linked to a resource object"
+                ),
             ),
             OpenApiParameter(
                 "app_name",
                 type=str,
-                description="Name of the application the object belongs to. Used jointly with object_type and object_id to find workflows linked to a resource object",
+                description=(
+                    "Name of the application the object belongs to. Used"
+                    " jointly with object_type and object_id to find workflows"
+                    " linked to a resource object"
+                ),
             ),
         ],
     ),
@@ -151,13 +166,21 @@ class WorkflowFilterBackend(BaseFilterBackend):
             "workflows",
             "templates",
         ),
-        description="Create a workflow from a template identified by its id, available to admin only",
+        description=(
+            "Create a workflow from a template identified by its id, available"
+            " to admin only"
+        ),
     ),
     partial_update=extend_schema(
-        description="Find an approval workflow by its id and update its attributes, available to admin only",
+        description=(
+            "Find an approval workflow by its id and update its attributes,"
+            " available to admin only"
+        ),
     ),
     destroy=extend_schema(
-        description="Delete an approval workflow by its id, available to admin only",
+        description=(
+            "Delete an approval workflow by its id, available to admin only"
+        ),
     ),
 )
 class WorkflowViewSet(
@@ -252,13 +275,18 @@ class WorkflowViewSet(
 
 @extend_schema_view(
     retrieve=extend_schema(
-        description="Get an approval request by its id, available to anyone who can access the request",
+        description=(
+            "Get an approval request by its id, available to anyone who can"
+            " access the request"
+        ),
         parameters=[
             OpenApiParameter(
                 "extra",
                 required=False,
                 enum=["true", "false"],
-                description="Include extra data such as subrequests and actions",
+                description=(
+                    "Include extra data such as subrequests and actions"
+                ),
             ),
         ],
     ),
@@ -269,13 +297,18 @@ class WorkflowViewSet(
                 "extra",
                 required=False,
                 enum=["true", "false"],
-                description="Include extra data such as subrequests and actions",
+                description=(
+                    "Include extra data such as subrequests and actions"
+                ),
             ),
             OpenApiParameter(
                 "persona",
                 required=False,
                 enum=["admin", "approver", "requester"],
-                description="List requests for the user desired persona, default requester",
+                description=(
+                    "List requests for the user desired persona, default"
+                    " requester"
+                ),
             ),
         ],
     ),
@@ -308,7 +341,10 @@ class RequestViewSet(
         return super().get_permissions()
 
     @extend_schema(
-        description="Create an approval request using given parameters, available to everyone",
+        description=(
+            "Create an approval request using given parameters, available to"
+            " everyone"
+        ),
         request=RequestInSerializer,
         responses={201: RequestSerializer},
     )
@@ -348,17 +384,22 @@ class RequestViewSet(
             "actions",
             "requests",
         ),
-        description="List actions of a request identified by its id, available to everyone",
+        description=(
+            "List actions of a request identified by its id, available to"
+            " everyone"
+        ),
     ),
     create=extend_schema(
         tags=(
             "actions",
             "requests",
         ),
-        description="Create an action under a request identified by its id. "
-        "Admin can create approve, deny, memo, and cancel operations; "
-        "approver can create approve, deny, and memo operations; "
-        "while requester can create only cancel operation.",
+        description=(
+            "Create an action under a request identified by its id. "
+            "Admin can create approve, deny, memo, and cancel operations; "
+            "approver can create approve, deny, and memo operations; "
+            "while requester can create only cancel operation."
+        ),
     ),
 )
 class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
