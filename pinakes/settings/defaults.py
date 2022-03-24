@@ -334,6 +334,10 @@ RQ_CRONJOBS = [
         CRONTAB,
         "pinakes.main.inventory.tasks.refresh_all_sources",
     ),
+    (
+        "* 0 * * *",
+        "pinakes.main.common.tasks.clear_sessions",
+    ),
 ]
 
 # Auto generation of openapi spec using Spectacular
