@@ -10,6 +10,36 @@ from pinakes.common.auth.keycloak_django import AbstractKeycloakResource
 models.CharField.register_lookup(Length)
 
 
+class Notification(models.Model):
+    """Notification model"""
+
+    name = models.CharField(
+        max_length=128,
+        editable=True,
+        help_text="Name of the notification method",
+    )
+    setting_schema = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="JSON schema of the notification method",
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                name="%(app_label)s_%(class)s_name_empty",
+                check=models.Q(name__length__gt=0),
+            ),
+            models.UniqueConstraint(
+                name="%(app_label)s_%(class)s_name_unique",
+                fields=("name",),
+            ),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
 class Template(KeycloakMixin, BaseModel):
     """Template model"""
 
@@ -23,6 +53,23 @@ class Template(KeycloakMixin, BaseModel):
     )
     process_setting = models.JSONField(blank=True, null=True)
     signal_setting = models.JSONField(blank=True, null=True)
+    process_method = models.ForeignKey(
+        Notification,
+        null=True,
+        related_name="process_notification",
+        on_delete=models.CASCADE,
+        help_text="ID of the notification method for processing the workflow",
+    )
+    signal_method = models.ForeignKey(
+        Notification,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="signal_notification",
+        help_text=(
+            "ID of the notification method for signaling the completion of the"
+            " workflow",
+        ),
+    )
 
     class Meta:
         constraints = [
