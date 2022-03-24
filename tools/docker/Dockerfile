@@ -2,8 +2,7 @@ FROM registry.access.redhat.com/ubi8/python-39
 ARG USER_ID=${USER_ID:-1001}
 USER 0
 
-RUN pip install wheel ansible \
-    && mkdir /startup && chmod a+rwx /startup
+RUN pip install wheel ansible 
 
 # required for compatibility between docker-compose and minikube
 RUN mkdir /startup && chmod a+rwx /startup
