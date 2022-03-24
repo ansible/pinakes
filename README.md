@@ -1,6 +1,7 @@
 # Pinakes
 
 [![Python package](https://github.com/ansible/pinakes/actions/workflows/python-package.yml/badge.svg)](https://github.com/ansible/pinakes/actions/workflows/python-package.yml)
+[![codecov](https://codecov.io/gh/ansible/pinakes/branch/devel/graph/badge.svg?token=GmTfoOt6WW)](https://codecov.io/gh/ansible/pinakes)
 
 <img src="./docs/Map_symbol_museum.png" width="150">
 

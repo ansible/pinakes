@@ -6,3 +6,4 @@ pytest-factoryboy
 pytest-mock
 responses
 httpretty
+pytest-cov
