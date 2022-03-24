@@ -14,4 +14,4 @@ ansible-galaxy collection build tools/keycloak_setup/collection
 echo -e "\e[34m >>> Installing keycloak setup collections \e[97m"
 ansible-galaxy collection install community.general pinakes-keycloak_setup-"$KEYCLOAK_SETUP_VERSION".tar.gz
 echo -e "\e[34m >>> Configuring Keycloak \e[97m"
-ansible-playbook tools/keycloak_setup/dev.yml
+ansible-playbook tools/keycloak_setup/dev.yml -vvv
