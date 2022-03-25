@@ -66,7 +66,7 @@ spec:
             - name: PINAKES_MEDIA_ROOT
               value: /app/media
             - name: PINAKES_ALLOWED_HOSTS
-              value: "catalog.k8s.local,app"
+              value: "pinakes.k8s.local,app"
             - name: PINAKES_SECRET_KEY
               value: "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
             - name: PINAKES_STATIC_ROOT
@@ -76,7 +76,7 @@ spec:
             - name: PINAKES_HTTPS_ENABLED
               value: "True"
             - name: PINAKES_CSRF_TRUSTED_ORIGINS
-              value: "https://catalog.k8s.local"
+              value: "https://pinakes.k8s.local"
             - name: PINAKES_CONTROLLER_URL
               valueFrom:
                 configMapKeyRef:

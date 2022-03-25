@@ -107,8 +107,8 @@ systemctl enable --now catalog_scheduler
 
 
 # Configure nginx
-cp /vagrant_data/nginx/ssl/catalog.vm.local.key /etc/ssl/catalog.key
-cp /vagrant_data/nginx/ssl/catalog.vm.local.crt /etc/ssl/catalog.crt
+cp /vagrant_data/nginx/ssl/pinakes.vm.local.key /etc/ssl/catalog.key
+cp /vagrant_data/nginx/ssl/pinakes.vm.local.crt /etc/ssl/catalog.crt
 python3 /vagrant_data/scripts/apply_env.py /vagrant_data/nginx/conf/catalog-nginx.conf.j2 /etc/nginx/conf.d/catalog-nginx.conf
 
 systemctl enable nginx

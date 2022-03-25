@@ -12,9 +12,9 @@ export PINAKES_KEYCLOAK_DISPLAY_NAME=PINAKES
 export PINAKES_KEYCLOAK_CLIENT_SECRET=REALLYWELLKEPTSECRET
 export PINAKES_KEYCLOAK_USER=admin
 export PINAKES_KEYCLOAK_PASSWORD=admin
-export REDIRECT_URIS_STR=http://catalog.vm.local,*
+export REDIRECT_URIS_STR=http://pinakes.vm.local,*
 
-export PINAKES_NGINX_HOST_NAME=catalog.vm.local
+export PINAKES_NGINX_HOST_NAME=pinakes.vm.local
 export PINAKES_NGINX_PROXY_URL=http://localhost:8000
 
 export PINAKES_SECRET_KEY="gobbledegook"
@@ -26,10 +26,10 @@ export PINAKES_POSTGRES_PASSWORD=catalog
 export PINAKES_STATIC_ROOT=/var/lib/catalog/public/static
 export PINAKES_MEDIA_ROOT=/var/lib/catalog/public/media
 export PINAKES_SERVICE_USER=catalog
-export PINAKES_ALLOWED_HOSTS=catalog.vm.local
+export PINAKES_ALLOWED_HOSTS=pinakes.vm.local
 export PINAKES_REDIS_HOST=localhost
 export PINAKES_REDIS_PORT=6379
 export PINAKES_REDIS_DB=0
 export PINAKES_HTTPS_ENABLED=True
-export PINAKES_UI_ALLOWED_ORIGINS=https://catalog.vm.local
-export PINAKES_CSRF_TRUSTED_ORIGINS=https://catalog.vm.local
+export PINAKES_UI_ALLOWED_ORIGINS=https://pinakes.vm.local
+export PINAKES_CSRF_TRUSTED_ORIGINS=https://pinakes.vm.local
