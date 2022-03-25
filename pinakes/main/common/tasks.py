@@ -6,7 +6,7 @@ import rq
 from django.db import transaction
 from django.conf import settings
 from django.utils import timezone as django_tz
-from django.contrib.sessions.management.commands.clearsessions import Command
+from django.contrib.sessions.management.commands import clearsessions
 
 from pinakes.common.auth import keycloak_django
 from pinakes.common.auth.keycloak import (
@@ -103,7 +103,7 @@ def sync_external_groups():
 
 
 def clear_sessions():
-    Command().handle()
+    clearsessions.Command().handle()
 
 
 def _manage_roles(obj, group_roles):
