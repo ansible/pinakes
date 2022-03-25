@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth import logout
-from rest_framework.request import Request
 
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -46,14 +45,8 @@ class SessionLogoutView(APIView):
     def get_serializer(self):
         return None
 
-    def post(self, request: Request):
-        get_social_user = getattr(
-            request.successful_authenticator, "get_social_user", None
-        )
-        if get_social_user is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        extra_data = get_social_user(request.user).extra_data
+    def post(self, request):
+        extra_data = request.keycloak_user.extra_data
         openid_client = get_oidc_client()
         openid_client.logout_user_session(
             extra_data["access_token"], extra_data["refresh_token"]
