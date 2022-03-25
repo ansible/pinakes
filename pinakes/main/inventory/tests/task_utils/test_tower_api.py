@@ -189,3 +189,22 @@ class TestTowerAPI:
         )
         with pytest.raises(RuntimeError, match=r"not found"):
             tower_api.post("/api/v2/job_templates/1/launch/", {"a": 1}, [])
+
+    testdata = [("y", True), ("n", False), ("true", True), ("false", False)]
+
+    @pytest.mark.parametrize("value,expected", testdata)
+    def test_verify_ssl_boolean(self, value, expected):
+        """Check if verify_ssl is proper boolean"""
+        tower_api = TowerAPI("https://www.example.com", "gobbledegook", value)
+        assert (tower_api.verify_ssl) == expected
+
+    def test_verify_ssl_ca_file(self, tmpdir):
+        """Check if verify_ssl is ca_file"""
+        ca_file = tmpdir.join("ca.crt")
+        ca_file.write("dummy")
+        tower_api = TowerAPI(
+            "https://www.example.com",
+            "gobbledegook",
+            str(ca_file),
+        )
+        assert (tower_api.verify_ssl) == str(ca_file)

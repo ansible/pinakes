@@ -3,6 +3,7 @@
     2. Get multiple objects with pagination info
     3. POST a Job Template/Workflow
 """
+from pathlib import Path
 from distutils.util import strtobool
 from django.conf import settings
 import requests
@@ -27,7 +28,10 @@ class TowerAPI:
         if verify_ssl is None:
             verify_ssl = settings.CONTROLLER_VERIFY_SSL
 
-        self.verify_ssl = strtobool(verify_ssl)
+        if Path(verify_ssl).is_file():
+            self.verify_ssl = verify_ssl
+        else:
+            self.verify_ssl = bool(strtobool(verify_ssl))
 
         self.headers = {"Authorization": f"Bearer {token}"}
 
