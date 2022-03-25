@@ -28,11 +28,11 @@ We can run our dev environment in VirtualBox using Vagrant. We have 2 VMs runnin
 	    * PINAKES_CONTROLLER_TOKEN
 	    * PINAKES_CONTROLLER_VERIFY_SSL
     * Modify the **/etc/hosts** file to have the following lines
-	    *  192.168.33.21 catalog.vm.local
+	    *  192.168.33.21 pinakes.vm.local
 	    * 192.168.33.20 keycloak.vm.local
 * Change directory to ./tools/vagrant
 * vagrant up
-* Login to the browser using the following url https://catalog.vm.local The server uses self signed certificates.
+* Login to the browser using the following url https://pinakes.vm.local The server uses self signed certificates.
 
 ## Cleanup/Restart
 Use **vagrant destroy** to cleanup the VM's 

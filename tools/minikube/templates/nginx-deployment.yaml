@@ -39,11 +39,11 @@ spec:
           configMap:
             name: ssl
             items:
-              - key: "catalog.k8s.local.crt"
-                path: "catalog.k8s.local.crt"
+              - key: "pinakes.k8s.local.crt"
+                path: "pinakes.k8s.local.crt"
                 mode: 0777
-              - key: "catalog.k8s.local.key"
-                path: "catalog.k8s.local.key"
+              - key: "pinakes.k8s.local.key"
+                path: "pinakes.k8s.local.key"
                 mode: 0777
         - name: app-claim0
           persistentVolumeClaim:

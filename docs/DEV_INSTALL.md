@@ -180,7 +180,7 @@ minikube ip
 
 The ingress uses 2 hardcoded hosts **catalog** and **keycloak** to route the traffic to the appropriate services so we need to add the the IP address from the above command into /etc/hosts. The /etc/hosts should have this line
 ```
-<<ip_from_minikube_ip>> catalog.k8s.local keycloak.k8s.local
+<<ip_from_minikube_ip>> pinakes.k8s.local keycloak.k8s.local
 ```
 ## Building the image
 
@@ -198,20 +198,20 @@ Once this has been setup you can start the deployments, services and ingress ser
 ```
 
 To login to the UI use
-https://catalog.k8s.local/api/pinakes/auth/login/
+https://pinakes.k8s.local/api/pinakes/auth/login/
 
 To access the keycloak server running inside the cluster use the following URL
 http://keycloak.k8s.local/auth  (Default userid is admin password is admin)
 
 
 To login to the catalog app using API endpoint
-https://catalog.k8s.local/api/pinakes/auth/login/
+https://pinakes.k8s.local/api/pinakes/auth/login/
 When prompted enter the userid/password (barney.sample/barney)
 
 To access the api DRF pages use
 
-https://catalog.k8s.local/api/pinakes/v1/schema/openapi.json
-https://catalog.k8s.local/api/pinakes/v1/portfolios/ (You wont be able to get to this link without logging in first)
+https://pinakes.k8s.local/api/pinakes/v1/schema/openapi.json
+https://pinakes.k8s.local/api/pinakes/v1/portfolios/ (You wont be able to get to this link without logging in first)
 
 ### Applying local code changes for testing
 To deploy your code changes that you have made locally before creating a PR you can redeploy the app using

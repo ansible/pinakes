@@ -38,8 +38,8 @@ fi
 
 if ! kubectl get configmap --namespace=catalog ssl &>/dev/null; then
 	kubectl create --namespace=catalog configmap ssl \
-        --from-file='./tools/minikube/nginx/catalog.k8s.local.key' \
-        --from-file='./tools/minikube/nginx/catalog.k8s.local.crt'
+        --from-file='./tools/minikube/nginx/pinakes.k8s.local.key' \
+        --from-file='./tools/minikube/nginx/pinakes.k8s.local.crt'
 fi
 
 if ! kubectl get configmap --namespace=catalog postgresql &>/dev/null; then

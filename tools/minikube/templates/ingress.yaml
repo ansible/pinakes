@@ -36,9 +36,9 @@ metadata:
 spec:
   tls:
     - hosts:
-        - "catalog.k8s.local"
+        - "pinakes.k8s.local"
   rules:
-    - host: "catalog.k8s.local"
+    - host: "pinakes.k8s.local"
       http:
         paths:
           - path: "/"
