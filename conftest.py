@@ -96,7 +96,15 @@ def api_request(admin):
         )
         request.session = mock.Mock()
         if user and authenticated:
-            force_authenticate(request, user=user, token=DUMMY_ACCESS_TOKEN)
+            force_authenticate(request, user=user)
+
+        keycloak_mock = mock.Mock()
+        keycloak_mock.extra_data = {
+            "id": "1",
+            "access_token": DUMMY_ACCESS_TOKEN,
+            "refresh_token": DUMMY_ACCESS_TOKEN,
+        }
+        request.keycloak_user = keycloak_mock
 
         if rbac_enabled:
             authz_client_mock = contextlib.nullcontext()
