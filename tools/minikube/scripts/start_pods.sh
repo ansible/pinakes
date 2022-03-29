@@ -5,23 +5,21 @@
 # export PINAKES_CONTROLLER_TOKEN=<<your controller token>>
 # export PINAKES_CONTROLLER_VERIFY_SSL=True|False
 
-set -o nounset
 set -o errexit
 
-PINAKES_CONTROLLER_URL=${PINAKES_CONTROLLER_URL:-}
-PINAKES_CONTROLLER_TOKEN=${PINAKES_CONTROLLER_TOKEN:-}
-PINAKES_CONTROLLER_VERIFY_SSL=${PINAKES_CONTROLLER_VERIFY_SSL:-}
-
 if [[ -z "${PINAKES_CONTROLLER_URL}" ]]; then
-  echo "Warning: PINAKES_CONTROLLER_URL is not set."
+  echo "Warning: Please set the environment variable PINAKES_CONTROLLER_URL"
+  exit 1
 fi
 
 if [[ -z "${PINAKES_CONTROLLER_TOKEN}" ]]; then
-  echo "Warning: PINAKES_CONTROLLER_TOKEN is not set."
+  echo "Warning: Please set the environment variable PINAKES_CONTROLLER_TOKEN"
+  exit 1
 fi
 
 if [[ -z "${PINAKES_CONTROLLER_VERIFY_SSL}" ]]; then
-  echo "Warning: PINAKES_CONTROLLER_VERIFY_SSL is not set."
+  echo "Warning: Please set the environment variable PINAKES_CONTROLLER_VERIFY_SSL"
+  exit 1
 fi
 
 if ! kubectl get namespace catalog &>/dev/null; then
