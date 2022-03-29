@@ -284,6 +284,11 @@ LOGGING = {
             "level": LOG_LEVEL,
             "propagate": False,
         },
+        "analytics": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
         "approval": {
             "handlers": ["console"],
             "level": LOG_LEVEL,
@@ -419,3 +424,21 @@ CORS_ALLOWED_ORIGINS = env.list("PINAKES_UI_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_CREDENTIALS = False
 CSRF_TRUSTED_ORIGINS = env.list("PINAKES_CSRF_TRUSTED_ORIGINS", default=[])
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Metrics collections
+PINAKES_INSIGHTS_TRACKING_STATE = env.bool(
+    "PINAKES_INSIGHTS_TRACKING_STATE", False
+)
+PINAKES_INSIGHTS_URL = env.str("PINAKES_INSIGHTS_URL", default="ingress_url")
+PINAKES_INSIGHTS_USERNAME = env.str(
+    "PINAKES_INSIGHTS_USERNAME", default="ingress_username"
+)
+PINAKES_INSIGHTS_PASSWORD = env.str(
+    "PINAKES_INSIGHTS_PASSWORD", default="ingress_password"
+)
+PINAKES_ANALYTICS_LAST_GATHER = env.str(
+    "PINAKES_ANALYTICS_LAST_GATHER", default=None
+)
+PINAKES_ANALYTICS_LAST_ENTRIES = env.str(
+    "PINAKES_ANALYTICS_LAST_ENTRIES", default={}
+)

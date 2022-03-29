@@ -1,3 +1,4 @@
+distro
 Django
 django-filter
 django-rq
@@ -6,6 +7,7 @@ djangorestframework
 drf-extensions
 drf-spectacular
 gunicorn
+insights_analytics_collector
 Pillow
 psycopg2
 python-dateutil

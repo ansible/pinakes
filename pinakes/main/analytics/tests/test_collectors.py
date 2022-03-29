@@ -18,7 +18,6 @@ from pinakes.main.catalog.models import (
     ApprovalRequest,
     Portfolio,
     PortfolioItem,
-    ServicePlan,
 )
 from pinakes.main.approval.tests.factories import (
     ActionFactory,
@@ -40,7 +39,7 @@ from pinakes.main.inventory.tests.factories import (
     ServiceOfferingFactory,
     ServiceOfferingNodeFactory,
 )
-from pinakes.main.analytics import collectors
+from pinakes.main.analytics import analytics_collectors as collectors
 
 import pytest
 
