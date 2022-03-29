@@ -3,7 +3,6 @@ import os
 import platform
 import distro
 
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from insights_analytics_collector import CsvFileSplitter, register
@@ -49,7 +48,6 @@ def config(since, **kwargs):
         # 'authentication_backends': settings.AUTHENTICATION_BACKENDS,
         # 'logging_aggregators': settings.LOG_AGGREGATOR_LOGGERS,
         # 'external_logger_enabled': settings.LOG_AGGREGATOR_ENABLED,
-        # "external_logger_type": getattr(settings, "LOG_AGGREGATOR_TYPE", None),
     }
 
 
@@ -61,18 +59,19 @@ def config(since, **kwargs):
 )
 def sources_table(since, full_path, until, **kwargs):
     source_query = """COPY (SELECT main_source.id,
-                                 main_source.name,
-                                 main_source.created_at,
-                                 main_source.updated_at,
-                                 main_source.refresh_state,
-                                 main_source.refresh_started_at,
-                                 main_source.refresh_finished_at,
-                                 main_source.last_checked_at,
-                                 main_source.last_available_at,
-                                 main_source.availability_status
-                                 FROM main_source
-                                 ORDER BY main_source.id ASC) TO STDOUT WITH CSV HEADER
-                        """
+       main_source.name,
+       main_source.created_at,
+       main_source.updated_at,
+       main_source.refresh_state,
+       main_source.refresh_started_at,
+       main_source.refresh_finished_at,
+       main_source.last_checked_at,
+       main_source.last_available_at,
+       main_source.availability_status
+       FROM main_source
+       ORDER BY main_source.id ASC) TO STDOUT WITH CSV HEADER
+    """
+
     return _simple_csv(full_path, "sources", source_query)
 
 
@@ -84,22 +83,25 @@ def sources_table(since, full_path, until, **kwargs):
 )
 def service_offerings_table(since, full_path, until, **kwargs):
     service_offering_query = """COPY (SELECT main_serviceoffering.id,
-                                 main_serviceoffering.name,
-                                 main_serviceoffering.created_at,
-                                 main_serviceoffering.updated_at,
-                                 main_serviceoffering.source_id,
-                                 main_serviceoffering.source_ref,
-                                 main_serviceoffering.service_inventory_id,
-                                 main_serviceoffering.survey_enabled,
-                                 main_serviceoffering.kind,
-                                 main_serviceoffering.extra
-                                 FROM main_serviceoffering
-                                 WHERE ((main_serviceoffering.created_at > '{0}' AND main_serviceoffering.created_at <= '{1}')
-                                       OR (main_serviceoffering.updated_at > '{0}' AND main_serviceoffering.updated_at <= '{1}'))
-                                 ORDER BY main_serviceoffering.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_serviceoffering.name,
+        main_serviceoffering.created_at,
+        main_serviceoffering.updated_at,
+        main_serviceoffering.source_id,
+        main_serviceoffering.source_ref,
+        main_serviceoffering.service_inventory_id,
+        main_serviceoffering.survey_enabled,
+        main_serviceoffering.kind,
+        main_serviceoffering.extra
+        FROM main_serviceoffering
+        WHERE ((main_serviceoffering.created_at > '{0}'
+                AND main_serviceoffering.created_at <= '{1}')
+                OR (main_serviceoffering.updated_at > '{0}'
+                AND main_serviceoffering.updated_at <= '{1}'))
+        ORDER BY main_serviceoffering.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "service_offerings", service_offering_query)
 
 
@@ -111,21 +113,24 @@ def service_offerings_table(since, full_path, until, **kwargs):
 )
 def service_offering_nodes_table(since, full_path, until, **kwargs):
     service_offering_node_query = """COPY (SELECT main_serviceofferingnode.id,
-                                 main_serviceofferingnode.created_at,
-                                 main_serviceofferingnode.updated_at,
-                                 main_serviceofferingnode.source_ref,
-                                 main_serviceofferingnode.source_id,
-                                 main_serviceofferingnode.service_inventory_id,
-                                 main_serviceofferingnode.service_offering_id,
-                                 main_serviceofferingnode.root_service_offering_id,
-                                 main_serviceofferingnode.extra
-                                 FROM main_serviceofferingnode
-                                 WHERE ((main_serviceofferingnode.created_at > '{0}' AND main_serviceofferingnode.created_at <= '{1}')
-                                       OR (main_serviceofferingnode.updated_at > '{0}' AND main_serviceofferingnode.updated_at <= '{1}'))
-                                 ORDER BY main_serviceofferingnode.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_serviceofferingnode.created_at,
+        main_serviceofferingnode.updated_at,
+        main_serviceofferingnode.source_ref,
+        main_serviceofferingnode.source_id,
+        main_serviceofferingnode.service_inventory_id,
+        main_serviceofferingnode.service_offering_id,
+        main_serviceofferingnode.root_service_offering_id,
+        main_serviceofferingnode.extra
+        FROM main_serviceofferingnode
+        WHERE ((main_serviceofferingnode.created_at > '{0}'
+            AND main_serviceofferingnode.created_at <= '{1}')
+            OR (main_serviceofferingnode.updated_at > '{0}'
+            AND main_serviceofferingnode.updated_at <= '{1}'))
+        ORDER BY main_serviceofferingnode.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(
         full_path, "service_offering_nodes", service_offering_node_query
     )
@@ -139,22 +144,25 @@ def service_offering_nodes_table(since, full_path, until, **kwargs):
 )
 def service_instances_table(since, full_path, until, **kwargs):
     service_instance_query = """COPY (SELECT main_serviceinstance.id,
-                                 main_serviceinstance.created_at,
-                                 main_serviceinstance.updated_at,
-                                 main_serviceinstance.source_ref,
-                                 main_serviceinstance.source_id,
-                                 main_serviceinstance.service_plan_id,
-                                 main_serviceinstance.service_offering_id,
-                                 main_serviceinstance.service_inventory_id,
-                                 main_serviceinstance.external_url,
-                                 main_serviceinstance.extra
-                                 FROM main_serviceinstance
-                                 WHERE ((main_serviceinstance.created_at > '{0}' AND main_serviceinstance.created_at <= '{1}')
-                                       OR (main_serviceinstance.updated_at > '{0}' AND main_serviceinstance.updated_at <= '{1}'))
-                                 ORDER BY main_serviceinstance.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_serviceinstance.created_at,
+        main_serviceinstance.updated_at,
+        main_serviceinstance.source_ref,
+        main_serviceinstance.source_id,
+        main_serviceinstance.service_plan_id,
+        main_serviceinstance.service_offering_id,
+        main_serviceinstance.service_inventory_id,
+        main_serviceinstance.external_url,
+        main_serviceinstance.extra
+        FROM main_serviceinstance
+        WHERE ((main_serviceinstance.created_at > '{0}'
+            AND main_serviceinstance.created_at <= '{1}')
+            OR (main_serviceinstance.updated_at > '{0}'
+            AND main_serviceinstance.updated_at <= '{1}'))
+        ORDER BY main_serviceinstance.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "service_instances", service_instance_query)
 
 
@@ -166,19 +174,22 @@ def service_instances_table(since, full_path, until, **kwargs):
 )
 def service_inventories_table(since, full_path, until, **kwargs):
     service_inventory_query = """COPY (SELECT main_serviceinventory.id,
-                                 main_serviceinventory.created_at,
-                                 main_serviceinventory.updated_at,
-                                 main_serviceinventory.name,
-                                 main_serviceinventory.source_ref,
-                                 main_serviceinventory.source_id,
-                                 main_serviceinventory.extra
-                                 FROM main_serviceinventory
-                                 WHERE ((main_serviceinventory.created_at > '{0}' AND main_serviceinventory.created_at <= '{1}')
-                                       OR (main_serviceinventory.updated_at > '{0}' AND main_serviceinventory.updated_at <= '{1}'))
-                                 ORDER BY main_serviceinventory.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_serviceinventory.created_at,
+        main_serviceinventory.updated_at,
+        main_serviceinventory.name,
+        main_serviceinventory.source_ref,
+        main_serviceinventory.source_id,
+        main_serviceinventory.extra
+        FROM main_serviceinventory
+        WHERE ((main_serviceinventory.created_at > '{0}'
+            AND main_serviceinventory.created_at <= '{1}')
+            OR (main_serviceinventory.updated_at > '{0}'
+            AND main_serviceinventory.updated_at <= '{1}'))
+        ORDER BY main_serviceinventory.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(
         full_path, "service_inventories", service_inventory_query
     )
@@ -192,19 +203,22 @@ def service_inventories_table(since, full_path, until, **kwargs):
 )
 def portfolios_table(since, full_path, until, **kwargs):
     portfolio_query = """COPY (SELECT main_portfolio.id,
-                                 main_portfolio.created_at,
-                                 main_portfolio.updated_at,
-                                 main_portfolio.name,
-                                 main_portfolio.user_id,
-                                 main_portfolio.enabled,
-                                 main_portfolio.share_count
-                                 FROM main_portfolio
-                                 WHERE ((main_portfolio.created_at > '{0}' AND main_portfolio.created_at <= '{1}')
-                                       OR (main_portfolio.updated_at > '{0}' AND main_portfolio.updated_at <= '{1}'))
-                                 ORDER BY main_portfolio.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_portfolio.created_at,
+        main_portfolio.updated_at,
+        main_portfolio.name,
+        main_portfolio.user_id,
+        main_portfolio.enabled,
+        main_portfolio.share_count
+        FROM main_portfolio
+        WHERE ((main_portfolio.created_at > '{0}'
+            AND main_portfolio.created_at <= '{1}')
+            OR (main_portfolio.updated_at > '{0}'
+            AND main_portfolio.updated_at <= '{1}'))
+        ORDER BY main_portfolio.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "portfolios", portfolio_query)
 
 
@@ -216,23 +230,26 @@ def portfolios_table(since, full_path, until, **kwargs):
 )
 def portfolio_items_table(since, full_path, until, **kwargs):
     portfolio_item_query = """COPY (SELECT main_portfolioitem.id,
-                                 main_portfolioitem.created_at,
-                                 main_portfolioitem.updated_at,
-                                 main_portfolioitem.name,
-                                 main_portfolioitem.user_id,
-                                 main_portfolioitem.portfolio_id,
-                                 main_portfolioitem.favorite,
-                                 main_portfolioitem.orphan,
-                                 main_portfolioitem.state,
-                                 main_portfolioitem.service_offering_ref,
-                                 main_portfolioitem.service_offering_source_ref
-                                 FROM main_portfolioitem
-                                 WHERE ((main_portfolioitem.created_at > '{0}' AND main_portfolioitem.created_at <= '{1}')
-                                       OR (main_portfolioitem.updated_at > '{0}' AND main_portfolioitem.updated_at <= '{1}'))
-                                 ORDER BY main_portfolioitem.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_portfolioitem.created_at,
+        main_portfolioitem.updated_at,
+        main_portfolioitem.name,
+        main_portfolioitem.user_id,
+        main_portfolioitem.portfolio_id,
+        main_portfolioitem.favorite,
+        main_portfolioitem.orphan,
+        main_portfolioitem.state,
+        main_portfolioitem.service_offering_ref,
+        main_portfolioitem.service_offering_source_ref
+        FROM main_portfolioitem
+        WHERE ((main_portfolioitem.created_at > '{0}'
+            AND main_portfolioitem.created_at <= '{1}')
+            OR (main_portfolioitem.updated_at > '{0}'
+            AND main_portfolioitem.updated_at <= '{1}'))
+        ORDER BY main_portfolioitem.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "portfolio_items", portfolio_item_query)
 
 
@@ -244,19 +261,22 @@ def portfolio_items_table(since, full_path, until, **kwargs):
 )
 def orders_table(since, full_path, until, **kwargs):
     order_query = """COPY (SELECT main_order.id,
-                                 main_order.created_at,
-                                 main_order.updated_at,
-                                 main_order.user_id,
-                                 main_order.state,
-                                 main_order.order_request_sent_at,
-                                 main_order.completed_at
-                                 FROM main_order
-                                 WHERE ((main_order.created_at > '{0}' AND main_order.created_at <= '{1}')
-                                       OR (main_order.updated_at > '{0}' AND main_order.updated_at <= '{1}'))
-                                 ORDER BY main_order.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_order.created_at,
+        main_order.updated_at,
+        main_order.user_id,
+        main_order.state,
+        main_order.order_request_sent_at,
+        main_order.completed_at
+        FROM main_order
+        WHERE ((main_order.created_at > '{0}'
+            AND main_order.created_at <= '{1}')
+            OR (main_order.updated_at > '{0}'
+            AND main_order.updated_at <= '{1}'))
+        ORDER BY main_order.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "orders", order_query)
 
 
@@ -268,26 +288,29 @@ def orders_table(since, full_path, until, **kwargs):
 )
 def order_items_table(since, full_path, until, **kwargs):
     order_item_query = """COPY (SELECT main_orderitem.id,
-                                 main_orderitem.created_at,
-                                 main_orderitem.updated_at,
-                                 main_orderitem.order_id,
-                                 main_orderitem.portfolio_item_id,
-                                 main_orderitem.user_id,
-                                 main_orderitem.inventory_task_ref,
-                                 main_orderitem.inventory_service_plan_ref,
-                                 main_orderitem.service_instance_ref,
-                                 main_orderitem.name,
-                                 main_orderitem.state,
-                                 main_orderitem.order_request_sent_at,
-                                 main_orderitem.completed_at,
-                                 main_orderitem.count
-                                 FROM main_orderitem
-                                 WHERE ((main_orderitem.created_at > '{0}' AND main_orderitem.created_at <= '{1}')
-                                       OR (main_orderitem.updated_at > '{0}' AND main_orderitem.updated_at <= '{1}'))
-                                 ORDER BY main_orderitem.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_orderitem.created_at,
+        main_orderitem.updated_at,
+        main_orderitem.order_id,
+        main_orderitem.portfolio_item_id,
+        main_orderitem.user_id,
+        main_orderitem.inventory_task_ref,
+        main_orderitem.inventory_service_plan_ref,
+        main_orderitem.service_instance_ref,
+        main_orderitem.name,
+        main_orderitem.state,
+        main_orderitem.order_request_sent_at,
+        main_orderitem.completed_at,
+        main_orderitem.count
+        FROM main_orderitem
+        WHERE ((main_orderitem.created_at > '{0}'
+            AND main_orderitem.created_at <= '{1}')
+            OR (main_orderitem.updated_at > '{0}'
+            AND main_orderitem.updated_at <= '{1}'))
+        ORDER BY main_orderitem.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "order_items", order_item_query)
 
 
@@ -299,19 +322,22 @@ def order_items_table(since, full_path, until, **kwargs):
 )
 def approval_requests_table(since, full_path, until, **kwargs):
     approval_request_query = """COPY (SELECT main_approvalrequest.id,
-                                 main_approvalrequest.created_at,
-                                 main_approvalrequest.updated_at,
-                                 main_approvalrequest.order_id,
-                                 main_approvalrequest.approval_request_ref,
-                                 main_approvalrequest.request_completed_at,
-                                 main_approvalrequest.state
-                                 FROM main_approvalrequest
-                                 WHERE ((main_approvalrequest.created_at > '{0}' AND main_approvalrequest.created_at <= '{1}')
-                                       OR (main_approvalrequest.updated_at > '{0}' AND main_approvalrequest.updated_at <= '{1}'))
-                                 ORDER BY main_approvalrequest.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_approvalrequest.created_at,
+        main_approvalrequest.updated_at,
+        main_approvalrequest.order_id,
+        main_approvalrequest.approval_request_ref,
+        main_approvalrequest.request_completed_at,
+        main_approvalrequest.state
+        FROM main_approvalrequest
+        WHERE ((main_approvalrequest.created_at > '{0}'
+            AND main_approvalrequest.created_at <= '{1}')
+            OR (main_approvalrequest.updated_at > '{0}'
+            AND main_approvalrequest.updated_at <= '{1}'))
+        ORDER BY main_approvalrequest.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "approval_requests", approval_request_query)
 
 
@@ -323,20 +349,23 @@ def approval_requests_table(since, full_path, until, **kwargs):
 )
 def service_plans_table(since, full_path, until, **kwargs):
     service_plan_query = """COPY (SELECT main_serviceplan.id,
-                                 main_serviceplan.created_at,
-                                 main_serviceplan.updated_at,
-                                 main_serviceplan.name,
-                                 main_serviceplan.portfolio_item_id,
-                                 main_serviceplan.inventory_service_plan_ref,
-                                 main_serviceplan.service_offering_ref,
-                                 main_serviceplan.outdated
-                                 FROM main_serviceplan
-                                 WHERE ((main_serviceplan.created_at > '{0}' AND main_serviceplan.created_at <= '{1}')
-                                       OR (main_serviceplan.updated_at > '{0}' AND main_serviceplan.updated_at <= '{1}'))
-                                 ORDER BY main_serviceplan.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_serviceplan.created_at,
+        main_serviceplan.updated_at,
+        main_serviceplan.name,
+        main_serviceplan.portfolio_item_id,
+        main_serviceplan.inventory_service_plan_ref,
+        main_serviceplan.service_offering_ref,
+        main_serviceplan.outdated
+        FROM main_serviceplan
+        WHERE ((main_serviceplan.created_at > '{0}'
+            AND main_serviceplan.created_at <= '{1}')
+            OR (main_serviceplan.updated_at > '{0}'
+            AND main_serviceplan.updated_at <= '{1}'))
+        ORDER BY main_serviceplan.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "service_plans", service_plan_query)
 
 
@@ -348,16 +377,19 @@ def service_plans_table(since, full_path, until, **kwargs):
 )
 def templates_table(since, full_path, until, **kwargs):
     template_query = """COPY (SELECT main_template.id,
-                                 main_template.created_at,
-                                 main_template.updated_at,
-                                 main_template.title
-                                 FROM main_template
-                                 WHERE ((main_template.created_at > '{0}' AND main_template.created_at <= '{1}')
-                                       OR (main_template.updated_at > '{0}' AND main_template.updated_at <= '{1}'))
-                                 ORDER BY main_template.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_template.created_at,
+        main_template.updated_at,
+        main_template.title
+        FROM main_template
+        WHERE ((main_template.created_at > '{0}'
+            AND main_template.created_at <= '{1}')
+            OR (main_template.updated_at > '{0}'
+            AND main_template.updated_at <= '{1}'))
+        ORDER BY main_template.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "templates", template_query)
 
 
@@ -369,19 +401,22 @@ def templates_table(since, full_path, until, **kwargs):
 )
 def workflows_table(since, full_path, until, **kwargs):
     workflow_query = """COPY (SELECT main_workflow.id,
-                                 main_workflow.created_at,
-                                 main_workflow.updated_at,
-                                 main_workflow.name,
-                                 main_workflow.template_id,
-                                 main_workflow.group_refs,
-                                 main_workflow.internal_sequence
-                                 FROM main_workflow
-                                 WHERE ((main_workflow.created_at > '{0}' AND main_workflow.created_at <= '{1}')
-                                       OR (main_workflow.updated_at > '{0}' AND main_workflow.updated_at <= '{1}'))
-                                 ORDER BY main_workflow.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_workflow.created_at,
+        main_workflow.updated_at,
+        main_workflow.name,
+        main_workflow.template_id,
+        main_workflow.group_refs,
+        main_workflow.internal_sequence
+        FROM main_workflow
+        WHERE ((main_workflow.created_at > '{0}'
+            AND main_workflow.created_at <= '{1}')
+            OR (main_workflow.updated_at > '{0}'
+            AND main_workflow.updated_at <= '{1}'))
+        ORDER BY main_workflow.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "workflows", workflow_query)
 
 
@@ -393,27 +428,30 @@ def workflows_table(since, full_path, until, **kwargs):
 )
 def requests_table(since, full_path, until, **kwargs):
     request_query = """COPY (SELECT main_request.id,
-                                 main_request.created_at,
-                                 main_request.updated_at,
-                                 main_request.name,
-                                 main_request.workflow_id,
-                                 main_request.parent_id,
-                                 main_request.user_id,
-                                 main_request.state,
-                                 main_request.decision,
-                                 main_request.group_name,
-                                 main_request.group_ref,
-                                 main_request.notified_at,
-                                 main_request.finished_at,
-                                 main_request.number_of_children,
-                                 main_request.number_of_finished_children
-                                 FROM main_request
-                                 WHERE ((main_request.created_at > '{0}' AND main_request.created_at <= '{1}')
-                                       OR (main_request.updated_at > '{0}' AND main_request.updated_at <= '{1}'))
-                                 ORDER BY main_request.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_request.created_at,
+        main_request.updated_at,
+        main_request.name,
+        main_request.workflow_id,
+        main_request.parent_id,
+        main_request.user_id,
+        main_request.state,
+        main_request.decision,
+        main_request.group_name,
+        main_request.group_ref,
+        main_request.notified_at,
+        main_request.finished_at,
+        main_request.number_of_children,
+        main_request.number_of_finished_children
+        FROM main_request
+        WHERE ((main_request.created_at > '{0}'
+            AND main_request.created_at <= '{1}')
+            OR (main_request.updated_at > '{0}'
+            AND main_request.updated_at <= '{1}'))
+        ORDER BY main_request.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "requests", request_query)
 
 
@@ -425,18 +463,21 @@ def requests_table(since, full_path, until, **kwargs):
 )
 def actions_table(since, full_path, until, **kwargs):
     action_query = """COPY (SELECT main_action.id,
-                                 main_action.created_at,
-                                 main_action.updated_at,
-                                 main_action.request_id,
-                                 main_action.user_id,
-                                 main_action.operation
-                                 FROM main_action
-                                 WHERE ((main_action.created_at > '{0}' AND main_action.created_at <= '{1}')
-                                       OR (main_action.updated_at > '{0}' AND main_action.updated_at <= '{1}'))
-                                 ORDER BY main_action.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_action.created_at,
+        main_action.updated_at,
+        main_action.request_id,
+        main_action.user_id,
+        main_action.operation
+        FROM main_action
+        WHERE ((main_action.created_at > '{0}'
+            AND main_action.created_at <= '{1}')
+            OR (main_action.updated_at > '{0}'
+            AND main_action.updated_at <= '{1}'))
+        ORDER BY main_action.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "actions", action_query)
 
 
@@ -448,19 +489,22 @@ def actions_table(since, full_path, until, **kwargs):
 )
 def tag_links_table(since, full_path, until, **kwargs):
     tag_link_query = """COPY (SELECT main_taglink.id,
-                                 main_taglink.created_at,
-                                 main_taglink.updated_at,
-                                 main_taglink.workflow_id,
-                                 main_taglink.app_name,
-                                 main_taglink.tag_name,
-                                 main_taglink.object_type
-                                 FROM main_taglink
-                                 WHERE ((main_taglink.created_at > '{0}' AND main_taglink.created_at <= '{1}')
-                                       OR (main_taglink.updated_at > '{0}' AND main_taglink.updated_at <= '{1}'))
-                                 ORDER BY main_taglink.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_taglink.created_at,
+        main_taglink.updated_at,
+        main_taglink.workflow_id,
+        main_taglink.app_name,
+        main_taglink.tag_name,
+        main_taglink.object_type
+        FROM main_taglink
+        WHERE ((main_taglink.created_at > '{0}'
+            AND main_taglink.created_at <= '{1}')
+            OR (main_taglink.updated_at > '{0}'
+            AND main_taglink.updated_at <= '{1}'))
+        ORDER BY main_taglink.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "tag_links", tag_link_query)
 
 
@@ -472,16 +516,18 @@ def tag_links_table(since, full_path, until, **kwargs):
 )
 def groups_table(since, full_path, until, **kwargs):
     group_query = """COPY (SELECT main_group.id,
-                                 main_group.name,
-                                 main_group.path,
-                                 main_group.parent_id,
-                                 main_group.last_sync_time
-                                 FROM main_group
-                                 WHERE (main_group.last_sync_time > '{0}' AND main_group.last_sync_time <= '{1}')
-                                 ORDER BY main_group.id ASC) TO STDOUT WITH CSV HEADER
-                        """.format(
+        main_group.name,
+        main_group.path,
+        main_group.parent_id,
+        main_group.last_sync_time
+        FROM main_group
+        WHERE (main_group.last_sync_time > '{0}'
+            AND main_group.last_sync_time <= '{1}')
+        ORDER BY main_group.id ASC) TO STDOUT WITH CSV HEADER
+    """.format(
         since.isoformat(), until.isoformat()
     )
+
     return _simple_csv(full_path, "groups", group_query)
 
 
