@@ -1,35 +1,27 @@
 import os
 
-# import distro
 import platform
+import distro
 
 from django.conf import settings
-from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
+
+from insights_analytics_collector import CsvFileSplitter, register
 
 from pinakes.main.catalog import models
 from pinakes.main.inventory.models import ServiceInventory
-from pinakes.main.analytics.core import register, four_hour_slicing, copy_table
-
-"""
-This module is used to define metrics collected by awx.main.analytics.gather()
-Each function is decorated with a key name, and should return a data
-structure that can be serialized to JSON
-
-@register('something', '1.0')
-def something(since):
-    # the generated archive will contain a `something.json` w/ this JSON
-    return {'some': 'json'}
-
-All functions - when called - will be passed a datetime.datetime object,
-`since`, which represents the last time analytics were gathered (some metrics
-functions - like those that return metadata about playbook runs, may return
-data _since_ the last report date - i.e., new data in the last 24 hours)
-"""
+from pinakes.main.analytics.collector import AnalyticsCollector
+from pinakes.main.analytics.package import Package
 
 
-@register("config", "1.0", description=_("General platform configuration."))
+@register(
+    "config",
+    "1.0",
+    description=_("General platform configuration."),
+    config=True,
+)
 def config(since, **kwargs):
+    # TODO:
     # license_info = get_license()
     license_info = {}
     install_type = "traditional"
@@ -40,7 +32,7 @@ def config(since, **kwargs):
     return {
         "platform": {
             "system": platform.system(),
-            # 'dist': distro.linux_distribution(),
+            "dist": distro.linux_distribution(),
             "release": platform.release(),
             "type": install_type,
         },
@@ -57,7 +49,7 @@ def config(since, **kwargs):
         # 'authentication_backends': settings.AUTHENTICATION_BACKENDS,
         # 'logging_aggregators': settings.LOG_AGGREGATOR_LOGGERS,
         # 'external_logger_enabled': settings.LOG_AGGREGATOR_ENABLED,
-        "external_logger_type": getattr(settings, "LOG_AGGREGATOR_TYPE", None),
+        # "external_logger_type": getattr(settings, "LOG_AGGREGATOR_TYPE", None),
     }
 
 
@@ -66,7 +58,6 @@ def config(since, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on sources"),
-    expensive=four_hour_slicing,
 )
 def sources_table(since, full_path, until, **kwargs):
     source_query = """COPY (SELECT main_source.id,
@@ -82,7 +73,7 @@ def sources_table(since, full_path, until, **kwargs):
                                  FROM main_source
                                  ORDER BY main_source.id ASC) TO STDOUT WITH CSV HEADER
                         """
-    return copy_table(table="sources", query=source_query, path=full_path)
+    return _simple_csv(full_path, "sources", source_query)
 
 
 @register(
@@ -90,7 +81,6 @@ def sources_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on service_offerings"),
-    expensive=four_hour_slicing,
 )
 def service_offerings_table(since, full_path, until, **kwargs):
     service_offering_query = """COPY (SELECT main_serviceoffering.id,
@@ -110,9 +100,7 @@ def service_offerings_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(
-        table="service_offerings", query=service_offering_query, path=full_path
-    )
+    return _simple_csv(full_path, "service_offerings", service_offering_query)
 
 
 @register(
@@ -120,7 +108,6 @@ def service_offerings_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on service_offering_nodes"),
-    expensive=four_hour_slicing,
 )
 def service_offering_nodes_table(since, full_path, until, **kwargs):
     service_offering_node_query = """COPY (SELECT main_serviceofferingnode.id,
@@ -139,10 +126,8 @@ def service_offering_nodes_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(
-        table="service_offering_nodes",
-        query=service_offering_node_query,
-        path=full_path,
+    return _simple_csv(
+        full_path, "service_offering_nodes", service_offering_node_query
     )
 
 
@@ -151,7 +136,6 @@ def service_offering_nodes_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on service_instances"),
-    expensive=four_hour_slicing,
 )
 def service_instances_table(since, full_path, until, **kwargs):
     service_instance_query = """COPY (SELECT main_serviceinstance.id,
@@ -171,9 +155,7 @@ def service_instances_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(
-        table="service_instances", query=service_instance_query, path=full_path
-    )
+    return _simple_csv(full_path, "service_instances", service_instance_query)
 
 
 @register(
@@ -181,7 +163,6 @@ def service_instances_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on service_inventories"),
-    expensive=four_hour_slicing,
 )
 def service_inventories_table(since, full_path, until, **kwargs):
     service_inventory_query = """COPY (SELECT main_serviceinventory.id,
@@ -198,10 +179,8 @@ def service_inventories_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(
-        table="service_inventories",
-        query=service_inventory_query,
-        path=full_path,
+    return _simple_csv(
+        full_path, "service_inventories", service_inventory_query
     )
 
 
@@ -210,7 +189,6 @@ def service_inventories_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on portfolios"),
-    expensive=four_hour_slicing,
 )
 def portfolios_table(since, full_path, until, **kwargs):
     portfolio_query = """COPY (SELECT main_portfolio.id,
@@ -227,9 +205,7 @@ def portfolios_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(
-        table="portfolios", query=portfolio_query, path=full_path
-    )
+    return _simple_csv(full_path, "portfolios", portfolio_query)
 
 
 @register(
@@ -237,7 +213,6 @@ def portfolios_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on portfolio_items"),
-    expensive=four_hour_slicing,
 )
 def portfolio_items_table(since, full_path, until, **kwargs):
     portfolio_item_query = """COPY (SELECT main_portfolioitem.id,
@@ -258,9 +233,7 @@ def portfolio_items_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(
-        table="portfolio_items", query=portfolio_item_query, path=full_path
-    )
+    return _simple_csv(full_path, "portfolio_items", portfolio_item_query)
 
 
 @register(
@@ -268,7 +241,6 @@ def portfolio_items_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on orders"),
-    expensive=four_hour_slicing,
 )
 def orders_table(since, full_path, until, **kwargs):
     order_query = """COPY (SELECT main_order.id,
@@ -285,7 +257,7 @@ def orders_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(table="orders", query=order_query, path=full_path)
+    return _simple_csv(full_path, "orders", order_query)
 
 
 @register(
@@ -293,7 +265,6 @@ def orders_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on order_items"),
-    expensive=four_hour_slicing,
 )
 def order_items_table(since, full_path, until, **kwargs):
     order_item_query = """COPY (SELECT main_orderitem.id,
@@ -317,9 +288,7 @@ def order_items_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(
-        table="order_items", query=order_item_query, path=full_path
-    )
+    return _simple_csv(full_path, "order_items", order_item_query)
 
 
 @register(
@@ -327,7 +296,6 @@ def order_items_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on approval_requests"),
-    expensive=four_hour_slicing,
 )
 def approval_requests_table(since, full_path, until, **kwargs):
     approval_request_query = """COPY (SELECT main_approvalrequest.id,
@@ -344,9 +312,7 @@ def approval_requests_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(
-        table="approval_requests", query=approval_request_query, path=full_path
-    )
+    return _simple_csv(full_path, "approval_requests", approval_request_query)
 
 
 @register(
@@ -354,7 +320,6 @@ def approval_requests_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on service_plans"),
-    expensive=four_hour_slicing,
 )
 def service_plans_table(since, full_path, until, **kwargs):
     service_plan_query = """COPY (SELECT main_serviceplan.id,
@@ -372,9 +337,7 @@ def service_plans_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(
-        table="service_plans", query=service_plan_query, path=full_path
-    )
+    return _simple_csv(full_path, "service_plans", service_plan_query)
 
 
 @register(
@@ -382,7 +345,6 @@ def service_plans_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on templates"),
-    expensive=four_hour_slicing,
 )
 def templates_table(since, full_path, until, **kwargs):
     template_query = """COPY (SELECT main_template.id,
@@ -396,7 +358,7 @@ def templates_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(table="templates", query=template_query, path=full_path)
+    return _simple_csv(full_path, "templates", template_query)
 
 
 @register(
@@ -404,7 +366,6 @@ def templates_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on workflows"),
-    expensive=four_hour_slicing,
 )
 def workflows_table(since, full_path, until, **kwargs):
     workflow_query = """COPY (SELECT main_workflow.id,
@@ -421,7 +382,7 @@ def workflows_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(table="workflows", query=workflow_query, path=full_path)
+    return _simple_csv(full_path, "workflows", workflow_query)
 
 
 @register(
@@ -429,7 +390,6 @@ def workflows_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on requests"),
-    expensive=four_hour_slicing,
 )
 def requests_table(since, full_path, until, **kwargs):
     request_query = """COPY (SELECT main_request.id,
@@ -454,7 +414,7 @@ def requests_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(table="requests", query=request_query, path=full_path)
+    return _simple_csv(full_path, "requests", request_query)
 
 
 @register(
@@ -462,7 +422,6 @@ def requests_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on actions"),
-    expensive=four_hour_slicing,
 )
 def actions_table(since, full_path, until, **kwargs):
     action_query = """COPY (SELECT main_action.id,
@@ -478,7 +437,7 @@ def actions_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(table="actions", query=action_query, path=full_path)
+    return _simple_csv(full_path, "actions", action_query)
 
 
 @register(
@@ -486,7 +445,6 @@ def actions_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on tag_links"),
-    expensive=four_hour_slicing,
 )
 def tag_links_table(since, full_path, until, **kwargs):
     tag_link_query = """COPY (SELECT main_taglink.id,
@@ -503,7 +461,7 @@ def tag_links_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(table="tag_links", query=tag_link_query, path=full_path)
+    return _simple_csv(full_path, "tag_links", tag_link_query)
 
 
 @register(
@@ -511,7 +469,6 @@ def tag_links_table(since, full_path, until, **kwargs):
     "1.0",
     format="csv",
     description=_("Data on groups"),
-    expensive=four_hour_slicing,
 )
 def groups_table(since, full_path, until, **kwargs):
     group_query = """COPY (SELECT main_group.id,
@@ -525,7 +482,7 @@ def groups_table(since, full_path, until, **kwargs):
                         """.format(
         since.isoformat(), until.isoformat()
     )
-    return copy_table(table="groups", query=group_query, path=full_path)
+    return _simple_csv(full_path, "groups", group_query)
 
 
 @register(
@@ -665,3 +622,19 @@ def tag_counts_by_service_intentory(since, **kwargs):
             }
 
     return counts
+
+
+def _simple_csv(
+    full_path, file_name, query, max_data_size=Package.MAX_DATA_SIZE
+):
+    file_path = _get_file_path(full_path, file_name)
+    file = CsvFileSplitter(filespec=file_path, max_file_size=max_data_size)
+
+    with AnalyticsCollector.db_connection().cursor() as cursor:
+        cursor.copy_expert(query, file)
+
+    return file.file_list()
+
+
+def _get_file_path(path, table):
+    return os.path.join(path, table + "_table.csv")

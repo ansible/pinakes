@@ -92,6 +92,17 @@ spec:
                 configMapKeyRef:
                   name: ansible-controller-env
                   key: PINAKES_CONTROLLER_VERIFY_SSL
+            - name: PINAKES_INSIGHTS_TRACKING_STATE
+              value: "True"
+            - name: PINAKES_INSIGHTS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: ansible-controller-env
+                  key: PINAKES_CONTROLLER_URL
+            - name: PINAKES_INSIGHTS_USERNAME
+              value: "insights-qa"
+            - name: PINAKES_INSIGHTS_PASSWORD
+              value: "insights-password"
           image: localhost/pinakes
           imagePullPolicy: Never
           name: app
