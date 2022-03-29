@@ -10,6 +10,13 @@ tar -xf keycloak-16.1.1.tar.gz -C /opt
 adduser keycloak
 chown keycloak:keycloak -R /opt/keycloak-16.1.1
 cp /vagrant_data/keycloak/services/keycloak.service /etc/systemd/system
+
+mkdir -p /opt/keycloak-16.1.1/themes/pinakes/login/resources/{css,img}
+cp /src/tools/keycloak_setup/login_theme/theme.properties "/opt/keycloak-16.1.1/themes/pinakes/login"
+cp /src/tools/keycloak_setup/login_theme/background.png "/opt/keycloak-16.1.1/themes/pinakes/login/resources/img"
+cp /src/tools/keycloak_setup/login_theme/styles.css "/opt/keycloak-16.1.1/themes/pinakes/login/resources/css"
+chown keycloak:keycloak -R /opt/keycloak-16.1.1/themes/pinakes
+
 systemctl daemon-reload
 systemctl start keycloak.service
 firewall-cmd --permanent --add-port 8080/tcp

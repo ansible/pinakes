@@ -50,6 +50,10 @@ if kubectl get configmap --namespace=catalog ansible-controller-env &>/dev/null;
 	kubectl delete --namespace=catalog configmap ansible-controller-env
 fi
 
+if ! kubectl get configmap --namespace=catalog keycloak-theme &>/dev/null; then
+     kubectl create configmap keycloak-theme --from-file=./tools/keycloak_setup/login_theme -n catalog
+fi
+
 kubectl create configmap \
     --namespace=catalog \
     ansible-controller-env \

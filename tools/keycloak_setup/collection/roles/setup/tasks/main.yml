@@ -12,6 +12,7 @@
     auth_realm: "{{ auth_realm }}"
     auth_username: "{{ auth_username }}"
     display_name: "{{ display_name }}"
+    login_theme: "pinakes"
     enabled: true
     attributes:
       frontendUrl: "{{ realm_frontend_url }}"

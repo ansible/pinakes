@@ -37,6 +37,8 @@ spec:
               value: postgres
             - name: KEYCLOAK_PASSWORD
               value: admin
+            - name: KEYCLOAK_DEFAULT_THEME
+              value: pinakes
             - name: JDBC_PARAMS
               value: sslmode=verify-ca&sslrootcert=/etc/ssl_config/root.crt
             - name: KEYCLOAK_USER
@@ -50,6 +52,8 @@ spec:
           volumeMounts:
             - mountPath: /etc/ssl_config
               name: ssl
+            - mountPath: /opt/jboss/keycloak/themes/pinakes
+              name: themes
       restartPolicy: Always
       volumes:
         - name: ssl
@@ -58,5 +62,18 @@ spec:
             items:
               - key: "root.crt"
                 path: "root.crt"
+                mode: 0640
+        - name: themes
+          configMap:
+            name: keycloak-theme
+            items:
+              - key: "theme.properties"
+                path: "./login/theme.properties"
+                mode: 0640
+              - key: "styles.css"
+                path: "./login/resources/css/styles.css"
+                mode: 0640
+              - key: "background.png"
+                path: "./login/resources/img/background.png"
                 mode: 0640
 status: {}
