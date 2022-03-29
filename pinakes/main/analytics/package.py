@@ -8,7 +8,7 @@ class Package(InsightsAnalyticsPackage):
 
     def _tarname_base(self):
         timestamp = self.collector.gather_until
-        # TODO: return f'{settings.SYSTEM_UUID}-{timestamp.strftime("%Y-%m-%d-%H%M%S%z")}'
+        # TODO: replace test with {settings.SYSTEM_UUID}
         return f'test-{timestamp.strftime("%Y-%m-%d-%H%M%S%z")}'
 
     def get_ingress_url(self):

@@ -349,7 +349,7 @@ RQ_CRONJOBS = [
         "pinakes.main.inventory.tasks.refresh_all_sources",
     ),
     (
-        CRONTAB,
+        "0 0 * * 0",  # At 00:00 on Sunday
         "pinakes.main.analytics.tasks.gather_analytics",
     ),
     (

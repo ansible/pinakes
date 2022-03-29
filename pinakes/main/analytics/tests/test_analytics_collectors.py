@@ -9,15 +9,10 @@ import tempfile
 from django.db.backends.sqlite3.base import SQLiteCursorWrapper
 from django.utils.timezone import now
 
-from pinakes.main.models import Source
+import pytest
 from pinakes.main.approval.models import (
     TagLink,
     Template,
-)
-from pinakes.main.catalog.models import (
-    ApprovalRequest,
-    Portfolio,
-    PortfolioItem,
 )
 from pinakes.main.approval.tests.factories import (
     ActionFactory,
@@ -41,8 +36,6 @@ from pinakes.main.inventory.tests.factories import (
 )
 from pinakes.main.analytics import analytics_collectors as collectors
 
-import pytest
-
 
 @pytest.fixture
 def sqlite_copy_expert(request):
@@ -51,8 +44,8 @@ def sqlite_copy_expert(request):
     path = tempfile.mkdtemp(prefix="copied_tables")
 
     def write_stdout(self, sql, fd):
-        # Would be cool if we instead properly disected the SQL query and verified
-        # it that way. But instead, we just take the naive approach here.
+        # Would be cool if we instead properly disected the SQL query and
+        # verified it that way. But we just take the naive approach here.
         sql = sql.strip()
         assert sql.startswith("COPY (")
         assert sql.endswith(") TO STDOUT WITH CSV HEADER")
@@ -61,13 +54,13 @@ def sqlite_copy_expert(request):
         sql = sql.replace(") TO STDOUT WITH CSV HEADER", "")
         # sqlite equivalent
         sql = sql.replace("ARRAY_AGG", "GROUP_CONCAT")
-        # SQLite doesn't support isoformatted dates, because that would be useful
+        # SQLite doesn't support isoformatted dates
         sql = sql.replace("+00:00", "")
         i = re.compile(r"(?P<date>\d\d\d\d-\d\d-\d\d)T")
         sql = i.sub(r"\g<date> ", sql)
 
         # Remove JSON style queries
-        # TODO: could replace JSON style queries with sqlite kind of equivalents
+        # TODO: replace JSON style queries with sqlite kind of equivalents
         sql_new = []
         for line in sql.split("\n"):
             if line.find("main_jobevent.event_data::") == -1:
