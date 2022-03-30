@@ -24,11 +24,13 @@ from drf_spectacular.utils import (
 
 from pinakes.main.models import Tenant
 from pinakes.main.approval.models import (
+    Notification,
     Template,
     Workflow,
     Request,
 )
 from pinakes.main.approval.serializers import (
+    NotificationSerializer,
     TemplateSerializer,
     WorkflowSerializer,
     RequestSerializer,
@@ -49,6 +51,29 @@ from pinakes.common.auth.keycloak_django.views import (
 )
 
 logger = logging.getLogger("approval")
+
+
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get a notification method, available to admin only",
+    ),
+    list=extend_schema(
+        description="List all notification methods, available to admin only",
+    ),
+)
+class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
+    """API endpoint for listing notifications."""
+
+    serializer_class = NotificationSerializer
+    queryset = Notification.objects.all()
+    permission_classes = (
+        IsAuthenticated,
+        permissions.TemplatePermission,
+    )
+    serializer_class = NotificationSerializer
+    ordering_fields = ("name",)
+    ordering = ("name",)
+    search_fields = ("name",)
 
 
 @extend_schema_view(

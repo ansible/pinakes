@@ -3,6 +3,7 @@ from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
 
 from pinakes.main.approval.models import (
+    Notification,
     Template,
     Workflow,
     Request,
@@ -17,12 +18,30 @@ from pinakes.main.approval.services.create_action import (
 from pinakes.main.approval import validations
 
 
+class NotificationSerializer(serializers.ModelSerializer):
+    """Notification method that define what settings are expected"""
+
+    class Meta:
+        model = Notification
+        fields = ("id", "name", "setting_schema")
+
+
 class TemplateSerializer(serializers.ModelSerializer):
     """The template to categorize workflows"""
 
     class Meta:
         model = Template
-        fields = ("id", "title", "description", "created_at", "updated_at")
+        fields = (
+            "id",
+            "title",
+            "description",
+            "created_at",
+            "updated_at",
+            "process_method",
+            "process_setting",
+            "signal_method",
+            "signal_setting",
+        )
         read_only_fields = ("created_at", "updated_at")
 
 

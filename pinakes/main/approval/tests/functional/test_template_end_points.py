@@ -10,6 +10,7 @@ from pinakes.main.approval.permissions import (
     TemplatePermission,
     WorkflowPermission,
 )
+from pinakes.main.approval.models import Notification
 
 
 @pytest.mark.django_db
@@ -65,7 +66,7 @@ def test_template_patch(api_request, mocker):
 
 
 @pytest.mark.django_db
-def test_portfolio_put_not_supported(api_request):
+def test_template_put_not_supported(api_request):
     """PUT on a template should fail"""
     template = TemplateFactory()
     response = api_request(
@@ -98,14 +99,26 @@ def test_template_post(api_request, mocker):
     """Create a template"""
     has_permission = mocker.spy(TemplatePermission, "has_permission")
     TenantFactory()
+    notification = Notification.objects.first()
     response = api_request(
         "post",
         "approval:template-list",
-        data={"title": "abcdef", "description": "abc"},
+        data={
+            "title": "abcdef",
+            "description": "abc",
+            "process_method": notification.id,
+            "process_setting": {"key": "val"},
+            "signal_method": notification.id,
+            "signal_setting": {"key": "val2"},
+        },
     )
 
     assert response.status_code == 201
-    content = json.loads(response.content)
+    content = response.data
     assert content["title"] == "abcdef"
     assert content["description"] == "abc"
+    assert content["process_method"] == notification.id
+    assert content["process_setting"]["key"] == "val"
+    assert content["signal_method"] == notification.id
+    assert content["signal_setting"]["key"] == "val2"
     has_permission.assert_called_once()
