@@ -5,20 +5,25 @@
 # export PINAKES_CONTROLLER_TOKEN=<<your controller token>>
 # export PINAKES_CONTROLLER_VERIFY_SSL=True|False
 
+set -o nounset
 set -o errexit
 
+PINAKES_CONTROLLER_URL=${PINAKES_CONTROLLER_URL:-}
+PINAKES_CONTROLLER_TOKEN=${PINAKES_CONTROLLER_TOKEN:-}
+PINAKES_CONTROLLER_VERIFY_SSL=${PINAKES_CONTROLLER_VERIFY_SSL:-}
+
 if [[ -z "${PINAKES_CONTROLLER_URL}" ]]; then
-  echo "Warning: Please set the environment variable PINAKES_CONTROLLER_URL"
+  echo "Error: Environment variable PINAKES_CONTROLLER_URL is not set."
   exit 1
 fi
 
 if [[ -z "${PINAKES_CONTROLLER_TOKEN}" ]]; then
-  echo "Warning: Please set the environment variable PINAKES_CONTROLLER_TOKEN"
+  echo "Error: Environment variable PINAKES_CONTROLLER_TOKEN is not set."
   exit 1
 fi
 
 if [[ -z "${PINAKES_CONTROLLER_VERIFY_SSL}" ]]; then
-  echo "Warning: Please set the environment variable PINAKES_CONTROLLER_VERIFY_SSL"
+  echo "Error: Environment variable PINAKES_CONTROLLER_VERIFY_SSL is not set."
   exit 1
 fi
 
