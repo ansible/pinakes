@@ -37,8 +37,6 @@ spec:
               value: postgres
             - name: KEYCLOAK_PASSWORD
               value: admin
-            - name: KEYCLOAK_DEFAULT_THEME
-              value: pinakes
             - name: JDBC_PARAMS
               value: sslmode=verify-ca&sslrootcert=/etc/ssl_config/root.crt
             - name: KEYCLOAK_USER
