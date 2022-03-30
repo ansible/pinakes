@@ -13,15 +13,18 @@ PINAKES_CONTROLLER_TOKEN=${PINAKES_CONTROLLER_TOKEN:-}
 PINAKES_CONTROLLER_VERIFY_SSL=${PINAKES_CONTROLLER_VERIFY_SSL:-}
 
 if [[ -z "${PINAKES_CONTROLLER_URL}" ]]; then
-  echo "Warning: PINAKES_CONTROLLER_URL is not set."
+  echo "Error: Environment variable PINAKES_CONTROLLER_URL is not set."
+  exit 1
 fi
 
 if [[ -z "${PINAKES_CONTROLLER_TOKEN}" ]]; then
-  echo "Warning: PINAKES_CONTROLLER_TOKEN is not set."
+  echo "Error: Environment variable PINAKES_CONTROLLER_TOKEN is not set."
+  exit 1
 fi
 
 if [[ -z "${PINAKES_CONTROLLER_VERIFY_SSL}" ]]; then
-  echo "Warning: PINAKES_CONTROLLER_VERIFY_SSL is not set."
+  echo "Error: Environment variable PINAKES_CONTROLLER_VERIFY_SSL is not set."
+  exit 1
 fi
 
 if ! kubectl get namespace catalog &>/dev/null; then
