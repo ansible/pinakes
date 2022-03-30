@@ -8,7 +8,7 @@ x-environment:
   - PINAKES_HTTPS_ENABLED=True
   - PINAKES_CSRF_TRUSTED_ORIGINS=${PINAKES_CSRF_TRUSTED_ORIGINS:-https://*,http://*}
   - PINAKES_STATIC_ROOT=/opt/app-root/src/staticfiles
-  - PINAKES_CONTROLLER_VERIFY_SSL=False
+  - PINAKES_CONTROLLER_VERIFY_SSL=false
   - PINAKES_MEDIA_ROOT=/opt/app-root/src/media
   - PINAKES_ALLOWED_HOSTS=*
   - PINAKES_DEBUG=False
@@ -117,6 +117,11 @@ services:
       - DB_PASSWORD=admin
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_DEFAULT_THEME=pinakes
+    volumes:
+      - '../keycloak_setup/login_theme/theme.properties:/opt/jboss/keycloak/themes/pinakes/login/theme.properties:z'
+      - '../keycloak_setup/login_theme/styles.css:/opt/jboss/keycloak/themes/pinakes/login/resources/css/styles.css:z'
+      - '../keycloak_setup/login_theme/background.png:/opt/jboss/keycloak/themes/pinakes/login/resources/img/background.png:z'
   postgres:
     image: 'docker.io/postgres:13-alpine'
     volumes:
