@@ -1,7 +1,6 @@
 Django
 django-filter
 django-rq
-django-split-settings
 django-taggit
 djangorestframework
 drf-extensions
