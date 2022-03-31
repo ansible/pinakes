@@ -53,9 +53,18 @@ if kubectl get configmap --namespace=catalog ansible-controller-env &>/dev/null;
 	kubectl delete --namespace=catalog configmap ansible-controller-env
 fi
 
-if ! kubectl get configmap --namespace=catalog keycloak-theme &>/dev/null; then
-     kubectl create configmap keycloak-theme --from-file=./tools/keycloak_setup/login_theme -n catalog
+# Override Keycloak image files
+tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
+cp ./tools/keycloak_setup/login_theme/* "$tmp_dir"
+if [[ -d ./overrides/keycloak ]]; then
+	cp ./overrides/keycloak/* "$tmp_dir"
 fi
+ 
+if ! kubectl get configmap --namespace=catalog keycloak-theme &>/dev/null; then
+     kubectl create configmap keycloak-theme --from-file="$tmp_dir" -n catalog
+fi
+
+rm -rf $tmp_dir
 
 kubectl create configmap \
     --namespace=catalog \

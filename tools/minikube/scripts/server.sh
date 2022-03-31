@@ -25,10 +25,29 @@ echo -e "\e[32m >>> migration completed \e[97m"
 
 echo -e "\e[32m >>> Fetch UI tar\e[97m"
 
-curl -o ui.tar.xz -L https://github.com/ansible/pinakes-ui/releases/download/latest/catalog-ui.tar.gz
+if [[ -f overrides/ui/catalog-ui.tar.gz ]]
+then
+	echo "Overriding with local ui tar"
+	cp overrides/ui/catalog-ui.tar.gz .
+else
+	echo "Downloading ui tar"
+        curl -o catalog-ui.tar.gz -L https://github.com/ansible/pinakes-ui/releases/download/latest/catalog-ui.tar.gz
+fi
+
 rm -rf pinakes/ui/catalog
 mkdir -p pinakes/ui/catalog
-tar -xf ui.tar.xz --directory pinakes/ui/catalog
+tar -xf catalog-ui.tar.gz --directory pinakes/ui/catalog
+
+# Overlay the catalog and approval images from overrides
+if [[ -d overrides/pinakes ]]
+then
+	cp overrides/pinakes/* pinakes/ui/catalog/fonts
+fi
+
+if [[ -d overrides/approval ]]
+then
+	cp overrides/approval/* pinakes/ui/catalog/approval/fonts
+fi
 
 rm -rf "$PINAKES_STATIC_ROOT"
 
