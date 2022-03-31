@@ -1,10 +1,10 @@
 
 # Vagrant Dev Environment
 
-We can run our dev environment in VirtualBox using Vagrant. We have 2 VMs running RHEL8
+We can run our dev environment in Virtual Box using Vagrant. We have 2 VMs running RHEL8
 
  1. Keycloak (keycloak.vm.local)
- 2. Catalog VM (with Postgres, Redis, NGINX, Catalog App, Catalog Worker, Catalog Scheduler)
+ 2. Pinakes VM (with Postgres, Redis, NGINX, Catalog App, Catalog Worker, Catalog Scheduler)
  
 
 # Pre requisites
@@ -12,7 +12,11 @@ We can run our dev environment in VirtualBox using Vagrant. We have 2 VMs runnin
 * You need the Red Hat Network (RHN) userid/password to access the RPM's for the different packages we need (Postgres, Redis,....)
 
 ## Installation
-* git clone this repo
+* Clone this repository
+```
+ git clone https://github.com/ansible/pinakes
+ cd pinakes
+```
 * We use the private network with the following 2 IP addresses for the VMs
 	* 192.168.33.20 
 	* 192.168.33.21
@@ -32,10 +36,10 @@ We can run our dev environment in VirtualBox using Vagrant. We have 2 VMs runnin
 	    * 192.168.33.20 keycloak.vm.local
 * Change directory to ./tools/vagrant
 * vagrant up
-* Login to the browser using the following url https://pinakes.vm.local The server uses self signed certificates.
+* Login to the browser using the following URL https://pinakes.vm.local The server uses self signed certificates.
 
 ## Cleanup/Restart
-Use **vagrant destroy** to cleanup the VM's 
+Use **vagrant destroy** to cleanup the VMs 
  
 ## Services
 During the setup process we create a user called "catalog" and it runs 3 services
@@ -54,5 +58,8 @@ journalctl -u catalog_scheduler > /tmp/catalog_scheduler.log
 * Since NGNIX talks to the catalog app we need to use
     * setsebool -P httpd_can_network_connect on
 
+## Login to PINAKES
+ * https://pinakes.vm.local/api/pinakes/auth/login/
+ * [Credentials](./CREDENTIALS.md)
 ## Keycloak
 To access Keycloak admin page use http://keycloak.vm.local:8080/auth (admin/admin)
