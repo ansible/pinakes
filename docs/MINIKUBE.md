@@ -85,3 +85,12 @@ If you are on Mac deleting the pods might not clear out the databases you might 
 minikube ssh
 sudo rm -rf /tmp/tmp/hostpath-provisioner/catalog/
 ```
+### Optionally overriding UI and images
+
+To override the UI tar file you can create a file in the following location
+   * ./overrides/ui/catalog-ui.tar.gz
+
+To override images and css you can store them in the following directories.
+  * ./overrides/pinakes
+  * ./overrides/approval
+  * ./overrides/keycloak
