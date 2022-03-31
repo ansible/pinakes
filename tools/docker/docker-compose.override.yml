@@ -114,7 +114,6 @@ services:
       - DB_PASSWORD=admin
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
-      - KEYCLOAK_DEFAULT_THEME=pinakes
     volumes:
       - '../keycloak_setup/login_theme/theme.properties:/opt/jboss/keycloak/themes/pinakes/login/theme.properties:z'
       - '../keycloak_setup/login_theme/styles.css:/opt/jboss/keycloak/themes/pinakes/login/resources/css/styles.css:z'
