@@ -1,3 +1,4 @@
+django-split-settings
 pylint
 pylint_django
 coverage
