@@ -18,10 +18,11 @@ logger = logging.getLogger("catalog")
 class SubmitApprovalRequest:
     """Submit a new approval request"""
 
-    def __init__(self, tag_resources, order):
+    def __init__(self, tag_resources, order, context={}):
         self.tag_resources = tag_resources
         self.order = order
         self.order_item = order.product
+        self.context = context
 
     def process(self):
         self.order.mark_approval_pending()
@@ -32,7 +33,7 @@ class SubmitApprovalRequest:
     def _submit_approval_request(self):
         try:
             request_body = self._create_approval_request_body()
-            svc = CreateRequest(request_body).process()
+            svc = CreateRequest(request_body, self.context).process()
 
             ApprovalRequest.objects.create(
                 approval_request_ref=str(svc.request.id),

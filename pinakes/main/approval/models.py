@@ -11,6 +11,7 @@ from pinakes.common.auth.keycloak_django import AbstractKeycloakResource
 models.CharField.register_lookup(Length)
 
 
+# pylint: disable=no-member
 class NotificationType(ImageableModel, models.Model):
     """NotificationType model"""
 
@@ -191,6 +192,8 @@ class Workflow(KeycloakMixin, BaseModel):
 
 
 class RequestContext(models.Model):
+    """RequestContext model"""
+
     content = models.JSONField()
     context = models.JSONField()
 
@@ -202,6 +205,8 @@ class Request(AbstractKeycloakResource, BaseModel):
     KEYCLOAK_ACTIONS = ("read",)
 
     class State(models.TextChoices):
+        """State contants"""
+
         PENDING = "pending"
         SKIPPED = "skipped"
         STARTED = "started"
@@ -211,6 +216,8 @@ class Request(AbstractKeycloakResource, BaseModel):
         FAILED = "failed"
 
     class Decision(models.TextChoices):
+        """Decision constants"""
+
         UNDECIDED = "undecided"
         APPROVED = "approved"
         DENIED = "denied"
@@ -347,7 +354,7 @@ class Request(AbstractKeycloakResource, BaseModel):
 
     def is_root(self):
         """Is the request a root node"""
-        return False if self.parent else True
+        return not bool(self.parent)
 
     def is_leaf(self):
         """Is the request a leaf node"""
@@ -382,6 +389,8 @@ class Action(BaseModel):
     """Action model"""
 
     class Operation(models.TextChoices):
+        """Operation contants"""
+
         NOTIFY = "notify"
         START = "start"
         SKIP = "skip"

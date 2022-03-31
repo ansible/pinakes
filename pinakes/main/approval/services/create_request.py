@@ -17,8 +17,9 @@ logger = logging.getLogger("approval")
 class CreateRequest:
     """Create an approval request"""
 
-    def __init__(self, data):
+    def __init__(self, data, context={}):
         self.data = data
+        self.context = context
         self.request = None
         self.job = None
 
@@ -32,7 +33,7 @@ class CreateRequest:
 
         content = self.data.pop("content")
         request_context = RequestContext.objects.create(
-            content=content, context={}
+            content=content, context=self.context
         )
         self.request = Request.objects.create(
             request_context=request_context, **self.data

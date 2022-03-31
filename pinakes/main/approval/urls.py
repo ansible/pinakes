@@ -14,7 +14,7 @@ from pinakes.main.approval.views import (
 urls_views = {}
 
 router = NestedDefaultRouter()
-notifications = router.register(
+router.register(
     "notifications_settings",
     NotificationSettingViewSet,
     basename="notificationsetting",
