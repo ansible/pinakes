@@ -6,7 +6,7 @@ echo running > /startup/status
 
 while true;
 do echo "Waiting for keycloak service to come up...";
-    wget $PINAKES_KEYCLOAK_URL -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break;
+    wget --no-check-certificate $PINAKES_KEYCLOAK_URL -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break;
     sleep 3;
 done;
 echo "Service is up!"

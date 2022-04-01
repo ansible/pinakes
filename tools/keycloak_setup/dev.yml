@@ -1,8 +1,8 @@
 ---
 - hosts: localhost
   vars:
-    seed_keycloak: true
     verify_keycloak_ssl: false
+    seed_keycloak: true
     seed_groups:
       - name: Information Technology - Sample
         clientRoles:
