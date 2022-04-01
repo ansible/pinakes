@@ -72,6 +72,14 @@ kubectl create configmap \
     --from-literal=PINAKES_CONTROLLER_URL="$PINAKES_CONTROLLER_URL" \
     --from-literal=PINAKES_CONTROLLER_TOKEN="$PINAKES_CONTROLLER_TOKEN" \
     --from-literal=PINAKES_CONTROLLER_VERIFY_SSL="$PINAKES_CONTROLLER_VERIFY_SSL"
+
+# Build the image if the user hasn't built it yet
+if ! minikube image ls | grep pinakes:latest; then
+    echo "Building app image"
+    eval $(minikube -p minikube docker-env)
+    minikube image build -t localhost/pinakes -f tools/docker/Dockerfile .
+fi
+
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/redis-deployment.yaml
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/redis-service.yaml
 kubectl apply --namespace=catalog -f ./tools/minikube/templates/pg-data-persistentvolumeclaim.yaml

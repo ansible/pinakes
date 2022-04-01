@@ -29,20 +29,8 @@ The ingress uses 2 hard coded hosts **pinakes** and **keycloak** to route the tr
   cd pinakes
 ```
 
-### Building the image
-
-If you have docker installed on your device it might help to set minikube as the docker daemon using the following command before doing the build
-```
-eval $(minikube -p minikube docker-env)
-```
-
-Build the image
-
-```
-minikube image build -t localhost/pinakes -f tools/docker/Dockerfile .
-```
 ### Starting the app
-Once this has been setup you can start the deployments, services and ingress service in the directory tools/minikube/templates. A helper script creates a Kubernetes namespace called **catalog** and runs all the deployments in that namespace. The helper scripts requires 3 environment variables to locate the Automation Controller.
+Once minikube has been setup you can start the deployments, services and ingress service in the directory tools/minikube/templates. A helper script creates a Kubernetes namespace called **catalog** and runs all the deployments in that namespace. The helper scripts requires 3 environment variables to locate the Automation Controller.
   - **export PINAKES_CONTROLLER_URL="Your controller URL"**
   - **export PINAKES_CONTROLLER_TOKEN="Your Token"**
   - **export PINAKES_CONTROLLER_VERIFY_SSL="False"**
@@ -50,6 +38,7 @@ Once this has been setup you can start the deployments, services and ingress ser
 ```
 ./tools/minikube/scripts/start_pods.sh
 ```
+The start_pods.sh script will check and build the pinakes app image if its missing.
 
 ### Login to PINAKES
  * https://pinakes.k8s.local/api/pinakes/auth/login/
