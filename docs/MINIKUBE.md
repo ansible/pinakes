@@ -83,7 +83,7 @@ The -d option deletes the persistent volumes so you can have a fresh start
 If you are on Mac deleting the pods might not clear out the databases you might have to do this
 ```
 minikube ssh
-sudo rm -rf /tmp/tmp/hostpath-provisioner/catalog/
+sudo rm -rf /tmp/hostpath-provisioner/catalog/
 ```
 ### Optionally overriding UI and images
 
