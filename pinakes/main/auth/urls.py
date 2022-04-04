@@ -14,6 +14,7 @@ urlpatterns = [
         "login/",
         RedirectView.as_view(
             pattern_name="social:begin",
+            query_string=True,
         ),
         name="login",
         kwargs={"backend": SOCIAL_AUTH_BACKEND},
