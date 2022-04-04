@@ -137,13 +137,13 @@ def test_portfolio_copy_with_icon(api_request):
     portfolio = PortfolioFactory(icon=image)
 
     assert Portfolio.objects.count() == 1
-    assert Image.objects.count() == 1
+    old_count = Image.objects.count()
 
     response = api_request("post", "catalog:portfolio-copy", portfolio.id, {})
 
     assert response.status_code == 200
     assert Portfolio.objects.count() == 2
-    assert Image.objects.count() == 2
+    assert Image.objects.count() == old_count + 1
 
     Portfolio.objects.last().delete()
 

@@ -3,6 +3,8 @@ from decimal import Decimal
 import factory
 
 from pinakes.main.approval.models import (
+    NotificationType,
+    NotificationSetting,
     Template,
     Workflow,
     Request,
@@ -10,6 +12,26 @@ from pinakes.main.approval.models import (
     Action,
 )
 from pinakes.main.tests.factories import default_tenant
+
+
+class NotificationTypeFactory(factory.django.DjangoModelFactory):
+    """Notification type factory class"""
+
+    class Meta:
+        model = NotificationType
+
+    n_type = factory.Sequence(lambda n: f"notificationtype{n}")
+
+
+class NotificationSettingFactory(factory.django.DjangoModelFactory):
+    """Notification setting factory class"""
+
+    class Meta:
+        model = NotificationSetting
+
+    tenant = factory.LazyAttribute(lambda _: default_tenant())
+    notification_type_id = 1  # the default seeded one
+    name = factory.Sequence(lambda n: f"notificationsetting{n}")
 
 
 class TemplateFactory(factory.django.DjangoModelFactory):

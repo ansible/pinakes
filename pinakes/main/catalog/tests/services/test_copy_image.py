@@ -16,12 +16,12 @@ from pinakes.main.catalog.services.copy_image import (
 def test_copy_image():
     image = ImageFactory()
 
-    assert Image.objects.count() == 1
+    old_count = Image.objects.count()
 
     svc = CopyImage(image)
     svc.process()
 
-    assert Image.objects.count() == 2
+    assert Image.objects.count() == old_count + 1
     assert Image.objects.first().file.name != Image.objects.last().file.name
 
     new_image = svc.new_icon

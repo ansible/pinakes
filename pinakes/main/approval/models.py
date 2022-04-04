@@ -2,26 +2,84 @@
 from django.db import models
 from django.db.models.functions import Length
 from django.contrib.auth import get_user_model
+from django.core.signing import Signer
 
-from pinakes.main.models import BaseModel
+from pinakes.main.models import BaseModel, ImageableModel
 from pinakes.common.auth.keycloak_django.models import KeycloakMixin
 from pinakes.common.auth.keycloak_django import AbstractKeycloakResource
 
 models.CharField.register_lookup(Length)
 
 
-class Notification(models.Model):
-    """Notification model"""
+class NotificationType(ImageableModel, models.Model):
+    """NotificationType model"""
+
+    n_type = models.CharField(
+        max_length=128,
+        help_text="Name of the notification type",
+    )
+    setting_schema = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="JSON schema of the notification type",
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                name="%(app_label)s_%(class)s_n_type_empty",
+                check=models.Q(n_type__length__gt=0),
+            ),
+            models.UniqueConstraint(
+                name="%(app_label)s_%(class)s_n_type_unique",
+                fields=("n_type",),
+            ),
+        ]
+
+    def __str__(self):
+        return self.n_type
+
+
+class SettingField(models.TextField):
+    """Customized field to store encrypted settings"""
+
+    def get_prep_value(self, value):
+        """override"""
+        if value is None:
+            return None
+        return Signer().sign_object(value)
+
+    def from_db_value(self, value, _expression, _connection):
+        """override"""
+        if value is None:
+            return None
+        return Signer().unsign_object(value)
+
+    def to_python(self, value):
+        """override"""
+        if value is None:
+            return None
+        return Signer().unsign_object(value)
+
+
+class NotificationSetting(BaseModel):
+    """Notification setting"""
 
     name = models.CharField(
         max_length=128,
         editable=True,
         help_text="Name of the notification method",
     )
-    setting_schema = models.JSONField(
+    settings = SettingField(
         blank=True,
         null=True,
-        help_text="JSON schema of the notification method",
+        help_text="Parameters for configuring the notification method",
+    )
+    notification_type = models.ForeignKey(
+        NotificationType,
+        null=True,
+        on_delete=models.CASCADE,
+        help_text="ID of the notification type",
     )
 
     class Meta:
@@ -32,7 +90,7 @@ class Notification(models.Model):
             ),
             models.UniqueConstraint(
                 name="%(app_label)s_%(class)s_name_unique",
-                fields=("name",),
+                fields=("name", "tenant"),
             ),
         ]
 
@@ -51,17 +109,15 @@ class Template(KeycloakMixin, BaseModel):
         default="",
         help_text="Describe the template with more details",
     )
-    process_setting = models.JSONField(blank=True, null=True)
-    signal_setting = models.JSONField(blank=True, null=True)
     process_method = models.ForeignKey(
-        Notification,
+        NotificationSetting,
         null=True,
         related_name="process_notification",
         on_delete=models.CASCADE,
         help_text="ID of the notification method for processing the workflow",
     )
     signal_method = models.ForeignKey(
-        Notification,
+        NotificationSetting,
         null=True,
         on_delete=models.CASCADE,
         related_name="signal_notification",

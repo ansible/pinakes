@@ -3,7 +3,8 @@ from pinakes.common.nested_router import (
     NestedDefaultRouter,
 )
 from pinakes.main.approval.views import (
-    NotificationViewSet,
+    NotificationSettingViewSet,
+    NotificationTypeViewSet,
     TemplateViewSet,
     WorkflowViewSet,
     RequestViewSet,
@@ -14,7 +15,12 @@ urls_views = {}
 
 router = NestedDefaultRouter()
 notifications = router.register(
-    "notifications", NotificationViewSet, basename="notification"
+    "notifications_settings",
+    NotificationSettingViewSet,
+    basename="notificationsetting",
+)
+router.register(
+    "notification_types", NotificationTypeViewSet, basename="notificationtype"
 )
 
 templates = router.register("templates", TemplateViewSet, basename="template")
