@@ -9,11 +9,12 @@ scheduler = django_rq.get_scheduler()
 logger = logging.getLogger("rq.worker")
 
 
-def clear_scheduled_jobs():
-    """Delete any existing jobs in the scheduler when the app starts up"""
+def cancel_scheduled_jobs():
+    """Cancel any existing jobs in the scheduler when the app starts up"""
     for job in scheduler.get_jobs():
-        logger.info("Deleting scheduled cron job %s", job)
-        job.delete()
+        if not job.is_canceled:
+            logger.info("Cancelling scheduled cron job %s", job)
+            scheduler.cancel(job)
 
 
 class Command(rqscheduler.Command):
@@ -21,7 +22,7 @@ class Command(rqscheduler.Command):
 
     def handle(self, *args, **kwargs):
         logger.info("Clearing scheduled cron jobs:")
-        clear_scheduled_jobs()
+        cancel_scheduled_jobs()
 
         for job in settings.STARTUP_RQ_JOBS:
             logger.info("Run startup job: %s", job)

@@ -1,20 +1,14 @@
-import json
-from pathlib import Path
-
 from django.conf import settings
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db import connection
 
 from rest_framework.fields import DateTimeField
+from rq import get_current_job
 
 from insights_analytics_collector import Collector
 from pinakes.main.analytics.package import Package
 
 
 class AnalyticsCollector(Collector):
-    ANALYTICS_LAST_GATHER_FILE = "analytics_last_gather"
-    ANALYTICS_LAST_ENTRIES_FILE = "analytics_last_entries"
-
     @staticmethod
     def db_connection():
         return connection
@@ -53,11 +47,8 @@ class AnalyticsCollector(Collector):
         return True
 
     def _last_gathering(self):
-        last_gathering_file = Path(self.ANALYTICS_LAST_GATHER_FILE)
-        last_gathering_file.touch(exist_ok=True)
-
-        with open(self.ANALYTICS_LAST_GATHER_FILE, "r") as reader:
-            last_gather = reader.read()
+        job = get_current_job()
+        last_gather = job.meta.get("last_gather", None)
 
         return (
             DateTimeField().to_internal_value(last_gather)
@@ -66,29 +57,26 @@ class AnalyticsCollector(Collector):
         )
 
     def _load_last_gathered_entries(self):
-        last_entries_file = Path(self.ANALYTICS_LAST_ENTRIES_FILE)
-        last_entries_file.touch(exist_ok=True)
+        job = get_current_job()
 
-        with open(self.ANALYTICS_LAST_ENTRIES_FILE, "r") as reader:
-            last_entries = reader.read()
+        last_entries = job.meta.get("last_gathered_entries", None) or {}
+        for key, value in last_entries.items():
+            last_entries[key] = DateTimeField().to_internal_value(value)
 
-        json_last_entries = json.loads(last_entries) if last_entries else {}
-        for key, value in json_last_entries.items():
-            json_last_entries[key] = DateTimeField().to_internal_value(value)
-
-        return json_last_entries
+        return last_entries
 
     def _save_last_gathered_entries(self, last_gathered_entries):
         self.logger.info(f"Save last_entries: {last_gathered_entries}")
 
-        with open(self.ANALYTICS_LAST_ENTRIES_FILE, "w") as writer:
-            writer.write(
-                json.dumps(
-                    last_gathered_entries["keys"], cls=DjangoJSONEncoder
-                )
-            )
+        job = get_current_job()
+        job.meta["last_gathered_entries"] = last_gathered_entries["keys"]
+        job.save_meta()
 
     def _save_last_gather(self):
         self.logger.info(f"Save last_gather: {self.gather_until}")
-        with open(self.ANALYTICS_LAST_GATHER_FILE, "w") as writer:
-            writer.write(self.gather_until.strftime("%Y-%m-%dT%H:%M:%S.%fZ"))
+
+        job = get_current_job()
+        job.meta["last_gather"] = self.gather_until.strftime(
+            "%Y-%m-%dT%H:%M:%S.%fZ"
+        )
+        job.save_meta()
