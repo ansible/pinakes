@@ -95,8 +95,12 @@ class TowerAPI:
             if self.attr_delimiter in attr:
                 data = payload
                 for key in attr.split(self.attr_delimiter):
-                    data = data[key]
+                    if key in data:
+                        data = data[key]
+                    else:
+                        data = None
+                        break
                 obj[attr] = data
             else:
-                obj[attr] = payload[attr]
+                obj[attr] = payload.get(attr, None)
         return obj

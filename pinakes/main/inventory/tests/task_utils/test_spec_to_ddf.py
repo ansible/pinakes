@@ -97,14 +97,11 @@ class TestSpecToDDF:
         "spec": [
           {
                 "question_name": "Password",
-                "question_description": "Please enter your password",
+                "question_description": "Enter your password",
                 "required": true,
                 "type": "password",
                 "variable": "blank_password",
-                "min": 0,
-                "max": 32,
                 "default": "$encrypted$",
-                "choices": "",
                 "new_question": true
             }
            ]
@@ -191,6 +188,24 @@ class TestSpecToDDF:
            ]
     }
     """
+
+    testdata10 = """
+    {
+        "name": "",
+        "description": "",
+        "spec": [
+          {
+                "question_name": "Password",
+                "question_description": "Enter your password",
+                "required": true,
+                "type": "password",
+                "variable": "blank_password",
+                "default": "$encrypted$",
+                "new_question": true
+            }
+           ]
+    }
+    """
     result1 = {"component": "select-field"}
     result2 = {"dataType": "integer"}
     result3 = {"dataType": "float"}
@@ -200,6 +215,7 @@ class TestSpecToDDF:
     result7 = {"component": "select-field"}
     result8 = {"component": "select-field"}
     result9 = {"component": "select-field"}
+    result10 = {"component": "text-field"}
 
     @pytest.mark.parametrize(
         "test_input,expected",
@@ -213,6 +229,7 @@ class TestSpecToDDF:
             (testdata7, result7),
             (testdata8, result8),
             (testdata9, result9),
+            (testdata10, result10),
         ],
     )
     def test_conversion(self, test_input, expected):

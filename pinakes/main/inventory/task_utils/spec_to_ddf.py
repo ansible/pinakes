@@ -40,7 +40,7 @@ class SpecToDDF:
         result = {
             "label": field["question_name"],
             "name": field["variable"],
-            "helperText": field["question_description"],
+            "helperText": field.get("question_description", ""),
             "isRequired": field["required"],
         }
         result = {**result, **self.DDF_FIELD_TYPES[field["type"]]}
@@ -62,10 +62,13 @@ class SpecToDDF:
 
     def _getOptions(self, field):
         values = None
-        if isinstance(field["choices"], list):
-            values = field["choices"]
-        elif isinstance(field["choices"], str) and field["choices"] != "":
-            values = field["choices"].split("\n")
+        if "choices" in field:
+            if isinstance(field["choices"], list):
+                values = field["choices"]
+            elif isinstance(field["choices"], str) and field["choices"] != "":
+                values = field["choices"].split("\n")
+            else:
+                return []
         else:
             return []
 
