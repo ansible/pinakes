@@ -55,6 +55,35 @@ class TestServicePlanImport:
         assert InventoryServicePlan.objects.first().schema_sha256 is not None
 
     @pytest.mark.django_db
+    def test_add_with_no_data(self):
+        """Test adding new objects with empty response from tower."""
+        tenant = TenantFactory()
+        source = SourceFactory()
+        service_offering = ServiceOfferingFactory(
+            tenant=tenant, source=source, survey_enabled=True
+        )
+
+        tower_mock = Mock()
+        objs = [{"name": None, "description": None}]
+
+        def fake_method(*_args, **_kwarg):
+            for i in objs:
+                yield i
+
+        tower_mock.get.side_effect = fake_method
+        converter_mock = Mock()
+        converter_mock.process.return_value = {"abc": 123}
+        spi = ServicePlanImport(tenant, source, tower_mock, converter_mock)
+        spi.process(
+            f"/api/v2/survey_spec/{service_offering.source_ref}/",
+            service_offering.id,
+            service_offering.source_ref,
+        )
+        assert spi.get_stats()["adds"] == 0
+        assert spi.get_stats()["updates"] == 0
+        assert (InventoryServicePlan.objects.count()) == 0
+
+    @pytest.mark.django_db
     def test_update(self):
         """Test updating survey objects."""
         old_spec = [{"name": "abc"}]

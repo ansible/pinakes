@@ -76,6 +76,7 @@ class TestTowerAPI:
             "name": "abc",
             "description": "desc1",
             "related": {"inventory": 2},
+            "summary": {"info": {"version": "2.0"}},
         }
         tower_api = TowerAPI(
             "https://www.example.com", "gobbledegook", "false"
@@ -89,9 +90,15 @@ class TestTowerAPI:
         names = []
         for obj in tower_api.get(
             "/api/v2/job_templates/1/",
-            ["name", "description", "related.inventory"],
+            [
+                "name",
+                "description",
+                "related.inventory",
+                "summary.info.missing",
+            ],
         ):
             names.append(obj["name"])
+            assert obj["summary.info.missing"] is None
 
         assert (names) == ["abc"]
 
