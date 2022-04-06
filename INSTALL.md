@@ -1,5 +1,5 @@
 # INSTALL
-How to install Pinkaes in a production-like environment. This guide assumes a basic knowledge about networking and systems administration. 
+How to install Pinakes in a production-like environment. This guide assumes a basic knowledge about networking and systems administration.
 
 ## Components
 - Backend: django application for the REST api
@@ -13,7 +13,7 @@ How to install Pinkaes in a production-like environment. This guide assumes a ba
 ![arch overview](./docs/catalog-arch.png?raw=true)
 
 ## Dependencies
-Pinakes acts as a client for the ansible controller (AKA ansible tower). It can work without connectivity to the controller with limited functionality. 
+Pinakes acts as a client for the ansible controller (AKA ansible tower). It can work without connectivity to the controller with limited functionality.
 
 ## Requirements
 - Python >= 3.6
@@ -23,7 +23,7 @@ Pinakes acts as a client for the ansible controller (AKA ansible tower). It can 
 - Keycloak >= 15
 
 ## How to install
-Note: all command examples are based on a clean linux server with a RHEL compatible OS. Please check the respective official documentation for the equivalent commands if you use another environment. 
+Note: all command examples are based on a clean linux server with a RHEL compatible OS. Please check the respective official documentation for the equivalent commands if you use another environment.
 
 ### Keycloak
 Install Keycloak and configure credentials for the admin user. See the official docs for further information
@@ -49,7 +49,7 @@ pip3 install -U pip
 
 ### Keycloak setup
 Several configurations must be done in keycloak in order to be used by Pinakes as auth provider. There is an ansible collection to do it automatically. There are some variables that must be configured for the ansible collection in `tools/keycloak_setup/dev.yml`
-Copy this file and modify `seed_users` according to your setup and needs. 
+Copy this file and modify `seed_users` according to your setup and needs.
 
 - install ansible and the collection:
 ```
@@ -59,7 +59,7 @@ ansible-galaxy collection build tools/keycloak_setup/collection
 ansible-galaxy collection install community.general pinakes-keycloak_setup-"$KEYCLOAK_SETUP_VERSION".tar.gz
 ```
 
-- some environment variables are needed: 
+- some environment variables are needed:
 ```
 # internal keycloak url
 export PINAKES_KEYCLOAK_URL=http://keycloak:8080/auth
@@ -135,7 +135,7 @@ export PINAKES_REDIS_HOST=localhost
 export PINAKES_REDIS_PORT=6379
 export PINAKES_REDIS_DB=0
 
-# use it to define a custom configuration file as python module syntax 
+# use it to define a custom configuration file as python module syntax
 export DJANGO_SETTINGS_MODULE=pinakes.settings.defaults
 
 # comma separated allowed public hostnames for the backend
@@ -178,13 +178,13 @@ A static file webserver must be configured to serve the UI application, backend'
 
 You can find an example of the required configuration for the NGINX in `tools/minikube/nginx/catalog-nginx.conf`
 
-The latest build of the UI can be downloaded from the releases page in the oficial repository: 
+The latest build of the UI can be downloaded from the releases page in the official repository:
 
-https://github.com/RedHatInsights/catalog-ui/releases
+https://github.com/ansible/pinakes-ui/releases
 
-Download and unpack the UI build and modify the nginx configuration for the right directories and server names. 
+Download and unpack the UI build and modify the nginx configuration for the right directories and server names.
 
-NOTE: The UI must be served under the same public hostname as the backend. 
+NOTE: The UI must be served under the same public hostname as the backend.
 
 
 

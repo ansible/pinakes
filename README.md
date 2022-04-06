@@ -1,9 +1,7 @@
-# Pinakes
+<img src="./docs/logo-masthead.svg"/>
 
 [![Python package](https://github.com/ansible/pinakes/actions/workflows/python-package.yml/badge.svg)](https://github.com/ansible/pinakes/actions/workflows/python-package.yml)
 [![codecov](https://codecov.io/gh/ansible/pinakes/branch/devel/graph/badge.svg?token=GmTfoOt6WW)](https://codecov.io/gh/ansible/pinakes)
-
-<img src="./docs/Map_symbol_museum.png" width="150">
 
 Pinakes is the upstream community project for RedHat's [Automation Services Catalog product.](https://www.ansible.com/products/automation-services-catalog?hsLang=en-us)
 
@@ -13,8 +11,16 @@ Pinakes in the future will also support editing of Survey Specs to create differ
 
 For more information about our architecture and services we depend on, see the [architecture doc](./docs/ARCHITECTURE.md)
 
-To install Pinakes, please view the [installation guide](./INSTALL.md)
+Installation
+------------
 
+If you would like to install Pinakes primarily as a user without needing or wanting to make code changes, please view the [installation guide with minikube environment](./docs/MINIKUBE.md). This should be the default use-case for most users.
+
+Also available are [docker environment](./docs/DOCKER_COMPOSE.md) or [vagrant environment](./docs/VAGRANT.md) instructions, but we heavily encourage and recommend the use of minikube.
+
+If you would like to install Pinakes with the intention of contributing to the codebase, please see below.
+
+If you would like to install Pinakes in a production or production-like environment, please be aware that we do not officially support production environments with Pinakes. However, if you would like to install Pinakes in this manner, please view this [installation guide](./INSTALL.md)
 
 Contributing
 ------------
