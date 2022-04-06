@@ -32,12 +32,12 @@ class ServicePlanImport:
         """Fetch the Service Plan"""
         logger.info(f"Fetching survey spec {slug}")
         for new_obj in self.tower.get(slug, ["name", "description", "spec"]):
-            if new_obj["name"]:
-                self._handle(new_obj, service_offering_id, source_ref)
-            else:
+            if new_obj["name"] is None:
                 logger.warning(
                     "No survey spec found even though survey_spec is enabled"
                 )
+            else:
+                self._handle(new_obj, service_offering_id, source_ref)
 
     def _handle(self, data, service_offering_id, source_ref):
         """Convert the survey spec to DDF format and save it"""
