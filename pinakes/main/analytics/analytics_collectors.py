@@ -2,15 +2,17 @@ import os
 
 import platform
 import distro
-
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from insights_analytics_collector import CsvFileSplitter, register
 
-from pinakes.main.catalog import models
-from pinakes.main.inventory.models import ServiceInventory
 from pinakes.main.analytics.collector import AnalyticsCollector
 from pinakes.main.analytics.package import Package
+from pinakes.main.approval.models import Request
+from pinakes.main.catalog import models
+from pinakes.main.common.models import Group
+from pinakes.main.inventory.models import ServiceInventory
 
 
 @register(
@@ -665,6 +667,182 @@ def tag_counts_by_service_intentory(since, **kwargs):
                     "object_type": "ServiceInventory",
                     "tags": tag_resource_list,
                 },
+            }
+
+    return counts
+
+
+@register(
+    "orders_data_by_product",
+    "1.0",
+    description=_("Order data by product"),
+)
+def orders_data_by_product(since, **kwargs):
+    counts = {}
+
+    products = models.PortfolioItem.objects.values(
+        "id",
+        "name",
+        "created_at",
+        "updated_at",
+    )
+
+    for product in products:
+        order_items = models.OrderItem.objects.filter(
+            portfolio_item_id=product["id"]
+        ).values()
+
+        order_list = []
+        sum_time_spent_in_tower = 0.0
+        num_orders = 0
+
+        for item in order_items:
+            order = models.Order.objects.filter(id=item["order_id"]).first()
+            if order.completed_at and order.order_request_sent_at:
+                sum_time_spent_in_tower += (
+                    order.completed_at - order.order_request_sent_at
+                ).total_seconds()
+                num_orders += 1
+
+            order_list.append(order)
+
+        completed = [
+            {
+                "id": order.id,
+                "state": order.state,
+                "tenant_id": order.tenant_id,
+                "user_id": order.user_id,
+                "created_at": order.created_at.isoformat(),
+                "updated_at": order.updated_at.isoformat(),
+                "order_sent_at": order.order_request_sent_at.isoformat()
+                if order.order_request_sent_at
+                else "",
+                "completed_at": order.completed_at.isoformat(),
+            }
+            for order in order_list
+            if order.state == models.Order.State.COMPLETED
+        ]
+        failed = [
+            {
+                "id": order.id,
+                "state": order.state,
+                "tenant_id": order.tenant_id,
+                "user_id": order.user_id,
+                "created_at": order.created_at.isoformat(),
+                "updated_at": order.updated_at.isoformat(),
+                "order_sent_at": order.order_request_sent_at.isoformat()
+                if order.order_request_sent_at
+                else "",
+                "completed_at": order.completed_at.isoformat(),
+            }
+            for order in order_list
+            if order.state == models.Order.State.FAILED
+        ]
+        stuck = [
+            {
+                "id": order.id,
+                "state": order.state,
+                "tenant_id": order.tenant_id,
+                "user_id": order.user_id,
+                "created_at": order.created_at.isoformat(),
+                "updated_at": order.updated_at.isoformat(),
+                "order_sent_at": order.order_request_sent_at.isoformat()
+                if order.order_request_sent_at
+                else "",
+                "completed_at": order.completed_at.isoformat(),
+            }
+            for order in order_list
+            if order.state == models.Order.State.PENDING
+            or order.state == models.Order.State.CREATED
+            or order.state == models.Order.State.ORDERED
+        ]
+
+        if bool(order_list):
+            counts[product["id"]] = {
+                "id": product["id"],
+                "name": product["name"],
+                "average_time_spent_in_tower": sum_time_spent_in_tower
+                / num_orders,
+                "completed_orders": completed,
+                "failed_orders": failed,
+                "stuck_orders": stuck,
+            }
+
+    return counts
+
+
+@register(
+    "approval_request_time_spent_by_group",
+    "1.0",
+    description=_("Approval request time spent by group"),
+)
+def approval_request_time_spent_by_groups(since, **kwargs):
+    counts = {}
+
+    groups = Group.objects.values(
+        "id",
+        "name",
+    )
+    for group in groups:
+        request_list = []
+        for request in Request.objects.filter(group_name=group["name"]).values(
+            "id",
+            "name",
+            "created_at",
+            "updated_at",
+            "notified_at",
+            "finished_at",
+            "group_name",
+        ):
+            request_list.append(request)
+
+        if bool(request_list):
+            sum_time_spent = 0.0
+            time_spent_intervals = {}
+
+            for request in request_list:
+                if request["finished_at"]:
+                    time_spent_intervals[request["id"]] = (
+                        request["finished_at"] - request["notified_at"]
+                    )
+                else:  # request is waiting for processing
+                    time_spent_intervals[request["id"]] = (
+                        now() - request["notified_at"]
+                    )
+                request["time_spent_in_approval"] = time_spent_intervals[
+                    request["id"]
+                ].total_seconds()
+
+                sum_time_spent += time_spent_intervals[
+                    request["id"]
+                ].total_seconds()
+
+            counts[group["name"]] = {
+                "max_time_spent": max(
+                    time_spent_intervals.values()
+                ).total_seconds(),
+                "min_time_spent": min(
+                    time_spent_intervals.values()
+                ).total_seconds(),
+                "average_time_spent": sum_time_spent / len(request_list),
+                "requests": [
+                    {
+                        "id": request["id"],
+                        "name": request["name"],
+                        "time_spent_in_approval": request[
+                            "time_spent_in_approval"
+                        ],
+                        "created_at": request["created_at"].isoformat(),
+                        "updated_at": request["updated_at"].isoformat(),
+                        "notified_at": request["notified_at"].isoformat()
+                        if request["notified_at"]
+                        else "",
+                        "finished_at": request["finished_at"].isoformat()
+                        if request["finished_at"]
+                        else "",
+                    }
+                    for request in request_list
+                ],
             }
 
     return counts

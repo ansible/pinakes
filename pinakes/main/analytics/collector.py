@@ -23,8 +23,7 @@ class AnalyticsCollector(Collector):
     def _is_shipping_configured(self):
         if not settings.PINAKES_INSIGHTS_TRACKING_STATE:
             self.logger.error(
-                "Insights for Automation Service Catalog is not enabled. \
-                Use --dry-run to gather locally without sending."
+                "Insights for Automation Service Catalog is not enabled."
             )
             return False
 
@@ -48,7 +47,7 @@ class AnalyticsCollector(Collector):
 
     def _last_gathering(self):
         job = get_current_job()
-        last_gather = job.meta.get("last_gather", None)
+        last_gather = job.meta.get("last_gather", None) if job else None
 
         return (
             DateTimeField().to_internal_value(last_gather)
@@ -59,7 +58,7 @@ class AnalyticsCollector(Collector):
     def _load_last_gathered_entries(self):
         job = get_current_job()
 
-        last_entries = job.meta.get("last_gathered_entries", None) or {}
+        last_entries = job.meta.get("last_gathered_entries", {}) if job else {}
         for key, value in last_entries.items():
             last_entries[key] = DateTimeField().to_internal_value(value)
 
@@ -69,14 +68,16 @@ class AnalyticsCollector(Collector):
         self.logger.info(f"Save last_entries: {last_gathered_entries}")
 
         job = get_current_job()
-        job.meta["last_gathered_entries"] = last_gathered_entries["keys"]
-        job.save_meta()
+        if job:
+            job.meta["last_gathered_entries"] = last_gathered_entries["keys"]
+            job.save_meta()
 
     def _save_last_gather(self):
         self.logger.info(f"Save last_gather: {self.gather_until}")
 
         job = get_current_job()
-        job.meta["last_gather"] = self.gather_until.strftime(
-            "%Y-%m-%dT%H:%M:%S.%fZ"
-        )
-        job.save_meta()
+        if job:
+            job.meta["last_gather"] = self.gather_until.strftime(
+                "%Y-%m-%dT%H:%M:%S.%fZ"
+            )
+            job.save_meta()

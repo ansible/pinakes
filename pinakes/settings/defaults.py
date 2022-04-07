@@ -328,7 +328,6 @@ RQ_QUEUES = {
 STARTUP_RQ_JOBS = [
     "pinakes.main.common.tasks.sync_external_groups",
     "pinakes.main.inventory.tasks.refresh_all_sources",
-    "pinakes.main.analytics.tasks.gather_analytics",
 ]
 CRONTAB = env.str("PINAKES_CRONTAB", default="*/30 * * * *")
 RQ_CRONJOBS = [
@@ -339,10 +338,6 @@ RQ_CRONJOBS = [
     (
         CRONTAB,
         "pinakes.main.inventory.tasks.refresh_all_sources",
-    ),
-    (
-        "0 0 * * 0",  # At 00:00 on Sunday
-        "pinakes.main.analytics.tasks.gather_analytics",
     ),
     (
         "* 0 * * *",
@@ -429,16 +424,23 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 PINAKES_INSIGHTS_TRACKING_STATE = env.bool(
     "PINAKES_INSIGHTS_TRACKING_STATE", False
 )
-PINAKES_INSIGHTS_URL = env.str("PINAKES_INSIGHTS_URL", default="ingress_url")
+PINAKES_INSIGHTS_URL = env.str(
+    "PINAKES_INSIGHTS_URL", default="https//Your_insight_url"
+)
 PINAKES_INSIGHTS_USERNAME = env.str(
-    "PINAKES_INSIGHTS_USERNAME", default="ingress_username"
+    "PINAKES_INSIGHTS_USERNAME", default="insight_username"
 )
 PINAKES_INSIGHTS_PASSWORD = env.str(
-    "PINAKES_INSIGHTS_PASSWORD", default="ingress_password"
+    "PINAKES_INSIGHTS_PASSWORD", default="insight_password"
 )
-PINAKES_ANALYTICS_LAST_GATHER = env.str(
-    "PINAKES_ANALYTICS_LAST_GATHER", default=None
-)
-PINAKES_ANALYTICS_LAST_ENTRIES = env.str(
-    "PINAKES_ANALYTICS_LAST_ENTRIES", default={}
-)
+
+if PINAKES_INSIGHTS_TRACKING_STATE:
+    STARTUP_RQ_JOBS.append(
+        "pinakes.main.analytics.tasks.gather_analytics",
+    )
+    RQ_CRONJOBS.append(
+        (
+            "5 0 * * 0",  # At 00:05 on Sunday
+            "pinakes.main.analytics.tasks.gather_analytics",
+        ),
+    )

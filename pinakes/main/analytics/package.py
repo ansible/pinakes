@@ -21,4 +21,7 @@ class Package(InsightsAnalyticsPackage):
         return getattr(settings, "PINAKES_INSIGHTS_PASSWORD", None)
 
     def _get_http_request_headers(self):
-        return {"Content-Type": self.PAYLOAD_CONTENT_TYPE}
+        return {
+            "Content-Type": self.PAYLOAD_CONTENT_TYPE,
+            "User-Agent": "python-requests/2.25.1",
+        }
