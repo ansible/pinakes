@@ -274,6 +274,15 @@ LOGGING = {
             "level": LOG_LEVEL,
             "propagate": False,
         },
+        "django.db.backends": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+        },
+        "pinakes": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
         "approval": {
             "handlers": ["console"],
             "level": LOG_LEVEL,
@@ -293,10 +302,6 @@ LOGGING = {
             "handlers": ["rq_console"],
             "level": LOG_LEVEL,
             "propagate": False,
-        },
-        "django.db.backends": {
-            "handlers": ["console"],
-            "level": LOG_LEVEL,
         },
     },
 }
