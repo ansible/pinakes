@@ -1,9 +1,10 @@
 """Serializers for Approval Model."""
 from rest_framework import serializers
-from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 from pinakes.main.approval.models import (
-    Notification,
+    NotificationSetting,
+    NotificationType,
     Template,
     Workflow,
     Request,
@@ -18,12 +19,39 @@ from pinakes.main.approval.services.create_action import (
 from pinakes.main.approval import validations
 
 
-class NotificationSerializer(serializers.ModelSerializer):
-    """Notification method that define what settings are expected"""
+class NotificationTypeSerializer(serializers.ModelSerializer):
+    """Notification type that define what settings are expected"""
+
+    icon_url = serializers.SerializerMethodField(
+        "get_icon_url", allow_null=True
+    )
 
     class Meta:
-        model = Notification
-        fields = ("id", "name", "setting_schema")
+        model = NotificationType
+        fields = ("id", "n_type", "setting_schema", "icon_url")
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_icon_url(self, obj):
+        """get the url to fetch the icon"""
+        request = self.context.get("request")
+        return (
+            request.build_absolute_uri(obj.icon.file.url)
+            if obj.icon is not None
+            else None
+        )
+
+
+class NotificationSettingSerializer(serializers.ModelSerializer):
+    """Notification setting that stores settings for notification"""
+
+    settings = serializers.JSONField(
+        required=False,
+        help_text="Parameters for configuring the notification method",
+    )
+
+    class Meta:
+        model = NotificationSetting
+        fields = ("id", "name", "notification_type", "settings")
 
 
 class TemplateSerializer(serializers.ModelSerializer):
@@ -38,9 +66,7 @@ class TemplateSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "process_method",
-            "process_setting",
             "signal_method",
-            "signal_setting",
         )
         read_only_fields = ("created_at", "updated_at")
 

@@ -24,13 +24,15 @@ from drf_spectacular.utils import (
 
 from pinakes.main.models import Tenant
 from pinakes.main.approval.models import (
-    Notification,
+    NotificationType,
+    NotificationSetting,
     Template,
     Workflow,
     Request,
 )
 from pinakes.main.approval.serializers import (
-    NotificationSerializer,
+    NotificationSettingSerializer,
+    NotificationTypeSerializer,
     TemplateSerializer,
     WorkflowSerializer,
     RequestSerializer,
@@ -55,25 +57,65 @@ logger = logging.getLogger("approval")
 
 @extend_schema_view(
     retrieve=extend_schema(
-        description="Get a notification method, available to admin only",
+        description="Get a notification type, available to admin only",
     ),
     list=extend_schema(
-        description="List all notification methods, available to admin only",
+        description="List all notification types, available to admin only",
     ),
 )
-class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
-    """API endpoint for listing notifications."""
+class NotificationTypeViewSet(viewsets.ReadOnlyModelViewSet):
+    """API endpoint for listing notification types."""
 
-    serializer_class = NotificationSerializer
-    queryset = Notification.objects.all()
+    serializer_class = NotificationTypeSerializer
+    queryset = NotificationType.objects.all()
     permission_classes = (
         IsAuthenticated,
         permissions.TemplatePermission,
     )
-    serializer_class = NotificationSerializer
+    serializer_class = NotificationTypeSerializer
+    ordering_fields = ("n_type",)
+    ordering = ("n_type",)
+    search_fields = ("n_type",)
+
+
+@extend_schema_view(
+    retrieve=extend_schema(
+        description="Get a notification setting, available to admin only",
+    ),
+    list=extend_schema(
+        description="List all notification settings, available to admin only",
+    ),
+    create=extend_schema(
+        description="Create a notification setting, available to admin only",
+    ),
+    partial_update=extend_schema(
+        description=(
+            "Find a notification setting by its id and update its attributes, "
+            "available to admin only"
+        ),
+    ),
+    destroy=extend_schema(
+        description="Delete a notification setting by its id, available to "
+        "admin only",
+    ),
+)
+class NotificationSettingViewSet(viewsets.ModelViewSet):
+    """API endpoints for notification settings"""
+
+    http_method_names = ["get", "post", "patch", "delete"]
+    serializer_class = NotificationSettingSerializer
+    queryset = NotificationSetting.objects.all()
+    permission_classes = (
+        IsAuthenticated,
+        permissions.TemplatePermission,
+    )
+    serializer_class = NotificationSettingSerializer
     ordering_fields = ("name",)
     ordering = ("name",)
     search_fields = ("name",)
+
+    def perform_create(self, serializer):
+        serializer.save(tenant=Tenant.current())
 
 
 @extend_schema_view(

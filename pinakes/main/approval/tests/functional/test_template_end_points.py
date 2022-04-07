@@ -1,8 +1,8 @@
 """ Module for testing Approval Templates """
 import json
 import pytest
-from pinakes.main.tests.factories import TenantFactory
 from pinakes.main.approval.tests.factories import (
+    NotificationSettingFactory,
     TemplateFactory,
     WorkflowFactory,
 )
@@ -10,7 +10,6 @@ from pinakes.main.approval.permissions import (
     TemplatePermission,
     WorkflowPermission,
 )
-from pinakes.main.approval.models import Notification
 
 
 @pytest.mark.django_db
@@ -98,18 +97,16 @@ def test_template_workflows_get(api_request, mocker):
 def test_template_post(api_request, mocker):
     """Create a template"""
     has_permission = mocker.spy(TemplatePermission, "has_permission")
-    TenantFactory()
-    notification = Notification.objects.first()
+    notification1 = NotificationSettingFactory()
+    notification2 = NotificationSettingFactory()
     response = api_request(
         "post",
         "approval:template-list",
         data={
             "title": "abcdef",
             "description": "abc",
-            "process_method": notification.id,
-            "process_setting": {"key": "val"},
-            "signal_method": notification.id,
-            "signal_setting": {"key": "val2"},
+            "process_method": notification1.id,
+            "signal_method": notification2.id,
         },
     )
 
@@ -117,8 +114,6 @@ def test_template_post(api_request, mocker):
     content = response.data
     assert content["title"] == "abcdef"
     assert content["description"] == "abc"
-    assert content["process_method"] == notification.id
-    assert content["process_setting"]["key"] == "val"
-    assert content["signal_method"] == notification.id
-    assert content["signal_setting"]["key"] == "val2"
+    assert content["process_method"] == notification1.id
+    assert content["signal_method"] == notification2.id
     has_permission.assert_called_once()
