@@ -6,7 +6,7 @@ from rq.job import Job
 from rq import get_current_job
 from rq import exceptions
 
-from django.utils.timezone import is_naive, make_naive, make_aware
+from django.utils.timezone import make_aware
 
 from pinakes.main.analytics.collector import AnalyticsCollector
 from pinakes.main.analytics import analytics_collectors
@@ -22,15 +22,14 @@ def gather_analytics():
     )
 
     last_gather = get_last_gather()
+    saved_last_gather = make_aware(last_gather) if last_gather else None
 
     # save last gathered job info in current job's meta
     job = get_current_job()
-    job.meta["last_gather"] = (
-        last_gather if is_naive(last_gather) else make_naive(last_gather)
-    )
+    job.meta["last_gather"] = saved_last_gather
     job.save_meta()
 
-    collector.gather(since=make_aware(last_gather))
+    collector.gather(since=saved_last_gather)
 
 
 def get_last_gather():
