@@ -1,5 +1,12 @@
 """Keycloak OpenID Connect."""
+import logging
+
+import requests
 from social_core.backends.open_id_connect import OpenIdConnectAuth
+
+
+# TODO(cutwater): Probably better logger name required
+logger = logging.getLogger("pinakes")
 
 
 class KeycloakOpenIdConnect(OpenIdConnectAuth):
@@ -49,3 +56,27 @@ class KeycloakOpenIdConnect(OpenIdConnectAuth):
     @property
     def OIDC_ENDPOINT(self):
         return self.setting("API_URL")
+
+    def request(self, *args, **kwargs):
+        try:
+            return super().request(*args, **kwargs)
+        except requests.HTTPError as exc:
+            request: requests.Request = exc.request
+            response: requests.Response = exc.response
+
+            try:
+                data = response.json()
+            except ValueError:
+                data = {}
+
+            detail = "[{}]".format(data.get("error", "<unknown>"))
+            if error_description := data.get("error_description", ""):
+                detail += f" {error_description}"
+
+            msg = (
+                f"{type(exc).__name__}: {request.method} {response.url} "
+                f"{response.status_code} {response.reason} "
+                f"{detail}"
+            )
+            logger.error(msg)
+            raise
