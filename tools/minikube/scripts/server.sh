@@ -31,7 +31,7 @@ then
 	cp overrides/ui/catalog-ui.tar.gz .
 else
 	echo "Downloading ui tar"
-        curl -o catalog-ui.tar.gz -L https://github.com/ansible/pinakes-ui/releases/download/latest/catalog-ui.tar.gz
+        curl -o catalog-ui.tar.gz -L https://github.com/ansible/pinakes-ui/releases/download/alice-in-wonderland/catalog-ui.tar.gz
 fi
 
 rm -rf pinakes/ui/catalog
