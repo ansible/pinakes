@@ -1,37 +1,33 @@
-## Welcome to GitHub Pages
+# What is Pinakes?
 
-You can use the [editor on GitHub](https://github.com/ansible/pinakes/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+Pinakes is the upstream community project for RedHat's Automation Services Catalog product.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Pinakes allows customers to expose their Ansible Job Templates and Workflows to business users with an added layer of governance. The Job Templates and Workflows are wrapped as Products into Portfolios which can be shared with different business users. An approval workflow can be attached to Products or Portfolios which adds governance and, in the future, will be able to notify the appropriate Administrators via email. Upon approval, the Job Template or workflow will be launched on the Automation Controller.
 
-### Markdown
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Key Features
 
-```markdown
-Syntax highlighted code block
+With Pinakes, you can:
+* Apply business governance to product execution, reducing mistakes and verifying correct usages
+* Alter surveys to be more restrictive, allowing only specified values or making others read-only or hidden
+* Only share portfolios and products with users who you deem should have access to them
 
-# Header 1
-## Header 2
-### Header 3
+# Documentation
 
-- Bulleted
-- List
+Learn about Pinakes with the detailed guides on:
+- [Development Information](https://github.com/ansible/pinakes/blob/devel/docs/DEV_INSTALL.md)
+  - Find out how to start developing for and contributing to Pinakes
+- [Installation](https://github.com/ansible/pinakes/blob/devel/docs/MINIKUBE.md)
+  - This details how to install Pinakes as a user who is not necessarily interested in contributing to the codebase
 
-1. Numbered
-2. List
+# Get Involved with the Community
 
-**Bold** and _Italic_ and `Code` text
+Pinakes is open source and open for contributions. Everyone is invited to connect, ask questions, give feedback, and collaborate in the Pinakes Community!
 
-[Link](url) and ![Image](src)
-```
+* [GitHub](https://github.com/ansible/pinakes): Check out the source code in the repository, or submit new issues.
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+# Why 'Pinakes'?
 
-### Jekyll Themes
+Pinakes is a bibliographic work widely considered to be the first library catalog, with its contents being based upon the holdings of the Library of Alexandria.
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ansible/pinakes/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+Pinakes is pronounced: /ˈpi.na.kes/
