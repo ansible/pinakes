@@ -1,4 +1,4 @@
-<img src="https://github.com/ansible/pinakes/blob/devel/docs/logo-masthead.svg"/>
+<img src="./assets/img/logo-masthead.svg"/>
 
 ## What is Pinakes?
 
