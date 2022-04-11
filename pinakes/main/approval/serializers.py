@@ -148,6 +148,11 @@ class ActionSerializer(serializers.ModelSerializer):
         default="",
     )
 
+    comments = serializers.CharField(
+        help_text="Comments for the action",
+        default="",
+    )
+
     class Meta:
         model = Action
         fields = (

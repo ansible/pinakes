@@ -174,6 +174,23 @@ def test_create_action(api_request, mocker):
 
 
 @pytest.mark.django_db
+def test_create_action_no_comments(api_request, mocker):
+    has_permission = mocker.spy(ActionPermission, "has_permission")
+    mocker.patch.object(SendEvent, "process")
+    request = RequestFactory(state="notified")
+    response = api_request(
+        "post",
+        "approval:request-action-list",
+        request.id,
+        {
+            "operation": "approve",
+        },
+    )
+    assert response.status_code == 201
+    has_permission.assert_called_once()
+
+
+@pytest.mark.django_db
 def test_retrieve_action(api_request, mocker):
     has_permission = mocker.spy(ActionPermission, "has_object_permission")
     request = RequestFactory()
