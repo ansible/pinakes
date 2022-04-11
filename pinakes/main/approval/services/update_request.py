@@ -10,6 +10,9 @@ from pinakes.main.approval.services.send_event import (
 from pinakes.main.approval.services.create_action import (
     CreateAction,
 )
+from pinakes.main.approval.services.email_notification import (
+    EmailNotification,
+)
 from pinakes.main.approval import validations
 
 logger = logging.getLogger("approval")
@@ -185,10 +188,14 @@ class UpdateRequest:
         validations.runtime_validate_group(self.request)
 
     def _notify_request(self):
-        # notify if this is an internal processing
-        CreateAction(
-            self.request, {"operation": Action.Operation.NOTIFY, "user": None}
-        ).process()
+        template = self.request.workflow.template
+        if template.process_method:
+            EmailNotification(self.request).process()
+        else:
+            # notify if this is an internal processing
+            CreateAction(
+                self.request, {"operation": Action.Operation.NOTIFY, "user": None}
+            ).process()
 
     def _approve_request(self):
         # auto approve the request
