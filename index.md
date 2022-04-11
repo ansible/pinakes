@@ -1,4 +1,6 @@
-# What is Pinakes?
+<img src="https://github.com/ansible/pinakes/blob/devel/docs/logo-masthead.svg"/>
+
+## What is Pinakes?
 
 Pinakes is the upstream community project for RedHat's Automation Services Catalog product.
 
@@ -12,21 +14,22 @@ With Pinakes, you can:
 * Alter surveys to be more restrictive, allowing only specified values or making others read-only or hidden
 * Only share portfolios and products with users who you deem should have access to them
 
-# Documentation
+## Documentation
 
-Learn about Pinakes with the detailed guides on:
-- [Development Information](https://github.com/ansible/pinakes/blob/devel/docs/DEV_INSTALL.md)
-  - Find out how to start developing for and contributing to Pinakes
-- [Installation](https://github.com/ansible/pinakes/blob/devel/docs/MINIKUBE.md)
-  - This details how to install Pinakes as a user who is not necessarily interested in contributing to the codebase
+Find out how to start developing for and contributing to Pinakes
+  - [Development Information and installation](https://github.com/ansible/pinakes/blob/devel/docs/DEV_INSTALL.md)
 
-# Get Involved with the Community
+Install Pinakes as a user who is not necessarily interested in contributing to the codebase
+  - [Minikube Installation](https://github.com/ansible/pinakes/blob/devel/docs/MINIKUBE.md)
+  
+
+## Get Involved with the Community
 
 Pinakes is open source and open for contributions. Everyone is invited to connect, ask questions, give feedback, and collaborate in the Pinakes Community!
 
 * [GitHub](https://github.com/ansible/pinakes): Check out the source code in the repository, or submit new issues.
 
-# Why 'Pinakes'?
+## Why 'Pinakes'?
 
 Pinakes is a bibliographic work widely considered to be the first library catalog, with its contents being based upon the holdings of the Library of Alexandria.
 
