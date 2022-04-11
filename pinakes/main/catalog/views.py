@@ -510,7 +510,16 @@ class OrderViewSet(
         order.update_message(ProgressMessage.Level.INFO, message)
 
         logger.info("Creating approval request for order id %d", order.id)
-        SubmitApprovalRequest(tag_resources, order).process()
+        if request and request.META:
+            http_host = (
+                request.META.get("HTTP_HOST")
+                or request.META.get("REMOTE_HOST")
+                or request.META.get("HTTP_ORIGIN")
+            )
+            context = {"http_host": http_host}
+        else:
+            context = {}
+        SubmitApprovalRequest(tag_resources, order, context).process()
 
         serializer = self.get_serializer(order)
         return Response(serializer.data)
