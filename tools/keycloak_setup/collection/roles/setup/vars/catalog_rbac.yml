@@ -13,25 +13,29 @@ roles:
             description: 'Administrator access to all requests'
             logic: POSITIVE
             name: approval-admin-all-request-permission
-            resourceType: approval:request
+            resources:
+              - approval:request:all
             type: resource
           - decisionStrategy: UNANIMOUS
             description: 'Administrator access to all workflow'
             logic: POSITIVE
             name: approval-admin-all-workflow-permission
-            resourceType: approval:workflow
+            resources:
+              - approval:workflow:all
             type: resource
           - decisionStrategy: UNANIMOUS
             description: 'Administrator access to all action'
             logic: POSITIVE
             name: approval-admin-all-action-permission
-            resourceType: approval:action
+            resources:
+              - approval:action:all
             type: resource
           - decisionStrategy: UNANIMOUS
             description: 'Administrator access to all template'
             logic: POSITIVE
             name: approval-admin-all-template-permission
-            resourceType: approval:template
+            resources:
+              - approval:template:all
             type: resource
         type: role
     resources:
@@ -140,37 +144,43 @@ roles:
             description: 'Administrator access to all portfolios'
             logic: POSITIVE
             name: catalog-admin-all-portfolio-permission
-            resourceType: catalog:portfolio
+            resources:
+              - catalog:portfolio:all
             type: resource
           - decisionStrategy: UNANIMOUS
             description: 'Administrator access to all portfolio items'
             logic: POSITIVE
             name: catalog-admin-all-portfolio-item-permission
-            resourceType: catalog:portfolio_item
+            resources:
+              - catalog:portfolio_item:all
             type: resource
           - decisionStrategy: UNANIMOUS
             description: 'Administrator access to all service plans'
             logic: POSITIVE
             name: catalog-admin-all-service-plan-permission
-            resourceType: catalog:service_plan
+            resources:
+              - catalog:service_plan:all
             type: resource
           - decisionStrategy: UNANIMOUS
             description: 'Administrator access to all orders'
             logic: POSITIVE
             name: catalog-admin-all-order-permission
-            resourceType: catalog:order
+            resources:
+              - catalog:order:all
             type: resource
           - decisionStrategy: UNANIMOUS
             description: 'Administrator access to all order items'
             logic: POSITIVE
             name: catalog-admin-all-order-item-permission
-            resourceType: catalog:order_item
+            resources:
+              - catalog:order_item:all
             type: resource
           - decisionStrategy: UNANIMOUS
             description: 'Administrator access to all progress messages'
             logic: POSITIVE
             name: catalog-admin-all-progress-message-permission
-            resourceType: catalog:progress_message
+            resources:
+              - catalog:progress_message:all
             type: resource
         type: role
     resources:
