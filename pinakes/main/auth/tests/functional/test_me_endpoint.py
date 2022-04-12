@@ -17,7 +17,7 @@ def test_current_me_authenticated(api_request):
         is_superuser=False,
         password="normal",
         first_name="Fred",
-        last_name="Flintstone",
+        last_name="Sample",
     )
     fred.save()
     response = api_request("get", "auth:me", None, None, fred)
@@ -25,7 +25,7 @@ def test_current_me_authenticated(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["username"] == "fred"
-    assert content["last_name"] == "Flintstone"
+    assert content["last_name"] == "Sample"
     assert content["first_name"] == "Fred"
     assert sorted(content["roles"]) == ["approval-admin", "catalog-admin"]
 
@@ -38,7 +38,7 @@ def test_current_me_unauthenticated(api_request):
         is_superuser=False,
         password="normal",
         first_name="Fred",
-        last_name="Flintstone",
+        last_name="Sample",
     )
     fred.save()
     response = api_request("get", "auth:me", None, None, fred, "json", False)
