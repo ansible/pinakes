@@ -57,10 +57,8 @@ class UpdateRequest:
         ):
             self._update_parent()
 
-        # FIXME(bzwei): Temporarily auto notify all requests until
-        #  notification is implemented
-        # if self._should_auto_approve():
-        self._notify_request()
+        if self._should_auto_notify():
+            self._notify_request()
 
     def _notified(self):
         self._persist_request("notified_at")
@@ -185,17 +183,16 @@ class UpdateRequest:
 
     # start the external approval process if configured
     def _run_request(self):
-        validations.runtime_validate_group(self.request)
+        if not validations.runtime_validate_group(self.request):
+            return
+
+        if self._external_processable():
+            EmailNotification(self.request).process()
 
     def _notify_request(self):
-        template = self.request.workflow.template
-        if template.process_method:
-            EmailNotification(self.request).process()
-        else:
-            # notify if this is an internal processing
-            CreateAction(
-                self.request, {"operation": Action.Operation.NOTIFY, "user": None}
-            ).process()
+        CreateAction(
+            self.request, {"operation": Action.Operation.NOTIFY, "user": None}
+        ).process()
 
     def _approve_request(self):
         # auto approve the request
@@ -221,4 +218,15 @@ class UpdateRequest:
     def _should_auto_approve(self):
         if self.request.is_parent():
             return False
-        return self.request.workflow is None
+        return not bool(self.request.workflow)
+
+    def _should_auto_notify(self):
+        if self.request.is_parent():
+            return False
+        return not self._external_processable()
+
+    def _external_processable(self):
+        return (
+            self.request.workflow
+            and self.request.workflow.template.process_method
+        )
