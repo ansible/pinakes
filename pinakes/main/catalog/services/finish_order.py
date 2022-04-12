@@ -29,9 +29,9 @@ class FinishOrder:
                 item.state for item in self.order.order_items
             ]:
                 self.order.mark_failed(
-                    _("Order {} is failed".format(self.order.id))
+                    _("Order {} has failed".format(self.order.id))
                 )
-                logger.error("Order %d failed", self.order.id)
+                logger.error("Order %d has failed", self.order.id)
             else:
                 self.order.mark_completed(
                     _("Order {} is completed".format(self.order.id))

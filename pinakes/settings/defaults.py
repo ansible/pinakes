@@ -384,8 +384,8 @@ KEYCLOAK_URL = env.str(
     "PINAKES_KEYCLOAK_URL",
     default="http://localhost:8080/auth",
 ).rstrip("/")
-KEYCLOAK_REALM = env.str("PINAKES_KEYCLOAK_REALM", default="aap")
-KEYCLOAK_CLIENT_ID = env.str("PINAKES_KEYCLOAK_CLIENT_ID", default="catalog")
+KEYCLOAK_REALM = env.str("PINAKES_KEYCLOAK_REALM", default="pinakes")
+KEYCLOAK_CLIENT_ID = env.str("PINAKES_KEYCLOAK_CLIENT_ID", default="pinakes")
 KEYCLOAK_CLIENT_SECRET = env.str(
     "PINAKES_KEYCLOAK_CLIENT_SECRET",
     default="secret-token",
