@@ -4,6 +4,7 @@ import os
 import urllib.parse
 from unittest import mock
 
+import jwt
 import pytest
 
 from django.urls import resolve, reverse
@@ -23,35 +24,21 @@ from pinakes.common.auth.keycloak_django.utils import (
 )
 
 AUTHZ_CLIENT_CLASS = "pinakes.common.auth.keycloak_django.clients.AuthzClient"
-
-
-# FIXME(cutwater): Replace this base64 blob with human readable payload
-#  which is encoded into JWT when needed.
-DUMMY_ACCESS_TOKEN = (
-    "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJjOGhQcFdtSk0wWmxYcXRvc"
-    "nNScVVwcC1GYWNiOTl6UU44NHkzWkpmS0J3In0.eyJleHAiOjE2NDM4MTYwNzksImlhdCI6MT"
-    "Y0MzgxNTc3OSwiYXV0aF90aW1lIjoxNjQzODE1Nzc5LCJqdGkiOiJkY2FhYzYzOC0zNDk4LTQ"
-    "5YzctYjM3NC1mMjE2MTg3NDcyMTIiLCJpc3MiOiJodHRwOi8va2V5Y2xvYWsudm0ubG9jYWw6"
-    "ODA4MC9hdXRoL3JlYWxtcy9hYXAiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiNzc3YmUyYWQtM"
-    "2QyZi00ZWViLTliODgtZjhjNjViNWMxZDZkIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiY2F0YW"
-    "xvZyIsIm5vbmNlIjoiTUxSemJPQ3FYTlU0MHp0ZFlLSnp6cTA4NUVRcnc4WElUbUxiVnpNblR"
-    "2d0dvQVlTVXZRZ1piTVFYSllCbFNEbiIsInNlc3Npb25fc3RhdGUiOiIzNjk5ODJjNC03NTcx"
-    "LTQ0MmYtODIwZC1iODJlZTRjZTFkMWQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbI"
-    "mh0dHA6Ly9hcHA6ODAwMC8qIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2"
-    "FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwiZGVmYXVsdC1yb2xlcy1hYXAiXX0sInJlc29"
-    "1cmNlX2FjY2VzcyI6eyJjYXRhbG9nIjp7InJvbGVzIjpbImFwcHJvdmFsLWFkbWluIiwiY2F0"
-    "YWxvZy1hZG1pbiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hb"
-    "mFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgcH"
-    "JvZmlsZSBlbWFpbCIsInNpZCI6IjM2OTk4MmM0LTc1NzEtNDQyZi04MjBkLWI4MmVlNGNlMWQ"
-    "xZCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IkZyZWQgRmxpbnRzdG9uZSIsInBy"
-    "ZWZlcnJlZF91c2VybmFtZSI6ImZyZWQiLCJnaXZlbl9uYW1lIjoiRnJlZCIsImZhbWlseV9uY"
-    "W1lIjoiRmxpbnRzdG9uZSIsImVtYWlsIjoiZnJlZEBzbGF0ZXJvY2suY29tIn0.Nz1Ry8FUY2"
-    "XCRQeVP-ihNAhaVKUELIsXYWKvlMyYRkHJBPQehtEgf5Chl_5HqcQ7QlxHtsg7jorB507z1kK"
-    "oLsI6SXYBMBIMIPRF5CU2IqBv0yLxKnqp1u_pQdrnMcqNv3fPq2ZF0bE4ESYSUNTzglOE3A1j"
-    "iIYf1H4BeK_Wyv44_SUuDQ0ghJHSCHWXhVtpStMczsnSfz_T7zja8QNaUO9lsz76DJZSXBfY3"
-    "P8HYncsinw2H09wq58m5ZYpAIlN6HBifZ3v-VlHx2nSEITsL2ymBhz3HO8K7SAHnbakf_UTaw"
-    "TpDtYdqJSHce9-BPAU8M2bRzQ4Wa7U_O_S0R9-Mw"
-)
+DUMMY_ACCESS_TOKEN = {
+    "name": "Fred Sample",
+    "preferred_username": "fred",
+    "given_name": "Fred",
+    "family_name": "Sample",
+    "email": "fred@acme.com",
+    "resource_access": {
+        "pinakes": {
+            "roles": [
+                "approval-admin",
+                "catalog-admin",
+            ]
+        }
+    },
+}
 
 
 @pytest.fixture
@@ -98,11 +85,12 @@ def api_request(admin):
         if user and authenticated:
             force_authenticate(request, user=user)
 
+        access_token = jwt.encode(DUMMY_ACCESS_TOKEN, "", algorithm="none")
         keycloak_mock = mock.Mock()
         keycloak_mock.extra_data = {
             "id": "1",
-            "access_token": DUMMY_ACCESS_TOKEN,
-            "refresh_token": DUMMY_ACCESS_TOKEN,
+            "access_token": access_token,
+            "refresh_token": access_token,
         }
         request.keycloak_user = keycloak_mock
 

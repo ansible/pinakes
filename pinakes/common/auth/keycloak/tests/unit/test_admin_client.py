@@ -1,7 +1,6 @@
 from unittest import mock
 from urllib.error import HTTPError
 import pytest
-from django.conf import settings
 
 from pinakes.common.auth.keycloak import models
 from pinakes.common.auth.keycloak.admin import AdminClient
@@ -49,7 +48,7 @@ def test_list_groups(api_client):
             "id": "87bd0889-2ae0-45c5-9d27-a58b7cb728f7",
             "name": "test-group-01",
             "path": "/test-group-01",
-            "clientRoles": {"catalog": ["approver", "adjuster"]},
+            "clientRoles": {"pinakes": ["approver", "adjuster"]},
             "subGroups": [],
         },
         {
@@ -80,9 +79,7 @@ def test_list_groups(api_client):
             id="87bd0889-2ae0-45c5-9d27-a58b7cb728f7",
             name="test-group-01",
             path="/test-group-01",
-            client_roles={
-                settings.KEYCLOAK_CLIENT_ID: ["approver", "adjuster"]
-            },
+            client_roles={"pinakes": ["approver", "adjuster"]},
             sub_groups=[],
         ),
         models.Group(
