@@ -124,7 +124,7 @@ EMAIL_ICON = b"""
 
 
 def create_notification_type(apps, schema_editor):
-    icon_path = os.path.join(settings.BASE_DIR, "media", "email-icon.png")
+    icon_path = os.path.join(settings.MEDIA_ROOT, "email-icon.png")
     if not os.path.exists(icon_path):
         icon_string = EMAIL_ICON.replace(b"\n", b"").replace(b"    ", b"")
         icon_binary = base64.b64decode(icon_string)
