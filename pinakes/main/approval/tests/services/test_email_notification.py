@@ -12,6 +12,9 @@ from pinakes.main.approval.tests.factories import (
     RequestContextFactory,
 )
 from pinakes.main.approval.services.email_notification import EmailNotification
+from pinakes.main.catalog.services.handle_approval_events import (
+    HandleApprovalEvents,
+)
 
 
 @pytest.mark.django_db
@@ -41,6 +44,7 @@ def test_email_notification(mocker):
     template = TemplateFactory(process_method=ns)
     workflow = WorkflowFactory(template=template)
     request = RequestFactory(
+        state="started",
         workflow=workflow,
         group_ref=group_ref,
         request_context=request_context,
@@ -67,3 +71,12 @@ def test_email_notification(mocker):
         assert args["connection"].use_tls is True
         assert bool("</html>" in args["html_message"]) is True
         assert bool("$" in args["html_message"]) is False
+        assert request.state == "notified"
+
+    mocker.patch.object(HandleApprovalEvents, "process", return_value=None)
+    with patch(
+        "pinakes.main.approval.services.email_notification.send_mail"
+    ) as send_mail_call:
+        send_mail_call.side_effect = Exception()
+        EmailNotification(request).process()
+        assert request.state == "failed"
