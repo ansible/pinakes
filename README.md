@@ -35,6 +35,8 @@ Reporting Issues
 
 If you're experiencing a problem that you feel is a bug in Pinakes or have ideas for improving Pinakes, we encourage you to open an issue and share your feedback.
 
+You can also contact us in real-time on gitter.im in our [ansible-pinakes](https://gitter.im/ansible-pinakes/community) channel.
+
 
 Code of Conduct
 ---------------

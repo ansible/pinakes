@@ -48,3 +48,5 @@ All submitted PRs will have the linter and unit tests run against them via githu
 ## Reporting Issues
 
 We welcome your feedback, and encourage you to file an issue when you run into a problem.
+
+You can also contact us in real-time on gitter.im in our [ansible-pinakes](https://gitter.im/ansible-pinakes/community) channel.
