@@ -1,6 +1,7 @@
 """Email notification for an approval request"""
 import logging
 import string
+import django_rq
 from importlib.resources import read_text
 from django.utils.translation import gettext_lazy as _
 from django.core.mail import send_mail
@@ -8,7 +9,8 @@ from django.core.mail.backends.smtp import EmailBackend
 
 from pinakes.common.auth.keycloak_django.clients import get_admin_client
 from pinakes.main.approval.services.create_action import CreateAction
-from pinakes.main.approval.models import Action
+from pinakes.main.approval.models import Action, Request
+
 
 logger = logging.getLogger("approval")
 
@@ -17,14 +19,25 @@ class EmailNotification:
     """Service class for email notification"""
 
     def __init__(self, request):
-        self.request = request
+        self.request = (
+            request
+            if isinstance(request, Request)
+            else Request.objects.get(id=request)
+        )
 
     def process(self):
         """process the service"""
-        self._send_mail()
+        from pinakes.main.approval.tasks import email_task
+
+        self.job = django_rq.enqueue(email_task, self.request.id)
+        logger.info(
+            "Enqueued job %s for sending email notification for request %d",
+            self.job.id,
+            self.request.id,
+        )
         return self
 
-    def _send_mail(self):
+    def send_emails(self):
         settings = self.request.workflow.template.process_method.settings
         sender = settings.pop("from", None)
         security = settings.pop("security", None)

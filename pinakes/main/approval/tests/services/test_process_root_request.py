@@ -43,6 +43,10 @@ def test_process_request_one_workflow_one_group(mocker):
         "pinakes.main.common.tasks.add_group_permissions",
         return_value=None,
     )
+    validations = mocker.patch(
+        "pinakes.main.approval.validations.runtime_validate_group",
+        return_value=True,
+    )
 
     workflow = WorkflowFactory(group_refs=({"name": "n1", "uuid": "u1"},))
     service = _prepare_service(mocker, [workflow.id])
@@ -51,6 +55,7 @@ def test_process_request_one_workflow_one_group(mocker):
         request, state="notified", group_name="n1", workflow=workflow
     )
     assert add_permissions.call_count == 1
+    assert validations.call_count == 1
 
 
 @pytest.mark.django_db

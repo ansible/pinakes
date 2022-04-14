@@ -62,7 +62,7 @@ def test_email_notification(mocker):
     with patch(
         "pinakes.main.approval.services.email_notification.send_mail"
     ) as send_mail_call:
-        EmailNotification(request).process()
+        EmailNotification(request).send_emails()
         args = send_mail_call.call_args[1]
         assert args["from_email"] == "catalog@test.com"
         assert args["recipient_list"][0] == approver.email
@@ -78,5 +78,5 @@ def test_email_notification(mocker):
         "pinakes.main.approval.services.email_notification.send_mail"
     ) as send_mail_call:
         send_mail_call.side_effect = Exception()
-        EmailNotification(request).process()
+        EmailNotification(request).send_emails()
         assert request.state == "failed"

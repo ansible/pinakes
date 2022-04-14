@@ -226,7 +226,7 @@ class UpdateRequest:
         return not self._external_processable()
 
     def _external_processable(self):
-        return (
+        return bool(
             self.request.workflow
             and self.request.workflow.template.process_method
         )
