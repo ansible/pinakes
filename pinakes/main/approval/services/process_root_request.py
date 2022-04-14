@@ -65,6 +65,7 @@ class ProcessRootRequest:
             group_ref=group_uuid,
             group_name=group_name,
         )
+        leaf_request.refresh_from_db()
 
     def _update_root_group_name(self):
         sub_groups = self.request.subrequests.order_by("id").values(
