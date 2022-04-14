@@ -22,7 +22,8 @@ class StartTowerJob:
         """Start background task and return the job id"""
         if self.service_offering.kind == OfferingKind.WORKFLOW:
             slug = (
-                f"/api/v2/workflows/{self.service_offering.source_ref}/launch/"
+                "/api/v2/workflow_job_templates/"
+                f"{self.service_offering.source_ref}/launch/"
             )
         else:
             slug = (

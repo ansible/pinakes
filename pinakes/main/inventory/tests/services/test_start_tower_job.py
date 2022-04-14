@@ -28,9 +28,9 @@ def test_starting_a_workflow(mock):
     assert obj.job_id() == job_id
 
     assert mock.call_count == 1
-    assert (
-        mock.call_args.args[1]
-        == f"/api/v2/workflows/{service_offering.source_ref}/launch/"
+    assert mock.call_args.args[1] == (
+        "/api/v2/workflow_job_templates/"
+        f"{service_offering.source_ref}/launch/"
     )
     assert mock.call_args.args[2] == {"extra_vars": "abc"}
 
