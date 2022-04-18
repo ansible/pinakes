@@ -1,9 +1,10 @@
 """module to test updating request"""
 
-from unittest import skip
 import pytest
 from pinakes.main.approval.models import Request
 from pinakes.main.approval.tests.factories import (
+    NotificationSettingFactory,
+    TemplateFactory,
     RequestFactory,
     WorkflowFactory,
 )
@@ -14,9 +15,9 @@ from pinakes.main.approval.services.update_request import (
 from pinakes.main.approval.services.send_event import (
     SendEvent,
 )
+from pinakes.main.approval.services.email_notification import EmailNotification
 
 
-@skip("until notification is implemented")
 @pytest.mark.django_db
 def test_update_single_request(mocker):
     """Test update state of a standalone request"""
@@ -64,11 +65,18 @@ def test_update_single_request(mocker):
             SendEvent, "__init__", return_value=None
         )
         mocker.patch.object(SendEvent, "process")
-        workflow = WorkflowFactory()
+        email_service = mocker.patch.object(
+            EmailNotification, "__init__", return_value=None
+        )
+        mocker.patch.object(EmailNotification, "process")
+        template = TemplateFactory(process_method=NotificationSettingFactory())
+        workflow = WorkflowFactory(template=template)
         request = RequestFactory(workflow=workflow)
         request = UpdateRequest(request, suite[0]).process().request
 
         assert request.state == suite[2]
+        if suite[0]["state"] == Request.State.STARTED:
+            email_service.assert_called_once_with(request)
         if suite[1]:
             event_service.assert_called_once_with(request, suite[1])
         if suite[3]:
@@ -91,7 +99,19 @@ def test_auto_approve(mocker):
     assert request.decision == Request.Decision.APPROVED
 
 
-@skip("until notification is implemented")
+@pytest.mark.django_db
+def test_auto_notify(mocker):
+    """Test auto approve a request"""
+    init_request = RequestFactory(workflow=WorkflowFactory())
+    request = (
+        UpdateRequest(init_request, {"state": Request.State.STARTED})
+        .process()
+        .request
+    )
+
+    assert request.state == Request.State.NOTIFIED
+
+
 @pytest.mark.django_db
 def test_update_child1(mocker):
     """Test updating first child with siblings and parent"""
@@ -154,15 +174,19 @@ def test_update_child1(mocker):
     )
     for suite in testing_suites:
         mocker.patch.object(SendEvent, "process")
+        mocker.patch.object(EmailNotification, "process")
+        template = TemplateFactory(process_method=NotificationSettingFactory())
         root = RequestFactory(state=suite[0], number_of_children=2)
         workflow1 = WorkflowFactory(
-            group_refs=[{"group_name": "g1", "group_ref": "r1"}]
+            template=template,
+            group_refs=[{"group_name": "g1", "group_ref": "r1"}],
         )
         child1 = RequestFactory(
             parent=root, state=suite[0], workflow=workflow1
         )
         workflow2 = WorkflowFactory(
-            group_refs=[{"group_name": "g2", "group_ref": "r2"}]
+            template=template,
+            group_refs=[{"group_name": "g2", "group_ref": "r2"}],
         )
         child2 = RequestFactory(parent=root, workflow=workflow2)
         UpdateRequest(child1, suite[1]).process()
@@ -175,7 +199,6 @@ def test_update_child1(mocker):
         assert child2.state == suite[2][2]
 
 
-@skip("until notification is implemented")
 @pytest.mark.django_db
 def test_update_child2(mocker):
     """Test updating last child with siblings and parent"""
@@ -238,11 +261,14 @@ def test_update_child2(mocker):
     )
     for suite in testing_suites:
         mocker.patch.object(SendEvent, "process")
+        mocker.patch.object(EmailNotification, "process")
         root = RequestFactory(
             state=Request.State.NOTIFIED, number_of_children=2
         )
+        template = TemplateFactory(process_method=NotificationSettingFactory())
         workflow1 = WorkflowFactory(
-            group_refs=[{"group_name": "g1", "group_ref": "r1"}]
+            template=template,
+            group_refs=[{"group_name": "g1", "group_ref": "r1"}],
         )
         child1 = RequestFactory(
             parent=root,
@@ -251,7 +277,8 @@ def test_update_child2(mocker):
             workflow=workflow1,
         )
         workflow2 = WorkflowFactory(
-            group_refs=[{"group_name": "g1", "group_ref": "r1"}]
+            template=template,
+            group_refs=[{"group_name": "g1", "group_ref": "r1"}],
         )
         child2 = RequestFactory(
             parent=root, state=suite[0], workflow=workflow2
@@ -313,9 +340,8 @@ def test_complete_canceled():
     assert child2.state == Request.State.SKIPPED
 
 
-@skip("until notification is implemented")
 @pytest.mark.django_db
-def test_update_parallel():
+def test_update_parallel(mocker):
     """Test update a child in parallel group"""
     testing_suites = (
         # (child2_initial_state, child2_init_decision, expect_states)
@@ -341,11 +367,14 @@ def test_update_parallel():
         ),
     )
     for suite in testing_suites:
+        mocker.patch.object(EmailNotification, "process")
         root = RequestFactory(
             state=Request.State.NOTIFIED, number_of_children=4
         )
+        template = TemplateFactory(process_method=NotificationSettingFactory())
         workflow1 = WorkflowFactory(
-            group_refs=[{"group_name": "g1", "group_ref": "r1"}]
+            template=template,
+            group_refs=[{"group_name": "g1", "group_ref": "r1"}],
         )
         child1 = RequestFactory(
             parent=root, state=Request.State.NOTIFIED, workflow=workflow1
@@ -355,7 +384,8 @@ def test_update_parallel():
         )
 
         workflow2 = WorkflowFactory(
-            group_refs=[{"group_name": "g2", "group_ref": "r2"}]
+            template=template,
+            group_refs=[{"group_name": "g2", "group_ref": "r2"}],
         )
         child3 = RequestFactory(parent=root, workflow=workflow2)
         child4 = RequestFactory(parent=root, workflow=workflow2)

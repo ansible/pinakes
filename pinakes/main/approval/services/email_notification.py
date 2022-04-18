@@ -2,12 +2,15 @@
 import logging
 import string
 from importlib.resources import read_text
+from django.utils.translation import gettext_lazy as _
 from django.core.mail import send_mail
 from django.core.mail.backends.smtp import EmailBackend
 
 from pinakes.common.auth.keycloak_django.clients import get_admin_client
+from pinakes.main.approval.services.create_action import CreateAction
+from pinakes.main.approval.models import Action
 
-logger = logging.getLogger("catalog")
+logger = logging.getLogger("approval")
 
 
 class EmailNotification:
@@ -31,17 +34,37 @@ class EmailNotification:
 
         group_id = self.request.group_ref
         approvers = get_admin_client().list_group_members(group_id, 0, 100)
+        all_failed = True
         for approver in approvers:
             logger.info("Sending email to %s", approver.email)
-            send_mail(
-                subject=self._subject(),
-                message=self._plain_body(),
-                html_message=self._html_body(approver),
-                from_email=sender,
-                recipient_list=(approver.email,),
-                connection=backend,
-            )
+            try:
+                send_mail(
+                    subject=self._subject(),
+                    message=self._plain_body(),
+                    html_message=self._html_body(approver),
+                    from_email=sender,
+                    recipient_list=(approver.email,),
+                    connection=backend,
+                )
+                all_failed = False
+            except Exception as ex:
+                logger.error("Email failed. Error %s", ex)
         backend.close()
+
+        if all_failed:
+            CreateAction(
+                self.request,
+                {
+                    "operation": Action.Operation.ERROR,
+                    "comments": _("Failed to email group {}").format(
+                        self.request.group_name
+                    ),
+                },
+            ).process()
+        else:
+            CreateAction(
+                self.request, {"operation": Action.Operation.NOTIFY}
+            ).process()
 
     def _subject(self):
         return (

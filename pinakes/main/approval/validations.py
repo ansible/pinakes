@@ -1,5 +1,7 @@
 """Validation functions for approval groups"""
 
+import logging
+from django.utils.translation import gettext_lazy as _
 from pinakes.main.approval.exceptions import (
     DuplicatedUuidException,
     NoAppoverRoleException,
@@ -10,6 +12,8 @@ from pinakes.main.approval.models import Action
 from pinakes.main.approval.services.create_action import (
     CreateAction,
 )
+
+logger = logging.getLogger("approval")
 
 
 def validate_approver_groups(group_refs, raise_error=True):
@@ -47,12 +51,17 @@ def runtime_validate_group(request):
     group = Group.objects.filter(id=request.group_ref).first()
 
     if not group:
-        _error_action(request, f"Group id {request.group_ref} does not exist")
+        logger.error("Group id %s does not exist", request.group_ref)
+        _error_action(
+            request, _("Group id {} does not exist").format(request.group_ref)
+        )
         return False
 
     if not _can_approve(group):
+        logger.error("Group %s does not have approver role", group.name)
         _error_action(
-            request, f"Group {group.name} does not have approver role"
+            request,
+            _("Group {} does not have approver role").format(group.name),
         )
         return False
 
