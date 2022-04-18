@@ -313,7 +313,7 @@ class Order(UserOwnedModel, MessageableMixin, KeycloakMixin):
     class State(models.TextChoices):
         """Available states for Order"""
 
-        PENDING = "Pending"  # Approval
+        PENDING = "Approval Pending"
         APPROVED = "Approved"
         CANCELED = "Canceled"
         COMPLETED = "Completed"
@@ -400,7 +400,7 @@ class OrderItem(UserOwnedModel, MessageableMixin):
     class State(models.TextChoices):
         """Available states for Order Item"""
 
-        PENDING = "Pending"  # Approval
+        PENDING = "Approval Pending"
         APPROVED = "Approved"
         CANCELED = "Canceled"
         COMPLETED = "Completed"
