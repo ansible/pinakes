@@ -1,5 +1,6 @@
 """ Task to Refresh Inventory from the Tower """
 import logging
+import traceback
 from django.db import transaction
 from django.utils import timezone
 
@@ -77,6 +78,7 @@ class RefreshInventory:
             self.source.last_refresh_message = "Error: %s" % str(error)
             self.source.refresh_state = Source.State.FAILED
             logger.error("Refresh failed: %s", str(error))
+            logger.error(traceback.format_exc())
         finally:
             self.source.refresh_finished_at = timezone.now()
 
