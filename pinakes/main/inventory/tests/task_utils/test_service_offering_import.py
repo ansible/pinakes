@@ -283,3 +283,71 @@ class TestServiceOfferingImport:
         assert (
             soi.source_ref_to_id(service_offering.source_ref)
         ) == service_offering.id
+
+    @pytest.mark.django_db
+    def test_none_related_inventory(self):
+        """Test adding new objects."""
+        tenant = TenantFactory()
+        source = SourceFactory()
+        inventory_source_ref = "999"
+        inventory = ServiceInventoryFactory(
+            tenant=tenant, source=source, source_ref=inventory_source_ref
+        )
+        tower_mock = Mock()
+        template_objs = [
+            {
+                "name": "Fred",
+                "url": "/api/v2/job_templates/298/",
+                "id": 298,
+                "description": "Bedrock Template",
+                "created": "2021-05-19T17:21:37.130143Z",
+                "modified": "2021-06-10T20:06:35.234167Z",
+                "related.inventory": None,
+                "related.survey_spec": "/api/v2/survey_spec/298",
+                "survey_enabled": True,
+                "type": "job_template",
+            },
+        ]
+        workflow_objs = [
+            {
+                "name": "Barney",
+                "url": "/api/v2/job_templates/299/",
+                "id": 299,
+                "description": "Barney Template",
+                "created": "2021-05-19T17:56:37.130143Z",
+                "modified": "2021-06-10T20:46:35.234167Z",
+                "related.inventory": (
+                    f"/api/v2/inventories/{inventory_source_ref}/"
+                ),
+                "survey_enabled": False,
+                "related.survey_spec": "/api/v2/survey_spec/299",
+                "type": "workflow_job_template",
+            },
+        ]
+
+        def fake_method(*args, **_kwarg):
+            if "workflow_job_templates" in args[0]:
+                for i in workflow_objs:
+                    yield i
+            else:
+                for i in template_objs:
+                    yield i
+
+        surveys = []
+
+        def survey_requests(*args, **_kwarg):
+            surveys.append(args[0])
+
+        tower_mock.get.side_effect = fake_method
+        inventory_import_mock = Mock()
+        inventory_import_mock.source_ref_to_id.return_value = inventory.id
+        plan_import_mock = Mock()
+        plan_import_mock.process.side_effect = survey_requests
+
+        soi = ServiceOfferingImport(
+            tenant, source, tower_mock, inventory_import_mock, plan_import_mock
+        )
+        soi.process()
+        assert (ServiceOffering.objects.all().count()) == 2
+        assert (soi.get_stats().get("adds")) == 2
+        assert (len(surveys)) == 1
