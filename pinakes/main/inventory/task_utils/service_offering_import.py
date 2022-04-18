@@ -74,7 +74,11 @@ class ServiceOfferingImport:
     def _handle_obj(self, new_obj, kind):
         """Handle an object based on kind of object job template or workflow"""
         source_ref = str(new_obj["id"])
-        inventory = self._get_inventory(new_obj["related.inventory"])
+        inventory = (
+            self._get_inventory(new_obj["related.inventory"])
+            if new_obj.get("related.inventory", None)
+            else None
+        )
         if source_ref in self.old_objects.keys():
             info = self.old_objects[source_ref]
             self._update_db_obj(info, new_obj, source_ref, inventory)
