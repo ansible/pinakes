@@ -122,7 +122,7 @@ def test_order_submit(api_request, mocker):
 
     assert response.status_code == 200
     content = json.loads(response.content)
-    assert content["state"] == "Pending"
+    assert content["state"] == "Approval Pending"
     assert content["state"] == order.state
     check_object_permission.assert_called_once()
 
