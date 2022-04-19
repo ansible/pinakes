@@ -18,6 +18,14 @@ from pinakes.main.inventory.tests.factories import (
 )
 
 
+EXPECTED_USER_CAPABILITIES = {
+    "retrieve": True,
+    "destroy": True,
+    "cancel": True,
+    "submit": True,
+}
+
+
 @pytest.mark.django_db
 def test_order_list(api_request, mocker):
     """Get List of Orders"""
@@ -29,7 +37,12 @@ def test_order_list(api_request, mocker):
     content = json.loads(response.content)
 
     assert content["count"] == 1
-    assert content["results"][0]["extra_data"] is None
+    results = content["results"]
+    assert results[0]["extra_data"] is None
+    assert (
+        results[0]["metadata"]["user_capabilities"]
+        == EXPECTED_USER_CAPABILITIES
+    )
 
     scope_queryset.assert_called_once()
 
@@ -63,7 +76,10 @@ def test_order_retrieve(api_request, mocker):
     assert content["id"] == order.id
     assert content["owner"] == order.owner
     assert content["extra_data"] is None
-    check_object_permission.assert_called_once()
+    assert (
+        content["metadata"]["user_capabilities"] == EXPECTED_USER_CAPABILITIES
+    )
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db
@@ -79,11 +95,14 @@ def test_order_retrieve_extra(api_request, mocker):
     )
 
     assert response.status_code == 200
-    content = json.loads(response.content)
-    assert content["id"] == order.id
-    assert content["owner"] == order.owner
-    assert content["extra_data"]["order_items"][0]["name"] == order_item.name
-    check_object_permission.assert_called_once()
+    result = json.loads(response.content)
+    assert result["id"] == order.id
+    assert result["owner"] == order.owner
+
+    order_item_result = result["extra_data"]["order_items"][0]
+    assert order_item_result["name"] == order_item.name
+    assert "user_capabilities" not in order_item_result
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db
@@ -96,7 +115,7 @@ def test_order_delete(api_request, mocker):
     response = api_request("delete", "catalog:order-detail", order.id)
 
     assert response.status_code == 204
-    check_object_permission.assert_called_once()
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db
@@ -124,7 +143,7 @@ def test_order_submit(api_request, mocker):
     content = json.loads(response.content)
     assert content["state"] == "Pending"
     assert content["state"] == order.state
-    check_object_permission.assert_called_once()
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db
@@ -146,7 +165,7 @@ def test_order_submit_without_service_offering(api_request, mocker):
         content["detail"] == f"Portfolio item {portfolio_item.id} does not"
         " have related service offering"
     )
-    check_object_permission.assert_called_once()
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db
@@ -167,6 +186,47 @@ def test_order_submit_without_order_item(api_request, mocker):
         content["detail"]
         == f"Order {order.id} does not have related order items"
     )
+    check_object_permission.assert_called()
+
+
+@pytest.mark.django_db
+def test_order_cancel(api_request, mocker):
+    """Cancels a single order by id"""
+    mocker.patch("django_rq.enqueue")
+    check_object_permission = mocker.spy(
+        OrderPermission, "perform_check_object_permission"
+    )
+
+    order = OrderFactory()
+
+    assert order.state == "Created"
+
+    response = api_request("patch", "catalog:order-cancel", order.id)
+    order.refresh_from_db()
+
+    assert response.status_code == 204
+    assert order.state == "Canceled"
+    check_object_permission.assert_called()
+
+
+@pytest.mark.django_db
+def test_order_cancel_with_uncancelable_states(api_request, mocker):
+    """Cancels a single order by id"""
+    mocker.patch("django_rq.enqueue")
+    check_object_permission = mocker.spy(
+        OrderPermission, "perform_check_object_permission"
+    )
+
+    order = OrderFactory(state="Completed")
+
+    response = api_request("patch", "catalog:order-cancel", order.id)
+    order.refresh_from_db()
+
+    assert response.status_code == 400
+    content = json.loads(response.content)
+    assert content["detail"] == (
+        "Order {} is not cancelable in its current state: {}"
+    ).format(order.id, order.state)
     check_object_permission.assert_called_once()
 
 

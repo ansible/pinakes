@@ -14,6 +14,17 @@ class TestPermission(BaseKeycloakPermission):
     }
 
 
+class UserCapabilitiesPermission(BaseKeycloakPermission):
+    access_policies = {
+        "list": KeycloakPolicy("read", KeycloakPolicy.Type.WILDCARD),
+        "create": KeycloakPolicy("create", KeycloakPolicy.Type.WILDCARD),
+        "retrieve": KeycloakPolicy("read", KeycloakPolicy.Type.OBJECT),
+        "update": KeycloakPolicy("update", KeycloakPolicy.Type.OBJECT),
+        "partial_update": KeycloakPolicy("update", KeycloakPolicy.Type.OBJECT),
+        "remove": KeycloakPolicy("delete", KeycloakPolicy.Type.OBJECT),
+    }
+
+
 @pytest.mark.parametrize(
     ("action", "tp", "expected"),
     [
@@ -56,3 +67,56 @@ def test_get_permission_unexpected_type():
     )
 
     assert result is None
+
+
+@mock.patch.object(
+    UserCapabilitiesPermission, "perform_check_object_permission"
+)
+def test_user_capabilities(perform_check_object_permission):
+    perform_check_object_permission.return_value = True
+    expected_result = {
+        "retrieve": True,
+        "update": True,
+        "partial_update": True,
+        "remove": True,
+    }
+    _test_user_capabilities(perform_check_object_permission, expected_result)
+
+
+@mock.patch.object(
+    UserCapabilitiesPermission, "perform_check_object_permission"
+)
+def test_user_capabilities_read_only(perform_check_object_permission):
+    def side_effect(permission, *args, **kwargs):
+        return permission == "read"
+
+    perform_check_object_permission.side_effect = side_effect
+    expected_result = {
+        "retrieve": True,
+        "update": False,
+        "partial_update": False,
+        "remove": False,
+    }
+    _test_user_capabilities(perform_check_object_permission, expected_result)
+
+
+def _test_user_capabilities(perform_check_object_permission, expected_result):
+    request = mock.Mock(name="request")
+    request.method = "GET"
+    view = mock.Mock(name="view", action="list")
+    obj = mock.Mock(name="obj")
+
+    permission = UserCapabilitiesPermission()
+    result = permission.get_user_capabilities(request, view, obj)
+
+    assert result == expected_result
+
+    assert perform_check_object_permission.call_count == 3
+    perform_check_object_permission.assert_has_calls(
+        [
+            mock.call("read", request, view, obj),
+            mock.call("update", request, view, obj),
+            mock.call("delete", request, view, obj),
+        ],
+        any_order=True,
+    )
