@@ -323,7 +323,7 @@ class Order(UserOwnedModel, MessageableMixin, KeycloakMixin):
         ORDERED = "Ordered"
 
     state = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=State.choices,
         default=State.CREATED,
         editable=False,
@@ -421,7 +421,7 @@ class OrderItem(UserOwnedModel, MessageableMixin):
         max_length=64, help_text="Name of the portfolio item or order process"
     )
     state = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=State.choices,
         default=State.CREATED,
         editable=False,
