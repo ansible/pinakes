@@ -2,8 +2,11 @@
     object from Ansible Tower. It handles adds, updates
     and deletes.
 """
+import logging
 import dateutil.parser
 from pinakes.main.inventory.models import ServiceInventory
+
+logger = logging.getLogger("inventory")
 
 
 class ServiceInventoryImport:
@@ -19,7 +22,13 @@ class ServiceInventoryImport:
     def source_ref_to_id(self, source_ref):
         """Given a Source Ref, get the ID of the object
         from the local database."""
-        return self.service_inventory_objects[source_ref]
+        source_id = self.service_inventory_objects.get(source_ref, None)
+        if source_id is None:
+            logger.warning(
+                f"Source {source_ref} is not found in service inventory"
+            )
+
+        return source_id
 
     def get_stats(self):
         """Get the stats of the process, the number of adds,

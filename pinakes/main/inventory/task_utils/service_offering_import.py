@@ -44,7 +44,13 @@ class ServiceOfferingImport:
 
     def source_ref_to_id(self, source_ref):
         """Convert id from tower to id in local database."""
-        return self.service_offering_objects[source_ref]
+        source_id = self.service_offering_objects.get(source_ref, None)
+        if source_id is None:
+            logger.warning(
+                f"Source {source_ref} is not found in service offering"
+            )
+
+        return source_id
 
     def get_stats(self):
         """Get the adds/updates/deletes for this object."""
