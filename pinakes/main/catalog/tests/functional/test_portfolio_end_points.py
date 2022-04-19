@@ -33,6 +33,22 @@ from pinakes.common.auth.keycloak_django.utils import (
 )
 
 
+EXPECTED_USER_CAPABILITIES = {
+    "retrieve": True,
+    "update": True,
+    "partial_update": True,
+    "destroy": True,
+    "tags": True,
+    "tag": True,
+    "untag": True,
+    "share": True,
+    "unshare": True,
+    "share_info": True,
+    "icon": True,
+    "copy": True,
+}
+
+
 @pytest.mark.django_db
 def test_portfolio_list(api_request, mocker):
     """Get List of Portfolios"""
@@ -43,8 +59,13 @@ def test_portfolio_list(api_request, mocker):
 
     assert response.status_code == 200
     content = json.loads(response.content)
-
     assert content["count"] == 1
+
+    results = content["results"]
+    assert (
+        results[0]["metadata"]["user_capabilities"]
+        == EXPECTED_USER_CAPABILITIES
+    )
 
     scope_queryset.assert_called_once()
 
@@ -58,6 +79,9 @@ def test_portfolio_retrieve(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == portfolio.id
+    assert (
+        content["metadata"]["user_capabilities"] == EXPECTED_USER_CAPABILITIES
+    )
 
 
 @pytest.mark.django_db

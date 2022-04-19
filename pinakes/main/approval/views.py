@@ -49,7 +49,7 @@ from pinakes.main.approval.exceptions import (
 from pinakes.main.approval import validations, permissions
 from pinakes.common.queryset_mixin import QuerySetMixin
 from pinakes.common.auth.keycloak_django.views import (
-    PermissionQuerySetMixin,
+    KeycloakPermissionMixin,
 )
 
 logger = logging.getLogger("approval")
@@ -382,7 +382,7 @@ class WorkflowViewSet(
 )
 class RequestViewSet(
     NestedViewSetMixin,
-    PermissionQuerySetMixin,
+    KeycloakPermissionMixin,
     QuerySetMixin,
     viewsets.ModelViewSet,
 ):
@@ -395,17 +395,8 @@ class RequestViewSet(
     search_fields = ("name", "description", "state", "decision", "reason")
     parent_field_names = ("parent",)
 
-    def get_permissions(self):
-        """override get_permissions method"""
-        if self.action == "create":
-            self.permission_classes = (IsAuthenticated,)
-        else:
-            self.permission_classes = (
-                IsAuthenticated,
-                permissions.RequestPermission,
-            )
-
-        return super().get_permissions()
+    permission_classes = (IsAuthenticated,)
+    keycloak_permission = permissions.RequestPermission
 
     @extend_schema(
         description=(
@@ -417,7 +408,6 @@ class RequestViewSet(
     )
     def create(self, request, *args, **kwargs):
         serializer = RequestInSerializer(data=request.data)
-        output_serializer = serializer  # default
         if not serializer.is_valid():
             return Response(
                 {"errors": serializer.errors},
@@ -447,20 +437,20 @@ class RequestViewSet(
         description="Get an action by its id, available to everyone"
     ),
     list=extend_schema(
-        tags=(
+        tags=[
             "actions",
             "requests",
-        ),
+        ],
         description=(
             "List actions of a request identified by its id, available to"
             " everyone"
         ),
     ),
     create=extend_schema(
-        tags=(
+        tags=[
             "actions",
             "requests",
-        ),
+        ],
         description=(
             "Create an action under a request identified by its id. "
             "Admin can create approve, deny, memo, and cancel operations; "
@@ -469,12 +459,15 @@ class RequestViewSet(
         ),
     ),
 )
-class ActionViewSet(QuerySetMixin, viewsets.ModelViewSet):
+class ActionViewSet(
+    KeycloakPermissionMixin, QuerySetMixin, viewsets.ModelViewSet
+):
     """API endpoints for listing and creating actions"""
 
     serializer_class = ActionSerializer
     http_method_names = ["get", "post"]
-    permission_classes = (IsAuthenticated, permissions.ActionPermission)
+    permission_classes = (IsAuthenticated,)
+    keycloak_permission = permissions.ActionPermission
     ordering = ("-id",)
     filterset_fields = ("operation", "comments")
     search_fields = ("operation", "comments")
