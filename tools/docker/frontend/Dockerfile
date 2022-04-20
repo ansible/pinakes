@@ -16,8 +16,8 @@ ADD --chown=1001:1001 certs/*.key ${CERT_PATH}
 
 # ui files
 RUN mkdir -p ${CATALOG_UI_SRC}
-COPY --chown=1001:1001 overrides/*.tar.gz ${CATALOG_UI_SRC}
-RUN if [[ ! -f ${CATALOG_UI_SRC}/catalog-ui.tar.gz ]]; then curl -L ${PINAKES_UI_PACKAGE_URL} --output ${CATALOG_UI_SRC}/catalog-ui.tar.gz; fi
+ADD --chown=1001:1001 ${PINAKES_UI_PACKAGE_URL} ${CATALOG_UI_SRC}/
+ADD --chown=1001:1001 overrides ${CATALOG_UI_SRC}/
 RUN cd ${CATALOG_UI_SRC} && tar -xf catalog-ui.tar.gz && rm -rf catalog-ui.tar.gz
 
 
