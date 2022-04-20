@@ -118,7 +118,13 @@ PINAKES_KEYCLOAK_REALM_FRONTEND_URL=https://[your-external-ip-address]:9443/auth
 ```
 
 ### Download the open api schema
+
 <http://localhost:8000/api/pinakes/v1/schema/openapi.json>
 
 ### Try with swagger UI
+
 <http://localhost:8000/api/pinakes/v1/schema/swagger-ui/>
+
+## Overriding UI
+
+You can override the UI's build providing your custom `catalog-ui.tar.gz` file inside `tools/docker/frontend/overrides` folder.
