@@ -23,5 +23,5 @@ class Package(InsightsAnalyticsPackage):
     def _get_http_request_headers(self):
         return {
             "Content-Type": self.PAYLOAD_CONTENT_TYPE,
-            "User-Agent": "python-requests/2.25.1",
+            "User-Agent": "python-requests/2.25.1 Pinakes-metrics-agent",
         }
