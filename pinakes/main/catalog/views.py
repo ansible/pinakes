@@ -65,6 +65,9 @@ from pinakes.main.catalog.serializers import (
     SharingPermissionSerializer,
 )
 
+from pinakes.main.catalog.services.cancel_order import (
+    CancelOrder,
+)
 from pinakes.main.catalog.services.collect_tag_resources import (
     CollectTagResources,
 )
@@ -527,7 +530,6 @@ class OrderViewSet(
         serializer = self.get_serializer(order)
         return Response(serializer.data)
 
-    # TODO:
     @extend_schema(
         description="Cancel the given order",
         request=None,
@@ -536,7 +538,12 @@ class OrderViewSet(
     @action(methods=["patch"], detail=True)
     def cancel(self, request, pk):
         """Cancels the specified pk order."""
-        pass
+        order = self.get_object()
+
+        svc = CancelOrder(order).process()
+        serializer = self.get_serializer(svc.order)
+
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
 
 
 @extend_schema_view(
