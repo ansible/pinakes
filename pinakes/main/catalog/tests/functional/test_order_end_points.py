@@ -171,6 +171,47 @@ def test_order_submit_without_order_item(api_request, mocker):
 
 
 @pytest.mark.django_db
+def test_order_cancel(api_request, mocker):
+    """Cancels a single order by id"""
+    mocker.patch("django_rq.enqueue")
+    check_object_permission = mocker.spy(
+        OrderPermission, "perform_check_object_permission"
+    )
+
+    order = OrderFactory()
+
+    assert order.state == "Created"
+
+    response = api_request("patch", "catalog:order-cancel", order.id)
+    order.refresh_from_db()
+
+    assert response.status_code == 204
+    assert order.state == "Canceled"
+    check_object_permission.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_order_cancel_with_uncancelable_states(api_request, mocker):
+    """Cancels a single order by id"""
+    mocker.patch("django_rq.enqueue")
+    check_object_permission = mocker.spy(
+        OrderPermission, "perform_check_object_permission"
+    )
+
+    order = OrderFactory(state="Completed")
+
+    response = api_request("patch", "catalog:order-cancel", order.id)
+    order.refresh_from_db()
+
+    assert response.status_code == 400
+    content = json.loads(response.content)
+    assert content["detail"] == (
+        "Order {} is not cancelable in its current state: {}"
+    ).format(order.id, order.state)
+    check_object_permission.assert_called_once()
+
+
+@pytest.mark.django_db
 def test_order_patch_not_supported(api_request):
     """Patch a single order by id"""
     order = OrderFactory()
