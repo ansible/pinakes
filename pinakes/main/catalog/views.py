@@ -158,7 +158,13 @@ class PortfolioViewSet(
     keycloak_permission = permissions.PortfolioPermission
     ordering = ("-id",)
     filterset_fields = ("name", "description", "created_at", "updated_at")
-    search_fields = ("name", "description")
+    search_fields = (
+        "name",
+        "description",
+        "user__first_name",
+        "user__last_name",
+        "user__username",
+    )
 
     @extend_schema(
         description="Make a copy of the portfolio",
