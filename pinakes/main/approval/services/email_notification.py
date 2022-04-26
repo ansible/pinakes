@@ -2,6 +2,7 @@
 import logging
 import string
 import django_rq
+import tempfile
 from importlib.resources import read_text
 from django.utils.translation import gettext_lazy as _
 from django.core.mail import send_mail
@@ -41,8 +42,23 @@ class EmailNotification:
         settings = self.request.workflow.template.process_method.settings
         sender = settings.pop("from", None)
         security = settings.pop("security", None)
+        has_cert = False
         if security:
             settings[security] = True
+            ssl_key = settings.pop("ssl_key", None)
+            ssl_cert = settings.pop("ssl_cert", None)
+            if ssl_key and ssl_cert:
+                key_file = tempfile.NamedTemporaryFile(mode="w+t")
+                key_file.write(ssl_key)
+                key_file.flush()
+                settings["ssl_keyfile"] = key_file.name
+                cert_file = tempfile.NamedTemporaryFile(mode="w+t")
+                cert_file.write(ssl_cert)
+                cert_file.flush()
+                settings["ssl_certfile"] = cert_file.name
+                has_cert = True
+        if "timeout" not in settings:
+            settings["timeout"] = 20
         backend = EmailBackend(**settings)
 
         group_id = self.request.group_ref
@@ -63,6 +79,9 @@ class EmailNotification:
             except Exception as ex:
                 logger.error("Email failed. Error %s", ex)
         backend.close()
+        if has_cert:
+            cert_file.close()
+            key_file.close()
 
         if all_failed:
             CreateAction(
