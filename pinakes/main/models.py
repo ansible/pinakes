@@ -62,7 +62,7 @@ class Source(models.Model):
         """states for Source"""
 
         DONE = "Done"
-        INPROGRESS = "InProgress"
+        IN_PROGRESS = "InProgress"
         FAILED = "Failed"
         UNKNOWN = "Unknown"
 
