@@ -45,7 +45,7 @@ class RefreshInventory:
         )
 
         self.source.refresh_started_at = timezone.now()
-        self.source.refresh_state = Source.State.INPROGRESS
+        self.source.refresh_state = Source.State.IN_PROGRESS
         self.source.save()
 
         try:
