@@ -62,6 +62,7 @@ class Source(models.Model):
         """states for Source"""
 
         DONE = "Done"
+        INPROGRESS = "InProgress"
         FAILED = "Failed"
         UNKNOWN = "Unknown"
 
@@ -81,7 +82,7 @@ class Source(models.Model):
         help_text="The time at which the object was last updated",
     )
     refresh_state = models.CharField(
-        max_length=10,
+        max_length=32,
         choices=State.choices,
         default=State.UNKNOWN,
         editable=False,
