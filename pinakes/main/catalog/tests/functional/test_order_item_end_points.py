@@ -10,6 +10,13 @@ from pinakes.main.catalog.tests.factories import (
 
 # FIXME(cutwater): Add unit tests for `catalog:orderitem-list` endpoint.
 
+EXPECTED_USER_CAPABILITIES = {
+    "retrieve": True,
+    "update": True,
+    "partial_update": True,
+    "destroy": True,
+}
+
 
 @pytest.mark.django_db
 def test_order_item_retrieve(api_request, mocker):
@@ -25,6 +32,9 @@ def test_order_item_retrieve(api_request, mocker):
     assert content["id"] == order_item.id
     assert content["owner"] == order_item.owner
     assert content["extra_data"] is None
+    assert (
+        content["metadata"]["user_capabilities"] == EXPECTED_USER_CAPABILITIES
+    )
 
     has_object_permission.assert_called_once()
 
@@ -50,6 +60,9 @@ def test_order_item_retrieve_extra(api_request, mocker):
     assert content["owner"] == order_item.owner
     assert (
         content["extra_data"]["portfolio_item"]["name"] == portfolio_item.name
+    )
+    assert (
+        content["metadata"]["user_capabilities"] == EXPECTED_USER_CAPABILITIES
     )
     has_object_permission.assert_called_once()
 

@@ -25,7 +25,7 @@ from pinakes.common.auth.keycloak_django.utils import (
     parse_scope,
 )
 from pinakes.common.auth.keycloak_django.views import (
-    PermissionQuerySetMixin,
+    KeycloakPermissionMixin,
 )
 from pinakes.common.serializers import TaskSerializer
 from pinakes.common.tag_mixin import TagMixin
@@ -146,7 +146,7 @@ class PortfolioViewSet(
     ImageMixin,
     TagMixin,
     NestedViewSetMixin,
-    PermissionQuerySetMixin,
+    KeycloakPermissionMixin,
     QuerySetMixin,
     viewsets.ModelViewSet,
 ):
@@ -154,7 +154,8 @@ class PortfolioViewSet(
 
     serializer_class = PortfolioSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
-    permission_classes = (IsAuthenticated, permissions.PortfolioPermission)
+    permission_classes = (IsAuthenticated,)
+    keycloak_permission = permissions.PortfolioPermission
     ordering = ("-id",)
     filterset_fields = ("name", "description", "created_at", "updated_at")
     search_fields = (
@@ -322,7 +323,7 @@ class PortfolioItemViewSet(
     ImageMixin,
     TagMixin,
     NestedViewSetMixin,
-    PermissionQuerySetMixin,
+    KeycloakPermissionMixin,
     QuerySetMixin,
     viewsets.ModelViewSet,
 ):
@@ -330,7 +331,8 @@ class PortfolioItemViewSet(
 
     serializer_class = PortfolioItemSerializer
     http_method_names = ["get", "post", "head", "patch", "delete"]
-    permission_classes = (IsAuthenticated, permissions.PortfolioItemPermission)
+    permission_classes = (IsAuthenticated,)
+    keycloak_permission = permissions.PortfolioItemPermission
     ordering = ("-id",)
     filterset_fields = (
         "name",
@@ -475,7 +477,7 @@ class PortfolioItemViewSet(
 )
 class OrderViewSet(
     NestedViewSetMixin,
-    PermissionQuerySetMixin,
+    KeycloakPermissionMixin,
     QuerySetMixin,
     viewsets.ModelViewSet,
 ):
@@ -483,7 +485,8 @@ class OrderViewSet(
 
     serializer_class = OrderSerializer
     http_method_names = ["get", "post", "patch", "head", "delete"]
-    permission_classes = (IsAuthenticated, permissions.OrderPermission)
+    permission_classes = (IsAuthenticated,)
+    keycloak_permission = permissions.OrderPermission
     ordering = ("-id",)
     filterset_fields = (
         "state",
@@ -551,7 +554,7 @@ class OrderViewSet(
 
 @extend_schema_view(
     retrieve=extend_schema(
-        tags=("orders", "order_items"),
+        tags=["orders", "order_items"],
         description="Get a specific order item based on the order item ID",
         parameters=[
             OpenApiParameter(
@@ -565,7 +568,7 @@ class OrderViewSet(
         ],
     ),
     list=extend_schema(
-        tags=("orders", "order_items"),
+        tags=["orders", "order_items"],
         description=(
             "Get a list of order items associated with the logged in user."
         ),
@@ -592,7 +595,7 @@ class OrderViewSet(
         },
     ),
     create=extend_schema(
-        tags=("orders", "order_items"),
+        tags=["orders", "order_items"],
         description="Add an order item to an order in pending state",
     ),
     destroy=extend_schema(
@@ -601,7 +604,7 @@ class OrderViewSet(
 )
 class OrderItemViewSet(
     NestedViewSetMixin,
-    PermissionQuerySetMixin,
+    KeycloakPermissionMixin,
     QuerySetMixin,
     viewsets.ModelViewSet,
 ):
@@ -609,7 +612,8 @@ class OrderItemViewSet(
 
     serializer_class = OrderItemSerializer
     http_method_names = ["get", "post", "head", "delete"]
-    permission_classes = (IsAuthenticated, permissions.OrderItemPermission)
+    permission_classes = (IsAuthenticated,)
+    keycloak_permission = permissions.OrderItemPermission
     ordering = ("-id",)
     filterset_fields = (
         "name",

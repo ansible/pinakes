@@ -22,6 +22,21 @@ from pinakes.main.inventory.tests.factories import (
 )
 
 
+EXPECTED_USER_CAPABILITIES = {
+    "create": True,
+    "retrieve": True,
+    "update": True,
+    "partial_update": True,
+    "destroy": True,
+    "copy": True,
+    "icon": True,
+    "next_name": True,
+    "tag": True,
+    "tags": True,
+    "untag": True,
+}
+
+
 @pytest.mark.django_db
 def test_portfolio_item_list(api_request, mocker):
     """Get list of Portfolio Items"""
@@ -36,6 +51,12 @@ def test_portfolio_item_list(api_request, mocker):
     content = json.loads(response.content)
 
     assert content["count"] == 1
+
+    results = content["results"]
+    assert (
+        results[0]["metadata"]["user_capabilities"]
+        == EXPECTED_USER_CAPABILITIES
+    )
 
     scope_queryset.assert_called_once()
 
@@ -55,8 +76,11 @@ def test_portfolio_item_retrieve(api_request, mocker):
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == portfolio_item.id
+    assert (
+        content["metadata"]["user_capabilities"] == EXPECTED_USER_CAPABILITIES
+    )
 
-    check_object_permission.assert_called_once()
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db
@@ -73,7 +97,7 @@ def test_portfolio_item_delete(api_request, mocker):
 
     assert response.status_code == 204
 
-    check_object_permission.assert_called_once()
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db
@@ -94,7 +118,7 @@ def test_portfolio_item_patch(api_request, mocker):
 
     assert response.status_code == 200
 
-    check_object_permission.assert_called_once()
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db
@@ -125,7 +149,7 @@ def test_portfolio_item_post(api_request, mocker):
     response = api_request("post", "catalog:portfolioitem-list", data=data)
     assert response.status_code == 201
 
-    check_object_permission.assert_called_once()
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db
@@ -175,7 +199,7 @@ def test_portfolio_item_icon_post(api_request, mocker, small_image, media_dir):
 
     portfolio_item.delete()
 
-    check_object_permission.assert_called_once()
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db
@@ -222,7 +246,7 @@ def test_portfolio_item_icon_patch(
     assert portfolio_item.icon is not None
     portfolio_item.delete()
 
-    assert check_object_permission.call_count == 2
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db
@@ -262,7 +286,7 @@ def test_portfolio_item_icon_delete(
     portfolio_item.refresh_from_db()
     assert portfolio_item.icon is None
 
-    assert check_object_permission.call_count == 2
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db
@@ -288,7 +312,7 @@ def test_portfolio_item_copy(api_request, mocker):
         PortfolioItem.objects.last().name == f"Copy of {portfolio_item.name}"
     )
 
-    check_object_permission.assert_called_once()
+    check_object_permission.assert_called()
 
 
 @pytest.mark.django_db

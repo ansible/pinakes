@@ -76,14 +76,17 @@ class RequestPermission(BaseKeycloakPermission):
     """Permission class for Request view"""
 
     access_policies = {
+        "create": KeycloakPolicy("", KeycloakPolicy.Type.WILDCARD),
         "list": KeycloakPolicy("read", KeycloakPolicy.Type.QUERYSET),
         "retrieve": KeycloakPolicy("read", KeycloakPolicy.Type.OBJECT),
         "content": KeycloakPolicy("read", KeycloakPolicy.Type.OBJECT),
     }
 
     def perform_check_permission(
-        self, permission: str, http_request: HttpRequest, _view: Any
+        self, permission: str, http_request: HttpRequest, view: Any
     ) -> bool:
+        if view.action == "create":
+            return True
         return check_wildcard_permission(
             Request.keycloak_type(),
             permission,
