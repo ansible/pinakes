@@ -425,7 +425,8 @@ PINAKES_INSIGHTS_TRACKING_STATE = env.bool(
     "PINAKES_INSIGHTS_TRACKING_STATE", False
 )
 PINAKES_INSIGHTS_URL = env.str(
-    "PINAKES_INSIGHTS_URL", default="https//Your_insight_url"
+    "PINAKES_INSIGHTS_URL",
+    default="https://cloud.redhat.com/api/ingress/v1/upload",
 )
 PINAKES_INSIGHTS_USERNAME = env.str(
     "PINAKES_INSIGHTS_USERNAME", default="insight_username"
