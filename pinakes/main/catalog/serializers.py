@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
-from pinakes.common.fields import MetadataSerializer
+from pinakes.common.fields import MetadataField
 from pinakes.main.models import Tenant, Image
 from pinakes.main.common.models import Group
 from pinakes.main.catalog.models import (
@@ -37,9 +37,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
         "get_icon_url", allow_null=True
     )
 
-    metadata = MetadataSerializer(
-        help_text="JSON Metadata about the portfolio"
-    )
+    metadata = MetadataField(help_text="JSON Metadata about the portfolio")
 
     class Meta:
         model = Portfolio
@@ -102,8 +100,8 @@ class PortfolioItemSerializerBase(serializers.ModelSerializer):
         "get_icon_url", allow_null=True
     )
 
-    metadata = MetadataSerializer(
-        skip_user_capabilities=True,
+    metadata = MetadataField(
+        user_capabilities_field=None,
         help_text="JSON Metadata about the portfolio item",
     )
 
@@ -136,7 +134,7 @@ class PortfolioItemSerializerBase(serializers.ModelSerializer):
 
 
 class PortfolioItemSerializer(PortfolioItemSerializerBase):
-    metadata = MetadataSerializer(
+    metadata = MetadataField(
         help_text="JSON Metadata about the portfolio item"
     )
 
@@ -190,8 +188,8 @@ class OrderItemSerializerBase(serializers.ModelSerializer):
     extra_data = serializers.SerializerMethodField(
         "get_extra_data", read_only=True, allow_null=True
     )
-    metadata = MetadataSerializer(
-        skip_user_capabilities=True,
+    metadata = MetadataField(
+        user_capabilities_field=None,
         help_text="Order item metadata",
     )
 
@@ -229,7 +227,7 @@ class OrderItemSerializerBase(serializers.ModelSerializer):
 
 
 class OrderItemSerializer(OrderItemSerializerBase):
-    metadata = MetadataSerializer(help_text="Order item metadata")
+    metadata = MetadataField(help_text="Order item metadata")
 
 
 class OrderItemDocSerializer(serializers.ModelSerializer):
@@ -265,7 +263,7 @@ class OrderSerializer(serializers.ModelSerializer):
         "get_extra_data", allow_null=True, read_only=True
     )
 
-    metadata = MetadataSerializer(help_text="Order metadata")
+    metadata = MetadataField(help_text="Order metadata")
 
     class Meta:
         model = Order

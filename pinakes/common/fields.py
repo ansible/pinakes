@@ -1,5 +1,8 @@
+import copy
 from typing import Dict
 
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 
@@ -19,19 +22,49 @@ class UserCapabilitiesField(serializers.ReadOnlyField):
         return permissions
 
 
-class MetadataSerializer(serializers.Serializer):
+@extend_schema_field(OpenApiTypes.OBJECT)
+class MetadataField(serializers.ReadOnlyField):
+    def __init__(self, **kwargs):
+        """
+        Resource metadata field.
 
-    user_capabilities = UserCapabilitiesField()
+        Retrieves model instance metadata field combined
+        with generated `user_capabilities`.
 
-    def __init__(self, skip_user_capabilities=False, **kwargs):
+        User capabilities generation can be ignored by setting
+        `user_capabilities_field` parameter to `None`:
+
+            metadata = MetadataField(user_capabilities_field=None)
+
+        Or it can be overridden by a custom field:
+
+            metadata = MetadataField(
+                user_capabilities_field=CustomUserCapabilitiesField()
+            )
+        """
         kwargs["source"] = "*"
-        kwargs["read_only"] = True
+        kwargs["default"] = {}
+        try:
+            self._user_capabilities_field = copy.deepcopy(
+                kwargs.pop("user_capabilities_field")
+            )
+        except KeyError:
+            self._user_capabilities_field = UserCapabilitiesField()
+
         super().__init__(**kwargs)
 
-        if skip_user_capabilities:
-            self.fields.pop("user_capabilities", None)
+        if self._user_capabilities_field:
+            self._user_capabilities_field.bind("", self)
 
     def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data.update(getattr(instance, self.field_name, {}))
+        if not instance:
+            return {}
+        data = {}
+        if self._user_capabilities_field:
+            data[
+                "user_capabilities"
+            ] = self._user_capabilities_field.to_representation(instance)
+        metadata = getattr(instance, self.field_name, None)
+        if metadata is not None:
+            data.update(metadata)
         return data
