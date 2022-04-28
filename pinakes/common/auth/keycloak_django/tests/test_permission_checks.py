@@ -12,11 +12,12 @@ from pinakes.common.auth.keycloak_django.permissions import (
 )
 
 
-def test_check_wildcard_permission():
-    client = mock.Mock()
+@mock.patch("pinakes.common.auth.keycloak_django.permissions.get_authz_client")
+def test_check_wildcard_permission(get_authz_client):
+    client = get_authz_client.return_value
     client.check_permissions.return_value = True
 
-    result = check_wildcard_permission("myresource", "read", client)
+    result = check_wildcard_permission("myresource", "read", mock.Mock())
 
     assert result is True
 
@@ -25,12 +26,16 @@ def test_check_wildcard_permission():
     )
 
 
-def test_check_resource_permission():
-    client = mock.Mock()
+@mock.patch("pinakes.common.auth.keycloak_django.permissions.get_authz_client")
+def test_check_resource_permission(get_authz_client):
+    client = get_authz_client.return_value
     client.check_permissions.return_value = True
 
     result = check_resource_permission(
-        "myresource", "myresource:1", "read", client
+        "myresource",
+        "myresource:1",
+        "read",
+        mock.Mock(),
     )
 
     assert result is True
@@ -61,12 +66,12 @@ def test_check_object_permission_exists(
     obj.keycloak_type.return_value = "myresource"
     obj.keycloak_name.return_value = "myresource:1"
 
-    client = mock.Mock()
+    request = mock.Mock()
 
-    assert check_object_permission(obj, "read", client) is True
+    assert check_object_permission(obj, "read", request) is True
 
     check_resource_permission.assert_called_once_with(
-        "myresource", "myresource:1", "read", client
+        "myresource", "myresource:1", "read", request
     )
     check_wildcard_permission.assert_not_called()
 
@@ -88,21 +93,22 @@ def test_check_object_permission_not_exists(
     obj.keycloak_id = None
     obj.keycloak_type.return_value = "myresource"
 
-    client = mock.Mock()
+    request = mock.Mock()
 
-    assert check_object_permission(obj, "read", client) is True
+    assert check_object_permission(obj, "read", request) is True
 
     check_wildcard_permission.assert_called_once_with(
-        "myresource", "read", client
+        "myresource", "read", request
     )
     check_resource_permission.assert_not_called()
 
 
-def test_get_permitted_resources_empty():
-    client = mock.Mock()
+@mock.patch("pinakes.common.auth.keycloak_django.permissions.get_authz_client")
+def test_get_permitted_resources_empty(get_authz_client):
+    client = get_authz_client.return_value
     client.get_permissions.return_value = []
 
-    result = get_permitted_resources("myresource", "read", client)
+    result = get_permitted_resources("myresource", "read", mock.Mock())
 
     assert result.is_wildcard is False
     assert result.items == []
@@ -112,14 +118,15 @@ def test_get_permitted_resources_empty():
     )
 
 
-def test_get_permitted_resources_wildcard():
-    client = mock.Mock()
+@mock.patch("pinakes.common.auth.keycloak_django.permissions.get_authz_client")
+def test_get_permitted_resources_wildcard(get_authz_client):
+    client = get_authz_client.return_value
     client.get_permissions.return_value = [
         AuthzResource(rsid="0", rsname="myresource:all"),
         AuthzResource(rsid="1", rsname="myresource:1"),
     ]
 
-    result = get_permitted_resources("myresource", "read", client)
+    result = get_permitted_resources("myresource", "read", mock.Mock())
 
     assert result.is_wildcard is True
     assert result.items == ["1"]
@@ -129,14 +136,15 @@ def test_get_permitted_resources_wildcard():
     )
 
 
-def test_get_permitted_resources():
-    client = mock.Mock()
+@mock.patch("pinakes.common.auth.keycloak_django.permissions.get_authz_client")
+def test_get_permitted_resources(get_authz_client):
+    client = get_authz_client.return_value
     client.get_permissions.return_value = [
         AuthzResource(rsid="1", rsname="myresource:1"),
         AuthzResource(rsid="2", rsname="myresource:2"),
     ]
 
-    result = get_permitted_resources("myresource", "read", client)
+    result = get_permitted_resources("myresource", "read", mock.Mock())
 
     assert result.is_wildcard is False
     assert result.items == ["1", "2"]

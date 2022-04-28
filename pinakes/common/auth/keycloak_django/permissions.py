@@ -24,11 +24,9 @@ from rest_framework.permissions import (
     BasePermission as _BasePermission,
 )
 
-from pinakes.common.auth.keycloak import (
-    models as keycloak_models,
-)
-from pinakes.common.auth.keycloak.authz import AuthzClient
+from pinakes.common.auth.keycloak import models as keycloak_models
 from pinakes.common.auth.keycloak_django import AbstractKeycloakResource
+from pinakes.common.auth.keycloak_django.clients import get_authz_client
 from pinakes.common.auth.keycloak_django.utils import (
     make_scope_name,
     make_resource_name,
@@ -224,10 +222,11 @@ def is_drf_renderer_request(request: Request, view: Any):
 
 
 def check_wildcard_permission(
-    resource_type: str, permission: str, client: AuthzClient
+    resource_type: str, permission: str, request: Request
 ) -> bool:
     scope = make_scope_name(resource_type, permission)
     resource = make_resource_name(resource_type, WILDCARD_RESOURCE_ID)
+    client = get_authz_client(request.keycloak_user.access_token)
     return client.check_permissions(
         keycloak_models.AuthzPermission(
             resource=resource,
@@ -240,7 +239,7 @@ def check_resource_permission(
     resource_type: str,
     resource_name: str,
     permission: str,
-    client: AuthzClient,
+    request: Request,
 ) -> bool:
     scope = make_scope_name(resource_type, permission)
     wildcard_permission = keycloak_models.AuthzPermission(
@@ -251,21 +250,22 @@ def check_resource_permission(
         resource=resource_name,
         scope=scope,
     )
+    client = get_authz_client(request.keycloak_user.access_token)
     return client.check_permissions([wildcard_permission, object_permission])
 
 
 def check_object_permission(
     obj: AbstractKeycloakResource,
     permission: str,
-    client: AuthzClient,
+    request: Request,
 ):
     if obj.keycloak_id:
         return check_resource_permission(
-            obj.keycloak_type(), obj.keycloak_name(), permission, client
+            obj.keycloak_type(), obj.keycloak_name(), permission, request
         )
     else:
         return check_wildcard_permission(
-            obj.keycloak_type(), permission, client
+            obj.keycloak_type(), permission, request
         )
 
 
@@ -276,8 +276,9 @@ class PermittedResourcesResult:
 
 
 def get_permitted_resources(
-    resource_type: str, permission: str, client: AuthzClient
+    resource_type: str, permission: str, request: Request
 ) -> PermittedResourcesResult:
+    client = get_authz_client(request.keycloak_user.access_token)
     permissions = client.get_permissions(
         keycloak_models.AuthzPermission(
             scope=make_scope_name(resource_type, permission)

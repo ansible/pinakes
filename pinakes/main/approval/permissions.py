@@ -7,8 +7,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework.request import Request as HttpRequest
 from rest_framework.permissions import BasePermission
 
-from pinakes.common.auth.keycloak_django.clients import get_authz_client
-
 from pinakes.common.auth.keycloak_django.permissions import (
     KeycloakPolicy,
     BaseKeycloakPermission,
@@ -43,7 +41,7 @@ class TemplatePermission(BaseKeycloakPermission):
         return check_wildcard_permission(
             Template.keycloak_type(),
             permission,
-            get_authz_client(http_request.keycloak_user.access_token),
+            http_request,
         )
 
 
@@ -68,7 +66,7 @@ class WorkflowPermission(BaseKeycloakPermission):
         return check_wildcard_permission(
             Workflow.keycloak_type(),
             permission,
-            get_authz_client(http_request.keycloak_user.access_token),
+            http_request,
         )
 
 
@@ -90,7 +88,7 @@ class RequestPermission(BaseKeycloakPermission):
         return check_wildcard_permission(
             Request.keycloak_type(),
             permission,
-            get_authz_client(http_request.keycloak_user.access_token),
+            http_request,
         )
 
     def perform_check_object_permission(
@@ -114,7 +112,7 @@ class RequestPermission(BaseKeycloakPermission):
         resources = get_permitted_resources(
             Request.keycloak_type(),
             permission,
-            get_authz_client(http_request.keycloak_user.access_token),
+            http_request,
         )
         if persona == PERSONA_ADMIN and resources.is_wildcard:
             if "parent_id" not in view.kwargs:
@@ -152,5 +150,5 @@ def _request_has_permission(request, http_request):
         request.keycloak_type(),
         request.keycloak_name(),
         "read",
-        get_authz_client(http_request.keycloak_user.access_token),
+        http_request,
     )
