@@ -60,6 +60,41 @@ open htmlcov/index.html
 ```
 
 ### To run localization
+
+Use Chinese (language code is `zh`) as example, first run the following command,
+
 ```
-python3 manage.py makemessages -l en --ignore "venv/*"
+python3 manage.py makemessages -l zh --ignore "extract-strings-env/*" --ignore "venv/*"
 ```
+
+The command will create the file `locale/zh/LC_MESSAGES/django.po`.
+
+Then make changes in `locale/zh/LC_MESSAGES/django.po`, add the Chinese translations to the corresponding `msgstr` fields, such as:
+
+```
+......
+#: pinakes/main/inventory/task_utils/refresh_inventory.py:128
+msgid "Nothing to update"
+msgstr "不需要更新"
+
+msgid "Done"
+msgstr "完成"
+
+msgid "InProgress"
+msgstr "进行中"
+
+msgid "Failed"
+msgstr "失败"
+
+msgid "Unknown"
+msgstr "未知"
+
+```
+
+After having translations, you need to run the command to compile these messages, which will create a binary .mo file at the same location as the .po file:
+
+```
+python3 manage.py compilemessages
+```
+
+Final step is to configure your browser, change language settings by adding Chinese and move it to the top. Now UI will display the messages in Chinese when they are needed.
