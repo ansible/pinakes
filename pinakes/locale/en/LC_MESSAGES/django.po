@@ -8,7 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
+<<<<<<< HEAD
 "POT-Creation-Date: 2022-04-05 13:20+0000\n"
+=======
+"POT-Creation-Date: 2022-04-28 15:34+0000\n"
+>>>>>>> 7cc91e4 (Add i18n support for source detail page)
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -107,11 +111,31 @@ msgstr ""
 msgid "Only child level request can be flagged error"
 msgstr ""
 
+<<<<<<< HEAD
 #: pinakes/main/approval/services/update_request.py:16
 msgid "Auto-approved"
 msgstr ""
 
 #: pinakes/main/approval/views.py:147
+=======
+#: pinakes/main/approval/services/email_notification.py:72
+msgid "Failed to email group {}"
+msgstr ""
+
+#: pinakes/main/approval/services/update_request.py:19
+msgid "Auto-approved"
+msgstr ""
+
+#: pinakes/main/approval/validations.py:56
+msgid "Group id {} does not exist"
+msgstr ""
+
+#: pinakes/main/approval/validations.py:64
+msgid "Group {} does not have approver role"
+msgstr ""
+
+#: pinakes/main/approval/views.py:189
+>>>>>>> 7cc91e4 (Add i18n support for source detail page)
 msgid "Insufficient resource object params: {}"
 msgstr ""
 
@@ -123,10 +147,24 @@ msgstr ""
 msgid "Invalid survey"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: pinakes/main/catalog/exceptions.py:18
+msgid "Uncancelable Order"
+msgstr ""
+
+>>>>>>> 7cc91e4 (Add i18n support for source detail page)
 #: pinakes/main/catalog/models.py:532
 msgid "Created Approval Request ref: {}. Catalog approval request id: {}"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: pinakes/main/catalog/services/cancel_order.py:61
+msgid "Order {} is not cancelable in its current state: {}"
+msgstr ""
+
+>>>>>>> 7cc91e4 (Add i18n support for source detail page)
 #: pinakes/main/catalog/services/collect_tag_resources.py:62
 msgid "Portfolio item {} does not have related service offering"
 msgstr ""
@@ -136,7 +174,11 @@ msgid "{} is not orderable, and cannot be copied"
 msgstr ""
 
 #: pinakes/main/catalog/services/finish_order.py:32
+<<<<<<< HEAD
 msgid "Order {} is failed"
+=======
+msgid "Order {} has failed"
+>>>>>>> 7cc91e4 (Add i18n support for source detail page)
 msgstr ""
 
 #: pinakes/main/catalog/services/finish_order.py:37
@@ -167,7 +209,11 @@ msgstr ""
 msgid "Submitting Order Item {} for provisioning"
 msgstr ""
 
+<<<<<<< HEAD
 #: pinakes/main/catalog/services/submit_approval_request.py:56
+=======
+#: pinakes/main/catalog/services/submit_approval_request.py:57
+>>>>>>> 7cc91e4 (Add i18n support for source detail page)
 msgid "Failed to submit request to approval for Order {}, error: {}"
 msgstr ""
 
@@ -177,11 +223,19 @@ msgid ""
 "is no longer valid, please contact an administrator to fix it."
 msgstr ""
 
+<<<<<<< HEAD
 #: pinakes/main/catalog/views.py:499
 msgid "Order {} does not have related order items"
 msgstr ""
 
 #: pinakes/main/catalog/views.py:507
+=======
+#: pinakes/main/catalog/views.py:502
+msgid "Order {} does not have related order items"
+msgstr ""
+
+#: pinakes/main/catalog/views.py:510
+>>>>>>> 7cc91e4 (Add i18n support for source detail page)
 msgid "Computed tags for order {}: {}"
 msgstr ""
 
@@ -197,6 +251,33 @@ msgstr ""
 msgid "Failed to get service offering [{}]"
 msgstr ""
 
+<<<<<<< HEAD
 #: pinakes/main/inventory/views.py:89
 msgid "Refresh job {} is already {}, please try again later"
 msgstr ""
+=======
+#: pinakes/main/inventory/task_utils/refresh_inventory.py:82
+#, python-format
+msgid "Error: %s"
+msgstr ""
+
+#: pinakes/main/inventory/views.py:89
+msgid "Refresh job {} is already {}, please try again later"
+msgstr ""
+
+#: pinakes/main/models.py:65
+msgid "Done"
+msgstr ""
+
+#: pinakes/main/models.py:66
+msgid "InProgress"
+msgstr ""
+
+#: pinakes/main/models.py:67
+msgid "Failed"
+msgstr ""
+
+#: pinakes/main/models.py:68
+msgid "Unknown"
+msgstr ""
+>>>>>>> 7cc91e4 (Add i18n support for source detail page)

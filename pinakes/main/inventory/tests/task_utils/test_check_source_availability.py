@@ -61,9 +61,5 @@ def test_process_with_exception(mocker):
 
     source_instance.refresh_from_db()
     assert source_instance.availability_status == "unavailable"
-    assert source_instance.availability_message == "Error: " + err_msg
+    assert source_instance.availability_message == err_msg
     assert source_instance.refresh_state == "Failed"
-    assert (
-        source_instance.last_refresh_message
-        == source_instance.name + " is unavailable, refresh skipped"
-    )
