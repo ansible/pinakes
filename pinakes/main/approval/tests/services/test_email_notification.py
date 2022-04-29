@@ -25,6 +25,8 @@ def test_email_notification(mocker):
         "port": 123,
         "security": "use_tls",
         "from": "catalog@test.com",
+        "ssl_key": "keyval",
+        "ssl_cert": "certificate",
     }
     content = {
         "product": "feature product",
@@ -69,6 +71,9 @@ def test_email_notification(mocker):
         assert args["connection"].host == email_settings["host"]
         assert args["connection"].port == email_settings["port"]
         assert args["connection"].use_tls is True
+        assert args["connection"].timeout == 20
+        assert args["connection"].ssl_keyfile is not None
+        assert args["connection"].ssl_certfile is not None
         assert bool("</html>" in args["html_message"]) is True
         assert bool("$" in args["html_message"]) is False
         assert request.state == "notified"
