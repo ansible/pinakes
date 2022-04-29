@@ -1,0 +1,376 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-05-05 11:45+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: pinakes/common/image_mixin.py:43
+msgid "{} object has no attribute 'icon'."
+msgstr "{} 对象没有属性 'icon'。"
+
+#: pinakes/common/image_mixin.py:69
+msgid "Icon attribute has been set on {} object (id: {})."
+msgstr "{} 对象(id: {})上设置了 icon 属性。"
+
+#: pinakes/common/image_mixin.py:95 pinakes/common/image_mixin.py:123
+msgid "Icon attribute has not been set on {} object (id: {})."
+msgstr "{} 对象(id: {})上尚未设置 icon 属性。"
+
+#: pinakes/main/analytics/analytics_collectors.py:21
+msgid "General platform configuration."
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:60
+msgid "Data on sources"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:84
+msgid "Data on service_offerings"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:114
+msgid "Data on service_offering_nodes"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:145
+msgid "Data on service_instances"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:175
+msgid "Data on service_inventories"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:204
+msgid "Data on portfolios"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:231
+msgid "Data on portfolio_items"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:262
+msgid "Data on orders"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:289
+msgid "Data on order_items"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:323
+msgid "Data on approval_requests"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:350
+msgid "Data on service_plans"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:378
+msgid "Data on templates"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:402
+msgid "Data on workflows"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:429
+msgid "Data on requests"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:464
+msgid "Data on actions"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:490
+msgid "Data on tag_links"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:517
+msgid "Data on groups"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:539
+msgid "Counts of orders by products"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:576
+msgid "Counts of tags by portfolios"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:610
+msgid "Counts of tags by products"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:644
+msgid "Counts of tags by service_intentories"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:678
+msgid "Order data by product"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:777
+msgid "Approval request time spent by group"
+msgstr ""
+
+#: pinakes/main/approval/exceptions.py:8
+msgid "Insufficient query parameters"
+msgstr "查询参数不足"
+
+#: pinakes/main/approval/exceptions.py:13
+msgid "Invalid State Transition"
+msgstr "无效的状态转换"
+
+#: pinakes/main/approval/exceptions.py:18
+msgid "Field cannot be blank"
+msgstr "字段不能为空"
+
+#: pinakes/main/approval/exceptions.py:23
+msgid "Duplicated UUID for approver groups"
+msgstr "批准者组的重复 UUID"
+
+#: pinakes/main/approval/exceptions.py:28
+msgid "Group has no approver role"
+msgstr "组没有批准者角色"
+
+#: pinakes/main/approval/exceptions.py:33
+msgid "Group does not exist"
+msgstr "组不存在"
+
+#: pinakes/main/approval/services/create_action.py:49
+msgid "The memo message cannot be blank"
+msgstr "memo 信息不能为空"
+
+#: pinakes/main/approval/services/create_action.py:56
+msgid "Current request is not pending state"
+msgstr "当前请求不是待处理状态"
+
+#: pinakes/main/approval/services/create_action.py:64
+msgid "Current request is not started state"
+msgstr "当前请求不是启动状态"
+
+#: pinakes/main/approval/services/create_action.py:72
+msgid "Current request is not in pending state"
+msgstr "当前请求没有处于待处理状态"
+
+#: pinakes/main/approval/services/create_action.py:80
+#: pinakes/main/approval/services/create_action.py:97
+msgid "Current request is not in notified state"
+msgstr "当前请求没有处于通知状态"
+
+#: pinakes/main/approval/services/create_action.py:85
+msgid "Only child level request can be approved"
+msgstr "只有子级别请求才可以被批准"
+
+#: pinakes/main/approval/services/create_action.py:102
+msgid "Only child level request can be denied"
+msgstr "只有子级别请求才可以被拒绝"
+
+#: pinakes/main/approval/services/create_action.py:107
+msgid "A reason has to be provided if a request is being denied"
+msgstr "如果请求被拒绝，则必须提供原因"
+
+#: pinakes/main/approval/services/create_action.py:119
+msgid "Only root level request can be canceled"
+msgstr "只有根级别请求才能取消"
+
+#: pinakes/main/approval/services/create_action.py:124
+msgid "The request has already finished"
+msgstr "请求已完成"
+
+#: pinakes/main/approval/services/create_action.py:136
+msgid "Current request has already finished"
+msgstr "当前请求已完成"
+
+#: pinakes/main/approval/services/create_action.py:140
+msgid "Failure reason is missing"
+msgstr "缺少故障原因"
+
+#: pinakes/main/approval/services/create_action.py:144
+msgid "Only child level request can be flagged error"
+msgstr "只有子级别请求可以被标记为错误"
+
+#: pinakes/main/approval/services/email_notification.py:91
+msgid "Failed to email group {}"
+msgstr ""
+
+#: pinakes/main/approval/services/update_request.py:19
+msgid "Auto-approved"
+msgstr "自动批准"
+
+#: pinakes/main/approval/validations.py:56
+msgid "Group id {} does not exist"
+msgstr ""
+
+#: pinakes/main/approval/validations.py:64
+msgid "Group {} does not have approver role"
+msgstr ""
+
+#: pinakes/main/approval/views.py:189
+msgid "Insufficient resource object params: {}"
+msgstr "不足的资源对象参数：{}"
+
+#: pinakes/main/catalog/exceptions.py:8
+msgid "Bad query parameters"
+msgstr "错误的查询参数"
+
+#: pinakes/main/catalog/exceptions.py:13
+msgid "Invalid survey"
+msgstr "无效的问卷调查"
+
+#: pinakes/main/catalog/exceptions.py:18
+msgid "Uncancelable Order"
+msgstr ""
+
+#: pinakes/main/catalog/models.py:532
+msgid "Created Approval Request ref: {}. Catalog approval request id: {}"
+msgstr "创建的批准请求 ref: {}。目录批准请求 id: {}"
+
+#: pinakes/main/catalog/services/cancel_order.py:61
+msgid "Order {} is not cancelable in its current state: {}"
+msgstr ""
+
+#: pinakes/main/catalog/services/collect_tag_resources.py:62
+msgid "Portfolio item {} does not have related service offering"
+msgstr "portfolio 项 {} 没有相关的服务"
+
+#: pinakes/main/catalog/services/copy_portfolio_item.py:49
+msgid "{} is not orderable, and cannot be copied"
+msgstr "{} 是不可订购的，无法复制"
+
+#: pinakes/main/catalog/services/finish_order.py:32
+msgid "Order {} has failed"
+msgstr "订购 {} 失败"
+
+#: pinakes/main/catalog/services/finish_order.py:37
+msgid "Order {} is completed"
+msgstr "订购 {} 完成"
+
+#: pinakes/main/catalog/services/finish_order.py:54
+msgid "This order item has failed due to the entire order {} before it ran"
+msgstr "因为整个订购 {} 的原因，这个订购在运行前失败"
+
+#: pinakes/main/catalog/services/finish_order_item.py:35
+msgid "Order Item {} is completed"
+msgstr "订购项 {} 已完成"
+
+#: pinakes/main/catalog/services/handle_approval_events.py:106
+msgid "Approval Request finished with status '{}'"
+msgstr "批准请求完成状态为 '{}'"
+
+#: pinakes/main/catalog/services/handle_approval_events.py:113
+msgid "Approval Request finished with status '{}' and reason '{}'"
+msgstr "批准请求完成状态为 '{}'，原因为 '{}'"
+
+#: pinakes/main/catalog/services/sanitize_parameters.py:42
+msgid "parameter {} is required and must have a value"
+msgstr "参数 {} 是必需的，必须有一个值"
+
+#: pinakes/main/catalog/services/start_order_item.py:54
+msgid "Submitting Order Item {} for provisioning"
+msgstr "提交用于置备的订购项 {}"
+
+#: pinakes/main/catalog/services/submit_approval_request.py:57
+msgid "Failed to submit request to approval for Order {}, error: {}"
+msgstr "提交请求以批准订购 {} 失败，错误：{}"
+
+#: pinakes/main/catalog/services/validate_order_item.py:45
+msgid ""
+"The underlying survey on product {} in the portfolio {} has been changed and "
+"is no longer valid, please contact an administrator to fix it."
+msgstr "产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修复。"
+
+#: pinakes/main/catalog/views.py:511
+msgid "Order {} does not have related order items"
+msgstr "订购 {} 没有相关的订购项"
+
+#: pinakes/main/catalog/views.py:519
+msgid "Computed tags for order {}: {}"
+msgstr "订单 {} 的计算标签：{}"
+
+#: pinakes/main/inventory/exceptions.py:8
+msgid "Refresh already registered"
+msgstr "刷新已注册"
+
+#: pinakes/main/inventory/serializers.py:49
+#, python-format
+msgid "%(name)s is unavailable, refresh skipped"
+msgstr "%(name)s无法使用，暂停更新"
+
+#: pinakes/main/inventory/serializers.py:54
+#, python-format
+msgid "Refresh faild: %(error)s"
+msgstr "更新错误: %(error)s"
+
+#: pinakes/main/inventory/serializers.py:73
+#, python-format
+msgid "Service Inventories: %(stats)s;\n"
+msgstr "服务清单：%(stats)s;\n"
+
+#: pinakes/main/inventory/serializers.py:78
+#, python-format
+msgid "Job Templates & Workflows: %(soi_stats)s;\n"
+msgstr "工作模版 & 流程：%(soi_stats)s;\n"
+
+#: pinakes/main/inventory/serializers.py:83
+#, python-format
+msgid "Workflow Template Nodes: %(son_stats)s;\n"
+msgstr "流程模版节点：%(son_stats)s;\n"
+
+#: pinakes/main/inventory/serializers.py:90
+msgid "Nothing to update"
+msgstr "没有变化，不需要更新"
+
+#: pinakes/main/inventory/serializers.py:98
+#, python-format
+msgid "Error: %(error)s"
+msgstr "错误: %(error)s"
+
+#: pinakes/main/inventory/services/collect_inventory_tags.py:38
+msgid "ServiceOffering object {} not found"
+msgstr "ServiceOffering 对象 {} 未找到"
+
+#: pinakes/main/inventory/services/get_service_offering.py:34
+msgid "Failed to get service offering [{}]"
+msgstr "获取服务产品失败 [{}]"
+
+#: pinakes/main/inventory/task_utils/check_source_availability.py:50
+msgid "Check availability completed"
+msgstr "可使用性检查完毕"
+
+#: pinakes/main/inventory/task_utils/launch_job.py:69
+#, python-format
+msgid "Job %(id)s has %(status)s status"
+msgstr ""
+
+#: pinakes/main/inventory/views.py:89
+msgid "Refresh job {} is already {}, please try again later"
+msgstr "刷新作业 {} 已是 {}，请稍后重试"
+
+#: pinakes/main/models.py:66
+msgid "Done"
+msgstr "完成"
+
+#: pinakes/main/models.py:67
+msgid "InProgress"
+msgstr "进行中"
+
+#: pinakes/main/models.py:68
+msgid "Failed"
+msgstr "失败"
+
+#: pinakes/main/models.py:69
+msgid "Unknown"
+msgstr "未知"
