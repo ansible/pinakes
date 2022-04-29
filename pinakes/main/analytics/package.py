@@ -9,19 +9,17 @@ class Package(InsightsAnalyticsPackage):
     def _tarname_base(self):
         timestamp = self.collector.gather_until
         # TODO: replace test with {settings.SYSTEM_UUID}
-        return f'test-{timestamp.strftime("%Y-%m-%d-%H%M%S%z")}'
+        return f'pinake-{timestamp.strftime("%Y-%m-%d-%H%M%S%z")}'
 
     def get_ingress_url(self):
         return getattr(settings, "PINAKES_INSIGHTS_URL", None)
 
-    def _get_rh_user(self):
-        return getattr(settings, "PINAKES_INSIGHTS_USERNAME", None)
-
-    def _get_rh_password(self):
-        return getattr(settings, "PINAKES_INSIGHTS_PASSWORD", None)
+    def shipping_auth_mode(self):
+        return InsightsAnalyticsPackage.SHIPPING_AUTH_CERTIFICATES
 
     def _get_http_request_headers(self):
         return {
             "Content-Type": self.PAYLOAD_CONTENT_TYPE,
-            "User-Agent": "python-requests/2.25.1 Pinakes-metrics-agent",
+            # TODO: add version string later
+            "User-Agent": "Pinakes-metrics-agent",
         }

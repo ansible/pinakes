@@ -90,16 +90,6 @@ spec:
                 configMapKeyRef:
                   name: ansible-insights-env
                   key: PINAKES_INSIGHTS_URL
-            - name: PINAKES_INSIGHTS_USERNAME
-              valueFrom:
-                configMapKeyRef:
-                  name: ansible-insights-env
-                  key: PINAKES_INSIGHTS_USERNAME
-            - name: PINAKES_INSIGHTS_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  name: ansible-insights-env
-                  key: PINAKES_INSIGHTS_PASSWORD
           image: localhost/pinakes
           imagePullPolicy: Never
           name: scheduler

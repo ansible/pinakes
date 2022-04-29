@@ -30,31 +30,10 @@ fi
 # Set the environment variable for accessing insights service
 # export PINAKES_INSIGHTS_TRACKING_STATE=True|False
 # export PINAKES_INSIGHTS_URL=<<your insights url>>
-# export PINAKES_INSIGHTS_USERNAME=<<your insights username>>
-# export PINAKES_INSIGHTS_PASSWORD=<<your insights password>>
 
 # Check if metrics collection is turned on
 PINAKES_INSIGHTS_TRACKING_STATE=${PINAKES_INSIGHTS_TRACKING_STATE:-False}
-PINAKES_INSIGHTS_URL=${PINAKES_INSIGHTS_URL:-}
-PINAKES_INSIGHTS_USERNAME=${PINAKES_INSIGHTS_USERNAME:-}
-PINAKES_INSIGHTS_PASSWORD=${PINAKES_INSIGHTS_PASSWORD:-}
-
-if [[ "${PINAKES_INSIGHTS_TRACKING_STATE}" = "True" ]]; then
-  if [[ -z "${PINAKES_INSIGHTS_URL}" ]]; then
-    echo "Error: Environment variable PINAKES_INSIGHTS_URL is not set."
-    exit 1
-  fi
-
-  if [[ -z "${PINAKES_INSIGHTS_USERNAME}" ]]; then
-    echo "Error: Environment variable PINAKES_INSIGHTS_USERNAME is not set."
-    exit 1
-  fi
-
-  if [[ -z "${PINAKES_INSIGHTS_PASSWORD}" ]]; then
-    echo "Error: Environment variable PINAKES_INSIGHTS_PASSWORD is not set."
-    exit 1
-  fi
-fi
+PINAKES_INSIGHTS_URL=${PINAKES_INSIGHTS_URL:-https://cert.cloud.redhat.com/api/ingress/v1/upload}
 
 if ! kubectl get namespace catalog &>/dev/null; then
 	kubectl create namespace catalog
@@ -110,9 +89,7 @@ kubectl create configmap \
     --namespace=catalog \
     ansible-insights-env \
     --from-literal=PINAKES_INSIGHTS_TRACKING_STATE="$PINAKES_INSIGHTS_TRACKING_STATE" \
-    --from-literal=PINAKES_INSIGHTS_URL="$PINAKES_INSIGHTS_URL" \
-    --from-literal=PINAKES_INSIGHTS_USERNAME="$PINAKES_INSIGHTS_USERNAME" \
-    --from-literal=PINAKES_INSIGHTS_PASSWORD="$PINAKES_INSIGHTS_PASSWORD"
+    --from-literal=PINAKES_INSIGHTS_URL="$PINAKES_INSIGHTS_URL"
 
 # Build the image if the user hasn't built it yet
 if ! minikube image ls | grep pinakes:latest; then
