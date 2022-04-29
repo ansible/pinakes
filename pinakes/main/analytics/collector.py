@@ -22,21 +22,13 @@ class AnalyticsCollector(Collector):
 
     def _is_shipping_configured(self):
         if not settings.PINAKES_INSIGHTS_TRACKING_STATE:
-            self.logger.error(
+            self.logger.warning(
                 "Insights for Automation Service Catalog is not enabled."
             )
             return False
 
         if not settings.PINAKES_INSIGHTS_URL:
-            self.logger.error("AUTOMATION_ANALYTICS_URL is not set")
-            return False
-
-        if not settings.PINAKES_INSIGHTS_USERNAME:
-            self.logger.error("PINAKES_INSIGHTS_USERNAME is not set")
-            return False
-
-        if not settings.PINAKES_INSIGHTS_PASSWORD:
-            self.logger.error("PINAKES_INSIGHTS_PASSWORD is not set")
+            self.logger.error("PINAKES_INSIGHTS_URL is not set")
             return False
 
         return True

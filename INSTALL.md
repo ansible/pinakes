@@ -87,21 +87,10 @@ ansible-playbook [path to your custom conf, eg: tools/keycloak_setup/dev.yml]
 
 
 ### Metrics collection setup
-Several environment variables must be configured in order to allow Pinakes to upload the collected data to the insights ingress service periodically.
-
-- some environment variables are needed:
+In order to allow Pinakes to upload the collected data to the insights ingress service periodically, the environment variable PINAKES_INSIGHTS_TRACKING_STATE needs to be set to True.
+- Enable metrics collection
 ```
-# enable metrics collection
 export PINAKES_INSIGHTS_TRACKING_STATE=True
-
-# insights service url
-export PINAKES_INSIGHTS_URL=https://[your-insights-service-url]
-
-# insights service user name
-export PINAKES_INSIGHTS_USERNAME=insight_username
-
-# insights service password
-export PINAKES_INSIGHTS_PASSWORD=insight_username
 ```
 
 - Configure to run collection periodically:
