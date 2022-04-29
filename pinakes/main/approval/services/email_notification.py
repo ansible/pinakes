@@ -96,6 +96,7 @@ class EmailNotification:
         params = {
             "approval_id": self.request.id,
             "approver_name": f"{approver.firstName} {approver.lastName}",
+            "group_name": self.request.group_name,
             "orderer_email": self.request.user.email,
             "requester_name": self.request.requester_name,
             "order_id": content["order_id"],
