@@ -27,6 +27,14 @@ if [[ -z "${PINAKES_CONTROLLER_VERIFY_SSL}" ]]; then
   exit 1
 fi
 
+# Set the environment variable for accessing insights service
+# export PINAKES_INSIGHTS_TRACKING_STATE=True|False
+# export PINAKES_INSIGHTS_URL=<<your insights url>>
+
+# Check if metrics collection is turned on
+PINAKES_INSIGHTS_TRACKING_STATE=${PINAKES_INSIGHTS_TRACKING_STATE:-False}
+PINAKES_INSIGHTS_URL=${PINAKES_INSIGHTS_URL:-https://cert.cloud.redhat.com/api/ingress/v1/upload}
+
 if ! kubectl get namespace catalog &>/dev/null; then
 	kubectl create namespace catalog
 fi
@@ -53,6 +61,10 @@ if kubectl get configmap --namespace=catalog ansible-controller-env &>/dev/null;
 	kubectl delete --namespace=catalog configmap ansible-controller-env
 fi
 
+if kubectl get configmap --namespace=catalog ansible-insights-env &>/dev/null; then
+	kubectl delete --namespace=catalog configmap ansible-insights-env
+fi
+
 # Override Keycloak image files
 tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
 cp ./tools/keycloak_setup/login_theme/* "$tmp_dir"
@@ -72,6 +84,12 @@ kubectl create configmap \
     --from-literal=PINAKES_CONTROLLER_URL="$PINAKES_CONTROLLER_URL" \
     --from-literal=PINAKES_CONTROLLER_TOKEN="$PINAKES_CONTROLLER_TOKEN" \
     --from-literal=PINAKES_CONTROLLER_VERIFY_SSL="$PINAKES_CONTROLLER_VERIFY_SSL"
+
+kubectl create configmap \
+    --namespace=catalog \
+    ansible-insights-env \
+    --from-literal=PINAKES_INSIGHTS_TRACKING_STATE="$PINAKES_INSIGHTS_TRACKING_STATE" \
+    --from-literal=PINAKES_INSIGHTS_URL="$PINAKES_INSIGHTS_URL"
 
 # Build the image if the user hasn't built it yet
 if ! minikube image ls | grep pinakes:latest; then
