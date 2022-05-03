@@ -218,11 +218,15 @@ class UpdateRequest:
     def _should_auto_approve(self):
         if self.request.is_parent():
             return False
+        if self._group_approved():
+            return True
         return not bool(self.request.workflow)
 
     def _should_auto_notify(self):
         if self.request.is_parent():
             return False
+        if self._group_approved():
+            return True
         return not self._external_processable()
 
     def _external_processable(self):
@@ -230,3 +234,15 @@ class UpdateRequest:
             self.request.workflow
             and self.request.workflow.template.process_method
         )
+
+    def _group_approved(self):
+        """if the current group already approved another leaf request"""
+        if not self.request.group_ref or self.request.is_parent():
+            return False
+        for leaf in self._leaves():
+            if (
+                self.request.group_ref == leaf.group_ref
+                and leaf.decision == Request.Decision.APPROVED
+            ):
+                return True
+        return False
