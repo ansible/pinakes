@@ -53,7 +53,7 @@ class ServiceOffering(TowerModel):
     Job Templates and Workflows.
     """
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=512)
     description = models.TextField(blank=True, default="")
     service_inventory = models.ForeignKey(
         ServiceInventory, on_delete=models.SET_NULL, blank=True, null=True

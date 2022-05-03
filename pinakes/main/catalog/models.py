@@ -91,6 +91,7 @@ class PortfolioItem(KeycloakMixin, ImageableModel, UserOwnedModel):
     """Portfolio Item represent a Job Template or a Workflow."""
 
     KEYCLOAK_TYPE = "catalog:portfolio"
+    MAX_PORTFOLIO_ITEM_LENGTH = 512
 
     favorite = models.BooleanField(
         default=False, help_text="Definition of a favorite portfolio item"
@@ -122,7 +123,8 @@ class PortfolioItem(KeycloakMixin, ImageableModel, UserOwnedModel):
         help_text="The source reference this portfolio item was created from",
     )
     name = models.CharField(
-        max_length=64, help_text="Name of the portfolio item"
+        max_length=MAX_PORTFOLIO_ITEM_LENGTH,
+        help_text="Name of the portfolio item",
     )
     long_description = models.TextField(
         blank=True,

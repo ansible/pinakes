@@ -107,7 +107,11 @@ class CopyPortfolioItem:
         ]
 
         return (
-            name.create_copy_name(self.name, portfolio_item_names)
+            name.create_copy_name(
+                self.name,
+                portfolio_item_names,
+                PortfolioItem.MAX_PORTFOLIO_ITEM_LENGTH,
+            )
             if self.name in portfolio_item_names
             else self.name
         )
