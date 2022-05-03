@@ -315,14 +315,22 @@ LOGGING = {
 LOGIN_URL = "/login/keycloak/"
 
 # Django Redis Queue Information
-RQ_QUEUES = {
-    "default": {
-        "HOST": env.str("PINAKES_REDIS_HOST", default="localhost"),
-        "PORT": env.int("PINAKES_REDIS_PORT", default=6379),
-        "DB": env.int("PINAKES_REDIS_DB", default=0),
-        "DEFAULT_TIMEOUT": 360,
-    },
-}
+if "PINAKES_REDIS_UNIX_SOCKET_PATH" in env:
+    RQ_QUEUES = {
+        "default": {
+            "UNIX_SOCKET_PATH": env.str("PINAKES_REDIS_UNIX_SOCKET_PATH"),
+        },
+    }
+else:
+    RQ_QUEUES = {
+        "default": {
+            "HOST": env.str("PINAKES_REDIS_HOST", default="localhost"),
+            "PORT": env.int("PINAKES_REDIS_PORT", default=6379),
+        },
+    }
+
+RQ_QUEUES["default"]["DB"] = env.int("PINAKES_REDIS_DB", default=0)
+RQ_QUEUES["default"]["DEFAULT_TIMEOUT"] = 360
 
 # RQ Cron Jobs setting
 STARTUP_RQ_JOBS = [
