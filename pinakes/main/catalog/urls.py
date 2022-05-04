@@ -9,7 +9,8 @@ from pinakes.main.catalog.views import (
     OrderItemViewSet,
     PortfolioViewSet,
     PortfolioItemViewSet,
-    ProgressMessageViewSet,
+    OrderProgressMessageViewSet,
+    OrderItemProgressMessageViewSet,
     TenantViewSet,
 )
 
@@ -68,7 +69,7 @@ orders.register(
 )
 orders.register(
     r"progress_messages",
-    ProgressMessageViewSet,
+    OrderProgressMessageViewSet,
     basename="order-progressmessage",
     parents_query_lookups=["messageable"],
 )
@@ -83,7 +84,7 @@ order_items = router.register(
 )
 order_items.register(
     r"progress_messages",
-    ProgressMessageViewSet,
+    OrderItemProgressMessageViewSet,
     basename="orderitem-progressmessage",
     parents_query_lookups=["messageable"],
 )
