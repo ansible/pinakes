@@ -43,6 +43,8 @@ from pinakes.main.catalog.models import (
     Portfolio,
     PortfolioItem,
     ProgressMessage,
+    Order,
+    OrderItem,
 )
 from pinakes.main.catalog import permissions
 from pinakes.main.catalog.serializers import (
@@ -680,12 +682,15 @@ class ApprovalRequestViewSet(
         ),
     ),
 )
-class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class _BaseProgressMessageViewSet(
+    NestedViewSetMixin, KeycloakPermissionMixin, viewsets.ModelViewSet
+):
     """API endpoint for listing progress messages."""
 
     serializer_class = ProgressMessageSerializer
     http_method_names = ["get"]
     permission_classes = (IsAuthenticated,)
+    keycloak_permission = permissions.ProgressMessagePermission
     ordering = ("-id",)
     filterset_fields = (
         "received_at",
@@ -693,20 +698,27 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         "created_at",
         "updated_at",
     )
+    messageable_model = None
+
+    @property
+    def messageable_type(self) -> str:
+        return self.messageable_model.__name__
 
     def get_queryset(self):
-        """return queryset based on messageable_type"""
-
-        path_splits = self.request.path.split("/")
-        parent_type = path_splits[path_splits.index("progress_messages") - 2]
-        messageable_id = self.kwargs.get("messageable_id")
-        messageable_type = "Order" if parent_type == "orders" else "OrderItem"
-
+        messageable_id = self.kwargs["messageable_id"]
         return ProgressMessage.objects.filter(
             tenant=Tenant.current(),
-            messageable_type=messageable_type,
+            messageable_type=self.messageable_type,
             messageable_id=messageable_id,
         )
+
+
+class OrderProgressMessageViewSet(_BaseProgressMessageViewSet):
+    messageable_model = Order
+
+
+class OrderItemProgressMessageViewSet(_BaseProgressMessageViewSet):
+    messageable_model = OrderItem
 
 
 @extend_schema_view(
