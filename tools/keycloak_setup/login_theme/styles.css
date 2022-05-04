@@ -1,3 +1,24 @@
+:root {
+  	--theme: #259adb;
+}
+
 .login-pf body {
 	background-image: url('../img/background.png');
+}
+#kc-header-wrapper {
+	color: var(--theme);
+	font-size: var(--pf-global--FontSize--3xl);
+	font-weight: var(--pf-global--FontWeight--semi-bold);
+}
+.card-pf {
+	border-color: var(--theme);
+}
+.pf-m-primary {
+    --pf-c-button--m-primary--BackgroundColor: var(--theme);
+}
+.pf-c-form-control:focus-visible {
+	outline-color: var(--theme);
+}
+.pf-c-form-control:hover {
+	border-bottom-color: var(--theme);
 }
