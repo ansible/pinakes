@@ -210,11 +210,12 @@ class ProgressMessage(KeycloakMixin, BaseModel):
     )
     messageable_type = models.CharField(
         max_length=64,
-        null=True,
+        editable=False,
         help_text="Identify order or order item that this message belongs to",
     )
     messageable_id = models.IntegerField(
-        editable=False, null=True, help_text="ID of the order or order item"
+        editable=False,
+        help_text="ID of the order or order item",
     )
 
     class Meta:
