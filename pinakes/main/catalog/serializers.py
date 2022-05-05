@@ -2,6 +2,7 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
+from pinakes.common.fields import MetadataField
 from pinakes.main.models import Tenant, Image
 from pinakes.main.common.models import Group
 from pinakes.main.catalog.models import (
@@ -36,11 +37,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
         "get_icon_url", allow_null=True
     )
 
-    metadata = serializers.JSONField(
-        read_only=True,
-        help_text="JSON Metadata about the portfolio",
-        default={},
-    )
+    metadata = MetadataField(help_text="JSON Metadata about the portfolio")
 
     class Meta:
         model = Portfolio
@@ -95,7 +92,7 @@ class CopyPortfolioSerializer(serializers.Serializer):
     )
 
 
-class PortfolioItemSerializer(serializers.ModelSerializer):
+class PortfolioItemSerializerBase(serializers.ModelSerializer):
     """PortfolioItem which maps to a Controller Job Template
     via the service_offering_ref"""
 
@@ -103,10 +100,9 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
         "get_icon_url", allow_null=True
     )
 
-    metadata = serializers.JSONField(
-        read_only=True,
+    metadata = MetadataField(
+        user_capabilities_field=None,
         help_text="JSON Metadata about the portfolio item",
-        default={},
     )
 
     class Meta:
@@ -137,6 +133,12 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
         )
 
 
+class PortfolioItemSerializer(PortfolioItemSerializerBase):
+    metadata = MetadataField(
+        help_text="JSON Metadata about the portfolio item"
+    )
+
+
 class CopyPortfolioItemSerializer(serializers.Serializer):
     """Parameters to copy a portfolio item"""
 
@@ -149,26 +151,25 @@ class CopyPortfolioItemSerializer(serializers.Serializer):
     )
 
 
-class OrderItemFields:
-    FIELDS = (
-        "id",
-        "name",
-        "count",
-        "service_parameters",
-        "provider_control_parameters",
-        "state",
-        "portfolio_item",
-        "order",
-        "service_instance_ref",
-        "inventory_service_plan_ref",
-        "inventory_task_ref",
-        "external_url",
-        "owner",
-        "order_request_sent_at",
-        "created_at",
-        "updated_at",
-        "completed_at",
-    )
+ORDER_ITEM_FIELDS = (
+    "id",
+    "name",
+    "count",
+    "service_parameters",
+    "provider_control_parameters",
+    "state",
+    "portfolio_item",
+    "order",
+    "service_instance_ref",
+    "inventory_service_plan_ref",
+    "inventory_task_ref",
+    "external_url",
+    "owner",
+    "order_request_sent_at",
+    "created_at",
+    "updated_at",
+    "completed_at",
+)
 
 
 class OrderItemExtraSerializer(serializers.Serializer):
@@ -177,23 +178,28 @@ class OrderItemExtraSerializer(serializers.Serializer):
     available only when query parameter extra=true
     """
 
-    portfolio_item = PortfolioItemSerializer(many=False)
+    portfolio_item = PortfolioItemSerializerBase(many=False)
 
 
-class OrderItemSerializer(serializers.ModelSerializer):
+class OrderItemSerializerBase(serializers.ModelSerializer):
     """OrderItem which keeps track of an execution of Portfolio Item"""
 
     owner = serializers.ReadOnlyField()
     extra_data = serializers.SerializerMethodField(
         "get_extra_data", read_only=True, allow_null=True
     )
+    metadata = MetadataField(
+        user_capabilities_field=None,
+        help_text="Order item metadata",
+    )
 
     class Meta:
         model = OrderItem
         fields = (
-            *OrderItemFields.FIELDS,
+            *ORDER_ITEM_FIELDS,
             "artifacts",
             "extra_data",
+            "metadata",
         )
         read_only_fields = ("created_at", "updated_at", "order", "name")
         extra_kwargs = {
@@ -220,12 +226,16 @@ class OrderItemSerializer(serializers.ModelSerializer):
         )
 
 
+class OrderItemSerializer(OrderItemSerializerBase):
+    metadata = MetadataField(help_text="Order item metadata")
+
+
 class OrderItemDocSerializer(serializers.ModelSerializer):
     """Workaround for OrderItem list params in openapi spec"""
 
     class Meta:
         model = OrderItem
-        fields = (*OrderItemFields.FIELDS,)
+        fields = ORDER_ITEM_FIELDS
         read_only_fields = (
             "created_at",
             "updated_at",
@@ -241,7 +251,7 @@ class OrderExtraSerializer(serializers.Serializer):
     available only when query parameter extra=true
     """
 
-    order_items = OrderItemSerializer(many=True)
+    order_items = OrderItemSerializerBase(many=True)
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -252,6 +262,8 @@ class OrderSerializer(serializers.ModelSerializer):
     extra_data = serializers.SerializerMethodField(
         "get_extra_data", allow_null=True, read_only=True
     )
+
+    metadata = MetadataField(help_text="Order metadata")
 
     class Meta:
         model = Order
@@ -264,6 +276,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "updated_at",
             "completed_at",
             "extra_data",
+            "metadata",
         )
         read_only_fields = ("created_at", "updated_at")
         extra_kwargs = {

@@ -10,6 +10,8 @@ from typing import (
     Optional,
     Any,
     List,
+    Iterator,
+    Tuple,
 )
 
 from django.conf import settings
@@ -32,7 +34,6 @@ from pinakes.common.auth.keycloak_django.utils import (
     make_resource_name,
     parse_resource_name,
 )
-
 
 WILDCARD_RESOURCE_ID = "all"
 
@@ -114,6 +115,40 @@ class BaseKeycloakPermission(_BasePermission):
             if policy.type == type_:
                 return policy.permission
         return None
+
+    def get_user_capabilities(
+        self, request: Request, view: Any, obj: Any
+    ) -> Dict[str, bool]:
+        """
+        Evaluates object permission checks for all available actions.
+
+        Returns a mapping of actions and respective permission
+        evaluation results.
+        """
+        permissions = {}
+        action_permissions = {}
+
+        policies = (
+            item
+            for item in _iter_access_policies(
+                self.get_access_policies(request, view)
+            )
+            if item[1].type == KeycloakPolicy.Type.OBJECT
+        )
+
+        for action, policy in policies:
+            permissions[policy.permission] = None
+            action_permissions[action] = policy.permission
+
+        for permission in permissions:
+            permissions[permission] = self.perform_check_object_permission(
+                permission, request, view, obj
+            )
+
+        return {
+            action: permissions[permission]
+            for action, permission in action_permissions.items()
+        }
 
     def has_permission(self, request: Request, view: Any) -> bool:
         if is_drf_renderer_request(request, view):
@@ -262,3 +297,13 @@ def get_permitted_resources(
     return PermittedResourcesResult(
         items=resource_ids, is_wildcard=is_wildcard
     )
+
+
+def _iter_access_policies(
+    policy_map: KeycloakPoliciesMap,
+) -> Iterator[Tuple[str, KeycloakPolicy]]:
+    for action, policy in policy_map.items():
+        if isinstance(policy, KeycloakPolicy):
+            yield action, policy
+        else:
+            yield from ((action, item) for item in policy)
