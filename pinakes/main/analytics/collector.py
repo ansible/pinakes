@@ -31,6 +31,21 @@ class AnalyticsCollector(Collector):
             self.logger.error("PINAKES_INSIGHTS_URL is not set")
             return False
 
+        if not settings.PINAKES_INSIGHTS_AUTH_METHOD:
+            self.logger.error("PINAKES_INSIGHTS_AUTH_METHOD is not set")
+            return False
+
+        if settings.PINAKES_INSIGHTS_AUTH_METHOD == "credential":
+            if (
+                settings.PINAKES_INSIGHTS_USERNAME == "unknown"
+                or settings.PINAKES_INSIGHTS_PASSWORD == "unknown"
+            ):
+                self.logger.error(
+                    "PINAKES_INSIGHTS_USERNAME and PINAKES_INSIGHTS_PASSWORD \
+are not set"
+                )
+                return False
+
         return True
 
     def _is_valid_license(self):
