@@ -248,7 +248,7 @@ class ProgressMessagePermission(BaseKeycloakPermission):
     ) -> bool:
         messageable_id = view.kwargs["messageable_id"]
         obj = get_object_or_404(view.messageable_model, pk=messageable_id)
-        if obj.owner == request.user:
+        if obj.user == request.user:
             return True
         return check_wildcard_permission(
             ProgressMessage.keycloak_type(),
