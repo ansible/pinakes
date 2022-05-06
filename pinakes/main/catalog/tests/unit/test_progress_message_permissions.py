@@ -38,7 +38,7 @@ def test_wildcard_is_owner(check_wildcard_permission):
     order = OrderFactory()
 
     request = mock.Mock()
-    request.user = order.owner
+    request.user = order.user
     view = mock.Mock(
         action="list",
         messageable_model=Order,
