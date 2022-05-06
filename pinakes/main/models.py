@@ -3,6 +3,7 @@ from django.db import models
 from django.db.utils import OperationalError
 from django.db.models.functions import Length
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_noop
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 models.CharField.register_lookup(Length)
@@ -61,10 +62,10 @@ class Source(models.Model):
     class State(models.TextChoices):
         """states for Source"""
 
-        DONE = "Done"
-        IN_PROGRESS = "InProgress"
-        FAILED = "Failed"
-        UNKNOWN = "Unknown"
+        DONE = gettext_noop("Done")
+        IN_PROGRESS = gettext_noop("InProgress")
+        FAILED = gettext_noop("Failed")
+        UNKNOWN = gettext_noop("Unknown")
 
     name = models.CharField(
         max_length=255, unique=True, help_text="Name of the source"
@@ -110,6 +111,11 @@ class Source(models.Model):
     )
     last_refresh_task_ref = models.CharField(
         max_length=64, null=True, help_text="The last refresh task id"
+    )
+    last_refresh_stats = models.JSONField(
+        blank=True,
+        default=dict(),
+        help_text="The result stats for the last source refresh",
     )
     availability_status = models.TextField(
         blank=True,

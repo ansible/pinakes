@@ -2,6 +2,7 @@
 import logging
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from pinakes.main.models import Source
 
@@ -32,6 +33,10 @@ class CheckSourceAvailability:
         )
 
         self.source.last_checked_at = timezone.now()
+        self.source.availability_status = "unknown"
+        self.source.availability_message = "Starting check availability"
+        self.source.save()
+
         try:
             svc = ControllerConfig(self.tower).process()
 
@@ -41,10 +46,12 @@ class CheckSourceAvailability:
             self.source.info["url"] = svc.tower.url
             self.source.last_available_at = timezone.now()
             self.source.availability_status = "available"
-            self.source.availability_message = "Check availability completed"
+            self.source.availability_message = _(
+                "Check availability completed"
+            )
         except Exception as error:
             self.source.availability_status = "unavailable"
-            self.source.availability_message = "Error: %s" % str(error)
+            self.source.availability_message = str(error)
             logger.error(
                 "Check availability failed on %s: %s",
                 self.tower.url,
@@ -53,9 +60,6 @@ class CheckSourceAvailability:
 
             # update refresh related fields in the same lock
             self.source.refresh_state = Source.State.FAILED
-            self.source.last_refresh_message = (
-                "{} is unavailable, refresh skipped".format(self.source.name)
-            )
         finally:
             self.source.last_checked_at = timezone.now()
 
