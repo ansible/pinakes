@@ -34,7 +34,7 @@ class CheckSourceAvailability:
 
         self.source.last_checked_at = timezone.now()
         self.source.availability_status = "unknown"
-        self.source.availability_message = "Start to check the availability"
+        self.source.availability_message = "Starting check availability"
         self.source.save()
 
         try:

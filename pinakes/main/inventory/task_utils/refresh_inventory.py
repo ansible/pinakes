@@ -70,7 +70,7 @@ class RefreshInventory:
             soi.process()
             self.source.last_refresh_stats[
                 "service_offering"
-            ] = sii.get_stats()
+            ] = soi.get_stats()
 
             son = ServiceOfferingNodeImport(
                 self.source.tenant, self.source, self.tower, sii, soi
@@ -79,7 +79,7 @@ class RefreshInventory:
             son.process()
             self.source.last_refresh_stats[
                 "service_offering_node"
-            ] = sii.get_stats()
+            ] = son.get_stats()
 
             self.source.last_successful_refresh_at = timezone.now()
             self.source.refresh_state = Source.State.DONE

@@ -3,27 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-<<<<<<< HEAD
-=======
-#, fuzzy
->>>>>>> 7cc91e4 (Add i18n support for source detail page)
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-<<<<<<< HEAD
 "POT-Creation-Date: 2022-04-24 22:44-0400\n"
-=======
-"POT-Creation-Date: 2022-05-05 11:45+0000\n"
->>>>>>> 7cc91e4 (Add i18n support for source detail page)
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
-<<<<<<< HEAD
-=======
-"MIME-Version: 1.0\n"
->>>>>>> 7cc91e4 (Add i18n support for source detail page)
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
@@ -39,8 +27,6 @@ msgstr "{} 对象(id: {})上设置了 icon 属性。"
 msgid "Icon attribute has not been set on {} object (id: {})."
 msgstr "{} 对象(id: {})上尚未设置 icon 属性。"
 
-<<<<<<< HEAD
-=======
 #: pinakes/main/analytics/analytics_collectors.py:21
 msgid "General platform configuration."
 msgstr ""
@@ -137,7 +123,6 @@ msgstr ""
 msgid "Approval request time spent by group"
 msgstr ""
 
->>>>>>> 7cc91e4 (Add i18n support for source detail page)
 #: pinakes/main/approval/exceptions.py:8
 msgid "Insufficient query parameters"
 msgstr "查询参数不足"
@@ -215,15 +200,9 @@ msgstr "缺少故障原因"
 msgid "Only child level request can be flagged error"
 msgstr "只有子级别请求可以被标记为错误"
 
-<<<<<<< HEAD
 #: pinakes/main/approval/services/email_notification.py:59
 msgid "Failed to email group {}"
 msgstr "为组 {} 发送电子邮件失败"
-=======
-#: pinakes/main/approval/services/email_notification.py:91
-msgid "Failed to email group {}"
-msgstr ""
->>>>>>> 7cc91e4 (Add i18n support for source detail page)
 
 #: pinakes/main/approval/services/update_request.py:19
 msgid "Auto-approved"
@@ -231,19 +210,11 @@ msgstr "自动批准"
 
 #: pinakes/main/approval/validations.py:56
 msgid "Group id {} does not exist"
-<<<<<<< HEAD
 msgstr "组 id {} 不存在"
 
 #: pinakes/main/approval/validations.py:64
 msgid "Group {} does not have approver role"
 msgstr "group {} 没有批准角色"
-=======
-msgstr ""
-
-#: pinakes/main/approval/validations.py:64
-msgid "Group {} does not have approver role"
-msgstr ""
->>>>>>> 7cc91e4 (Add i18n support for source detail page)
 
 #: pinakes/main/approval/views.py:189
 msgid "Insufficient resource object params: {}"
@@ -257,24 +228,18 @@ msgstr "错误的查询参数"
 msgid "Invalid survey"
 msgstr "无效的问卷调查"
 
-<<<<<<< HEAD
-=======
 #: pinakes/main/catalog/exceptions.py:18
 msgid "Uncancelable Order"
 msgstr ""
 
->>>>>>> 7cc91e4 (Add i18n support for source detail page)
-#: pinakes/main/catalog/models.py:532
+#: pinakes/main/catalog/models.py:534
 msgid "Created Approval Request ref: {}. Catalog approval request id: {}"
 msgstr "创建的批准请求 ref: {}。目录批准请求 id: {}"
 
-<<<<<<< HEAD
-=======
 #: pinakes/main/catalog/services/cancel_order.py:61
 msgid "Order {} is not cancelable in its current state: {}"
 msgstr ""
 
->>>>>>> 7cc91e4 (Add i18n support for source detail page)
 #: pinakes/main/catalog/services/collect_tag_resources.py:62
 msgid "Portfolio item {} does not have related service offering"
 msgstr "portfolio 项 {} 没有相关的服务"
@@ -323,21 +288,15 @@ msgstr "提交请求以批准订购 {} 失败，错误：{}"
 msgid ""
 "The underlying survey on product {} in the portfolio {} has been changed and "
 "is no longer valid, please contact an administrator to fix it."
-msgstr "产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修复。"
+msgstr ""
+"产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修"
+"复。"
 
-<<<<<<< HEAD
-#: pinakes/main/catalog/views.py:499
-msgid "Order {} does not have related order items"
-msgstr "订购 {} 没有相关的订购项"
-
-#: pinakes/main/catalog/views.py:507
-=======
 #: pinakes/main/catalog/views.py:511
 msgid "Order {} does not have related order items"
 msgstr "订购 {} 没有相关的订购项"
 
 #: pinakes/main/catalog/views.py:519
->>>>>>> 7cc91e4 (Add i18n support for source detail page)
 msgid "Computed tags for order {}: {}"
 msgstr "订单 {} 的计算标签：{}"
 
@@ -345,43 +304,52 @@ msgstr "订单 {} 的计算标签：{}"
 msgid "Refresh already registered"
 msgstr "刷新已注册"
 
-<<<<<<< HEAD
-=======
-#: pinakes/main/inventory/serializers.py:49
+#: pinakes/main/inventory/serializers.py:50
 #, python-format
 msgid "%(name)s is unavailable, refresh skipped"
 msgstr "%(name)s无法使用，暂停更新"
 
-#: pinakes/main/inventory/serializers.py:54
+#: pinakes/main/inventory/serializers.py:55
 #, python-format
 msgid "Refresh faild: %(error)s"
 msgstr "更新错误: %(error)s"
 
-#: pinakes/main/inventory/serializers.py:73
+#: pinakes/main/inventory/serializers.py:59
+msgid "adds"
+msgstr "增加"
+
+#: pinakes/main/inventory/serializers.py:60
+msgid "deletes"
+msgstr "删除"
+
+#: pinakes/main/inventory/serializers.py:61
+msgid "updates"
+msgstr "更新"
+
+#: pinakes/main/inventory/serializers.py:78
 #, python-format
 msgid "Service Inventories: %(stats)s;\n"
 msgstr "服务清单：%(stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:78
+#: pinakes/main/inventory/serializers.py:83
 #, python-format
 msgid "Job Templates & Workflows: %(soi_stats)s;\n"
 msgstr "工作模版 & 流程：%(soi_stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:83
+#: pinakes/main/inventory/serializers.py:88
 #, python-format
 msgid "Workflow Template Nodes: %(son_stats)s;\n"
 msgstr "流程模版节点：%(son_stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:90
+#: pinakes/main/inventory/serializers.py:92
 msgid "Nothing to update"
 msgstr "没有变化，不需要更新"
 
-#: pinakes/main/inventory/serializers.py:98
+#: pinakes/main/inventory/serializers.py:101
 #, python-format
 msgid "Error: %(error)s"
 msgstr "错误: %(error)s"
 
->>>>>>> 7cc91e4 (Add i18n support for source detail page)
 #: pinakes/main/inventory/services/collect_inventory_tags.py:38
 msgid "ServiceOffering object {} not found"
 msgstr "ServiceOffering 对象 {} 未找到"
@@ -390,11 +358,6 @@ msgstr "ServiceOffering 对象 {} 未找到"
 msgid "Failed to get service offering [{}]"
 msgstr "获取服务产品失败 [{}]"
 
-<<<<<<< HEAD
-#: pinakes/main/inventory/views.py:89
-msgid "Refresh job {} is already {}, please try again later"
-msgstr "刷新作业 {} 已是 {}，请稍后重试"
-=======
 #: pinakes/main/inventory/task_utils/check_source_availability.py:50
 msgid "Check availability completed"
 msgstr "可使用性检查完毕"
@@ -408,19 +371,18 @@ msgstr ""
 msgid "Refresh job {} is already {}, please try again later"
 msgstr "刷新作业 {} 已是 {}，请稍后重试"
 
-#: pinakes/main/models.py:66
+#: pinakes/main/models.py:65
 msgid "Done"
 msgstr "完成"
 
-#: pinakes/main/models.py:67
+#: pinakes/main/models.py:66
 msgid "InProgress"
 msgstr "进行中"
 
-#: pinakes/main/models.py:68
+#: pinakes/main/models.py:67
 msgid "Failed"
 msgstr "失败"
 
-#: pinakes/main/models.py:69
+#: pinakes/main/models.py:68
 msgid "Unknown"
 msgstr "未知"
->>>>>>> 7cc91e4 (Add i18n support for source detail page)
