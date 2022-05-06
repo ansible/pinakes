@@ -750,7 +750,10 @@ class OrderItemProgressMessageViewSet(_BaseProgressMessageViewSet):
     ),
 )
 class ServicePlanViewSet(
-    NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
+    NestedViewSetMixin,
+    KeycloakPermissionMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
 ):
     """API endpoint for listing and creating service plans"""
 
@@ -759,6 +762,7 @@ class ServicePlanViewSet(
     serializer_class = ServicePlanSerializer
     http_method_names = ["get", "patch", "post", "head"]
     permission_classes = (IsAuthenticated,)
+    keycloak_permission = permissions.ServicePlanPermission
     filter_backends = []  # no filtering is needed
     parent_field_names = ("portfolio_item",)
 
