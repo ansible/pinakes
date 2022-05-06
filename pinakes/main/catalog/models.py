@@ -181,8 +181,10 @@ class PortfolioItem(KeycloakMixin, ImageableModel, UserOwnedModel):
         return self.name
 
 
-class ProgressMessage(BaseModel):
+class ProgressMessage(KeycloakMixin, BaseModel):
     """Progress Message Model"""
+
+    KEYCLOAK_TYPE = "catalog:progress_message"
 
     class Level(models.TextChoices):
         """Available levels for ProgressMessage"""

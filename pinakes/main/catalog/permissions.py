@@ -11,7 +11,12 @@ from pinakes.common.auth.keycloak_django.permissions import (
     check_object_permission,
     get_permitted_resources,
 )
-from pinakes.main.catalog.models import Portfolio, PortfolioItem, Order
+from pinakes.main.catalog.models import (
+    Portfolio,
+    PortfolioItem,
+    Order,
+    ProgressMessage,
+)
 
 
 class PortfolioPermission(BaseKeycloakPermission):
@@ -228,6 +233,25 @@ class OrderItemPermission(BaseKeycloakPermission):
             return True
         return check_wildcard_permission(
             order.keycloak_type(),
+            permission,
+            request,
+        )
+
+
+class ProgressMessagePermission(BaseKeycloakPermission):
+    access_policies = {
+        "list": KeycloakPolicy("read", KeycloakPolicy.Type.WILDCARD),
+    }
+
+    def perform_check_permission(
+        self, permission: str, request: Request, view: Any
+    ) -> bool:
+        messageable_id = view.kwargs["messageable_id"]
+        obj = get_object_or_404(view.messageable_model, pk=messageable_id)
+        if obj.owner == request.user:
+            return True
+        return check_wildcard_permission(
+            ProgressMessage.keycloak_type(),
             permission,
             request,
         )
