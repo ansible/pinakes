@@ -15,7 +15,19 @@ class Package(InsightsAnalyticsPackage):
         return getattr(settings, "PINAKES_INSIGHTS_URL", None)
 
     def shipping_auth_mode(self):
-        return InsightsAnalyticsPackage.SHIPPING_AUTH_CERTIFICATES
+        auth_method = getattr(settings, "PINAKES_INSIGHTS_AUTH_METHOD")
+
+        return (
+            Package.SHIPPING_AUTH_CERTIFICATES
+            if auth_method == "certificate"
+            else Package.SHIPPING_AUTH_USERPASS
+        )
+
+    def _get_rh_user(self):
+        return getattr(settings, "PINAKES_INSIGHTS_USERNAME", "unknown")
+
+    def _get_rh_password(self):
+        return getattr(settings, "PINAKES_INSIGHTS_PASSWORD", "unknown")
 
     def _get_http_request_headers(self):
         return {

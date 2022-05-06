@@ -431,10 +431,29 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 PINAKES_INSIGHTS_TRACKING_STATE = env.bool(
     "PINAKES_INSIGHTS_TRACKING_STATE", False
 )
-PINAKES_INSIGHTS_URL = env.str(
-    "PINAKES_INSIGHTS_URL",
-    default="https://cert.cloud.redhat.com/api/ingress/v1/upload",
+PINAKES_INSIGHTS_AUTH_METHOD = env.str(
+    "PINAKES_INSIGHTS_AUTH_METHOD",
+    default="certificate",
 )
+
+if PINAKES_INSIGHTS_AUTH_METHOD == "certificate":
+    PINAKES_INSIGHTS_URL = env.str(
+        "PINAKES_INSIGHTS_URL",
+        default="https://cert.cloud.redhat.com/api/ingress/v1/upload",
+    )
+else:
+    PINAKES_INSIGHTS_URL = env.str(
+        "PINAKES_INSIGHTS_URL",
+        default="https://cloud.redhat.com/api/ingress/v1/upload",
+    )
+    PINAKES_INSIGHTS_USERNAME = env.str(
+        "PINAKES_INSIGHTS_USERNAME",
+        default="unknown",
+    )
+    PINAKES_INSIGHTS_PASSWORD = env.str(
+        "PINAKES_INSIGHTS_PASSWORD",
+        default="unknown",
+    )
 
 if PINAKES_INSIGHTS_TRACKING_STATE:
     STARTUP_RQ_JOBS.append(

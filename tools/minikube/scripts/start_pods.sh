@@ -28,12 +28,20 @@ if [[ -z "${PINAKES_CONTROLLER_VERIFY_SSL}" ]]; then
 fi
 
 # Set the environment variable for accessing insights service
+# export PINAKES_INSIGHTS_AUTH_METHOD=certificate|credential
 # export PINAKES_INSIGHTS_TRACKING_STATE=True|False
 # export PINAKES_INSIGHTS_URL=<<your insights url>>
 
 # Check if metrics collection is turned on
 PINAKES_INSIGHTS_TRACKING_STATE=${PINAKES_INSIGHTS_TRACKING_STATE:-False}
-PINAKES_INSIGHTS_URL=${PINAKES_INSIGHTS_URL:-https://cert.cloud.redhat.com/api/ingress/v1/upload}
+PINAKES_INSIGHTS_AUTH_METHOD=${PINAKES_INSIGHTS_AUTH_METHOD:-certificate}
+if [[ "${PINAKES_INSIGHTS_AUTH_METHOD}" == "certificate" ]]; then
+  PINAKES_INSIGHTS_URL=${PINAKES_INSIGHTS_URL:-https://cert.cloud.redhat.com/api/ingress/v1/upload}
+else
+  PINAKES_INSIGHTS_URL=${PINAKES_INSIGHTS_URL:-https://cloud.redhat.com/api/ingress/v1/upload}
+fi
+PINAKES_INSIGHTS_USERNAME=${PINAKES_INSIGHTS_USERNAME:-unknown}
+PINAKES_INSIGHTS_PASSWORD=${PINAKES_INSIGHTS_PASSWORD:-unknown}
 
 if ! kubectl get namespace catalog &>/dev/null; then
 	kubectl create namespace catalog
@@ -88,8 +96,11 @@ kubectl create configmap \
 kubectl create configmap \
     --namespace=catalog \
     ansible-insights-env \
+    --from-literal=PINAKES_INSIGHTS_AUTH_METHOD="$PINAKES_INSIGHTS_AUTH_METHOD" \
     --from-literal=PINAKES_INSIGHTS_TRACKING_STATE="$PINAKES_INSIGHTS_TRACKING_STATE" \
-    --from-literal=PINAKES_INSIGHTS_URL="$PINAKES_INSIGHTS_URL"
+    --from-literal=PINAKES_INSIGHTS_URL="$PINAKES_INSIGHTS_URL" \
+    --from-literal=PINAKES_INSIGHTS_USERNAME="$PINAKES_INSIGHTS_USERNAME" \
+    --from-literal=PINAKES_INSIGHTS_PASSWORD="$PINAKES_INSIGHTS_PASSWORD"
 
 # Build the image if the user hasn't built it yet
 if ! minikube image ls | grep pinakes:latest; then
