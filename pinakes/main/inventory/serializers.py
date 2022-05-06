@@ -1,5 +1,6 @@
 """ Serializers for Inventory Model."""
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from rest_framework import serializers
 
 from pinakes.main.models import Source
@@ -55,18 +56,21 @@ class SourceSerializer(serializers.ModelSerializer):
                 "error": obj.last_refresh_message
             }
 
+        gettext_noop("adds")
+        gettext_noop("deletes")
+        gettext_noop("updates")
         sii_stats = obj.last_refresh_stats.get("service_inventory", {})
         soi_stats = obj.last_refresh_stats.get("service_offering", {})
         son_stats = obj.last_refresh_stats.get("service_offering_node", {})
 
         filtered_sii_stats = {
-            key: value for key, value in sii_stats.items() if value > 0
+            _(key): value for key, value in sii_stats.items() if value > 0
         }
         filtered_soi_stats = {
-            key: value for key, value in soi_stats.items() if value > 0
+            _(key): value for key, value in soi_stats.items() if value > 0
         }
         filtered_son_stats = {
-            key: value for key, value in son_stats.items() if value > 0
+            _(key): value for key, value in son_stats.items() if value > 0
         }
 
         if bool(filtered_sii_stats):

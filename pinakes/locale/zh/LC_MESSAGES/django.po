@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-05 11:45+0000\n"
+"POT-Creation-Date: 2022-05-06 13:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -234,7 +234,7 @@ msgstr "无效的问卷调查"
 msgid "Uncancelable Order"
 msgstr ""
 
-#: pinakes/main/catalog/models.py:532
+#: pinakes/main/catalog/models.py:534
 msgid "Created Approval Request ref: {}. Catalog approval request id: {}"
 msgstr "创建的批准请求 ref: {}。目录批准请求 id: {}"
 
@@ -290,7 +290,9 @@ msgstr "提交请求以批准订购 {} 失败，错误：{}"
 msgid ""
 "The underlying survey on product {} in the portfolio {} has been changed and "
 "is no longer valid, please contact an administrator to fix it."
-msgstr "产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修复。"
+msgstr ""
+"产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修"
+"复。"
 
 #: pinakes/main/catalog/views.py:511
 msgid "Order {} does not have related order items"
@@ -304,36 +306,48 @@ msgstr "订单 {} 的计算标签：{}"
 msgid "Refresh already registered"
 msgstr "刷新已注册"
 
-#: pinakes/main/inventory/serializers.py:49
+#: pinakes/main/inventory/serializers.py:50
 #, python-format
 msgid "%(name)s is unavailable, refresh skipped"
 msgstr "%(name)s无法使用，暂停更新"
 
-#: pinakes/main/inventory/serializers.py:54
+#: pinakes/main/inventory/serializers.py:55
 #, python-format
 msgid "Refresh faild: %(error)s"
 msgstr "更新错误: %(error)s"
 
-#: pinakes/main/inventory/serializers.py:73
+#: pinakes/main/inventory/serializers.py:59
+msgid "adds"
+msgstr "增加"
+
+#: pinakes/main/inventory/serializers.py:60
+msgid "deletes"
+msgstr "删除"
+
+#: pinakes/main/inventory/serializers.py:61
+msgid "updates"
+msgstr "更新"
+
+#: pinakes/main/inventory/serializers.py:78
 #, python-format
 msgid "Service Inventories: %(stats)s;\n"
 msgstr "服务清单：%(stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:78
+#: pinakes/main/inventory/serializers.py:83
 #, python-format
 msgid "Job Templates & Workflows: %(soi_stats)s;\n"
 msgstr "工作模版 & 流程：%(soi_stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:83
+#: pinakes/main/inventory/serializers.py:88
 #, python-format
 msgid "Workflow Template Nodes: %(son_stats)s;\n"
 msgstr "流程模版节点：%(son_stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:90
+#: pinakes/main/inventory/serializers.py:92
 msgid "Nothing to update"
 msgstr "没有变化，不需要更新"
 
-#: pinakes/main/inventory/serializers.py:98
+#: pinakes/main/inventory/serializers.py:101
 #, python-format
 msgid "Error: %(error)s"
 msgstr "错误: %(error)s"
@@ -359,18 +373,18 @@ msgstr ""
 msgid "Refresh job {} is already {}, please try again later"
 msgstr "刷新作业 {} 已是 {}，请稍后重试"
 
-#: pinakes/main/models.py:66
+#: pinakes/main/models.py:65
 msgid "Done"
 msgstr "完成"
 
-#: pinakes/main/models.py:67
+#: pinakes/main/models.py:66
 msgid "InProgress"
 msgstr "进行中"
 
-#: pinakes/main/models.py:68
+#: pinakes/main/models.py:67
 msgid "Failed"
 msgstr "失败"
 
-#: pinakes/main/models.py:69
+#: pinakes/main/models.py:68
 msgid "Unknown"
 msgstr "未知"

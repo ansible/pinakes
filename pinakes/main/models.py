@@ -3,8 +3,8 @@ from django.db import models
 from django.db.utils import OperationalError
 from django.db.models.functions import Length
 from django.contrib.auth import get_user_model
-from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 from django.utils.translation import gettext_noop
+from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 models.CharField.register_lookup(Length)
 
