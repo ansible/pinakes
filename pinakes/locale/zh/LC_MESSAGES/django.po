@@ -288,15 +288,13 @@ msgstr "提交请求以批准订购 {} 失败，错误：{}"
 msgid ""
 "The underlying survey on product {} in the portfolio {} has been changed and "
 "is no longer valid, please contact an administrator to fix it."
-msgstr ""
-"产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修"
-"复。"
+msgstr "产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修复。"
 
-#: pinakes/main/catalog/views.py:511
+#: pinakes/main/catalog/views.py:499
 msgid "Order {} does not have related order items"
 msgstr "订购 {} 没有相关的订购项"
 
-#: pinakes/main/catalog/views.py:519
+#: pinakes/main/catalog/views.py:507
 msgid "Computed tags for order {}: {}"
 msgstr "订单 {} 的计算标签：{}"
 
