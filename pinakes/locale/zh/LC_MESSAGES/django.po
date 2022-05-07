@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -13,7 +12,6 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
-"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
@@ -204,7 +202,7 @@ msgstr "只有子级别请求可以被标记为错误"
 
 #: pinakes/main/approval/services/email_notification.py:91
 msgid "Failed to email group {}"
-msgstr ""
+msgstr "为组 {} 发送电子邮件失败"
 
 #: pinakes/main/approval/services/update_request.py:19
 msgid "Auto-approved"
@@ -212,11 +210,11 @@ msgstr "自动批准"
 
 #: pinakes/main/approval/validations.py:56
 msgid "Group id {} does not exist"
-msgstr ""
+msgstr "组 id {} 不存在"
 
 #: pinakes/main/approval/validations.py:64
 msgid "Group {} does not have approver role"
-msgstr ""
+msgstr "group {} 没有批准角色"
 
 #: pinakes/main/approval/views.py:189
 msgid "Insufficient resource object params: {}"
@@ -290,15 +288,13 @@ msgstr "提交请求以批准订购 {} 失败，错误：{}"
 msgid ""
 "The underlying survey on product {} in the portfolio {} has been changed and "
 "is no longer valid, please contact an administrator to fix it."
-msgstr ""
-"产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修"
-"复。"
+msgstr "产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修复。"
 
-#: pinakes/main/catalog/views.py:511
+#: pinakes/main/catalog/views.py:499
 msgid "Order {} does not have related order items"
 msgstr "订购 {} 没有相关的订购项"
 
-#: pinakes/main/catalog/views.py:519
+#: pinakes/main/catalog/views.py:507
 msgid "Computed tags for order {}: {}"
 msgstr "订单 {} 的计算标签：{}"
 
