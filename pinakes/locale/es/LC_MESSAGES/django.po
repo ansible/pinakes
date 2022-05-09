@@ -1,0 +1,211 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-04-24 22:44-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: pinakes/common/image_mixin.py:43
+msgid "{} object has no attribute 'icon'."
+msgstr "El objeto de {} no tiene el atributo 'icon'."
+
+#: pinakes/common/image_mixin.py:69
+msgid "Icon attribute has been set on {} object (id: {})."
+msgstr "El atributo icono se estableció en el objeto de {} (id: {})."
+
+#: pinakes/common/image_mixin.py:95 pinakes/common/image_mixin.py:123
+msgid "Icon attribute has not been set on {} object (id: {})."
+msgstr "El atributo icono no se estableció en el objeto de {} (id: {})."
+
+#: pinakes/main/approval/exceptions.py:8
+msgid "Insufficient query parameters"
+msgstr "Parámetros de consulta insuficientes"
+
+#: pinakes/main/approval/exceptions.py:13
+msgid "Invalid State Transition"
+msgstr "Transición de estado no válida"
+
+#: pinakes/main/approval/exceptions.py:18
+msgid "Field cannot be blank"
+msgstr "El campo no puede estar en blanco"
+
+#: pinakes/main/approval/exceptions.py:23
+msgid "Duplicated UUID for approver groups"
+msgstr "UUID duplicada para grupos de aprobadores"
+
+#: pinakes/main/approval/exceptions.py:28
+msgid "Group has no approver role"
+msgstr "El grupo no tiene rol de aprobador"
+
+#: pinakes/main/approval/exceptions.py:33
+msgid "Group does not exist"
+msgstr "El grupo no existe"
+
+#: pinakes/main/approval/services/create_action.py:49
+msgid "The memo message cannot be blank"
+msgstr "El mensaje del memorándum no puede estar en blanco"
+
+#: pinakes/main/approval/services/create_action.py:56
+msgid "Current request is not pending state"
+msgstr "La solicitud actual no está en estado pendiente"
+
+#: pinakes/main/approval/services/create_action.py:64
+msgid "Current request is not started state"
+msgstr "La solicitud actual no está en estado iniciado"
+
+#: pinakes/main/approval/services/create_action.py:72
+msgid "Current request is not in pending state"
+msgstr "La solicitud actual no está en estado pendiente"
+
+#: pinakes/main/approval/services/create_action.py:80
+#: pinakes/main/approval/services/create_action.py:97
+msgid "Current request is not in notified state"
+msgstr "La solicitud actual no está en estado notificado"
+
+#: pinakes/main/approval/services/create_action.py:85
+msgid "Only child level request can be approved"
+msgstr "Solo puede aprobarse la solicitud de nivel secundario"
+
+#: pinakes/main/approval/services/create_action.py:102
+msgid "Only child level request can be denied"
+msgstr "Solo puede denegarse la solicitud de nivel secundario"
+
+#: pinakes/main/approval/services/create_action.py:107
+msgid "A reason has to be provided if a request is being denied"
+msgstr "Debe proporcionarse un motivo si se deniega una solicitud"
+
+#: pinakes/main/approval/services/create_action.py:119
+msgid "Only root level request can be canceled"
+msgstr "Solo puede cancelarse una solicitud de nivel raíz"
+
+#: pinakes/main/approval/services/create_action.py:124
+msgid "The request has already finished"
+msgstr "La solicitud ya ha finalizado"
+
+#: pinakes/main/approval/services/create_action.py:136
+msgid "Current request has already finished"
+msgstr "La solicitud actual ya ha finalizado"
+
+#: pinakes/main/approval/services/create_action.py:140
+msgid "Failure reason is missing"
+msgstr "Falta el motivo de la falla"
+
+#: pinakes/main/approval/services/create_action.py:144
+msgid "Only child level request can be flagged error"
+msgstr "Solo puede marcar con error la solicitud de nivel secundario"
+
+#: pinakes/main/approval/services/email_notification.py:59
+msgid "Failed to email group {}"
+msgstr "Error al enviar correo electrónico al grupo {}"
+
+#: pinakes/main/approval/services/update_request.py:19
+msgid "Auto-approved"
+msgstr "Aprobado automáticamente"
+
+#: pinakes/main/approval/validations.py:56
+msgid "Group id {} does not exist"
+msgstr "El Id. de grupo {} no existe"
+
+#: pinakes/main/approval/validations.py:64
+msgid "Group {} does not have approver role"
+msgstr "El grupo {} no tiene rol de aprobador"
+
+#: pinakes/main/approval/views.py:189
+msgid "Insufficient resource object params: {}"
+msgstr "Parámetros de objeto de recurso insuficientes: {}"
+
+#: pinakes/main/catalog/exceptions.py:8
+msgid "Bad query parameters"
+msgstr "Parámetros de consulta incorrectos"
+
+#: pinakes/main/catalog/exceptions.py:13
+msgid "Invalid survey"
+msgstr "Encuesta no válida"
+
+#: pinakes/main/catalog/models.py:532
+msgid "Created Approval Request ref: {}. Catalog approval request id: {}"
+msgstr "Se creó la referencia de solicitud de aprobación: {}. Id. de solicitud de aprobación de catálogo: {}"
+
+#: pinakes/main/catalog/services/collect_tag_resources.py:62
+msgid "Portfolio item {} does not have related service offering"
+msgstr "El elemento de cartera {} no tiene una oferta de servicio relacionada"
+
+#: pinakes/main/catalog/services/copy_portfolio_item.py:49
+msgid "{} is not orderable, and cannot be copied"
+msgstr "{} no se puede pedir y no se puede copiar"
+
+#: pinakes/main/catalog/services/finish_order.py:32
+msgid "Order {} has failed"
+msgstr "Error en el pedido {}"
+
+#: pinakes/main/catalog/services/finish_order.py:37
+msgid "Order {} is completed"
+msgstr "El pedido {} está completado"
+
+#: pinakes/main/catalog/services/finish_order.py:54
+msgid "This order item has failed due to the entire order {} before it ran"
+msgstr "Este elemento de pedido falló porque se ejecutó el pedido entero {} anterior"
+
+#: pinakes/main/catalog/services/finish_order_item.py:35
+msgid "Order Item {} is completed"
+msgstr "El elemento de pedido {} está completado"
+
+#: pinakes/main/catalog/services/handle_approval_events.py:106
+msgid "Approval Request finished with status '{}'"
+msgstr "La solicitud de aprobación finalizó con el estado '{}'"
+
+#: pinakes/main/catalog/services/handle_approval_events.py:113
+msgid "Approval Request finished with status '{}' and reason '{}'"
+msgstr "La solicitud de aprobación finalizó con el estado '{}' y el motivo '{}'"
+
+#: pinakes/main/catalog/services/sanitize_parameters.py:42
+msgid "parameter {} is required and must have a value"
+msgstr "se requiere el parámetro {} y debe tener un valor"
+
+#: pinakes/main/catalog/services/start_order_item.py:54
+msgid "Submitting Order Item {} for provisioning"
+msgstr "Enviando elemento de pedido {} para aprovisionamiento"
+
+#: pinakes/main/catalog/services/submit_approval_request.py:57
+msgid "Failed to submit request to approval for Order {}, error: {}"
+msgstr "No se pudo enviar la solicitud de aprobación para el pedido {}, error: {}"
+
+#: pinakes/main/catalog/services/validate_order_item.py:45
+msgid ""
+"The underlying survey on product {} in the portfolio {} has been changed and "
+"is no longer valid, please contact an administrator to fix it."
+msgstr "La encuesta subyacente para el producto {} en la cartera {} ha cambiado y ya no es válida. Comuníquese con un administrador para corregirla."
+
+#: pinakes/main/catalog/views.py:499
+msgid "Order {} does not have related order items"
+msgstr "El pedido {} no tiene elementos de pedido relacionados"
+
+#: pinakes/main/catalog/views.py:507
+msgid "Computed tags for order {}: {}"
+msgstr "Etiquetas calculadas para el pedido {}: {}"
+
+#: pinakes/main/inventory/exceptions.py:8
+msgid "Refresh already registered"
+msgstr "La actualización ya está registrada"
+
+#: pinakes/main/inventory/services/collect_inventory_tags.py:38
+msgid "ServiceOffering object {} not found"
+msgstr "No se encontró el objeto ServiceOffering {}"
+
+#: pinakes/main/inventory/services/get_service_offering.py:34
+msgid "Failed to get service offering [{}]"
+msgstr "No se pudo encontrar la oferta de servicio [{}]"
+
+#: pinakes/main/inventory/views.py:89
+msgid "Refresh job {} is already {}, please try again later"
+msgstr "La tarea de actualización {} ya está {}, vuelva a intentar más tarde"
