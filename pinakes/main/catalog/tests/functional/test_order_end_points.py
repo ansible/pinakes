@@ -141,7 +141,7 @@ def test_order_submit(api_request, mocker):
 
     assert response.status_code == 200
     content = json.loads(response.content)
-    assert content["state"] == "Pending"
+    assert content["state"] == "Approval Pending"
     assert content["state"] == order.state
     check_object_permission.assert_called()
 
@@ -207,6 +207,47 @@ def test_order_cancel(api_request, mocker):
     assert response.status_code == 204
     assert order.state == "Canceled"
     check_object_permission.assert_called()
+
+
+@pytest.mark.django_db
+def test_order_cancel_with_uncancelable_states(api_request, mocker):
+    """Cancels a single order by id"""
+    mocker.patch("django_rq.enqueue")
+    check_object_permission = mocker.spy(
+        OrderPermission, "perform_check_object_permission"
+    )
+
+    order = OrderFactory(state="Completed")
+
+    response = api_request("patch", "catalog:order-cancel", order.id)
+    order.refresh_from_db()
+
+    assert response.status_code == 400
+    content = json.loads(response.content)
+    assert content["detail"] == (
+        "Order {} is not cancelable in its current state: {}"
+    ).format(order.id, order.state)
+    check_object_permission.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_order_cancel(api_request, mocker):
+    """Cancels a single order by id"""
+    mocker.patch("django_rq.enqueue")
+    check_object_permission = mocker.spy(
+        OrderPermission, "perform_check_object_permission"
+    )
+
+    order = OrderFactory()
+
+    assert order.state == "Created"
+
+    response = api_request("patch", "catalog:order-cancel", order.id)
+    order.refresh_from_db()
+
+    assert response.status_code == 204
+    assert order.state == "Canceled"
+    check_object_permission.assert_called_once()
 
 
 @pytest.mark.django_db

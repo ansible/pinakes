@@ -10,6 +10,7 @@ from rest_framework import mixins
 from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
+    OpenApiResponse,
 )
 
 from pinakes.common.auth.keycloak_django.clients import get_oidc_client
@@ -32,19 +33,20 @@ class CurrentUserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         return self.request.user
 
 
-@extend_schema_view(
-    post=extend_schema(
-        description="Logout current session",
-        tags=["auth"],
-        operation_id="logout_create",
-    ),
-)
 class SessionLogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get_serializer(self):
-        return None
-
+    @extend_schema(
+        description="Logout current session",
+        tags=["auth"],
+        operation_id="logout_create",
+        request=None,
+        responses={
+            status.HTTP_204_NO_CONTENT: OpenApiResponse(
+                description="Logout successful"
+            )
+        },
+    )
     def post(self, request):
         extra_data = request.keycloak_user.extra_data
         openid_client = get_oidc_client()
@@ -52,4 +54,4 @@ class SessionLogoutView(APIView):
             extra_data["access_token"], extra_data["refresh_token"]
         )
         logout(request)
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)

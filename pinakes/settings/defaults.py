@@ -283,6 +283,11 @@ LOGGING = {
             "level": LOG_LEVEL,
             "propagate": False,
         },
+        "analytics": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
         "approval": {
             "handlers": ["console"],
             "level": LOG_LEVEL,
@@ -421,3 +426,42 @@ CORS_ALLOWED_ORIGINS = env.list("PINAKES_UI_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_CREDENTIALS = False
 CSRF_TRUSTED_ORIGINS = env.list("PINAKES_CSRF_TRUSTED_ORIGINS", default=[])
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Metrics collections
+PINAKES_INSIGHTS_TRACKING_STATE = env.bool(
+    "PINAKES_INSIGHTS_TRACKING_STATE", False
+)
+PINAKES_INSIGHTS_AUTH_METHOD = env.str(
+    "PINAKES_INSIGHTS_AUTH_METHOD",
+    default="certificate",
+)
+
+if PINAKES_INSIGHTS_AUTH_METHOD == "certificate":
+    PINAKES_INSIGHTS_URL = env.str(
+        "PINAKES_INSIGHTS_URL",
+        default="https://cert.cloud.redhat.com/api/ingress/v1/upload",
+    )
+else:
+    PINAKES_INSIGHTS_URL = env.str(
+        "PINAKES_INSIGHTS_URL",
+        default="https://cloud.redhat.com/api/ingress/v1/upload",
+    )
+    PINAKES_INSIGHTS_USERNAME = env.str(
+        "PINAKES_INSIGHTS_USERNAME",
+        default="unknown",
+    )
+    PINAKES_INSIGHTS_PASSWORD = env.str(
+        "PINAKES_INSIGHTS_PASSWORD",
+        default="unknown",
+    )
+
+if PINAKES_INSIGHTS_TRACKING_STATE:
+    STARTUP_RQ_JOBS.append(
+        "pinakes.main.analytics.tasks.gather_analytics",
+    )
+    RQ_CRONJOBS.append(
+        (
+            "5 0 * * 0",  # At 00:05 on Sunday
+            "pinakes.main.analytics.tasks.gather_analytics",
+        ),
+    )

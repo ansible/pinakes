@@ -83,3 +83,20 @@ To override images and css you can store them in the following directories.
   * ./overrides/pinakes
   * ./overrides/approval
   * ./overrides/keycloak
+
+
+### Cleanup & Miscellaneous
+
+There might be times when you run out of disk space on the minikube vm.
+To reclaim some of the space you can run the following command
+```
+minikube ssh
+docker system prune  (when prompted enter y to continue)
+exit
+```
+
+The start_pods.sh script builds the pinakes image if one doesn't exist. If you want to rerun start_pods.sh it wont rebuild the image. If you want start_pods.sh to rebuild the image you might want to delete it before running start_pods.sh
+
+```
+minikube image rm localhost/pinakes
+```

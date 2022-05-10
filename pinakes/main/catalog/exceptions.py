@@ -11,3 +11,8 @@ class BadParamsException(exceptions.APIException):
 class InvalidSurveyException(exceptions.APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _("Invalid survey")
+
+
+class UncancelableException(exceptions.APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _("Uncancelable Order")

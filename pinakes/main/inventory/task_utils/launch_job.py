@@ -1,7 +1,7 @@
 """ Task to Launch a Job in Tower and wait for it to end"""
 import time
 import logging
-
+from django.utils.translation import gettext_lazy as _
 from pinakes.main.inventory.models import (
     InventoryServicePlan,
     ServiceInstance,
@@ -61,6 +61,14 @@ class LaunchJob:
             )
             self.service_instance_ref = str(instance.id)
             logger.info("Service instance %d created", instance.id)
+        else:
+            logger.error(
+                "Job [%s] has [%s] status", str(obj["id"]), obj["status"]
+            )
+            raise RuntimeError(
+                _("Job %(id)s has %(status)s status")
+                % {"id": str(obj["id"]), "status": obj["status"]}
+            )
 
         return self
 

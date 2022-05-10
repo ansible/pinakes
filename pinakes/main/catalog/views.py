@@ -43,6 +43,8 @@ from pinakes.main.catalog.models import (
     Portfolio,
     PortfolioItem,
     ProgressMessage,
+    Order,
+    OrderItem,
 )
 from pinakes.main.catalog import permissions
 from pinakes.main.catalog.serializers import (
@@ -65,6 +67,9 @@ from pinakes.main.catalog.serializers import (
     SharingPermissionSerializer,
 )
 
+from pinakes.main.catalog.services.cancel_order import (
+    CancelOrder,
+)
 from pinakes.main.catalog.services.collect_tag_resources import (
     CollectTagResources,
 )
@@ -155,7 +160,13 @@ class PortfolioViewSet(
     keycloak_permission = permissions.PortfolioPermission
     ordering = ("-id",)
     filterset_fields = ("name", "description", "created_at", "updated_at")
-    search_fields = ("name", "description")
+    search_fields = (
+        "name",
+        "description",
+        "user__first_name",
+        "user__last_name",
+        "user__username",
+    )
 
     @extend_schema(
         description="Make a copy of the portfolio",
@@ -527,7 +538,6 @@ class OrderViewSet(
         serializer = self.get_serializer(order)
         return Response(serializer.data)
 
-    # TODO:
     @extend_schema(
         description="Cancel the given order",
         request=None,
@@ -536,7 +546,12 @@ class OrderViewSet(
     @action(methods=["patch"], detail=True)
     def cancel(self, request, pk):
         """Cancels the specified pk order."""
-        pass
+        order = self.get_object()
+
+        svc = CancelOrder(order).process()
+        serializer = self.get_serializer(svc.order)
+
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
 
 
 @extend_schema_view(
@@ -667,12 +682,15 @@ class ApprovalRequestViewSet(
         ),
     ),
 )
-class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class _BaseProgressMessageViewSet(
+    NestedViewSetMixin, KeycloakPermissionMixin, viewsets.ModelViewSet
+):
     """API endpoint for listing progress messages."""
 
     serializer_class = ProgressMessageSerializer
     http_method_names = ["get"]
     permission_classes = (IsAuthenticated,)
+    keycloak_permission = permissions.ProgressMessagePermission
     ordering = ("-id",)
     filterset_fields = (
         "received_at",
@@ -680,20 +698,27 @@ class ProgressMessageViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         "created_at",
         "updated_at",
     )
+    messageable_model = None
+
+    @property
+    def messageable_type(self) -> str:
+        return self.messageable_model.__name__
 
     def get_queryset(self):
-        """return queryset based on messageable_type"""
-
-        path_splits = self.request.path.split("/")
-        parent_type = path_splits[path_splits.index("progress_messages") - 2]
-        messageable_id = self.kwargs.get("messageable_id")
-        messageable_type = "Order" if parent_type == "orders" else "OrderItem"
-
+        messageable_id = self.kwargs["messageable_id"]
         return ProgressMessage.objects.filter(
             tenant=Tenant.current(),
-            messageable_type=messageable_type,
+            messageable_type=self.messageable_type,
             messageable_id=messageable_id,
         )
+
+
+class OrderProgressMessageViewSet(_BaseProgressMessageViewSet):
+    messageable_model = Order
+
+
+class OrderItemProgressMessageViewSet(_BaseProgressMessageViewSet):
+    messageable_model = OrderItem
 
 
 @extend_schema_view(

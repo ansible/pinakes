@@ -86,6 +86,25 @@ ansible-playbook [path to your custom conf, eg: tools/keycloak_setup/dev.yml]
 ```
 
 
+### Metrics collection setup
+In order to allow Pinakes to upload the collected data to the insights ingress service periodically, the environment variable PINAKES_INSIGHTS_TRACKING_STATE needs to be set to True.
+- Enable metrics collection
+```
+export PINAKES_INSIGHTS_TRACKING_STATE=True
+```
+
+- Configure to run collection periodically:
+Once the metrics collection is enabled, by default it collects the analytic data and upload them to the Insights service every Sunday at 00:05. This is configurable by setting the cronjob entry via RQ_CRONJOBS, such as:
+```
+RQ_CRONJOBS.append(
+	(
+		"5 0 * * 0",  # At 00:05 on Sunday
+		"pinakes.main.analytics.tasks.gather_analytics",
+	),
+)
+```
+
+
 ### Backend, worker and scheduler
 - clone source code:
 ```

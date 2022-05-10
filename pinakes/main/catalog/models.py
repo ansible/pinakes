@@ -91,6 +91,7 @@ class PortfolioItem(KeycloakMixin, ImageableModel, UserOwnedModel):
     """Portfolio Item represent a Job Template or a Workflow."""
 
     KEYCLOAK_TYPE = "catalog:portfolio"
+    MAX_PORTFOLIO_ITEM_LENGTH = 512
 
     favorite = models.BooleanField(
         default=False, help_text="Definition of a favorite portfolio item"
@@ -122,7 +123,8 @@ class PortfolioItem(KeycloakMixin, ImageableModel, UserOwnedModel):
         help_text="The source reference this portfolio item was created from",
     )
     name = models.CharField(
-        max_length=64, help_text="Name of the portfolio item"
+        max_length=MAX_PORTFOLIO_ITEM_LENGTH,
+        help_text="Name of the portfolio item",
     )
     long_description = models.TextField(
         blank=True,
@@ -179,8 +181,10 @@ class PortfolioItem(KeycloakMixin, ImageableModel, UserOwnedModel):
         return self.name
 
 
-class ProgressMessage(BaseModel):
+class ProgressMessage(KeycloakMixin, BaseModel):
     """Progress Message Model"""
+
+    KEYCLOAK_TYPE = "catalog:progress_message"
 
     class Level(models.TextChoices):
         """Available levels for ProgressMessage"""
@@ -206,11 +210,12 @@ class ProgressMessage(BaseModel):
     )
     messageable_type = models.CharField(
         max_length=64,
-        null=True,
+        editable=False,
         help_text="Identify order or order item that this message belongs to",
     )
     messageable_id = models.IntegerField(
-        editable=False, null=True, help_text="ID of the order or order item"
+        editable=False,
+        help_text="ID of the order or order item",
     )
 
     class Meta:
@@ -313,7 +318,7 @@ class Order(UserOwnedModel, MessageableMixin, KeycloakMixin):
     class State(models.TextChoices):
         """Available states for Order"""
 
-        PENDING = "Pending"  # Approval
+        PENDING = "Approval Pending"
         APPROVED = "Approved"
         CANCELED = "Canceled"
         COMPLETED = "Completed"
@@ -323,7 +328,7 @@ class Order(UserOwnedModel, MessageableMixin, KeycloakMixin):
         ORDERED = "Ordered"
 
     state = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=State.choices,
         default=State.CREATED,
         editable=False,
@@ -400,7 +405,7 @@ class OrderItem(UserOwnedModel, MessageableMixin):
     class State(models.TextChoices):
         """Available states for Order Item"""
 
-        PENDING = "Pending"  # Approval
+        PENDING = "Approval Pending"
         APPROVED = "Approved"
         CANCELED = "Canceled"
         COMPLETED = "Completed"
@@ -421,7 +426,7 @@ class OrderItem(UserOwnedModel, MessageableMixin):
         max_length=64, help_text="Name of the portfolio item or order process"
     )
     state = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=State.choices,
         default=State.CREATED,
         editable=False,

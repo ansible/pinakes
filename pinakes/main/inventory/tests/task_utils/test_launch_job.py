@@ -22,18 +22,22 @@ class TestLaunchJob:
         "pinakes.main.inventory.task_utils.launch_job.TowerAPI",
         autoSpec=True,
     )
-    def test_process_with_failed_status(self, mock1, mock2):
+    def test_process_with_failed_status(self, mock1, _mock2):
         """Test the process method"""
         instance = mock1.return_value
-        instance.post.return_value = {"status": "pending", "url": "/abc/def/"}
+        instance.post.return_value = {
+            "id": 123,
+            "status": "pending",
+            "url": "/abc/def/",
+        }
 
         def result(*_args, **_kwargs):
-            yield {"status": "failed", "url": "/abc/def/"}
+            yield {"id": 123, "status": "failed", "url": "/abc/def/"}
 
         instance.get.side_effect = result
         launch_job = LaunchJob("/abc/def/", {"name": "Fred"})
-        obj = launch_job.process().output
-        assert (obj["status"]) == "failed"
+        with pytest.raises(RuntimeError, match=r"Job 123 has failed status"):
+            launch_job.process()
 
     @patch("time.sleep", return_value=None)
     @patch(
@@ -41,7 +45,7 @@ class TestLaunchJob:
         autoSpec=True,
     )
     @pytest.mark.django_db
-    def test_process_with_success_status(self, mock1, mock2):
+    def test_process_with_success_status(self, mock1, _mock2):
         """Test the process method"""
         source_ref = "abc"
         service_offering = ServiceOfferingFactory(source_ref=source_ref)

@@ -407,3 +407,33 @@ def test_update_parallel(mocker):
         assert child2.state == suite[2][1]
         assert child3.state == suite[2][2]
         assert child4.state == suite[2][3]
+
+
+@pytest.mark.django_db
+def test_duplicated_group(mocker):
+    """when the same group is used by different workflows"""
+    mocker.patch.object(SendEvent, "process")
+    root = RequestFactory(state=Request.State.NOTIFIED, number_of_children=2)
+    child1 = RequestFactory(
+        parent=root,
+        state=Request.State.NOTIFIED,
+        group_ref="ref1",
+        workflow=WorkflowFactory(),
+    )
+    child2 = RequestFactory(
+        parent=root, group_ref="ref1", workflow=WorkflowFactory()
+    )
+    UpdateRequest(
+        child1,
+        {
+            "state": Request.State.COMPLETED,
+            "decision": Request.Decision.APPROVED,
+        },
+    ).process()
+
+    root.refresh_from_db()
+    child2.refresh_from_db()
+    assert root.state == Request.State.COMPLETED
+    assert child2.state == Request.State.COMPLETED
+    assert child2.decision == Request.Decision.APPROVED
+    assert child2.reason == AUTO_APPROVED_REASON

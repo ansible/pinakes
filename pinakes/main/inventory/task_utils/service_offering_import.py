@@ -44,7 +44,13 @@ class ServiceOfferingImport:
 
     def source_ref_to_id(self, source_ref):
         """Convert id from tower to id in local database."""
-        return self.service_offering_objects[source_ref]
+        source_id = self.service_offering_objects.get(source_ref, None)
+        if source_id is None:
+            logger.warning(
+                f"Source {source_ref} is not found in service offering"
+            )
+
+        return source_id
 
     def get_stats(self):
         """Get the adds/updates/deletes for this object."""
@@ -74,7 +80,11 @@ class ServiceOfferingImport:
     def _handle_obj(self, new_obj, kind):
         """Handle an object based on kind of object job template or workflow"""
         source_ref = str(new_obj["id"])
-        inventory = self._get_inventory(new_obj["related.inventory"])
+        inventory = (
+            self._get_inventory(new_obj["related.inventory"])
+            if new_obj.get("related.inventory", None)
+            else None
+        )
         if source_ref in self.old_objects.keys():
             info = self.old_objects[source_ref]
             self._update_db_obj(info, new_obj, source_ref, inventory)

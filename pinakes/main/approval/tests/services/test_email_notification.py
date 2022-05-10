@@ -25,6 +25,8 @@ def test_email_notification(mocker):
         "port": 123,
         "security": "use_tls",
         "from": "catalog@test.com",
+        "ssl_key": "keyval",
+        "ssl_cert": "certificate",
     }
     content = {
         "product": "feature product",
@@ -62,13 +64,16 @@ def test_email_notification(mocker):
     with patch(
         "pinakes.main.approval.services.email_notification.send_mail"
     ) as send_mail_call:
-        EmailNotification(request).process()
+        EmailNotification(request).send_emails()
         args = send_mail_call.call_args[1]
         assert args["from_email"] == "catalog@test.com"
         assert args["recipient_list"][0] == approver.email
         assert args["connection"].host == email_settings["host"]
         assert args["connection"].port == email_settings["port"]
         assert args["connection"].use_tls is True
+        assert args["connection"].timeout == 20
+        assert args["connection"].ssl_keyfile is not None
+        assert args["connection"].ssl_certfile is not None
         assert bool("</html>" in args["html_message"]) is True
         assert bool("$" in args["html_message"]) is False
         assert request.state == "notified"
@@ -78,5 +83,5 @@ def test_email_notification(mocker):
         "pinakes.main.approval.services.email_notification.send_mail"
     ) as send_mail_call:
         send_mail_call.side_effect = Exception()
-        EmailNotification(request).process()
+        EmailNotification(request).send_emails()
         assert request.state == "failed"
