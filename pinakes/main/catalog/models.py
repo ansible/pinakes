@@ -595,8 +595,10 @@ class ApprovalRequest(BaseModel):
         return str(self.id)
 
 
-class ServicePlan(BaseModel):
+class ServicePlan(KeycloakMixin, BaseModel):
     """Service Plan Model"""
+
+    KEYCLOAK_TYPE = "catalog:service_plan"
 
     name = models.CharField(
         max_length=255,
