@@ -384,17 +384,24 @@ class PortfolioItemViewSet(
     @action(methods=["post"], detail=True)
     def copy(self, request, pk):
         """Copy the specified pk portfolio item."""
-        portfolio_item = self.get_object()
-        options = {
-            "portfolio_item_id": portfolio_item.id,
-            "portfolio_id": request.data.get(
-                "portfolio_id", portfolio_item.portfolio.id
-            ),
-            "portfolio_item_name": request.data.get(
-                "portfolio_item_name", portfolio_item.name
-            ),
-        }
-        svc = CopyPortfolioItem(portfolio_item, options).process()
+        portfolio_item_src = self.get_object()
+
+        # TODO: Move to serializer
+        portfolio_id_dest = request.data.get("portfolio_id", None)
+        if portfolio_id_dest:
+            portfolio_dest = get_object_or_404(Portfolio, id=portfolio_id_dest)
+        else:
+            portfolio_dest = portfolio_item_src.portfolio
+        self.get_keycloak_permission().perform_check_object_permission(
+            "update", request, self, portfolio_dest
+        )
+        portfolio_item_name = request.data.get(
+            "portfolio_item_name", portfolio_item_src.name
+        )
+
+        svc = CopyPortfolioItem(
+            portfolio_item_src, portfolio_dest, portfolio_item_name
+        ).process()
         serializer = self.get_serializer(svc.new_portfolio_item)
 
         return Response(serializer.data)

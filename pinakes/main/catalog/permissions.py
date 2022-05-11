@@ -98,7 +98,7 @@ class PortfolioItemPermission(BaseKeycloakPermission):
         "untag": KeycloakPolicy("update", KeycloakPolicy.Type.OBJECT),
         # Custom actions
         "icon": KeycloakPolicy("update", KeycloakPolicy.Type.OBJECT),
-        "copy": KeycloakPolicy("update", KeycloakPolicy.Type.OBJECT),
+        "copy": KeycloakPolicy("read", KeycloakPolicy.Type.OBJECT),
         "next_name": KeycloakPolicy("read", KeycloakPolicy.Type.OBJECT),
     }
 
