@@ -8,7 +8,6 @@ Automation Services Catalog uses Keycloak for Authentication and Authorization. 
  - catalog-user
  - approval-admin
  - approval-approver
- - approval-user
 
 ## catalog-admin
 Allows the logged in user to function as an Administrator and create, update, read, delete all objects in the Automation Services Catalog. A catalog-admin role doesn't allow you to Approve any pending requests. You would need the approval-admin role attached to the user to do that.
@@ -22,9 +21,6 @@ Allows the logged in user to create, read, update, delete Approval Processes. Ap
 ## approval-approver
 Allows the logged in user to Approve/Deny any pending requests. A approver cannot create Approval Processes.
 
-## approval-user
-Is a regular user who can track the process of his Approval Requests.
-
 
 ## Applying RBAC
  - Create Groups in Keycloak and assign them one or more of the above mentioned roles.
@@ -36,7 +32,7 @@ Is a regular user who can track the process of his Approval Requests.
 ## A approver group with only the approval-approver role
 ![Alt_ApproverGroup](./approver-group.png?raw=true)
 
-## A standard user group with the catalog-user and approval-user role
+## A standard user group with the catalog-user role
 ![Alt_UserGroup](./regular-user-group.png?raw=true)
 
 ## Adding users to groups
