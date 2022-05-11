@@ -7,13 +7,12 @@ For ease of development as part of the keycloak setup we create the following gr
  - **catalog-admin**
  - **catalog-user**
  - **approval-admin**
- - **approval-user**
  - **approval-approver**
 
 The following groups are created
 
  - **Information Technology - Sample** (roles assigned catalog-admin, approval-admin)
- - **Marketing - Sample** (roles assigned catalog-user, approval-user)
+ - **Marketing - Sample** (roles assigned catalog-user)
  - **Finance - Sample** (roles assigned approval-approver)
 
 The following users are also created
