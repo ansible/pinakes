@@ -17,6 +17,7 @@ class NotificationType(ImageableModel, models.Model):
 
     n_type = models.CharField(
         max_length=128,
+        unique=True,
         help_text="Name of the notification type",
     )
     setting_schema = models.JSONField(
@@ -30,10 +31,6 @@ class NotificationType(ImageableModel, models.Model):
             models.CheckConstraint(
                 name="%(app_label)s_%(class)s_n_type_empty",
                 check=models.Q(n_type__length__gt=0),
-            ),
-            models.UniqueConstraint(
-                name="%(app_label)s_%(class)s_n_type_unique",
-                fields=("n_type",),
             ),
         ]
 

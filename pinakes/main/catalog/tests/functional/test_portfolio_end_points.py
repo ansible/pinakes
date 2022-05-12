@@ -192,6 +192,10 @@ def test_portfolio_post(api_request):
 
     assert response.status_code == 201
 
+    response = api_request("post", "catalog:portfolio-list", data=data)
+    # uniqueness
+    assert response.status_code == 400
+
 
 @pytest.mark.django_db
 def test_portfolio_portfolio_items_get(api_request):

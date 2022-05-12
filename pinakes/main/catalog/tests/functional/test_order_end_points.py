@@ -299,8 +299,14 @@ def test_order_order_item_post(api_request, mocker):
     response = api_request(
         "post", "catalog:order-orderitem-list", order.id, data
     )
-    content = json.loads(response.content)
+    content = response.data
     assert response.status_code == 201
     assert content["name"] == portfolio_item.name
     assert content["order"] == str(order.id)
     perform_check_permission.assert_called_once()
+
+    response = api_request(
+        "post", "catalog:order-orderitem-list", order.id, data
+    )
+    # uniqueness
+    assert response.status_code == 400
