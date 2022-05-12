@@ -3,6 +3,8 @@ import os
 import glob
 
 import json
+from unittest import mock
+
 import pytest
 
 from pinakes.main.catalog.models import PortfolioItem
@@ -292,6 +294,9 @@ def test_portfolio_item_icon_delete(
 @pytest.mark.django_db
 def test_portfolio_item_copy(api_request, mocker):
     """Copy a PortfolioItem by id"""
+    mocker.patch.object(
+        PortfolioItemPermission, "get_user_capabilities", return_value={}
+    )
     check_object_permission = mocker.spy(
         PortfolioItemPermission, "perform_check_object_permission"
     )
@@ -312,7 +317,21 @@ def test_portfolio_item_copy(api_request, mocker):
         PortfolioItem.objects.last().name == f"Copy of {portfolio_item.name}"
     )
 
-    check_object_permission.assert_called()
+    read_call = mock.call(
+        mock.ANY,
+        "read",
+        mock.ANY,
+        mock.ANY,
+        portfolio_item,
+    )
+    update_call = mock.call(
+        mock.ANY,
+        "update",
+        mock.ANY,
+        mock.ANY,
+        portfolio_item.portfolio,
+    )
+    check_object_permission.assert_has_calls([read_call, update_call])
 
 
 @pytest.mark.django_db
