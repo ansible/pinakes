@@ -65,6 +65,7 @@ from pinakes.main.catalog.serializers import (
     TenantSerializer,
     SharingRequestSerializer,
     SharingPermissionSerializer,
+    UnsharingRequestSerializer,
 )
 
 from pinakes.main.catalog.services.cancel_order import (
@@ -201,9 +202,12 @@ class PortfolioViewSet(
     @action(methods=["post"], detail=True)
     def share(self, request, pk=None):
         portfolio = self.get_object()
-        data = self._parse_share_policy(request, portfolio)
-        group_ids = [group.id for group in data["groups"]]
 
+        serializer = SharingRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        group_ids = [group.id for group in data["groups"]]
         job = django_rq.enqueue(
             tasks.add_portfolio_permissions,
             portfolio.id,
@@ -217,7 +221,7 @@ class PortfolioViewSet(
         description=(
             "Remove a portfolio sharing with specified groups and permissions."
         ),
-        request=SharingRequestSerializer,
+        request=UnsharingRequestSerializer,
         responses={
             status.HTTP_200_OK: None,
             status.HTTP_202_ACCEPTED: TaskSerializer,
@@ -226,7 +230,10 @@ class PortfolioViewSet(
     @action(methods=["post"], detail=True)
     def unshare(self, request, pk=None):
         portfolio = self.get_object()
-        data = self._parse_share_policy(request, portfolio)
+
+        serializer = UnsharingRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
 
         if portfolio.keycloak_id is None:
             return Response(status=status.HTTP_200_OK)
@@ -289,16 +296,6 @@ class PortfolioViewSet(
                 }
             )
         return Response(data)
-
-    def _parse_share_policy(self, request, portfolio):
-        serializer = SharingRequestSerializer(
-            data=request.data,
-            context={
-                "valid_scopes": portfolio.keycloak_actions(),
-            },
-        )
-        serializer.is_valid(raise_exception=True)
-        return serializer.validated_data
 
     def perform_destroy(self, instance):
         if instance.keycloak_id:

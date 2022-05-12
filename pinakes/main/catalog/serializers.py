@@ -416,7 +416,7 @@ class ModifiedServicePlanInSerializer(serializers.Serializer):
     )
 
 
-class SharingRequestSerializer(serializers.Serializer):
+class _SharingRequestSerializerBase(serializers.Serializer):
     """SharingRequest which defines groups and permissions
     that the object can be shared to"""
 
@@ -429,14 +429,30 @@ class SharingRequestSerializer(serializers.Serializer):
         many=True, queryset=Group.objects.all(), help_text="List of group IDs."
     )
 
+    valid_permissions = None
+
     def validate_permissions(self, value):
-        valid_scopes = self.context.get("valid_scopes", [])
-        invalid_scopes = set(value).difference(valid_scopes)
-        if invalid_scopes:
-            raise serializers.ValidationError(
-                "Unexpected permissions: {}".format(", ".join(invalid_scopes))
-            )
-        return value
+        value_set = set(value)
+        for permissions in self.valid_permissions:
+            if value_set == permissions:
+                return value
+        raise serializers.ValidationError(
+            "Unexpected permissions: {}".format(", ".join(value))
+        )
+
+
+class SharingRequestSerializer(_SharingRequestSerializerBase):
+    valid_permissions = [
+        {"read", "order"},
+        {"read", "order", "update", "delete"},
+    ]
+
+
+class UnsharingRequestSerializer(_SharingRequestSerializerBase):
+    valid_permissions = [
+        {"update", "delete"},
+        {"read", "order", "update", "delete"},
+    ]
 
 
 class SharingPermissionSerializer(serializers.Serializer):

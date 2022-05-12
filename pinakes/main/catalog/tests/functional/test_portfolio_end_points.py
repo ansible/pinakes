@@ -6,7 +6,9 @@ import glob
 from unittest.mock import patch
 from unittest import mock
 import pytest
+from rest_framework import status
 
+from pinakes.main.catalog import tasks
 from pinakes.main.catalog.permissions import (
     PortfolioPermission,
 )
@@ -349,6 +351,122 @@ def test_portfolio_icon_delete(api_request, small_image, media_dir):
     assert len(images) == len(orignal_images) - 1
     portfolio.refresh_from_db()
     assert portfolio.icon is None
+
+
+@pytest.mark.django_db
+def test_portfolio_share(api_request, mocker):
+    job_mock = mock.Mock()
+    job_mock.id = "00000000-0000-0000-0000-000000000000"
+    job_mock.get_status.return_value = "queued"
+    enqueue_mock = mocker.patch("django_rq.enqueue", return_value=job_mock)
+
+    group = GroupFactory()
+    portfolio = PortfolioFactory()
+
+    response = api_request(
+        "post",
+        "catalog:portfolio-share",
+        portfolio.id,
+        {
+            "groups": [group.id],
+            "permissions": ["read", "order"],
+        },
+    )
+
+    assert response.status_code == status.HTTP_202_ACCEPTED
+    assert response.data == {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "status": "queued",
+    }
+
+    enqueue_mock.assert_called_with(
+        tasks.add_portfolio_permissions,
+        portfolio.id,
+        [group.id],
+        ["read", "order"],
+    )
+
+
+@pytest.mark.django_db
+def test_portfolio_share_invalid_permissions(api_request):
+    group = GroupFactory()
+    portfolio = PortfolioFactory(
+        keycloak_id="00000000-0000-0000-0000-000000000000"
+    )
+
+    response = api_request(
+        "post",
+        "catalog:portfolio-share",
+        portfolio.id,
+        {
+            "groups": [group.id],
+            "permissions": ["read", "delete"],
+        },
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert json.loads(response.content) == {
+        "permissions": ["Unexpected permissions: read, delete"]
+    }
+
+
+@pytest.mark.django_db
+def test_portfolio_unshare(api_request, mocker):
+    job_mock = mock.Mock()
+    job_mock.id = "00000000-0000-0000-0000-000000000000"
+    job_mock.get_status.return_value = "queued"
+    enqueue_mock = mocker.patch("django_rq.enqueue", return_value=job_mock)
+
+    group = GroupFactory()
+    portfolio = PortfolioFactory(
+        keycloak_id="00000000-0000-0000-0000-000000000000"
+    )
+
+    response = api_request(
+        "post",
+        "catalog:portfolio-unshare",
+        portfolio.id,
+        {
+            "groups": [group.id],
+            "permissions": ["read", "order", "update", "delete"],
+        },
+    )
+
+    assert response.status_code == status.HTTP_202_ACCEPTED
+    assert response.data == {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "status": "queued",
+    }
+
+    enqueue_mock.assert_called_with(
+        tasks.remove_portfolio_permissions,
+        portfolio.id,
+        [group.id],
+        ["read", "order", "update", "delete"],
+    )
+
+
+@pytest.mark.django_db
+def test_portfolio_unshare_invalid_permissions(api_request):
+    group = GroupFactory()
+    portfolio = PortfolioFactory(
+        keycloak_id="00000000-0000-0000-0000-000000000000"
+    )
+
+    response = api_request(
+        "post",
+        "catalog:portfolio-unshare",
+        portfolio.id,
+        {
+            "groups": [group.id],
+            "permissions": ["read", "order"],
+        },
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert json.loads(response.content) == {
+        "permissions": ["Unexpected permissions: read, order"]
+    }
 
 
 @pytest.mark.django_db
