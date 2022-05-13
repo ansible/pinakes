@@ -16,6 +16,8 @@ jobs:
     env:
       DJANGO_SETTINGS_MODULE: pinakes.settings.development
       PINAKES_SECRET_KEY: test
+      # Base64 encoded b'TEST' * 8
+      PINAKES_DB_ENCRYPTION_KEYS: VEVTVFRFU1RURVNUVEVTVFRFU1RURVNUVEVTVFRFU1Q=
     runs-on: ubuntu-latest
     strategy:
       matrix:

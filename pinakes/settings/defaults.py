@@ -33,7 +33,11 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 DEBUG = env.bool("PINAKES_DEBUG", default=False)
 TEMPLATE_DEBUG = DEBUG
 SQL_DEBUG = DEBUG
+
 SECRET_KEY = env.str("PINAKES_SECRET_KEY")
+DB_ENCRYPTION_KEYS = env.str("PINAKES_DB_ENCRYPTION_KEYS", default="").split(
+    ":"
+)
 
 ALLOWED_HOSTS = env.list(
     "PINAKES_ALLOWED_HOSTS",

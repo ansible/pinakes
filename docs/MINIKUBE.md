@@ -58,6 +58,10 @@ The `start_pods.sh` script will check and build the pinakes app image if it's mi
 ./tools/minikube/scripts/start_pods.sh
 ```
 
+### Set database encryption key
+
+See [database encryption](./SECURITY.md#encryption).
+
 ### Login to PINAKES
 
  * https://pinakes.k8s.local/api/pinakes/auth/login/
