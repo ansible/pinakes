@@ -67,6 +67,11 @@ class Source(models.Model):
         FAILED = gettext_noop("Failed")
         UNKNOWN = gettext_noop("Unknown")
 
+    class ErrorCode(models.IntegerChoices):
+        SUCCESS = 0, "Success"
+        GENERIC_ERROR = 1, "Failed"
+        SOURCE_CANNOT_BE_CHANGED = 2, "Bounded Source"
+
     name = models.CharField(
         max_length=255, unique=True, help_text="Name of the source"
     )
@@ -114,7 +119,7 @@ class Source(models.Model):
     )
     last_refresh_stats = models.JSONField(
         blank=True,
-        default=dict(),
+        default=dict,
         help_text="The result stats for the last source refresh",
     )
     availability_status = models.TextField(
@@ -141,6 +146,15 @@ class Source(models.Model):
         blank=True,
         null=True,
         help_text="The information about the source",
+    )
+
+    error_code = models.IntegerField(
+        default=ErrorCode.SUCCESS, choices=ErrorCode.choices
+    )
+    error_dict = models.JSONField(
+        blank=True,
+        default=dict,
+        help_text="Stores error args used by localization",
     )
 
     def __str__(self):
