@@ -73,6 +73,7 @@ class SourceSerializer(serializers.ModelSerializer):
             _(key): value for key, value in son_stats.items() if value > 0
         }
 
+        obj.last_refresh_message = ""
         if bool(filtered_sii_stats):
             obj.last_refresh_message = _(
                 "Service Inventories: %(stats)s;\n"
@@ -98,9 +99,27 @@ class SourceSerializer(serializers.ModelSerializer):
 
     def get_availability_message(self, obj):
         if obj.availability_status == "unavailable":
-            return _("Error: %(error)s") % {"error": obj.availability_message}
+            return self._create_localized_availability_message(obj)
 
         return _(obj.availability_message)
+
+    def _create_localized_availability_message(self, obj):
+        if obj.error_code == obj.__class__.ErrorCode.SOURCE_CANNOT_BE_CHANGED:
+            params = {
+                "new_url": obj.error_dict["new_url"],
+                "new_install_uuid": obj.error_dict["new_install_uuid"],
+                "url": obj.info["url"],
+                "install_uuid": obj.info["install_uuid"],
+            }
+            return (
+                _(
+                    "Source cannot be changed to url %(new_url)s uuid \
+%(new_install_uuid)s, currently bound to \
+url %(url)s with uuid %(install_uuid)s"
+                )
+                % params
+            )
+        return _("Error: %(error)s") % {"error": obj.availability_message}
 
 
 class ServiceInventorySerializer(serializers.ModelSerializer):

@@ -8,6 +8,7 @@ from pinakes.main.inventory.tests.factories import (
     ServiceInventoryFactory,
     ServiceOfferingFactory,
 )
+from pinakes.main.models import Source
 
 
 @pytest.mark.django_db
@@ -33,6 +34,29 @@ def test_source_retrieve(api_request):
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == source.id
+
+
+@pytest.mark.django_db
+def test_source_retrieve_with_error(api_request):
+    """Test to retrieve Source endpoint"""
+
+    source = SourceFactory(
+        error_code=Source.ErrorCode.SOURCE_CANNOT_BE_CHANGED,
+        error_dict={"new_url": "abc", "new_install_uuid": "123"},
+        info={"url": "xyz", "install_uuid": "456"},
+        availability_status="unavailable",
+    )
+    response = api_request("get", "inventory:source-detail", source.id)
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+
+    assert content["id"] == source.id
+    assert (
+        content["availability_message"]
+        == "Source cannot be changed to url abc uuid 123, \
+currently bound to url xyz with uuid 456"
+    )
 
 
 @pytest.mark.django_db
