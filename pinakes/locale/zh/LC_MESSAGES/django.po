@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-06 13:04+0000\n"
+"POT-Creation-Date: 2022-05-16 13:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -232,20 +232,22 @@ msgstr "无效的问卷调查"
 msgid "Uncancelable Order"
 msgstr ""
 
-#: pinakes/main/catalog/models.py:534
+#: pinakes/main/catalog/models.py:537
 msgid "Created Approval Request ref: {}. Catalog approval request id: {}"
 msgstr "创建的批准请求 ref: {}。目录批准请求 id: {}"
 
 #: pinakes/main/catalog/services/cancel_order.py:61
-msgid "Order {} is not cancelable in its current state: {}"
+msgid "Order {} is not cancel able in its current state: {}"
 msgstr ""
 
 #: pinakes/main/catalog/services/collect_tag_resources.py:62
 msgid "Portfolio item {} does not have related service offering"
 msgstr "portfolio 项 {} 没有相关的服务"
 
-#: pinakes/main/catalog/services/copy_portfolio_item.py:49
-msgid "{} is not orderable, and cannot be copied"
+#: pinakes/main/catalog/services/copy_portfolio_item.py:47
+#, fuzzy
+#| msgid "{} is not orderable, and cannot be copied"
+msgid "{} is not order able, and cannot be copied"
 msgstr "{} 是不可订购的，无法复制"
 
 #: pinakes/main/catalog/services/finish_order.py:32
@@ -288,13 +290,15 @@ msgstr "提交请求以批准订购 {} 失败，错误：{}"
 msgid ""
 "The underlying survey on product {} in the portfolio {} has been changed and "
 "is no longer valid, please contact an administrator to fix it."
-msgstr "产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修复。"
+msgstr ""
+"产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修"
+"复。"
 
-#: pinakes/main/catalog/views.py:499
+#: pinakes/main/catalog/views.py:520
 msgid "Order {} does not have related order items"
 msgstr "订购 {} 没有相关的订购项"
 
-#: pinakes/main/catalog/views.py:507
+#: pinakes/main/catalog/views.py:528
 msgid "Computed tags for order {}: {}"
 msgstr "订单 {} 的计算标签：{}"
 
@@ -308,8 +312,9 @@ msgid "%(name)s is unavailable, refresh skipped"
 msgstr "%(name)s无法使用，暂停更新"
 
 #: pinakes/main/inventory/serializers.py:55
-#, python-format
-msgid "Refresh faild: %(error)s"
+#, fuzzy, python-format
+#| msgid "Refresh faild: %(error)s"
+msgid "Refresh failed: %(error)s"
 msgstr "更新错误: %(error)s"
 
 #: pinakes/main/inventory/serializers.py:59
@@ -324,26 +329,33 @@ msgstr "删除"
 msgid "updates"
 msgstr "更新"
 
-#: pinakes/main/inventory/serializers.py:78
+#: pinakes/main/inventory/serializers.py:79
 #, python-format
 msgid "Service Inventories: %(stats)s;\n"
 msgstr "服务清单：%(stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:83
+#: pinakes/main/inventory/serializers.py:84
 #, python-format
 msgid "Job Templates & Workflows: %(soi_stats)s;\n"
 msgstr "工作模版 & 流程：%(soi_stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:88
+#: pinakes/main/inventory/serializers.py:89
 #, python-format
 msgid "Workflow Template Nodes: %(son_stats)s;\n"
 msgstr "流程模版节点：%(son_stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:92
+#: pinakes/main/inventory/serializers.py:93
 msgid "Nothing to update"
 msgstr "没有变化，不需要更新"
 
-#: pinakes/main/inventory/serializers.py:101
+#: pinakes/main/inventory/serializers.py:116
+#, python-format
+msgid ""
+"Source cannot be changed to url %(new_url)s uuid %(new_install_uuid)s, "
+"currently bound to url %(url)s with uuid %(install_uuid)s"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:122
 #, python-format
 msgid "Error: %(error)s"
 msgstr "错误: %(error)s"
@@ -356,7 +368,7 @@ msgstr "ServiceOffering 对象 {} 未找到"
 msgid "Failed to get service offering [{}]"
 msgstr "获取服务产品失败 [{}]"
 
-#: pinakes/main/inventory/task_utils/check_source_availability.py:50
+#: pinakes/main/inventory/task_utils/check_source_availability.py:55
 msgid "Check availability completed"
 msgstr "可使用性检查完毕"
 
