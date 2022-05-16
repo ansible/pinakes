@@ -44,7 +44,7 @@ class CopyPortfolioItem:
     def make_copy(self):
         if not self._is_orderable():
             raise RuntimeError(
-                _("{} is not orderable, and cannot be copied").format(
+                _("{} is not order able, and cannot be copied").format(
                     self.portfolio_item.name
                 )
             )

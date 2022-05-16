@@ -58,7 +58,7 @@ class CancelOrder:
 
     def _raise_uncancellable_error(self):
         error_message = _(
-            "Order {} is not cancelable in its current state: {}"
+            "Order {} is not cancel able in its current state: {}"
         ).format(self.order.id, self.order.state)
         logger.error(error_message)
 
