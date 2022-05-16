@@ -68,7 +68,7 @@ python3 manage.py makemessages -l zh --ignore "extract-strings-env/*" --ignore "
 ```
 
 If you want to generate messages for all the supported languages in the project use
-'``
+```
 python3 manage.py makemessages --all --ignore "extract-strings-env/*" --ignore "venv/*"
 ```
 
