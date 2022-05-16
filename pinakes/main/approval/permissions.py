@@ -3,10 +3,10 @@
 from typing import Any
 
 from django.db import models
-from django.shortcuts import get_object_or_404
 from rest_framework.request import Request as HttpRequest
 from rest_framework.permissions import BasePermission
 
+from pinakes.common.exception_handler import get_object_by_id_or_404
 from pinakes.common.auth.keycloak_django.permissions import (
     KeycloakPolicy,
     BaseKeycloakPermission,
@@ -130,7 +130,7 @@ class ActionPermission(BasePermission):
         if "request_id" not in view.kwargs:
             return True
 
-        request = get_object_or_404(Request, pk=view.kwargs["request_id"])
+        request = get_object_by_id_or_404(Request, view.kwargs["request_id"])
         return _request_has_permission(request, http_request)
 
     def has_object_permission(

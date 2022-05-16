@@ -1,9 +1,9 @@
 from typing import Any
 
 from django.db import models
-from django.shortcuts import get_object_or_404
 from rest_framework.request import Request
 
+from pinakes.common.exception_handler import get_object_by_id_or_404
 from pinakes.common.auth.keycloak_django.permissions import (
     KeycloakPolicy,
     BaseKeycloakPermission,
@@ -200,7 +200,7 @@ class OrderItemPermission(BaseKeycloakPermission):
         order_id = view.kwargs.get("order_id")
         if order_id is None:
             return False
-        order = get_object_or_404(Order, pk=order_id)
+        order = get_object_by_id_or_404(Order, pk=order_id)
         return self._check_order_permission(permission, request, order)
 
     def perform_check_object_permission(
@@ -249,7 +249,9 @@ class ProgressMessagePermission(BaseKeycloakPermission):
         self, permission: str, request: Request, view: Any
     ) -> bool:
         messageable_id = view.kwargs["messageable_id"]
-        obj = get_object_or_404(view.messageable_model, pk=messageable_id)
+        obj = get_object_by_id_or_404(
+            view.messageable_model, pk=messageable_id
+        )
         if obj.user == request.user:
             return True
         return check_wildcard_permission(
@@ -285,11 +287,13 @@ class ServicePlanPermission(BaseKeycloakPermission):
     ) -> bool:
         portfolio_item_id = view.kwargs.get("portfolio_item_id")
         if portfolio_item_id is not None:
-            portfolio_item = get_object_or_404(
-                PortfolioItem, pk=portfolio_item_id
+            portfolio_item = get_object_by_id_or_404(
+                PortfolioItem, portfolio_item_id
             )
         else:
-            service_plan = get_object_or_404(ServicePlan, pk=view.kwargs["pk"])
+            service_plan = get_object_by_id_or_404(
+                ServicePlan, view.kwargs["pk"]
+            )
             portfolio_item = service_plan.portfolio_item
 
         if PortfolioItemPermission().perform_check_object_permission(

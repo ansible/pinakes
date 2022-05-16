@@ -4,7 +4,6 @@ import logging
 
 import django_rq
 from django.utils.translation import gettext_lazy as _
-from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -20,6 +19,7 @@ from drf_spectacular.utils import (
     OpenApiResponse,
 )
 
+from pinakes.common.exception_handler import get_object_by_id_or_404
 from pinakes.common.auth import keycloak_django
 from pinakes.common.auth.keycloak_django.utils import (
     parse_scope,
@@ -361,7 +361,7 @@ class PortfolioItemViewSet(
             )
 
         portfolio_id = request.data.get("portfolio")
-        portfolio = get_object_or_404(Portfolio, pk=portfolio_id)
+        portfolio = get_object_by_id_or_404(Portfolio, portfolio_id)
         self.check_object_permissions(request, portfolio)
 
         output_serializer = PortfolioItemSerializer(
@@ -389,7 +389,9 @@ class PortfolioItemViewSet(
         # TODO: Move to serializer
         portfolio_id_dest = request.data.get("portfolio_id", None)
         if portfolio_id_dest:
-            portfolio_dest = get_object_or_404(Portfolio, id=portfolio_id_dest)
+            portfolio_dest = get_object_by_id_or_404(
+                Portfolio, portfolio_id_dest
+            )
         else:
             portfolio_dest = portfolio_item_src.portfolio
         self.get_keycloak_permission().perform_check_object_permission(
@@ -429,7 +431,7 @@ class PortfolioItemViewSet(
     @action(methods=["get"], detail=True)
     def next_name(self, request, pk):
         """Retrieve next available portfolio item name"""
-        portfolio_item = get_object_or_404(PortfolioItem, pk=pk)
+        portfolio_item = get_object_by_id_or_404(PortfolioItem, pk)
         destination_portfolio_id = request.GET.get(
             "destination_portfolio_id", None
         )
@@ -779,7 +781,7 @@ class ServicePlanViewSet(
         responses={200: ServicePlanSerializer},
     )
     def partial_update(self, request, pk):
-        service_plan = get_object_or_404(ServicePlan, pk=pk)
+        service_plan = get_object_by_id_or_404(ServicePlan, pk)
 
         serializer = ModifiedServicePlanInSerializer(data=request.data)
         if not serializer.is_valid():
@@ -807,7 +809,7 @@ class ServicePlanViewSet(
     @action(methods=["post"], detail=True)
     def reset(self, request, pk):
         """Reset the specified service plan."""
-        service_plan = get_object_or_404(ServicePlan, pk=pk)
+        service_plan = get_object_by_id_or_404(ServicePlan, pk)
 
         service_plan.modified_schema = None
         service_plan.base_schema = None

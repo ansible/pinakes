@@ -1,6 +1,5 @@
 import logging
 
-from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -12,6 +11,7 @@ from rest_framework_extensions.mixins import NestedViewSetMixin
 import rq.job as rq_job
 import django_rq
 
+from pinakes.common.exception_handler import get_object_by_id_or_404
 from pinakes.common.tag_mixin import TagMixin
 from pinakes.common.queryset_mixin import QuerySetMixin
 from pinakes.common.serializers import TaskSerializer
@@ -68,7 +68,7 @@ class SourceViewSet(NestedViewSetMixin, QuerySetMixin, ModelViewSet):
     )
     @action(methods=["patch"], detail=True)
     def refresh(self, request, pk):
-        source = get_object_or_404(Source, pk=pk)
+        source = get_object_by_id_or_404(Source, pk)
 
         if source.last_refresh_task_ref:
             try:

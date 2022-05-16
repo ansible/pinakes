@@ -1,11 +1,10 @@
-from django.shortcuts import get_object_or_404
-
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema
 
 from .serializers import TagSerializer
+from .exception_handler import get_object_by_id_or_404
 
 
 class TagMixin:
@@ -22,7 +21,7 @@ class TagMixin:
         List all tags of a given instance
         """
         model = self.get_serializer().Meta.model
-        instance = get_object_or_404(model, pk=pk)
+        instance = get_object_by_id_or_404(model, pk)
         tags = instance.tags.all().order_by("name")
 
         page = self.paginate_queryset(tags)
@@ -42,7 +41,7 @@ class TagMixin:
             content body:    {"name": "tag"}
         """
         model = self.get_serializer().Meta.model
-        instance = get_object_or_404(model, pk=pk)
+        instance = get_object_by_id_or_404(model, pk)
 
         tag_serializer = TagSerializer(data=request.data)
         if tag_serializer.is_valid():
@@ -66,7 +65,7 @@ class TagMixin:
             content body:    {"name": "tag"}
         """
         model = self.get_serializer().Meta.model
-        instance = get_object_or_404(model, pk=pk)
+        instance = get_object_by_id_or_404(model, pk)
 
         tag_serializer = TagSerializer(data=request.data)
         if tag_serializer.is_valid():

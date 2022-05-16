@@ -12,7 +12,6 @@ from rest_framework.filters import (
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_extensions.mixins import NestedViewSetMixin
-from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
@@ -22,6 +21,7 @@ from drf_spectacular.utils import (
     OpenApiTypes,
 )
 
+from pinakes.common.exception_handler import get_object_by_id_or_404
 from pinakes.main.models import Tenant
 from pinakes.main.approval.models import (
     NotificationType,
@@ -295,7 +295,7 @@ class WorkflowViewSet(
         available to admin only.
         """
 
-        workflow = get_object_or_404(Workflow, pk=pk)
+        workflow = get_object_by_id_or_404(Workflow, pk)
         validations.validate_and_update_approver_groups(workflow)
 
         LinkWorkflow(workflow, request.data).process(
@@ -314,7 +314,7 @@ class WorkflowViewSet(
         and a workflow by its id, available to admin only
         """
 
-        workflow = get_object_or_404(Workflow, pk=pk)
+        workflow = get_object_by_id_or_404(Workflow, pk)
 
         LinkWorkflow(workflow, request.data).process(
             LinkWorkflow.Operation.REMOVE
@@ -428,7 +428,7 @@ class RequestViewSet(
     def content(self, request, pk):
         """Retrieve the content of a request"""
 
-        request = get_object_or_404(Request, pk=pk)
+        request = get_object_by_id_or_404(Request, pk)
         return Response(request.request_context.content)
 
 

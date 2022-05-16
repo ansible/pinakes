@@ -304,3 +304,12 @@ def test_order_order_item_post(api_request, mocker):
     assert content["name"] == portfolio_item.name
     assert content["order"] == str(order.id)
     perform_check_permission.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_order_order_item_post_string_id(api_request):
+    """Create a new order item with a string order id"""
+    response = api_request(
+        "post", "catalog:order-orderitem-list", "string-id", {}
+    )
+    assert response.status_code == 404
