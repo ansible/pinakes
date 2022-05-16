@@ -67,6 +67,11 @@ Use Chinese (language code is `zh`) as example, first run the following command,
 python3 manage.py makemessages -l zh --ignore "extract-strings-env/*" --ignore "venv/*"
 ```
 
+If you want to generate messages for all the supported languages in the project use
+'``
+python3 manage.py makemessages --all --ignore "extract-strings-env/*" --ignore "venv/*"
+```
+
 The command will create the file `locale/zh/LC_MESSAGES/django.po`.
 
 Then make changes in `locale/zh/LC_MESSAGES/django.po`, add the Chinese translations to the corresponding `msgstr` fields, such as:

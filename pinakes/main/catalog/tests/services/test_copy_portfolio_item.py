@@ -156,6 +156,6 @@ def test_copy_portfolio_items_to_raise_exception():
         svc.process()
 
     assert (
-        f"{portfolio_item.name} is not orderable, and cannot be copied"
+        f"{portfolio_item.name} is not order able, and cannot be copied"
         in str(excinfo.value)
     )

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-28 15:34+0000\n"
+"POT-Creation-Date: 2022-05-16 13:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,102 @@ msgstr ""
 
 #: pinakes/common/image_mixin.py:95 pinakes/common/image_mixin.py:123
 msgid "Icon attribute has not been set on {} object (id: {})."
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:21
+msgid "General platform configuration."
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:60
+msgid "Data on sources"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:84
+msgid "Data on service_offerings"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:114
+msgid "Data on service_offering_nodes"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:145
+msgid "Data on service_instances"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:175
+msgid "Data on service_inventories"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:204
+msgid "Data on portfolios"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:231
+msgid "Data on portfolio_items"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:262
+msgid "Data on orders"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:289
+msgid "Data on order_items"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:323
+msgid "Data on approval_requests"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:350
+msgid "Data on service_plans"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:378
+msgid "Data on templates"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:402
+msgid "Data on workflows"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:429
+msgid "Data on requests"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:464
+msgid "Data on actions"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:490
+msgid "Data on tag_links"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:517
+msgid "Data on groups"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:539
+msgid "Counts of orders by products"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:576
+msgid "Counts of tags by portfolios"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:610
+msgid "Counts of tags by products"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:644
+msgid "Counts of tags by service_intentories"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:678
+msgid "Order data by product"
+msgstr ""
+
+#: pinakes/main/analytics/analytics_collectors.py:777
+msgid "Approval request time spent by group"
 msgstr ""
 
 #: pinakes/main/approval/exceptions.py:8
@@ -107,7 +203,7 @@ msgstr ""
 msgid "Only child level request can be flagged error"
 msgstr ""
 
-#: pinakes/main/approval/services/email_notification.py:72
+#: pinakes/main/approval/services/email_notification.py:91
 msgid "Failed to email group {}"
 msgstr ""
 
@@ -139,20 +235,20 @@ msgstr ""
 msgid "Uncancelable Order"
 msgstr ""
 
-#: pinakes/main/catalog/models.py:532
+#: pinakes/main/catalog/models.py:537
 msgid "Created Approval Request ref: {}. Catalog approval request id: {}"
 msgstr ""
 
 #: pinakes/main/catalog/services/cancel_order.py:61
-msgid "Order {} is not cancelable in its current state: {}"
+msgid "Order {} is not cancel able in its current state: {}"
 msgstr ""
 
 #: pinakes/main/catalog/services/collect_tag_resources.py:62
 msgid "Portfolio item {} does not have related service offering"
 msgstr ""
 
-#: pinakes/main/catalog/services/copy_portfolio_item.py:49
-msgid "{} is not orderable, and cannot be copied"
+#: pinakes/main/catalog/services/copy_portfolio_item.py:47
+msgid "{} is not order able, and cannot be copied"
 msgstr ""
 
 #: pinakes/main/catalog/services/finish_order.py:32
@@ -197,16 +293,69 @@ msgid ""
 "is no longer valid, please contact an administrator to fix it."
 msgstr ""
 
-#: pinakes/main/catalog/views.py:502
+#: pinakes/main/catalog/views.py:520
 msgid "Order {} does not have related order items"
 msgstr ""
 
-#: pinakes/main/catalog/views.py:510
+#: pinakes/main/catalog/views.py:528
 msgid "Computed tags for order {}: {}"
 msgstr ""
 
 #: pinakes/main/inventory/exceptions.py:8
 msgid "Refresh already registered"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:50
+#, python-format
+msgid "%(name)s is unavailable, refresh skipped"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:55
+#, python-format
+msgid "Refresh failed: %(error)s"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:59
+msgid "adds"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:60
+msgid "deletes"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:61
+msgid "updates"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:79
+#, python-format
+msgid "Service Inventories: %(stats)s;\n"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:84
+#, python-format
+msgid "Job Templates & Workflows: %(soi_stats)s;\n"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:89
+#, python-format
+msgid "Workflow Template Nodes: %(son_stats)s;\n"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:93
+msgid "Nothing to update"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:116
+#, python-format
+msgid ""
+"Source cannot be changed to url %(new_url)s uuid %(new_install_uuid)s, "
+"currently bound to url %(url)s with uuid %(install_uuid)s"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:122
+#, python-format
+msgid "Error: %(error)s"
 msgstr ""
 
 #: pinakes/main/inventory/services/collect_inventory_tags.py:38
@@ -217,9 +366,13 @@ msgstr ""
 msgid "Failed to get service offering [{}]"
 msgstr ""
 
-#: pinakes/main/inventory/task_utils/refresh_inventory.py:82
+#: pinakes/main/inventory/task_utils/check_source_availability.py:55
+msgid "Check availability completed"
+msgstr ""
+
+#: pinakes/main/inventory/task_utils/launch_job.py:69
 #, python-format
-msgid "Error: %s"
+msgid "Job %(id)s has %(status)s status"
 msgstr ""
 
 #: pinakes/main/inventory/views.py:89

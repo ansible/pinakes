@@ -52,7 +52,7 @@ class SourceSerializer(serializers.ModelSerializer):
             }
 
         if obj.refresh_state == Source.State.FAILED:
-            return _("Refresh faild: %(error)s") % {
+            return _("Refresh failed: %(error)s") % {
                 "error": obj.last_refresh_message
             }
 

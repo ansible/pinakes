@@ -225,7 +225,7 @@ def test_order_cancel_with_uncancelable_states(api_request, mocker):
     assert response.status_code == 400
     content = json.loads(response.content)
     assert content["detail"] == (
-        "Order {} is not cancelable in its current state: {}"
+        "Order {} is not cancel able in its current state: {}"
     ).format(order.id, order.state)
     check_object_permission.assert_called_once()
 
