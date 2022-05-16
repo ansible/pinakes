@@ -39,7 +39,7 @@ def test_place_order_item(mocker):
 
     assert (
         str(ProgressMessage.objects.first())
-        == "Submitting Order Item 1 for provisioning"
+        == "Submitting Order Item %(item_id)s for provisioning"
     )
 
 

@@ -1,4 +1,6 @@
 """Serializers for Catalog Model."""
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
@@ -228,6 +230,7 @@ class OrderItemSerializerBase(serializers.ModelSerializer):
     """OrderItem which keeps track of an execution of Portfolio Item"""
 
     owner = serializers.ReadOnlyField()
+    state = serializers.SerializerMethodField()
     extra_data = serializers.SerializerMethodField(
         "get_extra_data", read_only=True, allow_null=True
     )
@@ -255,6 +258,9 @@ class OrderItemSerializerBase(serializers.ModelSerializer):
             "completed_at": {"allow_null": True},
             "order_request_sent_at": {"allow_null": True},
         }
+
+    def get_state(self, obj):
+        return _(obj.state)
 
     @extend_schema_field(OrderItemExtraSerializer(many=False))
     def get_extra_data(self, order_item):
@@ -308,6 +314,7 @@ class OrderSerializer(serializers.ModelSerializer):
     and after processes (To be added)"""
 
     owner = serializers.ReadOnlyField()
+    state = serializers.SerializerMethodField()
     extra_data = serializers.SerializerMethodField(
         "get_extra_data", allow_null=True, read_only=True
     )
@@ -332,6 +339,9 @@ class OrderSerializer(serializers.ModelSerializer):
             "completed_at": {"allow_null": True},
             "order_request_sent_at": {"allow_null": True},
         }
+
+    def get_state(self, obj):
+        return _(obj.state)
 
     def create(self, validated_data):
         user = self.context["request"].user
@@ -365,6 +375,9 @@ class ApprovalRequestSerializer(serializers.ModelSerializer):
     """ApprovalRequest which keeps track of the approval
     progress of an order"""
 
+    state = serializers.SerializerMethodField()
+    reason = serializers.SerializerMethodField()
+
     class Meta:
         model = ApprovalRequest
         fields = (
@@ -376,10 +389,23 @@ class ApprovalRequestSerializer(serializers.ModelSerializer):
             "state",
         )
 
+    def get_state(self, obj):
+        return _(obj.state)
+
+    def get_reason(self, obj):
+        return _(obj.reason)
+
 
 class ProgressMessageSerializer(serializers.ModelSerializer):
     """ProgressMessage which wraps a message describing
     the progress of an order or order item"""
+
+    level = serializers.SerializerMethodField()
+    message = serializers.SerializerMethodField()
+    messageable_type = serializers.SerializerMethodField()
+
+    gettext_noop("Order")
+    gettext_noop("OrderItem")
 
     class Meta:
         model = ProgressMessage
@@ -389,6 +415,19 @@ class ProgressMessageSerializer(serializers.ModelSerializer):
             "message",
             "messageable_type",
             "messageable_id",
+        )
+
+    def get_level(self, obj):
+        return _(obj.level)
+
+    def get_messageable_type(self, obj):
+        return _(obj.messageable_type)
+
+    def get_message(self, obj):
+        return (
+            _(obj.message) % obj.message_params
+            if bool(obj.message_params)
+            else _(obj.message)
         )
 
 
