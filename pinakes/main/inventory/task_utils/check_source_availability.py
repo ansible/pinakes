@@ -28,8 +28,12 @@ class CheckSourceAvailability:
         self.source_id = source_id
         self.error_dict = {}
 
-    @transaction.atomic()
     def process(self):
+        self._pre_check()
+        self._start_check()
+
+    @transaction.atomic()
+    def _pre_check(self):
         self.source = (
             Source.objects.filter(pk=self.source_id)
             .select_for_update(nowait=True)
@@ -40,6 +44,15 @@ class CheckSourceAvailability:
         self.source.availability_status = "unknown"
         self.source.availability_message = "Starting check availability"
         self.source.save()
+
+    @transaction.atomic()
+    def _start_check(self):
+        self.source = (
+            Source.objects.filter(pk=self.source_id)
+            .select_for_update(nowait=True)
+            .get()
+        )
+
         try:
             svc = ControllerConfig(self.tower).process()
 

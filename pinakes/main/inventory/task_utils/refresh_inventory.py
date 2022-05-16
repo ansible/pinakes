@@ -36,17 +36,26 @@ class RefreshInventory:
         self.tower = TowerAPI()
         self.source_id = source_id
 
-    @transaction.atomic()
     def process(self):
+        self._pre_refresh()
+        self._start_refresh()
+
+    @transaction.atomic()
+    def _pre_refresh(self):
         self.source = (
-            Source.objects.filter(pk=self.source_id)
-            .select_for_update(nowait=True)
-            .get()
+            Source.objects.select_for_update().filter(pk=self.source_id).get()
         )
 
         self.source.refresh_started_at = timezone.now()
         self.source.refresh_state = Source.State.IN_PROGRESS
         self.source.save()
+        logger.info(f"Starting refresh on source {self.source_id}")
+
+    @transaction.atomic()
+    def _start_refresh(self):
+        self.source = (
+            Source.objects.select_for_update().filter(pk=self.source_id).get()
+        )
 
         try:
             """Run the import process"""
