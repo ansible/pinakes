@@ -4,6 +4,7 @@ import platform
 import distro
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 from insights_analytics_collector import CsvFileSplitter, register
 
@@ -13,6 +14,7 @@ from pinakes.main.approval.models import Request
 from pinakes.main.catalog import models
 from pinakes.main.common.models import Group
 from pinakes.main.inventory.models import ServiceInventory
+from pinakes.main.models import Source
 
 
 @register(
@@ -25,6 +27,9 @@ def config(since, **kwargs):
     # TODO:
     # license_info = get_license()
     license_info = {}
+
+    # Single controller so far
+    source = Source.objects.first()
     install_type = "traditional"
     if os.environ.get("container") == "oci":
         install_type = "openshift"
@@ -37,17 +42,16 @@ def config(since, **kwargs):
             "release": platform.release(),
             "type": install_type,
         },
-        # 'install_uuid': settings.INSTALL_UUID,
+        "install_uuid": source.info["install_uuid"],
+        "tower_url_base": source.info["url"],
+        "tower_version": source.info["version"],
         # 'instance_uuid': settings.SYSTEM_UUID,
-        # 'tower_url_base': settings.TOWER_URL_BASE,
-        # 'tower_version': get_awx_version(),
-        "tower_version": "1.0.0",
         "license_type": license_info.get("license_type", "UNLICENSED"),
         "free_instances": license_info.get("free_instances", 0),
         "total_licensed_instances": license_info.get("instance_count", 0),
         "license_expiry": license_info.get("time_remaining", 0),
+        "authentication_backends": settings.AUTHENTICATION_BACKENDS,
         # 'pendo_tracking': settings.PENDO_TRACKING_STATE,
-        # 'authentication_backends': settings.AUTHENTICATION_BACKENDS,
         # 'logging_aggregators': settings.LOG_AGGREGATOR_LOGGERS,
         # 'external_logger_enabled': settings.LOG_AGGREGATOR_ENABLED,
     }
@@ -62,6 +66,7 @@ def config(since, **kwargs):
 def sources_table(since, full_path, until, **kwargs):
     source_query = """COPY (SELECT main_source.id,
        main_source.name,
+       main_source.info,
        main_source.created_at,
        main_source.updated_at,
        main_source.refresh_state,
