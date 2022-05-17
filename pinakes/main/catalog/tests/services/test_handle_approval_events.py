@@ -36,6 +36,7 @@ def test_handle_approval_events_approved_completed():
     svc.process()
 
     assert svc.approval_request.state == ApprovalRequest.State.APPROVED
+    assert svc.approval_request.order.state == Order.State.COMPLETED
 
 
 @pytest.mark.django_db
@@ -54,6 +55,26 @@ def test_handle_approval_events_denied_completed():
     svc.process()
 
     assert svc.approval_request.state == ApprovalRequest.State.DENIED
+    assert svc.approval_request.order.state == Order.State.FAILED
+
+
+@pytest.mark.django_db
+def test_handle_approval_events_error_completed():
+    request = RequestFactory()
+    order = OrderFactory()
+    ApprovalRequestFactory(approval_request_ref=request.id, order=order)
+    payload = {
+        "request_id": request.id,
+        "decision": "error",
+        "reason": "something is wrong",
+    }
+    event = "request_finished"
+
+    svc = HandleApprovalEvents(payload, event)
+    svc.process()
+
+    assert svc.approval_request.state == ApprovalRequest.State.FAILED
+    assert svc.approval_request.order.state == Order.State.FAILED
 
 
 @pytest.mark.django_db
@@ -68,6 +89,7 @@ def test_handle_approval_events_canceled_complete():
     svc.process()
 
     assert svc.approval_request.state == ApprovalRequest.State.CANCELED
+    assert svc.approval_request.order.state == Order.State.FAILED
 
 
 @pytest.mark.django_db

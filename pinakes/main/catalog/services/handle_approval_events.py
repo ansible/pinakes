@@ -88,6 +88,8 @@ class HandleApprovalEvents:
     def _update_approval_request(self):
         if self.event == self.EVENT_REQUEST_FINISHED:
             state = self.payload["decision"]
+            if state == "error":
+                state = ApprovalRequest.State.FAILED
         elif self.event == self.EVENT_REQUEST_CANCELED:
             state = ApprovalRequest.State.CANCELED
 

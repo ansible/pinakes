@@ -24,6 +24,7 @@ class CreateRequest:
         self.job = None
 
     def process(self):
+        logger.info("Creating request from data %s", self.data)
         tag_resources = self.data.pop("tag_resources", [])
         workflows = FindWorkflows(tag_resources).process().workflows
         for workflow in workflows:
