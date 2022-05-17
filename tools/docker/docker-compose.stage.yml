@@ -27,6 +27,7 @@ x-environment:
   - PINAKES_POSTGRES_USER=admin
   - PINAKES_POSTGRES_PASSWORD=admin
   - PINAKES_POSTGRES_SSL_MODE=disable
+  - KEYCLOAK_SEED_FILE=tools/keycloak_setup/qa.yml
 
 services:
   frontend:
