@@ -115,22 +115,6 @@ roles:
             scope_name: approval:access
             type: scope
         type: role
-  approval-user:
-    description: 'The Approval User can look at the status of the Approval Requests'
-    name: 'Approval User'
-    policies:
-      - decisionStrategy: UNANIMOUS
-        description: 'Approval User Policy'
-        logic: POSITIVE
-        name: approval-user-policy
-        permissions:
-          - decisionStrategy: UNANIMOUS
-            description: 'User access to Approval Automation Services Catalog'
-            logic: POSITIVE
-            name: approval-user-access-permission
-            scope_name: approval:access
-            type: scope
-        type: role
   catalog-admin:
     description: 'The Catalog Administrator has access to all objects in catalog'
     name: 'Catalog Administrator'
