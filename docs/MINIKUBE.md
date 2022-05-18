@@ -30,10 +30,18 @@ The ingress uses 2 hard coded hosts **pinakes** and **keycloak** to route the tr
 ```
 
 ### Starting the app
-Once minikube has been setup you can start the deployments, services and ingress service in the directory tools/minikube/templates. A helper script creates a Kubernetes namespace called **catalog** and runs all the deployments in that namespace. The helper scripts requires 3 environment variables to locate the Automation Controller.
-  - **export PINAKES_CONTROLLER_URL="Your controller URL"**
-  - **export PINAKES_CONTROLLER_TOKEN="Your Token"**
-  - **export PINAKES_CONTROLLER_VERIFY_SSL="False"**
+Once minikube has been setup you can start the deployments, services and ingress service in the directory tools/minikube/templates. A helper script creates a Kubernetes namespace called **catalog** and runs all the deployments in that namespace. 
+
+The helper scripts requires 3 environment variables to locate the Automation Controller.
+  You can set this in a file called minikube_env_vars. A sample file is located in ./tools/minikube/env_var.sample
+  copy this file to the root directory
+  cp ./tools/minikube/env_vars.sample minikube_env_vars
+  Edit this file and set the 3 fields
+
+  * PINAKES_CONTROLLER_URL
+  * PINAKES_CONTROLLER_TOKEN
+  * PINAKES_CONTROLLER_VERIFY_SSL
+
 
 ```
 ./tools/minikube/scripts/start_pods.sh

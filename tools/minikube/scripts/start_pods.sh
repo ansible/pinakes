@@ -1,47 +1,41 @@
 #!/bin/bash
 # For development purpose only
 # Set the environment variable for accessing your Automation Controller
-# export PINAKES_CONTROLLER_URL=<<your controller url>>
-# export PINAKES_CONTROLLER_TOKEN=<<your controller token>>
-# export PINAKES_CONTROLLER_VERIFY_SSL=True|False
 
 set -o nounset
 set -o errexit
 
+OVERRIDE_ENV_FILE="minikube_env_vars"
 PINAKES_CONTROLLER_URL=${PINAKES_CONTROLLER_URL:-}
 PINAKES_CONTROLLER_TOKEN=${PINAKES_CONTROLLER_TOKEN:-}
 PINAKES_CONTROLLER_VERIFY_SSL=${PINAKES_CONTROLLER_VERIFY_SSL:-}
 
-if [[ -z "${PINAKES_CONTROLLER_URL}" ]]; then
-  echo "Error: Environment variable PINAKES_CONTROLLER_URL is not set."
-  exit 1
-fi
+setup_env_vars() {
+    if [ ! -f "$OVERRIDE_ENV_FILE" ]; then
+      cp ./tools/minikube/env_vars.sample "$OVERRIDE_ENV_FILE"
+      if [[ -z "${PINAKES_CONTROLLER_URL}" ]]; then
+        echo "Error: Environment variable PINAKES_CONTROLLER_URL is not set."
+        exit 1
+      fi
 
-if [[ -z "${PINAKES_CONTROLLER_TOKEN}" ]]; then
-  echo "Error: Environment variable PINAKES_CONTROLLER_TOKEN is not set."
-  exit 1
-fi
+      if [[ -z "${PINAKES_CONTROLLER_TOKEN}" ]]; then
+        echo "Error: Environment variable PINAKES_CONTROLLER_TOKEN is not set."
+        exit 1
+      fi
 
-if [[ -z "${PINAKES_CONTROLLER_VERIFY_SSL}" ]]; then
-  echo "Error: Environment variable PINAKES_CONTROLLER_VERIFY_SSL is not set."
-  exit 1
-fi
+      if [[ -z "${PINAKES_CONTROLLER_VERIFY_SSL}" ]]; then
+        echo "Error: Environment variable PINAKES_CONTROLLER_VERIFY_SSL is not set."
+        exit 1
+      fi
+      sed -i '' -e '/PINAKES_CONTROLLER_URL/d' -e '/PINAKES_CONTROLLER_TOKEN/d' -e '/PINAKES_CONTROLLER_VERIFY_SSL/d' "$OVERRIDE_ENV_FILE"
+      echo "PINAKES_CONTROLLER_URL="${PINAKES_CONTROLLER_URL}"" >> "$OVERRIDE_ENV_FILE"
+      echo "PINAKES_CONTROLLER_TOKEN="${PINAKES_CONTROLLER_TOKEN}"" >> "$OVERRIDE_ENV_FILE"
+      echo "PINAKES_CONTROLLER_VERIFY_SSL="${PINAKES_CONTROLLER_VERIFY_SSL}"" >> "$OVERRIDE_ENV_FILE"
+    fi
+}
 
-# Set the environment variable for accessing insights service
-# export PINAKES_INSIGHTS_AUTH_METHOD=certificate|credential
-# export PINAKES_INSIGHTS_TRACKING_STATE=True|False
-# export PINAKES_INSIGHTS_URL=<<your insights url>>
-
-# Check if metrics collection is turned on
-PINAKES_INSIGHTS_TRACKING_STATE=${PINAKES_INSIGHTS_TRACKING_STATE:-False}
-PINAKES_INSIGHTS_AUTH_METHOD=${PINAKES_INSIGHTS_AUTH_METHOD:-certificate}
-if [[ "${PINAKES_INSIGHTS_AUTH_METHOD}" == "certificate" ]]; then
-  PINAKES_INSIGHTS_URL=${PINAKES_INSIGHTS_URL:-https://cert.cloud.redhat.com/api/ingress/v1/upload}
-else
-  PINAKES_INSIGHTS_URL=${PINAKES_INSIGHTS_URL:-https://cloud.redhat.com/api/ingress/v1/upload}
-fi
-PINAKES_INSIGHTS_USERNAME=${PINAKES_INSIGHTS_USERNAME:-unknown}
-PINAKES_INSIGHTS_PASSWORD=${PINAKES_INSIGHTS_PASSWORD:-unknown}
+#One time setup from previous approach
+setup_env_vars
 
 if ! kubectl get namespace catalog &>/dev/null; then
 	kubectl create namespace catalog
@@ -65,14 +59,6 @@ if ! kubectl get configmap --namespace=catalog postgresql &>/dev/null; then
      kubectl create configmap postgresql --from-file=./tools/postgresql -n catalog
 fi
 
-if kubectl get configmap --namespace=catalog ansible-controller-env &>/dev/null; then
-	kubectl delete --namespace=catalog configmap ansible-controller-env
-fi
-
-if kubectl get configmap --namespace=catalog ansible-insights-env &>/dev/null; then
-	kubectl delete --namespace=catalog configmap ansible-insights-env
-fi
-
 # Override Keycloak image files
 tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
 cp ./tools/keycloak_setup/login_theme/* "$tmp_dir"
@@ -87,20 +73,11 @@ fi
 rm -rf $tmp_dir
 
 kubectl create configmap \
-    --namespace=catalog \
-    ansible-controller-env \
-    --from-literal=PINAKES_CONTROLLER_URL="$PINAKES_CONTROLLER_URL" \
-    --from-literal=PINAKES_CONTROLLER_TOKEN="$PINAKES_CONTROLLER_TOKEN" \
-    --from-literal=PINAKES_CONTROLLER_VERIFY_SSL="$PINAKES_CONTROLLER_VERIFY_SSL"
+	--namespace=catalog \
+	pinakes-env-overrides \
+	--from-env-file="$OVERRIDE_ENV_FILE"
 
-kubectl create configmap \
-    --namespace=catalog \
-    ansible-insights-env \
-    --from-literal=PINAKES_INSIGHTS_AUTH_METHOD="$PINAKES_INSIGHTS_AUTH_METHOD" \
-    --from-literal=PINAKES_INSIGHTS_TRACKING_STATE="$PINAKES_INSIGHTS_TRACKING_STATE" \
-    --from-literal=PINAKES_INSIGHTS_URL="$PINAKES_INSIGHTS_URL" \
-    --from-literal=PINAKES_INSIGHTS_USERNAME="$PINAKES_INSIGHTS_USERNAME" \
-    --from-literal=PINAKES_INSIGHTS_PASSWORD="$PINAKES_INSIGHTS_PASSWORD"
+
 
 # Build the image if the user hasn't built it yet
 if ! minikube image ls | grep pinakes:latest; then

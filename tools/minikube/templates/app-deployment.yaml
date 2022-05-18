@@ -34,91 +34,14 @@ spec:
       containers:
         - args:
             - "/opt/app-root/src/tools/minikube/scripts/server.sh"
-          env:
-            - name: PINAKES_KEYCLOAK_URL
-              value: http://keycloak:8080/auth
-            - name: PINAKES_KEYCLOAK_VERIFY_SSL
-              value: "false"
-            - name: PINAKES_KEYCLOAK_CLIENT_SECRET
-              value: SOMESECRETVALUE
-            - name: PINAKES_KEYCLOAK_REALM_FRONTEND_URL
-              value: https://keycloak.k8s.local/auth
-            - name: PINAKES_KEYCLOAK_REALM
-              value: pinakes
-            - name: PINAKES_KEYCLOAK_CLIENT_ID
-              value: pinakes
-            - name: CONTROLLER_VERIFY_SSL
-              value: "False"
-            - name: PINAKES_REDIS_HOST
-              value: redis
-            - name: PINAKES_REDIS_PORT
-              value: "6379"
-            - name: PINAKES_REDIS_DB
-              value: "0"
-            - name: PINAKES_DATABASE_NAME
-              value: dev_catalog
-            - name: PINAKES_POSTGRES_HOST
-              value: postgres
-            - name: PINAKES_POSTGRES_USER
-              value: keycloak
-            - name: PINAKES_POSTGRES_PASSWORD
-              value: password
-            - name: PINAKES_MEDIA_ROOT
-              value: /app/media
-            - name: PINAKES_ALLOWED_HOSTS
-              value: "pinakes.k8s.local,app"
-            - name: PINAKES_SECRET_KEY
-              value: "django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5"
-            - name: PINAKES_STATIC_ROOT
-              value: /app/static
-            - name: PINAKES_LOGIN_REDIRECT_URL
-              value: /ui/catalog/index.html
-            - name: PINAKES_HTTPS_ENABLED
-              value: "True"
-            - name: PINAKES_CSRF_TRUSTED_ORIGINS
-              value: "https://pinakes.k8s.local"
-            - name: PINAKES_CONTROLLER_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: ansible-controller-env
-                  key: PINAKES_CONTROLLER_URL
-            - name: PINAKES_CONTROLLER_TOKEN
-              valueFrom:
-                configMapKeyRef:
-                  name: ansible-controller-env
-                  key: PINAKES_CONTROLLER_TOKEN
-            - name: PINAKES_CONTROLLER_VERIFY_SSL
-              valueFrom:
-                configMapKeyRef:
-                  name: ansible-controller-env
-                  key: PINAKES_CONTROLLER_VERIFY_SSL
-            - name: PINAKES_INSIGHTS_TRACKING_STATE
-              valueFrom:
-                configMapKeyRef:
-                  name: ansible-insights-env
-                  key: PINAKES_INSIGHTS_TRACKING_STATE
-            - name: PINAKES_INSIGHTS_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: ansible-insights-env
-                  key: PINAKES_INSIGHTS_URL
-            - name: PINAKES_INSIGHTS_AUTH_METHOD
-              valueFrom:
-                configMapKeyRef:
-                  name: ansible-insights-env
-                  key: PINAKES_INSIGHTS_AUTH_METHOD
-            - name: PINAKES_INSIGHTS_USERNAME
-              valueFrom:
-                configMapKeyRef:
-                  name: ansible-insights-env
-                  key: PINAKES_INSIGHTS_USERNAME
-            - name: PINAKES_INSIGHTS_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  name: ansible-insights-env
-                  key: PINAKES_INSIGHTS_PASSWORD
+          envFrom:
+          - configMapRef:
+            name: pinakes-env-overrides
           image: localhost/pinakes
           imagePullPolicy: Never
+          envFrom:
+          - configMapRef:
+              name: pinakes-env-overrides
           name: app
           ports:
             - containerPort: 8000
