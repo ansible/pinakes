@@ -39,9 +39,6 @@ spec:
             name: pinakes-env-overrides
           image: localhost/pinakes
           imagePullPolicy: Never
-          envFrom:
-          - configMapRef:
-              name: pinakes-env-overrides
           name: app
           ports:
             - containerPort: 8000
