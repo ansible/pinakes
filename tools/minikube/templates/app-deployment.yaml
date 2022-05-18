@@ -36,7 +36,7 @@ spec:
             - "/opt/app-root/src/tools/minikube/scripts/server.sh"
           envFrom:
           - configMapRef:
-            name: pinakes-env-overrides
+              name: pinakes-env-overrides
           image: localhost/pinakes
           imagePullPolicy: Never
           name: app

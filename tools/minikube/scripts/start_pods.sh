@@ -72,10 +72,12 @@ fi
 
 rm -rf $tmp_dir
 
-kubectl create configmap \
+if ! kubectl get configmap --namespace=catalog pinakes-env-overrides &>/dev/null; then
+     kubectl create configmap \
 	--namespace=catalog \
 	pinakes-env-overrides \
 	--from-env-file="$OVERRIDE_ENV_FILE"
+fi
 
 
 
