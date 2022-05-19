@@ -10,7 +10,7 @@ PINAKES_CONTROLLER_URL=${PINAKES_CONTROLLER_URL:-}
 PINAKES_CONTROLLER_TOKEN=${PINAKES_CONTROLLER_TOKEN:-}
 PINAKES_CONTROLLER_VERIFY_SSL=${PINAKES_CONTROLLER_VERIFY_SSL:-}
 
-setup_env_vars() {
+one_time_transiiton() {
     # This is one time migration to using the env var file
     # if the file doesn't exist we create a file from the old
     # required env vars.
@@ -39,6 +39,7 @@ setup_env_vars() {
       tmpfile=$(mktemp /tmp/pinakes_env_var.XXXXXX)
       sed -e '/PINAKES_CONTROLLER_URL/d' -e '/PINAKES_CONTROLLER_TOKEN/d' -e '/PINAKES_CONTROLLER_VERIFY_SSL/d' "$OVERRIDE_ENV_FILE" > "$tmpfile"
       mv "$tmpfile" "$OVERRIDE_ENV_FILE"
+      chmod 0644 "$OVERRIDE_ENV_FILE"
       echo "PINAKES_CONTROLLER_URL="${PINAKES_CONTROLLER_URL}"" >> "$OVERRIDE_ENV_FILE"
       echo "PINAKES_CONTROLLER_TOKEN="${PINAKES_CONTROLLER_TOKEN}"" >> "$OVERRIDE_ENV_FILE"
       echo "PINAKES_CONTROLLER_VERIFY_SSL="${PINAKES_CONTROLLER_VERIFY_SSL}"" >> "$OVERRIDE_ENV_FILE"
@@ -46,7 +47,17 @@ setup_env_vars() {
 }
 
 #One time setup from previous approach
-setup_env_vars
+one_time_transiiton
+
+
+if [[ ! -f "$OVERRIDE_ENV_FILE" ]]
+then
+	echo "Missing file: $OVERRIDE_ENV_FILE"
+	echo "This file contains all the configurable environment variables for the app"
+	echo "A sample file has been provided in ./tools/minikube/env_vars.sample"
+	echo "Please copy this file as $OVERRIDE_ENV_FILE and change the values"
+	exit 1
+fi
 
 if ! kubectl get namespace catalog &>/dev/null; then
 	kubectl create namespace catalog
