@@ -11,23 +11,34 @@ PINAKES_CONTROLLER_TOKEN=${PINAKES_CONTROLLER_TOKEN:-}
 PINAKES_CONTROLLER_VERIFY_SSL=${PINAKES_CONTROLLER_VERIFY_SSL:-}
 
 setup_env_vars() {
-    if [ ! -f "$OVERRIDE_ENV_FILE" ]; then
+    # This is one time migration to using the env var file
+    # if the file doesn't exist we create a file from the old
+    # required env vars.
+    if [[ ! -f "$OVERRIDE_ENV_FILE" ]]
+    then
       cp ./tools/minikube/env_vars.sample "$OVERRIDE_ENV_FILE"
-      if [[ -z "${PINAKES_CONTROLLER_URL}" ]]; then
+      if [[ -z "${PINAKES_CONTROLLER_URL}" ]]
+      then
         echo "Error: Environment variable PINAKES_CONTROLLER_URL is not set."
         exit 1
       fi
 
-      if [[ -z "${PINAKES_CONTROLLER_TOKEN}" ]]; then
+      if [[ -z "${PINAKES_CONTROLLER_TOKEN}" ]]
+      then
         echo "Error: Environment variable PINAKES_CONTROLLER_TOKEN is not set."
         exit 1
       fi
 
-      if [[ -z "${PINAKES_CONTROLLER_VERIFY_SSL}" ]]; then
+      if [[ -z "${PINAKES_CONTROLLER_VERIFY_SSL}" ]]
+      then
         echo "Error: Environment variable PINAKES_CONTROLLER_VERIFY_SSL is not set."
         exit 1
       fi
-      sed -i '' -e '/PINAKES_CONTROLLER_URL/d' -e '/PINAKES_CONTROLLER_TOKEN/d' -e '/PINAKES_CONTROLLER_VERIFY_SSL/d' "$OVERRIDE_ENV_FILE"
+
+      # To handle compatibility issues between sed on Mac and linux don't use the -i
+      tmpfile=$(mktemp /tmp/pinakes_env_var.XXXXXX)
+      sed -e '/PINAKES_CONTROLLER_URL/d' -e '/PINAKES_CONTROLLER_TOKEN/d' -e '/PINAKES_CONTROLLER_VERIFY_SSL/d' "$OVERRIDE_ENV_FILE" > "$tmpfile"
+      mv "$tmpfile" "$OVERRIDE_ENV_FILE"
       echo "PINAKES_CONTROLLER_URL="${PINAKES_CONTROLLER_URL}"" >> "$OVERRIDE_ENV_FILE"
       echo "PINAKES_CONTROLLER_TOKEN="${PINAKES_CONTROLLER_TOKEN}"" >> "$OVERRIDE_ENV_FILE"
       echo "PINAKES_CONTROLLER_VERIFY_SSL="${PINAKES_CONTROLLER_VERIFY_SSL}"" >> "$OVERRIDE_ENV_FILE"
