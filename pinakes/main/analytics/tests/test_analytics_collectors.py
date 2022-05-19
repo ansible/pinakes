@@ -106,6 +106,7 @@ def test_source_table_collector(sqlite_copy_expert):
             assert header == [
                 "id",
                 "name",
+                "info",
                 "created_at",
                 "updated_at",
                 "refresh_state",
