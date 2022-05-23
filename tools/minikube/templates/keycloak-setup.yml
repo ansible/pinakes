@@ -9,25 +9,9 @@ spec:
       - name: keycloak-setup
         image: localhost/pinakes
         imagePullPolicy: Never
-        env:
-           - name: PINAKES_KEYCLOAK_URL
-             value: http://keycloak:8080/auth
-           - name: PINAKES_KEYCLOAK_CLIENT_SECRET
-             value: SOMESECRETVALUE
-           - name: PINAKES_KEYCLOAK_USER
-             value: admin
-           - name: PINAKES_KEYCLOAK_PASSWORD
-             value: admin
-           - name: PINAKES_KEYCLOAK_REALM
-             value: pinakes
-           - name: PINAKES_KEYCLOAK_CLIENT_ID
-             value: pinakes
-           - name: PINAKES_KEYCLOAK_DISPLAY_NAME
-             value: PINAKES
-           - name: PINAKES_KEYCLOAK_REALM_FRONTEND_URL
-             value: https://keycloak.k8s.local/auth
-           - name: REDIRECT_URIS_STR
-             value: http://app:8000,http://app:8000/*,*
+        envFrom:
+        - configMapRef:
+            name: pinakes-env-overrides
         command:  [/opt/app-root/src/tools/docker/scripts/keycloak-setup.sh]
       restartPolicy: Never
   backoffLimit: 1
