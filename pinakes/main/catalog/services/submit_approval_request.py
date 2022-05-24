@@ -18,10 +18,12 @@ logger = logging.getLogger("catalog")
 class SubmitApprovalRequest:
     """Submit a new approval request"""
 
-    def __init__(self, tag_resources, order, context={}):
+    def __init__(self, tag_resources, order, context=None):
         self.tag_resources = tag_resources
         self.order = order
         self.order_item = order.product
+        if context is None:
+            context = {}
         self.context = context
 
     def process(self):
