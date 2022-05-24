@@ -2,6 +2,7 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
+from pinakes.common.fields import MetadataField, UserCapabilitiesField
 from pinakes.main.approval.models import (
     NotificationSetting,
     NotificationType,
@@ -10,6 +11,7 @@ from pinakes.main.approval.models import (
     Request,
     Action,
 )
+from pinakes.main.approval.permissions import WorkflowPermission
 from pinakes.main.approval.services.create_request import (
     CreateRequest,
 )
@@ -182,6 +184,43 @@ class ActionSerializer(serializers.ModelSerializer):
         return CreateAction(request, validated_data).process().action
 
 
+class RequestCapabilitiesField(UserCapabilitiesField):
+    """Customized user capabilities for requests"""
+
+    def to_representation(self, value):
+        permissions = super().to_representation(value)
+        return {**permissions, **self._valid_actions(permissions, value)}
+
+    def _valid_actions(self, permissions, request: Request):
+        if not permissions.get("retrieve"):
+            return {}
+
+        valid_actions = {}
+
+        admin = self._is_admin()
+        owner = self._is_owner(request)
+        if admin or owner:
+            valid_actions["cancel"] = request.can_cancel()
+        if admin or not owner:
+            valid_actions["memo"] = True
+            valid_actions["approve"] = request.can_decide()
+            valid_actions["deny"] = valid_actions["approve"]
+        return valid_actions
+
+    def _is_admin(self):
+        """
+        We currently cannot determine roles. Sine only admin can see workflows,
+        we use workflow permission to assess
+        """
+        return WorkflowPermission().has_permission(
+            self.context["request"], self.context["view"]
+        )
+
+    def _is_owner(self, request: Request):
+        view = self.context["view"]
+        return request.user == view.request.user
+
+
 class RequestFields:
     FIELDS = (
         "id",
@@ -266,6 +305,10 @@ class RequestSerializer(serializers.ModelSerializer):
     extra_data = serializers.SerializerMethodField(
         "get_extra_data", read_only=True, allow_null=True
     )
+    metadata = MetadataField(
+        user_capabilities_field=RequestCapabilitiesField(),
+        help_text="JSON Metadata about the request",
+    )
 
     class Meta:
         model = Request
@@ -274,6 +317,7 @@ class RequestSerializer(serializers.ModelSerializer):
             "number_of_children",
             "number_of_finished_children",
             "extra_data",
+            "metadata",
         )
         read_only_fields = (
             "__all__",
