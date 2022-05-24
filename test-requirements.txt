@@ -1,5 +1,4 @@
-black
-flake8
+-r lint-requirements.txt
 pytest
 pytest-django
 pytest-factoryboy
