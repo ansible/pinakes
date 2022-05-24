@@ -25,14 +25,8 @@ class TestWorkflows:
 
         tenant = TenantFactory()
         template = TemplateFactory(tenant=tenant)
-        with pytest.raises(IntegrityError) as excinfo:
+        with pytest.raises(IntegrityError):
             WorkflowFactory(tenant=tenant, template=template, name="")
-
-        assert (
-            "CHECK constraint failed:"
-            f" {template._meta.app_label}_workflow_name_empty"
-            in str(excinfo.value)
-        )
 
     @pytest.mark.django_db
     def test_duplicate_workflow_name(self):
@@ -42,13 +36,8 @@ class TestWorkflows:
         template = TemplateFactory(tenant=tenant)
         name = "fred"
         WorkflowFactory(tenant=tenant, template=template, name=name)
-        with pytest.raises(IntegrityError) as excinfo:
+        with pytest.raises(IntegrityError):
             WorkflowFactory(tenant=tenant, template=template, name=name)
-
-        assert (
-            "UNIQUE constraint failed:"
-            f" {template._meta.app_label}_workflow.name" in str(excinfo.value)
-        )
 
     @pytest.mark.django_db
     def test_duplicate_internal_sequence(self):
@@ -59,13 +48,7 @@ class TestWorkflows:
         WorkflowFactory(
             tenant=tenant, template=template, internal_sequence=Decimal(3)
         )
-        with pytest.raises(IntegrityError) as excinfo:
+        with pytest.raises(IntegrityError):
             WorkflowFactory(
                 tenant=tenant, template=template, internal_sequence=Decimal(3)
             )
-
-        assert (
-            "UNIQUE constraint failed:"
-            f" {template._meta.app_label}_workflow.internal_sequence"
-            in str(excinfo.value)
-        )

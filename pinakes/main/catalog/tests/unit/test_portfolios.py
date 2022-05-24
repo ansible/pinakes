@@ -26,14 +26,9 @@ class TestPortfolios:
 
         tenant = TenantFactory()
         name = "fred"
-        portfolio = PortfolioFactory(tenant=tenant, name=name)
-        with pytest.raises(IntegrityError) as excinfo:
+        PortfolioFactory(tenant=tenant, name=name)
+        with pytest.raises(IntegrityError):
             PortfolioFactory(tenant=tenant, name=name)
-        assert (
-            "UNIQUE constraint failed:"
-            f" {portfolio._meta.app_label}_portfolio.name"
-            in str(excinfo.value)
-        )
 
     @pytest.mark.django_db
     def test_empty_portfolio_name(self):

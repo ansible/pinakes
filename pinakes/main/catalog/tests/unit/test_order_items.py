@@ -39,17 +39,12 @@ def test_duplicate_orderitem_name():
     order = OrderFactory(tenant=tenant)
     portfolio_item = PortfolioItemFactory(tenant=tenant)
     OrderItemFactory(tenant=tenant, order=order, portfolio_item=portfolio_item)
-    with pytest.raises(IntegrityError) as excinfo:
+    with pytest.raises(IntegrityError):
         OrderItemFactory(
             tenant=tenant,
             order=order,
             portfolio_item=portfolio_item,
         )
-
-    assert (
-        f"UNIQUE constraint failed: {order._meta.app_label}_orderitem.name"
-        in str(excinfo.value)
-    )
 
 
 @pytest.mark.django_db

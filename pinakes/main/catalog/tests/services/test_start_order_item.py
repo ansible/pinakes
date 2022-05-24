@@ -30,7 +30,7 @@ from pinakes.main.catalog.tests.factories import (
 @pytest.mark.django_db
 def test_place_order_item(mocker):
     order = OrderFactory()
-    OrderItemFactory(state=OrderItem.State.PENDING, order=order)
+    order_item1 = OrderItemFactory(state=OrderItem.State.PENDING, order=order)
     OrderItemFactory(state=OrderItem.State.APPROVED, order=order)
 
     mocker.patch.object(ProvisionOrderItem, "process", return_value=None)
@@ -39,7 +39,7 @@ def test_place_order_item(mocker):
 
     assert (
         str(ProgressMessage.objects.first())
-        == "Submitting Order Item 1 for provisioning"
+        == f"Submitting Order Item {order_item1.id} for provisioning"
     )
 
 

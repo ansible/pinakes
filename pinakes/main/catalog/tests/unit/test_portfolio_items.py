@@ -25,14 +25,8 @@ class TestPortfolioItems:
 
         tenant = TenantFactory()
         portfolio = PortfolioFactory(tenant=tenant)
-        with pytest.raises(IntegrityError) as excinfo:
+        with pytest.raises(IntegrityError):
             PortfolioItemFactory(tenant=tenant, portfolio=portfolio, name="")
-
-        assert (
-            "CHECK constraint failed:"
-            f" {portfolio._meta.app_label}_portfolioitem_name_empty"
-            in str(excinfo.value)
-        )
 
     @pytest.mark.django_db
     def test_portfolio_metadata(self, api_request):
