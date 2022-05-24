@@ -50,8 +50,7 @@ class LaunchJob:
 
         while obj["status"] not in self.JOB_COMPLETION_STATUSES:
             time.sleep(self.REFRESH_INTERVAL)
-            for obj in self.tower.get(obj["url"], attrs):
-                pass
+            obj = next(self.tower.get(obj["url"], attrs))
 
         self.output = obj
 

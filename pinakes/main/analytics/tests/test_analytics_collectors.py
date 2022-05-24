@@ -83,7 +83,7 @@ def sqlite_copy_expert(request):
         csv_handle.writerow(headers)
         csv_handle.writerows(results)
 
-    setattr(SQLiteCursorWrapper, "copy_expert", write_stdout)
+    SQLiteCursorWrapper.copy_expert = write_stdout
     request.addfinalizer(lambda: shutil.rmtree(path))
     request.addfinalizer(lambda: delattr(SQLiteCursorWrapper, "copy_expert"))
     return path

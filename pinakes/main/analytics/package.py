@@ -15,7 +15,7 @@ class Package(InsightsAnalyticsPackage):
         return getattr(settings, "PINAKES_INSIGHTS_URL", None)
 
     def shipping_auth_mode(self):
-        auth_method = getattr(settings, "PINAKES_INSIGHTS_AUTH_METHOD")
+        auth_method = settings.PINAKES_INSIGHTS_AUTH_METHOD
 
         return (
             Package.SHIPPING_AUTH_CERTIFICATES
