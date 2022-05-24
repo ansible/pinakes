@@ -39,6 +39,7 @@ export PINAKES_SECRET_KEY=abcdef
    You can override the Database and Tower information in your local development settings file.
    This settings file should not be checked into github, local settings file name should have a prefix of  **local_** e.g.   **pinakes/settings/local_info.py**
 
+* Optionally set [database encryption](./SECURITY.md#encryption) key.
 
 * After you have tested in the dev environment you can deactivate the virtual env by using
 ```deactivate```

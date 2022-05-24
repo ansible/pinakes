@@ -4,6 +4,7 @@ from django.db.models.functions import Length
 from django.contrib.auth import get_user_model
 from django.core.signing import Signer
 
+from pinakes.common.models.fields import EncryptedJsonField
 from pinakes.main.models import BaseModel, ImageableModel
 from pinakes.common.auth.keycloak_django.models import KeycloakMixin
 from pinakes.common.auth.keycloak_django import AbstractKeycloakResource
@@ -71,8 +72,7 @@ class NotificationSetting(BaseModel):
         editable=True,
         help_text="Name of the notification method",
     )
-    settings = SettingField(
-        blank=True,
+    settings = EncryptedJsonField(
         null=True,
         help_text="Parameters for configuring the notification method",
     )
