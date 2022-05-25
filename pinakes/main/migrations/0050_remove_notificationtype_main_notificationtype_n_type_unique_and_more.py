@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("main", "0048_source_error_code_source_error_dict_and_more"),
+        ("main", "0049_notificationsetting_encryption"),
     ]
 
     operations = [
