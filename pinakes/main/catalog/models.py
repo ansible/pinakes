@@ -29,9 +29,7 @@ class Portfolio(AbstractKeycloakResource, ImageableModel, UserOwnedModel):
     KEYCLOAK_TYPE = "catalog:portfolio"
     KEYCLOAK_ACTIONS = ["read", "update", "delete", "order"]
 
-    name = models.CharField(
-        max_length=255, unique=True, help_text="Portfolio name"
-    )
+    name = models.CharField(max_length=255, help_text="Portfolio name")
     description = models.TextField(
         blank=True, default="", help_text="Describe the portfolio in details"
     )
@@ -423,7 +421,8 @@ class OrderItem(UserOwnedModel, MessageableMixin):
 
     objects = OrderItemManager()
     name = models.CharField(
-        max_length=64, help_text="Name of the portfolio item or order process"
+        max_length=PortfolioItem.MAX_PORTFOLIO_ITEM_LENGTH,
+        help_text="Name of the portfolio item or order process",
     )
     state = models.CharField(
         max_length=20,

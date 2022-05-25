@@ -4,6 +4,7 @@ from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 from pinakes.common.fields import MetadataField
 from pinakes.main.models import Tenant, Image
+from pinakes.main.validators import UniqueWithinTenantValidator
 from pinakes.main.common.models import Group
 from pinakes.main.catalog.models import (
     ApprovalRequest,
@@ -41,6 +42,11 @@ class PortfolioSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Portfolio
+        validators = [
+            UniqueWithinTenantValidator(
+                queryset=Portfolio.objects.all(), fields=("name", "tenant")
+            )
+        ]
         fields = (
             "id",
             "name",
@@ -181,6 +187,43 @@ class OrderItemExtraSerializer(serializers.Serializer):
     portfolio_item = PortfolioItemSerializerBase(many=False)
 
 
+class UniqueWithinOrderValidator(UniqueWithinTenantValidator):
+    """Uniqueness validator on joint columns including order"""
+
+    def __call__(self, attrs, serializer):
+        order_attr = False
+        if "order" not in attrs:
+            if "order_id" in serializer.context["view"].kwargs:
+                attrs["order"] = Order.objects.get(
+                    id=serializer.context["view"].kwargs["order_id"]
+                )
+                order_attr = True
+
+        order_field = False
+        if "order" not in serializer.fields:
+            serializer.fields["order"] = serializers.PrimaryKeyRelatedField(
+                queryset=Order.objects.all()
+            )
+            order_field = True
+
+        name_attr = False
+        if "name" not in attrs:
+            if "portfolio_item" in attrs:
+                attrs["name"] = attrs["portfolio_item"].name
+                name_attr = True
+
+        super().__call__(attrs, serializer)
+
+        if order_attr:
+            del attrs["order"]
+
+        if order_field:
+            del serializer.fields["order"]
+
+        if name_attr:
+            del attrs["name"]
+
+
 class OrderItemSerializerBase(serializers.ModelSerializer):
     """OrderItem which keeps track of an execution of Portfolio Item"""
 
@@ -195,6 +238,12 @@ class OrderItemSerializerBase(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
+        validators = [
+            UniqueWithinOrderValidator(
+                queryset=OrderItem.objects.all(),
+                fields=("name", "order", "portfolio_item", "tenant"),
+            )
+        ]
         fields = (
             *ORDER_ITEM_FIELDS,
             "artifacts",

@@ -17,6 +17,7 @@ from pinakes.main.approval.services.create_action import (
     CreateAction,
 )
 from pinakes.main.approval import validations
+from pinakes.main.validators import UniqueWithinTenantValidator
 
 
 class NotificationTypeSerializer(serializers.ModelSerializer):
@@ -51,6 +52,12 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NotificationSetting
+        validators = [
+            UniqueWithinTenantValidator(
+                queryset=NotificationSetting.objects.all(),
+                fields=("name", "tenant"),
+            )
+        ]
         fields = ("id", "name", "notification_type", "settings")
 
 
@@ -59,6 +66,11 @@ class TemplateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Template
+        validators = [
+            UniqueWithinTenantValidator(
+                queryset=Template.objects.all(), fields=("title", "tenant")
+            )
+        ]
         fields = (
             "id",
             "title",
