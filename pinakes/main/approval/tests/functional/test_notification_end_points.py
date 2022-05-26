@@ -1,4 +1,4 @@
-""" Module for testing Notification settings """
+"""Module for testing Notification settings"""
 import pytest
 from pinakes.main.approval.models import NotificationType
 from pinakes.main.approval.permissions import TemplatePermission

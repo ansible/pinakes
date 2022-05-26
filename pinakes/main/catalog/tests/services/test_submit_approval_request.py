@@ -1,4 +1,4 @@
-""" Test on CreateApprovalRequest service """
+"""Test on CreateApprovalRequest service"""
 import pytest
 
 from pinakes.main.approval.models import Request

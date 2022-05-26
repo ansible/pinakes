@@ -1,4 +1,4 @@
-""" Background tasks for inventory """
+"""Background tasks for inventory"""
 import logging
 from rq import get_current_job
 

@@ -1,4 +1,4 @@
-""" Test on CancelOrder service """
+"""Test on CancelOrder service"""
 import pytest
 
 from pinakes.main.approval.models import Action, Request

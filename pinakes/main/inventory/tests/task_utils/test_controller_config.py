@@ -1,4 +1,4 @@
-""" Test module for ControllerConfig  """
+"""Test module for ControllerConfig"""
 from unittest.mock import Mock
 
 from pinakes.main.inventory.task_utils.controller_config import (

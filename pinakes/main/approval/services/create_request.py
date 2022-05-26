@@ -1,4 +1,4 @@
-""" Create an approval request """
+"""Create an approval request"""
 import logging
 import django_rq
 from pinakes.main.approval.models import (

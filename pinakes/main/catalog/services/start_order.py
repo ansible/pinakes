@@ -1,4 +1,4 @@
-""" Approval Request State Transition """
+"""Approval Request State Transition"""
 
 import logging
 

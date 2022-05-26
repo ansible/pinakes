@@ -1,4 +1,4 @@
-""" Module to test creating requests """
+"""Module to test creating requests"""
 from unittest.mock import Mock
 import pytest
 from pinakes.main.tests.factories import default_tenant

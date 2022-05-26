@@ -1,4 +1,4 @@
-""" Module to test Source end points """
+"""Module to test Source end points"""
 from unittest.mock import Mock
 import json
 import pytest

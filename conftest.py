@@ -1,4 +1,4 @@
-""" pytest fixtures """
+"""pytest fixtures"""
 import contextlib
 import os
 import urllib.parse

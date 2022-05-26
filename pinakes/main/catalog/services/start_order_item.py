@@ -1,4 +1,4 @@
-""" Start processing the next order item """
+"""Start processing the next order item"""
 import logging
 from django.utils.translation import gettext_lazy as _
 

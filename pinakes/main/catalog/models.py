@@ -1,4 +1,4 @@
-""" This modules stores the definition of the Catalog model."""
+"""This modules stores the definition of the Catalog model."""
 import logging
 
 from django.utils.translation import gettext_lazy as _

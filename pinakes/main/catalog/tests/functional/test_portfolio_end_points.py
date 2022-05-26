@@ -1,4 +1,4 @@
-""" Test portfolio end points """
+"""Test portfolio end points"""
 import json
 import os
 import glob

@@ -1,4 +1,4 @@
-""" Process a root request """
+"""Process a root request"""
 import logging
 import django_rq
 

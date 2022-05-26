@@ -1,4 +1,4 @@
-""" Module to Finish Processing an OrderItem """
+"""Module to Finish Processing an OrderItem"""
 import logging
 
 from django.utils.translation import gettext_lazy as _

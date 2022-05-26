@@ -1,4 +1,4 @@
-""" Test population json template with input parameters """
+"""Test population json template with input parameters"""
 import pytest
 import copy
 

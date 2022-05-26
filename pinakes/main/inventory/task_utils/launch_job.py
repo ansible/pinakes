@@ -1,4 +1,4 @@
-""" Task to Launch a Job in Tower and wait for it to end"""
+"""Task to Launch a Job in Tower and wait for it to end"""
 import time
 import logging
 from django.utils.translation import gettext_lazy as _

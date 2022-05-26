@@ -1,4 +1,4 @@
-""" Module to test OrderItem end points """
+"""Module to test OrderItem end points"""
 import json
 import pytest
 
