@@ -71,7 +71,7 @@ class ProcessRootRequest:
         sub_groups = self.request.subrequests.order_by("id").values(
             "group_name"
         )
-        all_names = ",".join(map(lambda x: x["group_name"], sub_groups))
+        all_names = ",".join(x["group_name"] for x in sub_groups)
         self.request.group_name = all_names
         self.request.save()
 

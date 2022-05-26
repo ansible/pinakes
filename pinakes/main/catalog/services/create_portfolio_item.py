@@ -83,14 +83,11 @@ class CreatePortfolioItem:
         )
 
     def _create_fields(self):
-        service_offering_columns = [
+        service_offering_columns = {
             field.name for field in self.service_offering._meta.get_fields()
-        ]
-        portfolio_item_columns = list(
-            set([field.name for field in PortfolioItem._meta.get_fields()])
-            - set(self.IGNORE_FIELDS)
-        )
+        }
+        portfolio_item_columns = {
+            field.name for field in PortfolioItem._meta.get_fields()
+        } - set(self.IGNORE_FIELDS)
 
-        return list(
-            set(service_offering_columns) & set(portfolio_item_columns)
-        )
+        return list(service_offering_columns & portfolio_item_columns)

@@ -101,7 +101,7 @@ def test_source_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -134,7 +134,7 @@ def test_service_offering_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -168,7 +168,7 @@ def test_service_offering_node_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -198,7 +198,7 @@ def test_service_instance_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -229,7 +229,7 @@ def test_service_inventories_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -258,7 +258,7 @@ def test_portfolio_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -287,7 +287,7 @@ def test_portfolio_item_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -320,7 +320,7 @@ def test_order_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -349,7 +349,7 @@ def test_order_item_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -386,7 +386,7 @@ def test_approval_request_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -415,7 +415,7 @@ def test_service_plan_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -445,7 +445,7 @@ def test_template_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -471,7 +471,7 @@ def test_workflow_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -500,7 +500,7 @@ def test_request_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -537,7 +537,7 @@ def test_action_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -572,7 +572,7 @@ def test_tag_link_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -604,7 +604,7 @@ def test_group_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
