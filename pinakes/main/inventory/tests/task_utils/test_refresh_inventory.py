@@ -1,4 +1,4 @@
-""" Module to test the Refresh Inventory. """
+"""Module to test the Refresh Inventory."""
 from unittest.mock import patch
 import pytest
 from pinakes.main.tests.factories import TenantFactory

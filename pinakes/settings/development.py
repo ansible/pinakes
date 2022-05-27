@@ -1,4 +1,4 @@
-""" Development Settings
+"""Development Settings
     When running pytest SQLite is used as Database
     Supports local settings in pinakes/settings/local*.py
 """

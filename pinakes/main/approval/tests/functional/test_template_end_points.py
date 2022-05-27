@@ -1,4 +1,4 @@
-""" Module for testing Approval Templates """
+"""Module for testing Approval Templates"""
 import json
 import pytest
 from pinakes.main.approval.tests.factories import (

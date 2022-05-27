@@ -1,4 +1,4 @@
-""" Module to test processing root requests """
+"""Module to test processing root requests"""
 from unittest.mock import Mock, call
 import pytest
 from pinakes.main.approval.tests.factories import (

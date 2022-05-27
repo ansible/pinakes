@@ -1,4 +1,4 @@
-""" Default views for Catalog."""
+"""Default views for Catalog."""
 
 import logging
 

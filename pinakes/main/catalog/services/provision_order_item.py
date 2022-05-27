@@ -1,4 +1,4 @@
-""" Start provisioning a Single order item """
+"""Start provisioning a Single order item"""
 
 from pinakes.main.inventory.services.start_tower_job import (
     StartTowerJob,

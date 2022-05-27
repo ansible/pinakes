@@ -1,4 +1,4 @@
-""" Test service_plan end points """
+"""Test service_plan end points"""
 import json
 from unittest import mock
 

@@ -1,4 +1,4 @@
-""" Serializers for Inventory Model."""
+"""Serializers for Inventory Model."""
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext_noop
 from rest_framework import serializers

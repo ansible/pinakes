@@ -1,4 +1,4 @@
-""" Module to test approval requests and actions """
+"""Module to test approval requests and actions"""
 import json
 import pytest
 from pinakes.main.tests.factories import default_tenant

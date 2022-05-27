@@ -1,4 +1,4 @@
-""" Validate order item by its service plans. """
+"""Validate order item by its service plans."""
 
 from django.utils.translation import gettext_lazy as _
 

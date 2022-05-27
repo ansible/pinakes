@@ -1,4 +1,4 @@
-""" Get service plan for a given service plan id """
+"""Get service plan for a given service plan id"""
 
 from django.utils.translation import gettext_lazy as _
 from pinakes.main.inventory.models import (

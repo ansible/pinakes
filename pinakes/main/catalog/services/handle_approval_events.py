@@ -1,4 +1,4 @@
-""" Handle approval events """
+"""Handle approval events"""
 import logging
 
 from django.utils import timezone

@@ -1,4 +1,4 @@
-""" Test on CollectTagResources """
+"""Test on CollectTagResources"""
 import pytest
 
 from pinakes.main.catalog.services.collect_tag_resources import (

@@ -1,4 +1,4 @@
-""" Cancel an order request"""
+"""Cancel an order request"""
 import logging
 
 from django.utils.translation import gettext_lazy as _

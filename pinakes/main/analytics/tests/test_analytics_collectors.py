@@ -1,4 +1,4 @@
-""" Tests for metrics collection """
+"""Tests for metrics collection"""
 import csv
 from datetime import timedelta
 import os

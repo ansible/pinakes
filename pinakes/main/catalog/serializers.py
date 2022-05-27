@@ -1,4 +1,4 @@
-""" Serializers for Catalog Model."""
+"""Serializers for Catalog Model."""
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 

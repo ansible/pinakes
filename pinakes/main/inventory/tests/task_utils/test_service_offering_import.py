@@ -1,4 +1,4 @@
-""" Test module for ServiceOfferingImport  """
+"""Test module for ServiceOfferingImport"""
 from unittest.mock import Mock
 
 import pytest

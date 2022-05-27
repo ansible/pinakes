@@ -1,4 +1,4 @@
-""" This module stores the base models needed for Catalog. """
+"""This module stores the base models needed for Catalog."""
 from django.db import models
 from django.db.utils import OperationalError
 from django.db.models.functions import Length

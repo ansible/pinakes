@@ -1,4 +1,4 @@
-""" Test starting an order """
+"""Test starting an order"""
 
 import pytest
 

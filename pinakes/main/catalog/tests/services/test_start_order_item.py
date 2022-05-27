@@ -1,4 +1,4 @@
-""" Start ordering an item """
+"""Start ordering an item"""
 
 import pytest
 from unittest import mock

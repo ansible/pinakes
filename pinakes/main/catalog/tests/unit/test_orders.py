@@ -1,4 +1,4 @@
-""" Test on Order """
+"""Test on Order"""
 import pytest
 
 from pinakes.main.catalog.models import ProgressMessage

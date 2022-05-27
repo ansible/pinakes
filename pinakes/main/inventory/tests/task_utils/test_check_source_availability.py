@@ -1,4 +1,4 @@
-""" Module to test the source availability check. """
+"""Module to test the source availability check."""
 from unittest import mock
 
 import pytest

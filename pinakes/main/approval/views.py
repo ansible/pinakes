@@ -1,4 +1,4 @@
-""" Default views for Approval."""
+"""Default views for Approval."""
 import logging
 
 from decimal import Decimal

@@ -1,5 +1,4 @@
-""" Get Controller Config Information
-"""
+"""Get Controller Config Information"""
 import logging
 
 logger = logging.getLogger("inventory")

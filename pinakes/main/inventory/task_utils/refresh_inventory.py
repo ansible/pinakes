@@ -1,4 +1,4 @@
-""" Task to Refresh Inventory from the Tower """
+"""Task to Refresh Inventory from the Tower"""
 import logging
 import traceback
 from django.db import transaction

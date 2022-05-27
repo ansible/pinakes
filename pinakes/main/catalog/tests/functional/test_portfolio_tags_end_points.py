@@ -1,4 +1,4 @@
-""" Test for tagging  """
+"""Test for tagging"""
 import json
 import pytest
 
