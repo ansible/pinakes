@@ -124,7 +124,7 @@ class WorkflowSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
-        read_only_fields = ("created_at", "updated_at", "template")
+        read_only_fields = ("created_at", "updated_at")
 
     def validate_group_refs(self, value):
         serializer = GroupRefSerializer(many=True, data=value)

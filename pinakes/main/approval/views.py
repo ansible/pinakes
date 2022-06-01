@@ -26,7 +26,6 @@ from pinakes.main.models import Tenant
 from pinakes.main.approval.models import (
     NotificationType,
     NotificationSetting,
-    Template,
     Workflow,
     Request,
 )
@@ -229,14 +228,7 @@ class WorkflowFilterBackend(BaseFilterBackend):
         ],
     ),
     create=extend_schema(
-        tags=(
-            "workflows",
-            "templates",
-        ),
-        description=(
-            "Create a workflow from a template identified by its id, available"
-            " to admin only"
-        ),
+        description="Create a workflow, available to admin only",
     ),
     partial_update=extend_schema(
         description=(
@@ -334,7 +326,6 @@ class WorkflowViewSet(
                 max_obj.internal_sequence.to_integral_value() + 1
             )
         serializer.save(
-            template=Template(id=self.kwargs["template_id"]),
             internal_sequence=next_seq,
             tenant=Tenant.current(),
         )
