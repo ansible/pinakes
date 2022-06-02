@@ -1,5 +1,6 @@
 """Create a request to Approval"""
 import logging
+import traceback
 
 from django.utils.translation import gettext_lazy as _
 
@@ -54,6 +55,7 @@ class SubmitApprovalRequest:
                 self.order.id,
                 error,
             )
+            logger.error(traceback.format_exc())
             raise BadParamsException(
                 _(
                     "Failed to submit request to approval for Order {},"

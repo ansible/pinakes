@@ -4,6 +4,7 @@ import logging
 
 import django_rq
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets
@@ -525,10 +526,12 @@ class OrderViewSet(
         ValidateOrderItem(order.product).process()
 
         tag_resources = CollectTagResources(order).process().tag_resources
-        message = _("Computed tags for order {}: {}").format(
-            order.id, tag_resources
+
+        message = gettext_noop(
+            "Computed tags for order %(order_id)d: %(tag_resources)s"
         )
-        order.update_message(ProgressMessage.Level.INFO, message)
+        params = {"order_id": order.id, "tag_resources": tag_resources}
+        order.update_message(ProgressMessage.Level.INFO, message, params)
 
         logger.info("Creating approval request for order id %d", order.id)
         if request and request.META:
