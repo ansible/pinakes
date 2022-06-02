@@ -378,6 +378,18 @@ class Request(AbstractKeycloakResource, BaseModel):
             self.State.FAILED,
         )
 
+    def can_cancel(self) -> bool:
+        """Is the request in a state that can be canceled"""
+        return self.is_root() and self.state in (
+            self.State.PENDING,
+            self.State.STARTED,
+            self.State.NOTIFIED,
+        )
+
+    def can_decide(self) -> bool:
+        """Is the request in a state that can be approved or denied"""
+        return self.is_leaf() and self.state == self.State.NOTIFIED
+
     def __str__(self):
         return self.name
 
