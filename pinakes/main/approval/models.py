@@ -1,6 +1,10 @@
 """Models for Approval"""
+import math
+from decimal import Decimal
 from django.db import models
+from django.db.models.signals import pre_save
 from django.db.models.functions import Length
+from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from django.core.signing import Signer
 
@@ -169,6 +173,7 @@ class Workflow(KeycloakMixin, BaseModel):
     )
 
     class Meta:
+        ordering = ["internal_sequence"]
         constraints = [
             models.CheckConstraint(
                 name="%(app_label)s_%(class)s_name_empty",
@@ -184,8 +189,94 @@ class Workflow(KeycloakMixin, BaseModel):
             ),
         ]
 
+    def move_internal_sequence(self, delta):
+        """
+        Move current record up or down relative to other records.
+        delta is an integer
+        """
+        if delta == 0:
+            return
+
+        if delta > 0:
+            self.internal_sequence = Decimal(
+                self._internal_sequence_plus(delta)
+            )
+        else:
+            self.internal_sequence = Decimal(
+                self._internal_sequence_minus(-delta)
+            )
+        self.save()
+
+    def _internal_sequence_plus(self, delta):
+        if delta == math.inf:
+            return self._internal_sequence_extend_from_last()
+
+        query = Workflow.objects.filter(
+            internal_sequence__gt=self.internal_sequence
+        )
+        sequence_range = self._internal_sequence_range(query, delta)
+
+        if len(sequence_range) == 0:
+            return self._internal_sequence_extend_from_last()
+
+        if len(sequence_range) == 1:
+            return sequence_range[0].to_integral_value() + 1
+
+        return (sequence_range[0] + sequence_range[1]) / 2
+
+    def _internal_sequence_minus(self, delta):
+        if delta == math.inf:
+            return self._internal_sequence_before_first()
+
+        query = Workflow.objects.filter(
+            internal_sequence__lt=self.internal_sequence
+        ).order_by("-internal_sequence")
+        sequence_range = self._internal_sequence_range(query, delta)
+        if len(sequence_range) == 0:
+            return self._internal_sequence_before_first()
+
+        if len(sequence_range) == 1:
+            return sequence_range[0] / 2
+
+        return (sequence_range[0] + sequence_range[1]) / 2
+
+    def _internal_sequence_range(self, query, delta):
+        return query.values_list("internal_sequence", flat=True)[
+            (delta - 1) : (delta + 1)
+        ]
+
+    def _internal_sequence_extend_from_last(self):
+        last_sequence = (
+            Workflow.objects.filter(tenant=self.tenant)
+            .values_list("internal_sequence", flat=True)
+            .last()
+        )
+        return last_sequence.to_integral_value() + 1
+
+    def _internal_sequence_before_first(self):
+        first_sequence = (
+            Workflow.objects.filter(tenant=self.tenant)
+            .values_list("internal_sequence", flat=True)
+            .first()
+        )
+        return first_sequence / 2
+
     def __str__(self):
         return self.name
+
+
+@receiver(pre_save, sender=Workflow)
+def assign_internal_sequence(sender, instance, *args, **kwargs):
+    if instance.internal_sequence is not None:
+        return
+
+    max_obj = Workflow.objects.filter(tenant=instance.tenant).last()
+    if max_obj is None:
+        instance.internal_sequence = Decimal(1)
+    else:
+        instance.internal_sequence = Decimal(
+            max_obj.internal_sequence.to_integral_value() + 1
+        )
 
 
 class RequestContext(models.Model):

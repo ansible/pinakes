@@ -126,12 +126,55 @@ class WorkflowSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
-        read_only_fields = ("created_at", "updated_at", "template")
+        read_only_fields = ("created_at", "updated_at")
 
     def validate_group_refs(self, value):
         serializer = GroupRefSerializer(many=True, data=value)
         serializer.is_valid(raise_exception=True)
         return validations.validate_approver_groups(value)
+
+
+PLACEMENT_CHOICES = (
+    ("top", "top"),
+    ("bottom", "bottom"),
+)
+
+
+class RepositionSerializer(serializers.Serializer):
+    """
+    The desired increment relative to its current position,
+    or placement to top or bottom of the list.
+    """
+
+    increment = serializers.IntegerField(
+        required=False,
+        write_only=True,
+        help_text=(
+            "Move the record up (negative) or down (positive) in the list. "
+            "Do not set it if placement is used"
+        ),
+    )
+    placement = serializers.ChoiceField(
+        required=False,
+        choices=PLACEMENT_CHOICES,
+        help_text=(
+            "Place the record to the top or bottom of the list. Do not set it "
+            "if increment is used"
+        ),
+    )
+
+    def validate(self, data):
+        has_increment = "increment" in data
+        has_placement = "placement" in data
+        if has_increment and has_placement:
+            raise serializers.ValidationError(
+                {"increment and placement": "cannot both present in the body"}
+            )
+        if has_increment or has_placement:
+            return data
+        raise serializers.ValidationError(
+            {"increment or placement": "either one is needed in the body"}
+        )
 
 
 class TagResourceSerializer(serializers.Serializer):

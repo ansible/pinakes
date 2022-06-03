@@ -33,11 +33,11 @@ templates.register(
 urls_views["template-workflow-detail"] = None  # disable
 urls_views["template-workflow-link"] = None
 urls_views["template-workflow-unlink"] = None
-
-router.register("workflows", WorkflowViewSet, basename="workflow")
-urls_views["workflow-list"] = WorkflowViewSet.as_view(
+urls_views["template-workflow-list"] = WorkflowViewSet.as_view(
     {"get": "list"}
 )  # list only
+
+router.register("workflows", WorkflowViewSet, basename="workflow")
 
 requests = router.register("requests", RequestViewSet, basename="request")
 requests.register(
