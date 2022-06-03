@@ -175,12 +175,13 @@ def test_workflow_patch(api_request, mocker):
     """PATCH a Workflow by its ID"""
     has_permission = mocker.spy(WorkflowPermission, "has_permission")
     workflow = WorkflowFactory()
+    template = TemplateFactory()
     group_refs = [{"name": "group1", "uuid": "uuid1"}]
     args = (
         "patch",
         "approval:workflow-detail",
         workflow.id,
-        {"name": "update", "group_refs": group_refs},
+        {"name": "update", "group_refs": group_refs, "template": template.id},
     )
 
     assert api_request(*args).status_code == 400
@@ -191,9 +192,10 @@ def test_workflow_patch(api_request, mocker):
     )
     response = api_request(*args)
     assert response.status_code == 200
-    content = json.loads(response.content)
+    content = response.data
     assert content["name"] == "update"
     assert content["group_refs"] == group_refs
+    assert content["template"] == template.id
     assert has_permission.call_count == 2
 
 
@@ -214,24 +216,22 @@ def test_workflow_post(api_request, mocker):
     has_permission = mocker.spy(WorkflowPermission, "has_permission")
     template = TemplateFactory()
     group_refs = [{"name": "group1", "uuid": "uuid1"}]
-    args = (
-        "post",
-        "approval:template-workflow-list",
-        template.id,
-        {
-            "name": "abcdef",
-            "description": "abc",
-            "group_refs": group_refs,
-        },
-    )
+    data = {
+        "name": "abcdef",
+        "description": "abc",
+        "group_refs": group_refs,
+        "template": template.id,
+    }
 
-    assert api_request(*args).status_code == 400
+    response = api_request("post", "approval:workflow-list", data=data)
+    assert response.status_code == 400
 
     mocker.patch(
         "pinakes.main.approval.validations.validate_approver_groups",
         return_value=group_refs,
     )
-    assert api_request(*args).status_code == 201
+    response = api_request("post", "approval:workflow-list", data=data)
+    assert response.status_code == 201
     assert has_permission.call_count == 2
 
 
@@ -242,12 +242,12 @@ def test_workflow_post_bad(api_request, mocker):
     template = TemplateFactory()
     response = api_request(
         "post",
-        "approval:template-workflow-list",
-        template.id,
-        {
+        "approval:workflow-list",
+        data={
             "name": "abcdef",
             "description": "abc",
             "group_refs": [{"name": "group1"}],
+            "template": template.id,
         },
     )
 
