@@ -70,17 +70,6 @@ class ApiClient:
         ).json()
 
     def exception_handler(self, e: requests.HTTPError):
-        status_code = e.response.status_code
-
-        # TODO(cutwater): Refactor this as a dispatch dictionary
-        exception_cls = exceptions.ApiException
-        if e.response.status_code == requests.codes.not_found:
-            exception_cls = exceptions.ResourceNotFound
-        elif e.response.status_code == requests.codes.conflict:
-            exception_cls = exceptions.ResourceExists
-        elif e.response.status_code == requests.codes.forbidden:
-            exception_cls = exceptions.Forbidden
-
         error = None
         error_description = None
         try:
@@ -92,4 +81,6 @@ class ApiClient:
                 error = data.get("error")
                 error_description = data.get("error_description")
 
+        status_code = e.response.status_code
+        exception_cls = exceptions.get_http_exception_class(status_code)
         raise exception_cls(error, error_description, status_code) from e
