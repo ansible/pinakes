@@ -151,6 +151,7 @@ class RepositionSerializer(serializers.Serializer):
         write_only=True,
         help_text=(
             "Move the record up (negative) or down (positive) in the list. "
+            "Upper workflows will be executed before lower ones"
             "Do not set it if placement is used"
         ),
     )
@@ -158,8 +159,9 @@ class RepositionSerializer(serializers.Serializer):
         required=False,
         choices=PLACEMENT_CHOICES,
         help_text=(
-            "Place the record to the top or bottom of the list. Do not set it "
-            "if increment is used"
+            "Place the record to the top or bottom of the list. The top "
+            "workflow will be executed first. Do not set it if increment "
+            "is used"
         ),
     )
 

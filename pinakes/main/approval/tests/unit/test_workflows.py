@@ -84,9 +84,15 @@ def _all_ids():
     return list(Workflow.objects.values_list("id", flat=True))
 
 
+def _move_sequence(id, delta):
+    workflow = Workflow.objects.get(id=id)
+    workflow.move_internal_sequence(delta)
+    workflow.save()
+
+
 @pytest.mark.django_db
 def test_move_up(workflow_ids):
-    Workflow.objects.get(id=workflow_ids[4]).move_internal_sequence(-2)
+    _move_sequence(workflow_ids[4], -2)
     assert _all_ids() == [
         workflow_ids[0],
         workflow_ids[1],
@@ -98,7 +104,7 @@ def test_move_up(workflow_ids):
 
 @pytest.mark.django_db
 def test_move_down(workflow_ids):
-    Workflow.objects.get(id=workflow_ids[1]).move_internal_sequence(2)
+    _move_sequence(workflow_ids[1], 2)
     assert _all_ids() == [
         workflow_ids[0],
         workflow_ids[2],
@@ -110,7 +116,7 @@ def test_move_down(workflow_ids):
 
 @pytest.mark.django_db
 def test_move_top(workflow_ids):
-    Workflow.objects.get(id=workflow_ids[2]).move_internal_sequence(-2)
+    _move_sequence(workflow_ids[2], -2)
     assert _all_ids() == [
         workflow_ids[2],
         workflow_ids[0],
@@ -122,7 +128,7 @@ def test_move_top(workflow_ids):
 
 @pytest.mark.django_db
 def test_move_bottom(workflow_ids):
-    Workflow.objects.get(id=workflow_ids[3]).move_internal_sequence(1)
+    _move_sequence(workflow_ids[3], 1)
     assert _all_ids() == [
         workflow_ids[0],
         workflow_ids[1],
@@ -134,7 +140,7 @@ def test_move_bottom(workflow_ids):
 
 @pytest.mark.django_db
 def test_move_up_beyond(workflow_ids):
-    Workflow.objects.get(id=workflow_ids[2]).move_internal_sequence(-20)
+    _move_sequence(workflow_ids[2], -20)
     assert _all_ids() == [
         workflow_ids[2],
         workflow_ids[0],
@@ -146,7 +152,7 @@ def test_move_up_beyond(workflow_ids):
 
 @pytest.mark.django_db
 def test_move_down_beyond(workflow_ids):
-    Workflow.objects.get(id=workflow_ids[3]).move_internal_sequence(20)
+    _move_sequence(workflow_ids[3], 20)
     assert _all_ids() == [
         workflow_ids[0],
         workflow_ids[1],
@@ -158,7 +164,7 @@ def test_move_down_beyond(workflow_ids):
 
 @pytest.mark.django_db
 def test_move_top_explicitly(workflow_ids):
-    Workflow.objects.get(id=workflow_ids[2]).move_internal_sequence(-math.inf)
+    _move_sequence(workflow_ids[2], -math.inf)
     assert _all_ids() == [
         workflow_ids[2],
         workflow_ids[0],
@@ -170,7 +176,7 @@ def test_move_top_explicitly(workflow_ids):
 
 @pytest.mark.django_db
 def test_move_bottom_explicitly(workflow_ids):
-    Workflow.objects.get(id=workflow_ids[3]).move_internal_sequence(math.inf)
+    _move_sequence(workflow_ids[3], math.inf)
     assert _all_ids() == [
         workflow_ids[0],
         workflow_ids[1],

@@ -339,6 +339,7 @@ class WorkflowViewSet(
 
         workflow = get_object_or_404(Workflow, pk=pk)
         workflow.move_internal_sequence(offset)
+        workflow.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 

@@ -2,9 +2,7 @@
 import math
 from decimal import Decimal
 from django.db import models
-from django.db.models.signals import pre_save
 from django.db.models.functions import Length
-from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from django.core.signing import Signer
 
@@ -192,7 +190,15 @@ class Workflow(KeycloakMixin, BaseModel):
     def move_internal_sequence(self, delta):
         """
         Move current record up or down relative to other records.
-        delta is an integer
+        delta is an integer indictating how many other records should this
+        record be moved over upward (negative) or downward (positive).
+        -math.inf moves the record to top while math.inf moves it to bottom.
+
+        internal_sequence is a column used to sort the workflows by users.
+        The user only needs to be able to adjust the sequence of the workflow
+        but does not care the actual value of the internal_sequence. It is a
+        decimal field for the performance of updating a single record without
+        changing other records.
         """
         if delta == 0:
             return
@@ -205,7 +211,6 @@ class Workflow(KeycloakMixin, BaseModel):
             self.internal_sequence = Decimal(
                 self._internal_sequence_minus(-delta)
             )
-        self.save()
 
     def _internal_sequence_plus(self, delta):
         if delta == math.inf:
@@ -264,19 +269,16 @@ class Workflow(KeycloakMixin, BaseModel):
     def __str__(self):
         return self.name
 
-
-@receiver(pre_save, sender=Workflow)
-def assign_internal_sequence(sender, instance, *args, **kwargs):
-    if instance.internal_sequence is not None:
-        return
-
-    max_obj = Workflow.objects.filter(tenant=instance.tenant).last()
-    if max_obj is None:
-        instance.internal_sequence = Decimal(1)
-    else:
-        instance.internal_sequence = Decimal(
-            max_obj.internal_sequence.to_integral_value() + 1
-        )
+    def save(self, *args, **kwargs):
+        if self.internal_sequence is None:
+            max_obj = Workflow.objects.filter(tenant=self.tenant).last()
+            if max_obj is None:
+                self.internal_sequence = Decimal(1)
+            else:
+                self.internal_sequence = Decimal(
+                    max_obj.internal_sequence.to_integral_value() + 1
+                )
+        super().save(*args, **kwargs)
 
 
 class RequestContext(models.Model):
