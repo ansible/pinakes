@@ -103,7 +103,7 @@ class UmaClient:
         if not permissions:
             raise exceptions.NoResultFound
         if len(permissions) > 1:
-            raise exceptions.MultipleResourcesFound
+            raise exceptions.MultipleResultsFound
         return permissions[0]
 
     def find_permissions_by_name(
