@@ -148,6 +148,12 @@ services:
   redis:
     image: "docker.io/redis:alpine"
 
+  mailcatcher:
+    image: 'docker.io/sj26/mailcatcher'
+    ports:
+      - 1025:1025
+      - 1080:1080
+
 volumes:
   pg_data: {}
   media_files: {}
