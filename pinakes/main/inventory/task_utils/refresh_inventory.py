@@ -80,6 +80,9 @@ class RefreshInventory:
             self.source.last_refresh_stats[
                 "service_offering_node"
             ] = son.get_stats()
+            self.source.last_refresh_stats[
+                "service_plan"
+            ] = plan_importer.get_stats()
 
             self.source.last_successful_refresh_at = timezone.now()
             self.source.refresh_state = Source.State.DONE

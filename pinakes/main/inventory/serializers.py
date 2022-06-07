@@ -62,6 +62,7 @@ class SourceSerializer(serializers.ModelSerializer):
         sii_stats = obj.last_refresh_stats.get("service_inventory", {})
         soi_stats = obj.last_refresh_stats.get("service_offering", {})
         son_stats = obj.last_refresh_stats.get("service_offering_node", {})
+        sp_stats = obj.last_refresh_stats.get("service_plan", {})
 
         filtered_sii_stats = {
             _(key): value for key, value in sii_stats.items() if value > 0
@@ -73,6 +74,9 @@ class SourceSerializer(serializers.ModelSerializer):
             _(key): value for key, value in son_stats.items() if value > 0
         }
 
+        filtered_sp_stats = {
+            _(key): value for key, value in sp_stats.items() if value > 0
+        }
         obj.last_refresh_message = ""
         if bool(filtered_sii_stats):
             obj.last_refresh_message = _(
@@ -88,6 +92,11 @@ class SourceSerializer(serializers.ModelSerializer):
             obj.last_refresh_message += _(
                 "Workflow Template Nodes: %(son_stats)s;\n"
             ) % {"son_stats": filtered_son_stats}
+
+        if bool(filtered_sp_stats):
+            obj.last_refresh_message += _("Service Plan: %(sp_stats)s;\n") % {
+                "sp_stats": filtered_sp_stats
+            }
 
         if not obj.last_refresh_message:
             obj.last_refresh_message = _("Nothing to update")
