@@ -1,6 +1,5 @@
 """Default views for Approval."""
 import logging
-import math
 from rest_framework.decorators import action
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -330,10 +329,9 @@ class WorkflowViewSet(
             )
 
         if "placement" in serializer.validated_data:
+            offset = Workflow.objects.count()
             if serializer.validated_data["placement"] == "top":
-                offset = -math.inf
-            else:
-                offset = math.inf
+                offset = -offset
         else:
             offset = serializer.validated_data["increment"]
 

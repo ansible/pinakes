@@ -1,6 +1,4 @@
 """Models for Approval"""
-import math
-from decimal import Decimal
 from django.db import models
 from django.db.models.functions import Length
 from django.contrib.auth import get_user_model
@@ -147,6 +145,7 @@ class Workflow(KeycloakMixin, BaseModel):
     """Workflow model"""
 
     KEYCLOAK_TYPE = "approval:workflow"
+    INTERNAL_INTERVAL = 1024  # an integer must be greater than 1
 
     name = models.CharField(max_length=255, help_text="Name of the workflow")
     description = models.TextField(
@@ -161,9 +160,7 @@ class Workflow(KeycloakMixin, BaseModel):
             " have approval permission"
         ),
     )
-    internal_sequence = models.DecimalField(
-        max_digits=16, decimal_places=6, db_index=True
-    )
+    internal_sequence = models.BigIntegerField(db_index=True)
     template = models.ForeignKey(
         Template,
         on_delete=models.CASCADE,
@@ -192,30 +189,27 @@ class Workflow(KeycloakMixin, BaseModel):
         Move current record up or down relative to other records.
         delta is an integer indictating how many other records should this
         record be moved over upward (negative) or downward (positive).
-        -math.inf moves the record to top while math.inf moves it to bottom.
 
-        internal_sequence is a column used to sort the workflows by users.
+        Internal_sequence is a column used to sort the workflows by users.
         The user only needs to be able to adjust the sequence of the workflow
-        but does not care the actual value of the internal_sequence. It is a
-        decimal field for the performance of updating a single record without
-        changing other records.
+        but does not care the actual value of the internal_sequence. When a new
+        workflow is created it is placed to the end of the list with an
+        internal_sequence number much greater than the value from previous tail
+        of the list. When workflow_a is moved to between workflow_b and
+        workflow_c, its internal_sequence is simply adjusted to the average
+        number of b and c unless the average becomes a decimal, in which case
+        all the internal_sequence numbers will get rebalanced with a big
+        interval again.
         """
         if delta == 0:
             return
 
         if delta > 0:
-            self.internal_sequence = Decimal(
-                self._internal_sequence_plus(delta)
-            )
+            self.internal_sequence = self._internal_sequence_plus(delta)
         else:
-            self.internal_sequence = Decimal(
-                self._internal_sequence_minus(-delta)
-            )
+            self.internal_sequence = self._internal_sequence_minus(-delta)
 
     def _internal_sequence_plus(self, delta):
-        if delta == math.inf:
-            return self._internal_sequence_extend_from_last()
-
         query = Workflow.objects.filter(
             internal_sequence__gt=self.internal_sequence
         )
@@ -225,14 +219,15 @@ class Workflow(KeycloakMixin, BaseModel):
             return self._internal_sequence_extend_from_last()
 
         if len(sequence_range) == 1:
-            return sequence_range[0].to_integral_value() + 1
+            return sequence_range[0] + Workflow.INTERNAL_INTERVAL
 
-        return (sequence_range[0] + sequence_range[1]) / 2
+        if sequence_range[1] - sequence_range[0] < 2:
+            self._rebalance_internal_sequences()
+            return self._internal_sequence_plus(delta)
+
+        return (sequence_range[0] + sequence_range[1]) // 2
 
     def _internal_sequence_minus(self, delta):
-        if delta == math.inf:
-            return self._internal_sequence_before_first()
-
         query = Workflow.objects.filter(
             internal_sequence__lt=self.internal_sequence
         ).order_by("-internal_sequence")
@@ -241,9 +236,13 @@ class Workflow(KeycloakMixin, BaseModel):
             return self._internal_sequence_before_first()
 
         if len(sequence_range) == 1:
-            return sequence_range[0] / 2
+            return self._half_first_internal_sequence(sequence_range[0])
 
-        return (sequence_range[0] + sequence_range[1]) / 2
+        if sequence_range[0] - sequence_range[1] < 2:
+            self._rebalance_internal_sequences()
+            return self._internal_sequence_minus(delta)
+
+        return (sequence_range[0] + sequence_range[1]) // 2
 
     def _internal_sequence_range(self, query, delta):
         return query.values_list("internal_sequence", flat=True)[
@@ -256,7 +255,7 @@ class Workflow(KeycloakMixin, BaseModel):
             .values_list("internal_sequence", flat=True)
             .last()
         )
-        return last_sequence.to_integral_value() + 1
+        return last_sequence + Workflow.INTERNAL_INTERVAL
 
     def _internal_sequence_before_first(self):
         first_sequence = (
@@ -264,7 +263,23 @@ class Workflow(KeycloakMixin, BaseModel):
             .values_list("internal_sequence", flat=True)
             .first()
         )
-        return first_sequence / 2
+        return self._half_first_internal_sequence(first_sequence)
+
+    def _half_first_internal_sequence(self, first_sequence):
+        if first_sequence < 2:
+            self._rebalance_internal_sequences()
+            return Workflow.INTERNAL_INTERVAL // 2
+        return first_sequence // 2
+
+    def _rebalance_internal_sequences(self):
+        workflows = Workflow.objects.filter(tenant=self.tenant)
+        new_sequence = 0
+        for workflow in workflows:
+            new_sequence = new_sequence + Workflow.INTERNAL_INTERVAL
+            workflow.internal_sequence = new_sequence
+
+        Workflow.objects.bulk_update(workflows, ["internal_sequence"])
+        self.refresh_from_db()
 
     def __str__(self):
         return self.name
@@ -273,10 +288,10 @@ class Workflow(KeycloakMixin, BaseModel):
         if self.internal_sequence is None:
             max_obj = Workflow.objects.filter(tenant=self.tenant).last()
             if max_obj is None:
-                self.internal_sequence = Decimal(1)
+                self.internal_sequence = Workflow.INTERNAL_INTERVAL
             else:
-                self.internal_sequence = Decimal(
-                    max_obj.internal_sequence.to_integral_value() + 1
+                self.internal_sequence = (
+                    max_obj.internal_sequence + Workflow.INTERNAL_INTERVAL
                 )
         super().save(*args, **kwargs)
 

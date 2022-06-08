@@ -1,6 +1,4 @@
-from decimal import Decimal
 import pytest
-import math
 
 from pinakes.main.tests.factories import TenantFactory
 from pinakes.main.approval.models import Workflow
@@ -60,13 +58,9 @@ def test_duplicate_internal_sequence():
 
     tenant = TenantFactory()
     template = TemplateFactory(tenant=tenant)
-    WorkflowFactory(
-        tenant=tenant, template=template, internal_sequence=Decimal(3)
-    )
+    WorkflowFactory(tenant=tenant, template=template, internal_sequence=3)
     with pytest.raises(IntegrityError) as excinfo:
-        WorkflowFactory(
-            tenant=tenant, template=template, internal_sequence=Decimal(3)
-        )
+        WorkflowFactory(tenant=tenant, template=template, internal_sequence=3)
 
     assert (
         "UNIQUE constraint failed:"
@@ -76,8 +70,11 @@ def test_duplicate_internal_sequence():
 
 
 @pytest.fixture
-def workflow_ids():
-    return [WorkflowFactory().id for _ in range(5)]
+def workflow_ids(request):
+    return [
+        WorkflowFactory(internal_sequence=r * request.param).id
+        for r in range(1, 6)
+    ]
 
 
 def _all_ids():
@@ -91,6 +88,7 @@ def _move_sequence(id, delta):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("workflow_ids", [1024, 1], indirect=True)
 def test_move_up(workflow_ids):
     _move_sequence(workflow_ids[4], -2)
     assert _all_ids() == [
@@ -103,6 +101,7 @@ def test_move_up(workflow_ids):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("workflow_ids", [1024, 1], indirect=True)
 def test_move_down(workflow_ids):
     _move_sequence(workflow_ids[1], 2)
     assert _all_ids() == [
@@ -115,6 +114,7 @@ def test_move_down(workflow_ids):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("workflow_ids", [1024, 1], indirect=True)
 def test_move_top(workflow_ids):
     _move_sequence(workflow_ids[2], -2)
     assert _all_ids() == [
@@ -127,6 +127,7 @@ def test_move_top(workflow_ids):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("workflow_ids", [1024, 1], indirect=True)
 def test_move_bottom(workflow_ids):
     _move_sequence(workflow_ids[3], 1)
     assert _all_ids() == [
@@ -139,6 +140,7 @@ def test_move_bottom(workflow_ids):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("workflow_ids", [1024, 1], indirect=True)
 def test_move_up_beyond(workflow_ids):
     _move_sequence(workflow_ids[2], -20)
     assert _all_ids() == [
@@ -151,6 +153,7 @@ def test_move_up_beyond(workflow_ids):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("workflow_ids", [1024, 1], indirect=True)
 def test_move_down_beyond(workflow_ids):
     _move_sequence(workflow_ids[3], 20)
     assert _all_ids() == [
@@ -163,30 +166,7 @@ def test_move_down_beyond(workflow_ids):
 
 
 @pytest.mark.django_db
-def test_move_top_explicitly(workflow_ids):
-    _move_sequence(workflow_ids[2], -math.inf)
-    assert _all_ids() == [
-        workflow_ids[2],
-        workflow_ids[0],
-        workflow_ids[1],
-        workflow_ids[3],
-        workflow_ids[4],
-    ]
-
-
-@pytest.mark.django_db
-def test_move_bottom_explicitly(workflow_ids):
-    _move_sequence(workflow_ids[3], math.inf)
-    assert _all_ids() == [
-        workflow_ids[0],
-        workflow_ids[1],
-        workflow_ids[2],
-        workflow_ids[4],
-        workflow_ids[3],
-    ]
-
-
-@pytest.mark.django_db
+@pytest.mark.parametrize("workflow_ids", [1024, 1], indirect=True)
 def test_new_at_the_end(workflow_ids):
     workflow = WorkflowFactory()
     assert _all_ids() == [
@@ -200,6 +180,7 @@ def test_new_at_the_end(workflow_ids):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("workflow_ids", [1024, 1], indirect=True)
 def test_delete_middle(workflow_ids):
     Workflow.objects.get(id=workflow_ids[3]).delete()
     assert _all_ids() == [
