@@ -19,6 +19,7 @@ from pinakes.main.approval.tests.factories import (
     RequestFactory,
     WorkflowFactory,
 )
+from pinakes.main.catalog.models import Order
 from pinakes.main.catalog.tests.factories import (
     ApprovalRequestFactory,
     OrderFactory,
@@ -717,3 +718,24 @@ def test_tag_count_by_service_inventory_collector(sqlite_copy_expert):
         results[service_inventory.id]["tag_resources"]["tags"][0]["name"]
         == "/abc"
     )
+
+
+@pytest.mark.django_db
+def test_order_data_by_product_collector(sqlite_copy_expert):
+    time_start = now() - timedelta(hours=9)
+
+    product_1 = PortfolioItemFactory()
+    product_2 = PortfolioItemFactory()
+    completed_order = OrderFactory(state=Order.State.COMPLETED)
+    failed_order = OrderFactory(state=Order.State.FAILED)
+    OrderItemFactory(order=completed_order, portfolio_item=product_1)
+    OrderItemFactory(order=failed_order, portfolio_item=product_2)
+
+    results = collectors.orders_data_by_product(
+        time_start, until=now() + timedelta(seconds=1)
+    )
+
+    assert len(results) == 2
+    assert [*results.keys()] == [product_1.id, product_2.id]
+    assert len(results[product_1.id]["completed_orders"]) == 1
+    assert len(results[product_2.id]["failed_orders"]) == 1
