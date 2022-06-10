@@ -717,12 +717,12 @@ def orders_data_by_product(since, **kwargs):
                 "state": order.state,
                 "tenant_id": order.tenant_id,
                 "user_id": order.user_id,
-                "created_at": order.created_at.isoformat(),
-                "updated_at": order.updated_at.isoformat(),
-                "order_sent_at": order.order_request_sent_at.isoformat()
-                if order.order_request_sent_at
-                else "",
-                "completed_at": order.completed_at.isoformat(),
+                "created_at": _timestamp_string(order.created_at),
+                "updated_at": _timestamp_string(order.updated_at),
+                "order_sent_at": _timestamp_string(
+                    order.order_request_sent_at
+                ),
+                "completed_at": _timestamp_string(order.completed_at),
             }
             for order in order_list
             if order.state == models.Order.State.COMPLETED
@@ -733,12 +733,12 @@ def orders_data_by_product(since, **kwargs):
                 "state": order.state,
                 "tenant_id": order.tenant_id,
                 "user_id": order.user_id,
-                "created_at": order.created_at.isoformat(),
-                "updated_at": order.updated_at.isoformat(),
-                "order_sent_at": order.order_request_sent_at.isoformat()
-                if order.order_request_sent_at
-                else "",
-                "completed_at": order.completed_at.isoformat(),
+                "created_at": _timestamp_string(order.created_at),
+                "updated_at": _timestamp_string(order.updated_at),
+                "order_sent_at": _timestamp_string(
+                    order.order_request_sent_at
+                ),
+                "completed_at": _timestamp_string(order.completed_at),
             }
             for order in order_list
             if order.state == models.Order.State.FAILED
@@ -749,12 +749,12 @@ def orders_data_by_product(since, **kwargs):
                 "state": order.state,
                 "tenant_id": order.tenant_id,
                 "user_id": order.user_id,
-                "created_at": order.created_at.isoformat(),
-                "updated_at": order.updated_at.isoformat(),
-                "order_sent_at": order.order_request_sent_at.isoformat()
-                if order.order_request_sent_at
-                else "",
-                "completed_at": order.completed_at.isoformat(),
+                "created_at": _timestamp_string(order.created_at),
+                "updated_at": _timestamp_string(order.updated_at),
+                "order_sent_at": _timestamp_string(
+                    order.order_request_sent_at
+                ),
+                "completed_at": _timestamp_string(order.completed_at),
             }
             for order in order_list
             if order.state == models.Order.State.PENDING
@@ -766,8 +766,9 @@ def orders_data_by_product(since, **kwargs):
             counts[product["id"]] = {
                 "id": product["id"],
                 "name": product["name"],
-                "average_time_spent_in_tower": sum_time_spent_in_tower
-                / num_orders,
+                "average_time_spent_in_tower": 0
+                if num_orders == 0
+                else sum_time_spent_in_tower / num_orders,
                 "completed_orders": completed,
                 "failed_orders": failed,
                 "stuck_orders": stuck,
@@ -837,14 +838,14 @@ def approval_request_time_spent_by_groups(since, **kwargs):
                         "time_spent_in_approval": request[
                             "time_spent_in_approval"
                         ],
-                        "created_at": request["created_at"].isoformat(),
-                        "updated_at": request["updated_at"].isoformat(),
-                        "notified_at": request["notified_at"].isoformat()
-                        if request["notified_at"]
-                        else "",
-                        "finished_at": request["finished_at"].isoformat()
-                        if request["finished_at"]
-                        else "",
+                        "created_at": _timestamp_string(request["created_at"]),
+                        "updated_at": _timestamp_string(request["updated_at"]),
+                        "notified_at": _timestamp_string(
+                            request["notified_at"]
+                        ),
+                        "finished_at": _timestamp_string(
+                            request["finished_at"]
+                        ),
                     }
                     for request in request_list
                 ],
@@ -867,3 +868,7 @@ def _simple_csv(
 
 def _get_file_path(path, table):
     return os.path.join(path, table + "_table.csv")
+
+
+def _timestamp_string(timestamp):
+    return timestamp.isoformat() if timestamp else ""
