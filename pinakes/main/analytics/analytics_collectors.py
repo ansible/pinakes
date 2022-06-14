@@ -569,7 +569,7 @@ def product_counts(since, **kwargs):
                 "service_offering_source_ref": product[
                     "service_offering_source_ref"
                 ],
-                "order items": order_item_list,
+                "order_items": order_item_list,
             }
 
     return counts

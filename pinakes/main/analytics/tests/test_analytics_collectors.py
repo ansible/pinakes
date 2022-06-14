@@ -639,10 +639,10 @@ def test_product_count_collector(sqlite_copy_expert):
         "portfolio_id",
         "service_offering_ref",
         "service_offering_source_ref",
-        "order items",
+        "order_items",
     ]
-    assert len(results[portfolio_item.id]["order items"]) == 2
-    assert [*results[portfolio_item.id]["order items"][0].keys()] == [
+    assert len(results[portfolio_item.id]["order_items"]) == 2
+    assert [*results[portfolio_item.id]["order_items"][0].keys()] == [
         "id",
         "name",
         "state",
