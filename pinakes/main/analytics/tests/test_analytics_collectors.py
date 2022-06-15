@@ -739,3 +739,29 @@ def test_order_data_by_product_collector(sqlite_copy_expert):
     assert [*results.keys()] == [product_1.id, product_2.id]
     assert len(results[product_1.id]["completed_orders"]) == 1
     assert len(results[product_2.id]["failed_orders"]) == 1
+
+
+@pytest.mark.django_db
+def test_approval_request_time_spent_by_groups(sqlite_copy_expert):
+    time_start = now() - timedelta(hours=2)
+
+    group_1 = GroupFactory()
+    group_2 = GroupFactory()
+    RequestFactory(group_name=group_1.name, group_ref=group_1.id)
+    RequestFactory(
+        group_name=group_1.name,
+        group_ref=group_1.id,
+        notified_at=(now() - timedelta(hours=1)),
+    )
+    RequestFactory(
+        group_name=group_2.name,
+        group_ref=group_2.id,
+        finished_at=(now() + timedelta(hours=2)),
+    )
+
+    results = collectors.approval_request_time_spent_by_groups(
+        time_start, until=now() + timedelta(seconds=1)
+    )
+
+    assert len(results) == 2
+    assert [*results.keys()] == [group_1.name, group_2.name]

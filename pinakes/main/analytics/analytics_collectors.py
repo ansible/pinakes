@@ -807,14 +807,14 @@ def approval_request_time_spent_by_groups(since, **kwargs):
             time_spent_intervals = {}
 
             for request in request_list:
+                started_at = request["notified_at"] or request["created_at"]
+
                 if request["finished_at"]:
                     time_spent_intervals[request["id"]] = (
-                        request["finished_at"] - request["notified_at"]
+                        request["finished_at"] - started_at
                     )
                 else:  # request is waiting for processing
-                    time_spent_intervals[request["id"]] = (
-                        now() - request["notified_at"]
-                    )
+                    time_spent_intervals[request["id"]] = now() - started_at
                 request["time_spent_in_approval"] = time_spent_intervals[
                     request["id"]
                 ].total_seconds()
