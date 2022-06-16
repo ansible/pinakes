@@ -61,6 +61,8 @@ orders.register(
     basename="order-orderitem",
     parents_query_lookups=OrderItemViewSet.parent_field_names,
 )
+urls_views["order-detail"] = OrderViewSet.as_view({"get": "retrieve"})
+
 orders.register(
     r"approval_requests",
     ApprovalRequestViewSet,
