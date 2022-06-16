@@ -106,19 +106,6 @@ def test_order_retrieve_extra(api_request, mocker):
 
 
 @pytest.mark.django_db
-def test_order_delete(api_request, mocker):
-    """Delete a single order by id"""
-    check_object_permission = mocker.spy(
-        OrderPermission, "perform_check_object_permission"
-    )
-    order = OrderFactory()
-    response = api_request("delete", "catalog:order-detail", order.id)
-
-    assert response.status_code == 204
-    check_object_permission.assert_called()
-
-
-@pytest.mark.django_db
 def test_order_submit(api_request, mocker):
     """Submit a single order by id"""
     mocker.patch("django_rq.enqueue")
@@ -228,6 +215,15 @@ def test_order_cancel_with_uncancelable_states(api_request, mocker):
         "Order {} is not cancel able in its current state: {}"
     ).format(order.id, order.state)
     check_object_permission.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_order_delete_not_supported(api_request, mocker):
+    """Delete a single order by id"""
+    order = OrderFactory()
+    response = api_request("delete", "catalog:order-detail", order.id)
+
+    assert response.status_code == 405
 
 
 @pytest.mark.django_db
