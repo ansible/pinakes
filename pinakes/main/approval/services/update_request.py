@@ -43,8 +43,8 @@ class UpdateRequest:
         return self
 
     def _started(self):
-        if self.request.is_leaf():
-            self._run_request()
+        if self.request.is_leaf() and not self._should_auto_notify():
+            self._start_external_notification()
 
         self._persist_request()
 
@@ -75,8 +75,8 @@ class UpdateRequest:
 
     # Called directly when it is a leaf node, or indirectly from its child node
     def _completed(self):
-        if self.request.is_leaf():
-            self._finish_request()
+        if self.request.is_leaf() and not self._should_auto_notify():
+            self._signal_external_system()
 
         if self.request.state == Request.State.CANCELED:
             return
@@ -182,11 +182,13 @@ class UpdateRequest:
         self.__class__(self.request.parent, self.options).process()
 
     # start the external approval process if configured
-    def _run_request(self):
+    def _start_external_notification(self):
         if not validations.runtime_validate_group(self.request):
             return
 
         if self._external_processable():
+            # TODO: will invoke various configured notification systems when
+            # they are added
             EmailNotification(self.request).process()
 
     def _notify_request(self):
@@ -205,8 +207,9 @@ class UpdateRequest:
             },
         ).process()
 
-    # complete the external approval process if configured
-    def _finish_request(self):
+    # signal the external approval process if configured that the request
+    # has completed
+    def _signal_external_system(self):
         pass
 
     def _persist_request(self, time_field=None):
