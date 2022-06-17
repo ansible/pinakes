@@ -3,6 +3,7 @@ cd _clones
 
 # Install Python Packages & activate virtual env
 python3 -m venv extract-strings-env
+source extract-strings-env/bin/activate
 pip3 install -r requirements.txt
 
 # Extract API Strings
