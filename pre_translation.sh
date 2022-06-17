@@ -3,7 +3,7 @@ cd _clones
 
 # Install Python Packages & activate virtual env
 python3 -m venv extract-strings-env
-pip3 install requirements.txt
+pip3 install -r requirements.txt
 
 # Extract API Strings
 source extract-strings-env/bin/activate && python3 manage.py makemessages -l en --ignore "extract-strings-env/*"
