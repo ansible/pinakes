@@ -17,7 +17,6 @@ for d in */ ; do
     dir=${d%*/}
     mkdir $dir/LC_MESSAGES
     mv $dir/django.po $dir/LC_MESSAGES/
-    rm $dir/messages.po
 done
 
 cd ..
