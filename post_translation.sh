@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd _clones/pinakes/
+
 # Rename the zh_cn folder 
 mv translations/zh_cn translations/zh
 
