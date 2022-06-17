@@ -1,5 +1,5 @@
 # Change Directory to clones
-cd _clones/catalog_api/
+cd _clones/
 
 # Install Python Packages & activate virtual env
 python3 -m venv extract-strings-env
