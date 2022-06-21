@@ -1,7 +1,5 @@
 """Default views for Approval."""
 import logging
-
-from decimal import Decimal
 from rest_framework.decorators import action
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -34,6 +32,7 @@ from pinakes.main.approval.serializers import (
     NotificationTypeSerializer,
     TemplateSerializer,
     WorkflowSerializer,
+    RepositionSerializer,
     RequestSerializer,
     RequestInSerializer,
     ActionSerializer,
@@ -313,22 +312,37 @@ class WorkflowViewSet(
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def perform_create(self, serializer):
-        max_obj = (
-            Workflow.objects.filter(tenant=Tenant.current())
-            .order_by("-internal_sequence")
-            .first()
-        )
-        if max_obj is None:
-            next_seq = Decimal(1)
-        else:
-            next_seq = Decimal(
-                max_obj.internal_sequence.to_integral_value() + 1
+    @extend_schema(
+        request=RepositionSerializer,
+        responses={204: None},
+    )
+    @action(methods=["post"], detail=True)
+    def reposition(self, request, pk):
+        """
+        Adjust the position of a workflow related to others by an offset number
+        """
+        serializer = RepositionSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {"errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
             )
-        serializer.save(
-            internal_sequence=next_seq,
-            tenant=Tenant.current(),
-        )
+
+        if "placement" in serializer.validated_data:
+            offset = Workflow.objects.count()
+            if serializer.validated_data["placement"] == "top":
+                offset = -offset
+        else:
+            offset = serializer.validated_data["increment"]
+
+        workflow = get_object_or_404(Workflow, pk=pk)
+        workflow.move_internal_sequence(offset)
+        workflow.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def perform_create(self, serializer):
+        serializer.save(tenant=Tenant.current())
 
 
 @extend_schema_view(

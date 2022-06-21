@@ -287,3 +287,61 @@ def test_workflow_unlink(api_request, mocker):
 
     assert response.status_code == 204
     has_permission.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_workflow_relative_reposition(api_request, mocker):
+    """Adjust workflow sequence by increment"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
+    workflow = WorkflowFactory()
+
+    data = {"increment": -1}
+    response = api_request(
+        "post", "approval:workflow-reposition", workflow.id, data
+    )
+    assert response.status_code == 204
+    has_permission.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_workflow_absolute_reposition(api_request, mocker):
+    """Adjust workflow sequence by placement"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
+    workflow = WorkflowFactory()
+
+    data = {"placement": "top"}
+    response = api_request(
+        "post", "approval:workflow-reposition", workflow.id, data
+    )
+
+    assert response.status_code == 204
+    has_permission.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_workflow_reposition_both(api_request, mocker):
+    """Adjust workflow sequence by increment"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
+    workflow = WorkflowFactory()
+
+    data = {"increment": -1, "placement": "top"}
+    response = api_request(
+        "post", "approval:workflow-reposition", workflow.id, data
+    )
+    assert response.status_code == 400
+    has_permission.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_workflow_reposition_none(api_request, mocker):
+    """Adjust workflow sequence by placement"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
+    workflow = WorkflowFactory()
+
+    data = {"something": "else"}
+    response = api_request(
+        "post", "approval:workflow-reposition", workflow.id, data
+    )
+
+    assert response.status_code == 400
+    has_permission.assert_called_once()
