@@ -12,9 +12,6 @@ from pinakes.main.approval.models import (
     Action,
 )
 from pinakes.main.approval.permissions import WorkflowPermission
-from pinakes.main.approval.services.create_request import (
-    CreateRequest,
-)
 from pinakes.main.approval.services.create_action import (
     CreateAction,
 )
@@ -385,31 +382,6 @@ class RequestSerializer(serializers.ModelSerializer):
             )
             return serializer.data
         return None
-
-
-class RequestInSerializer(serializers.Serializer):
-    """Input parameters for approval request object"""
-
-    name = serializers.CharField(
-        required=True, help_text="Name of the the request to be created"
-    )
-    description = serializers.CharField(
-        required=False, help_text="Describe the request in more details"
-    )
-    content = serializers.JSONField(
-        required=True, help_text="Content of the request in JSON format"
-    )
-    tag_resources = serializers.ListField(
-        child=TagResourceSerializer(many=False),
-        required=False,
-        help_text=(
-            "An array of resource tags that determine the workflows for the"
-            " request"
-        ),
-    )
-
-    def create(self, validated_data):
-        return CreateRequest(validated_data).process().request
 
 
 class ResourceObjectSerializer(serializers.Serializer):

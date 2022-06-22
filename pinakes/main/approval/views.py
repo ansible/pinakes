@@ -34,7 +34,6 @@ from pinakes.main.approval.serializers import (
     WorkflowSerializer,
     RepositionSerializer,
     RequestSerializer,
-    RequestInSerializer,
     ActionSerializer,
     ResourceObjectSerializer,
 )
@@ -394,7 +393,7 @@ class RequestViewSet(
     """API endpoint for listing and creating requests"""
 
     serializer_class = RequestSerializer
-    http_method_names = ["get", "post"]
+    http_method_names = ["get"]
     ordering = ("-id",)
     filterset_fields = ("name", "description", "state", "decision", "reason")
     search_fields = ("name", "description", "state", "decision", "reason")
@@ -402,28 +401,6 @@ class RequestViewSet(
 
     permission_classes = (IsAuthenticated,)
     keycloak_permission = permissions.RequestPermission
-
-    @extend_schema(
-        description=(
-            "Create an approval request using given parameters, available to"
-            " everyone"
-        ),
-        request=RequestInSerializer,
-        responses={201: RequestSerializer},
-    )
-    def create(self, request, *args, **kwargs):
-        serializer = RequestInSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(
-                {"errors": serializer.errors},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        output_serializer = RequestSerializer(
-            serializer.save(tenant=Tenant.current(), user=self.request.user),
-            context=self.get_serializer_context(),
-        )
-        return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 
     @extend_schema(
         description="Get the content of a request",
