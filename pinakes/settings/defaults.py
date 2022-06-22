@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "rest_framework",
     "django_filters",
-    "rest_framework.authtoken",
     "taggit",
     "django_rq",
     "drf_spectacular",
