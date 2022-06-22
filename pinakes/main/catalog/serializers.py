@@ -388,6 +388,9 @@ class ApprovalRequestSerializer(serializers.ModelSerializer):
             "request_completed_at",
             "state",
         )
+        extra_kwargs = {
+            "request_completed_at": {"allow_null": True},
+        }
 
     def get_state(self, obj):
         return _(obj.state)
