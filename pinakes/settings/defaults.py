@@ -173,7 +173,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTHENTICATION_BACKENDS = [
     "pinakes.common.auth.keycloak_oidc.KeycloakOpenIdConnect",
-    "django.contrib.auth.backends.ModelBackend",
 ]
 
 # Internationalization
