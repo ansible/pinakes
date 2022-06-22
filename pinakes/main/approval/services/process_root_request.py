@@ -84,7 +84,7 @@ class ProcessRootRequest:
         if self.request.is_parent():
             first_child = self.request.subrequests.order_by("id").first()
             first_leaves = Request.objects.filter(
-                workflow=first_child.workflow
+                workflow=first_child.workflow, parent=self.request
             )
 
         if len(first_leaves) == 1:
