@@ -31,8 +31,7 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("PINAKES_DEBUG", default=False)
-TEMPLATE_DEBUG = DEBUG
-SQL_DEBUG = DEBUG
+DEBUG_SQL = env.bool("PINAKES_DEBUG_SQL", default=False)
 
 SECRET_KEY = env.str("PINAKES_SECRET_KEY")
 DB_ENCRYPTION_KEYS = env.str("PINAKES_DB_ENCRYPTION_KEYS", default="").split(
@@ -279,7 +278,8 @@ LOGGING = {
         },
         "django.db.backends": {
             "handlers": ["console"],
-            "level": LOG_LEVEL,
+            "level": "DEBUG" if DEBUG_SQL else "INFO",
+            "propagate": False,
         },
         "pinakes": {
             "handlers": ["console"],
