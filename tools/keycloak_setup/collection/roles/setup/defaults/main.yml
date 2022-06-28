@@ -17,3 +17,4 @@ web_origins:
 realm_management_roles:
   - view-users
 verify_keycloak_ssl: "{{ lookup('env', 'PINAKES_KEYCLOAK_VERIFY_SSL') | default('true', True) }}"
+create_cli_client: false
