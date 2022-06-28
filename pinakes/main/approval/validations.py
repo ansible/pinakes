@@ -6,9 +6,11 @@ from pinakes.main.approval.exceptions import (
     DuplicatedUuidException,
     NoAppoverRoleException,
     GroupNotExistException,
+    WorkflowInUseException,
+    WorkflowIsLinkedException,
 )
 from pinakes.main.common.models import Group
-from pinakes.main.approval.models import Action
+from pinakes.main.approval.models import Action, TagLink, Request
 from pinakes.main.approval.services.create_action import (
     CreateAction,
 )
@@ -107,3 +109,16 @@ def _error_action(request, message):
     CreateAction(
         request, {"operation": Action.Operation.ERROR, "comments": message}
     ).process()
+
+
+def validate_workflow_deletable(workflow):
+    if TagLink.objects.filter(workflow=workflow).count() > 0:
+        raise WorkflowIsLinkedException()
+
+    if (
+        Request.objects.filter(
+            state__in=["pending", "started"], workflow=workflow
+        ).count()
+        > 0
+    ):
+        raise WorkflowInUseException()
