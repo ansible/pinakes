@@ -113,7 +113,7 @@ verify access tokens, issued by Keycloak:
 
 - `KeycloakBearerOfflineAuthentication`. Performs an offline authentication, by verifying access
   token digital signature. Enabled by default.
-- `KeycloakBearerOnlineuthentication`. Verifies access token by calling Keycloak 
+- `KeycloakBearerOnlineAuthentication`. Verifies access token by calling Keycloak 
   token introspection endpoint.
 
 These backends are mutually exclusive. At the moment it is not possible to switch between backends
