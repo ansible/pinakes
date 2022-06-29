@@ -3,9 +3,8 @@ import json
 import pytest
 from pinakes.main.approval.tests.factories import (
     TemplateFactory,
-)
-from pinakes.main.approval.tests.factories import (
     WorkflowFactory,
+    RequestFactory,
 )
 from pinakes.main.catalog.tests.factories import (
     PortfolioFactory,
@@ -167,6 +166,18 @@ def test_workflow_delete(api_request, mocker):
     response = api_request("delete", "approval:workflow-detail", workflow.id)
 
     assert response.status_code == 204
+    has_permission.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_workflow_delete_forbbiden(api_request, mocker):
+    """Delete a Workflow by its ID"""
+    has_permission = mocker.spy(WorkflowPermission, "has_permission")
+    workflow = WorkflowFactory()
+    RequestFactory(state="pending", workflow=workflow)
+    response = api_request("delete", "approval:workflow-detail", workflow.id)
+
+    assert response.status_code == 400
     has_permission.assert_called_once()
 
 

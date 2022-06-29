@@ -274,6 +274,11 @@ class WorkflowViewSet(
         serializer = self.get_serializer(workflow)
         return Response(serializer.data)
 
+    def destroy(self, request, *args, **kwargs):
+        workflow = self.get_object()
+        validations.validate_workflow_deletable(workflow)
+        return super().destroy(request, *args, **kwargs)
+
     @extend_schema(
         request=ResourceObjectSerializer,
         responses={204: None},
