@@ -226,7 +226,7 @@ def check_wildcard_permission(
 ) -> bool:
     scope = make_scope_name(resource_type, permission)
     resource = make_resource_name(resource_type, WILDCARD_RESOURCE_ID)
-    client = get_authz_client(request.keycloak_user.access_token)
+    client = get_authz_client(request.auth)
     return client.check_permissions(
         keycloak_models.AuthzPermission(
             resource=resource,
@@ -250,7 +250,7 @@ def check_resource_permission(
         resource=resource_name,
         scope=scope,
     )
-    client = get_authz_client(request.keycloak_user.access_token)
+    client = get_authz_client(request.auth)
     return client.check_permissions([wildcard_permission, object_permission])
 
 
@@ -278,7 +278,7 @@ class PermittedResourcesResult:
 def get_permitted_resources(
     resource_type: str, permission: str, request: Request
 ) -> PermittedResourcesResult:
-    client = get_authz_client(request.keycloak_user.access_token)
+    client = get_authz_client(request.auth)
     permissions = client.get_permissions(
         keycloak_models.AuthzPermission(
             scope=make_scope_name(resource_type, permission)

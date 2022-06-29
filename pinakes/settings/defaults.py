@@ -129,7 +129,9 @@ REST_FRAMEWORK = {
     ),
     "PAGE_SIZE": 25,
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
+        "pinakes.common.auth.keycloak_django.authentication.KeycloakSessionAuthentication",  # noqa
+        "pinakes.common.auth.keycloak_django.authentication.KeycloakBearerOfflineAuthentication",  # noqa
+        # "pinakes.common.auth.keycloak_django.authentication.KeycloakBearerOnlineAuthentication",  # noqa
     ),
     "DEFAULT_FILTER_BACKENDS": (
         "django_filters.rest_framework.DjangoFilterBackend",
