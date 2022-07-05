@@ -11,7 +11,7 @@ from django.core.mail.backends.smtp import EmailBackend
 from pinakes.common.auth.keycloak_django.clients import get_admin_client
 from pinakes.main.approval.services.create_action import CreateAction
 from pinakes.main.approval.models import Action, Request
-from pinakes.settings import defaults
+from django.conf import settings
 
 
 logger = logging.getLogger("approval")
@@ -132,7 +132,7 @@ class EmailNotification:
         return string.Template(email_template).safe_substitute(**params)
 
     def _web_url(self):
-        scheme = defaults.HTTP_SCHEME
+        scheme = settings.HTTP_SCHEME
         host = self.request.request_context.context.get(
             "http_host", "localhost"
         )
