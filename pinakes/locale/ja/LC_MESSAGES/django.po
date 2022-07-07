@@ -7,13 +7,25 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-16 13:56+0000\n"
+"POT-Creation-Date: 2022-06-10 14:54-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: pinakes/common/exception_handler.py:27
+msgid "Internal Error"
+msgstr "内部エラー"
+
+#: pinakes/common/exception_handler.py:31
+msgid "{}. Report to the support team if it is not an user error."
+msgstr "{}。これがユーザーエラーでない場合は、サポートチームに報告してください。"
+
+#: pinakes/common/exception_handler.py:37
+msgid "Unauthorized"
+msgstr "許可されていません"
 
 #: pinakes/common/image_mixin.py:43
 msgid "{} object has no attribute 'icon'."
@@ -27,103 +39,105 @@ msgstr "アイコン属性が {} オブジェクト (id: {}) に設定されて�
 msgid "Icon attribute has not been set on {} object (id: {})."
 msgstr "アイコン属性が {} オブジェクト (id: {}) に設定されていません。"
 
-#: pinakes/main/analytics/analytics_collectors.py:21
+#: pinakes/common/models/fields.py:14
+msgid "An encrypted JSON object"
+msgstr "暗号化された JSON オブジェクト"
+
+#: pinakes/main/analytics/analytics_collectors.py:23
 msgid "General platform configuration."
-msgstr ""
+msgstr "一般的なプラットフォーム構成。"
 
-#: pinakes/main/analytics/analytics_collectors.py:60
+#: pinakes/main/analytics/analytics_collectors.py:64
 msgid "Data on sources"
-msgstr ""
+msgstr "ソースに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:84
-#, fuzzy
-#| msgid "Failed to get service offering [{}]"
+#: pinakes/main/analytics/analytics_collectors.py:89
 msgid "Data on service_offerings"
-msgstr "サービスオファリング [{}] の取得に失敗しました"
+msgstr "サービスオファリングに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:114
+#: pinakes/main/analytics/analytics_collectors.py:119
 msgid "Data on service_offering_nodes"
-msgstr ""
+msgstr "サービスオファリングノードに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:145
+#: pinakes/main/analytics/analytics_collectors.py:150
 msgid "Data on service_instances"
-msgstr ""
+msgstr "サービスインスタンスに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:175
+#: pinakes/main/analytics/analytics_collectors.py:180
 msgid "Data on service_inventories"
-msgstr ""
+msgstr "サービスインベントリーに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:204
+#: pinakes/main/analytics/analytics_collectors.py:209
 msgid "Data on portfolios"
-msgstr ""
+msgstr "ポートフォリオに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:231
+#: pinakes/main/analytics/analytics_collectors.py:236
 msgid "Data on portfolio_items"
-msgstr ""
+msgstr "ポートフォリオアイテムに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:262
+#: pinakes/main/analytics/analytics_collectors.py:267
 msgid "Data on orders"
-msgstr ""
+msgstr "オーダーに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:289
+#: pinakes/main/analytics/analytics_collectors.py:294
 msgid "Data on order_items"
-msgstr ""
+msgstr "オーダーアイテムに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:323
+#: pinakes/main/analytics/analytics_collectors.py:328
 msgid "Data on approval_requests"
-msgstr ""
+msgstr "承認リクエストに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:350
+#: pinakes/main/analytics/analytics_collectors.py:355
 msgid "Data on service_plans"
-msgstr ""
+msgstr "サービスプランに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:378
+#: pinakes/main/analytics/analytics_collectors.py:383
 msgid "Data on templates"
-msgstr ""
+msgstr "テンプレートに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:402
+#: pinakes/main/analytics/analytics_collectors.py:407
 msgid "Data on workflows"
-msgstr ""
+msgstr "ワークフローに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:429
+#: pinakes/main/analytics/analytics_collectors.py:434
 msgid "Data on requests"
-msgstr ""
+msgstr "リクエストに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:464
+#: pinakes/main/analytics/analytics_collectors.py:469
 msgid "Data on actions"
-msgstr ""
+msgstr "アクションに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:490
+#: pinakes/main/analytics/analytics_collectors.py:495
 msgid "Data on tag_links"
-msgstr ""
+msgstr "タグリンクに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:517
+#: pinakes/main/analytics/analytics_collectors.py:522
 msgid "Data on groups"
-msgstr ""
+msgstr "グループに関するデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:539
+#: pinakes/main/analytics/analytics_collectors.py:544
 msgid "Counts of orders by products"
-msgstr ""
+msgstr "製品別のオーダー数"
 
-#: pinakes/main/analytics/analytics_collectors.py:576
+#: pinakes/main/analytics/analytics_collectors.py:581
 msgid "Counts of tags by portfolios"
-msgstr ""
+msgstr "ポートフォリオ別のタグの数"
 
-#: pinakes/main/analytics/analytics_collectors.py:610
+#: pinakes/main/analytics/analytics_collectors.py:615
 msgid "Counts of tags by products"
-msgstr ""
+msgstr "製品別のタグの数"
 
-#: pinakes/main/analytics/analytics_collectors.py:644
+#: pinakes/main/analytics/analytics_collectors.py:649
 msgid "Counts of tags by service_intentories"
-msgstr ""
+msgstr "サービスインベントリー別のタグの数"
 
-#: pinakes/main/analytics/analytics_collectors.py:678
+#: pinakes/main/analytics/analytics_collectors.py:683
 msgid "Order data by product"
-msgstr ""
+msgstr "製品別のオーダーデータ"
 
-#: pinakes/main/analytics/analytics_collectors.py:777
+#: pinakes/main/analytics/analytics_collectors.py:783
 msgid "Approval request time spent by group"
-msgstr ""
+msgstr "グループによって費やされた承認リクエストの時間"
 
 #: pinakes/main/approval/exceptions.py:8
 msgid "Insufficient query parameters"
@@ -218,7 +232,7 @@ msgstr "グループ id {} は存在しません"
 msgid "Group {} does not have approver role"
 msgstr "グループ {} には approver ロールがありません"
 
-#: pinakes/main/approval/views.py:189
+#: pinakes/main/approval/views.py:188
 msgid "Insufficient resource object params: {}"
 msgstr "不十分なリソースオブジェクトパラメーター: {}"
 
@@ -232,62 +246,166 @@ msgstr "無効な Survey"
 
 #: pinakes/main/catalog/exceptions.py:18
 msgid "Uncancelable Order"
-msgstr ""
+msgstr "取り消し不可能なオーダー"
 
-#: pinakes/main/catalog/models.py:537
-msgid "Created Approval Request ref: {}. Catalog approval request id: {}"
-msgstr ""
-"承認リクエストのリファレンスを作成しました: {}。カタログ承認リクエスト ID: {}"
+#: pinakes/main/catalog/models.py:190
+msgid "Info"
+msgstr "情報"
+
+#: pinakes/main/catalog/models.py:191
+msgid "Error"
+msgstr "エラー"
+
+#: pinakes/main/catalog/models.py:192
+msgid "Warning"
+msgstr "警告"
+
+#: pinakes/main/catalog/models.py:193
+msgid "Debug"
+msgstr "デバッグ"
+
+#: pinakes/main/catalog/models.py:332 pinakes/main/catalog/models.py:419
+msgid "Approval Pending"
+msgstr "承認は保留中"
+
+#: pinakes/main/catalog/models.py:333 pinakes/main/catalog/models.py:420
+msgid "Approved"
+msgstr "承認済"
+
+#: pinakes/main/catalog/models.py:334 pinakes/main/catalog/models.py:421
+msgid "Canceled"
+msgstr "取り消し済み"
+
+#: pinakes/main/catalog/models.py:335 pinakes/main/catalog/models.py:422
+msgid "Completed"
+msgstr "完了済み"
+
+#: pinakes/main/catalog/models.py:336 pinakes/main/catalog/models.py:423
+msgid "Created"
+msgstr "作成日時"
+
+#: pinakes/main/catalog/models.py:337 pinakes/main/catalog/models.py:424
+msgid "Denied"
+msgstr "拒否済み"
+
+#: pinakes/main/catalog/models.py:338 pinakes/main/catalog/models.py:425
+#: pinakes/main/models.py:67
+msgid "Failed"
+msgstr "失敗"
+
+#: pinakes/main/catalog/models.py:339 pinakes/main/catalog/models.py:426
+msgid "Ordered"
+msgstr "オーダー済み"
+
+#: pinakes/main/catalog/models.py:549
+#, python-format
+msgid ""
+"Created Approval Request ref: %(approval_request_ref)s. Catalog approval "
+"request id: %(approval_request_id)s"
+msgstr "承認リクエストのリファレンスを作成しました: %(approval_request_ref)s。カタログ承認リクエスト ID: %(approval_request_id)s"
+
+#: pinakes/main/catalog/models.py:569
+msgid "undecided"
+msgstr "未決定"
+
+#: pinakes/main/catalog/models.py:570
+msgid "approved"
+msgstr "承認"
+
+#: pinakes/main/catalog/models.py:571
+msgid "canceled"
+msgstr "取り消し済み"
+
+#: pinakes/main/catalog/models.py:572
+msgid "denied"
+msgstr "拒否"
+
+#: pinakes/main/catalog/models.py:573
+msgid "failed"
+msgstr "失敗"
+
+#: pinakes/main/catalog/serializers.py:407
+msgid "Order"
+msgstr "オーダー"
+
+#: pinakes/main/catalog/serializers.py:408
+msgid "OrderItem"
+msgstr "オーダーアイテム"
 
 #: pinakes/main/catalog/services/cancel_order.py:61
 msgid "Order {} is not cancel able in its current state: {}"
-msgstr ""
+msgstr "オーダー {} は、現在の状態では取り消すことができません: {}"
 
 #: pinakes/main/catalog/services/collect_tag_resources.py:62
 msgid "Portfolio item {} does not have related service offering"
-msgstr ""
-"ポートフォリオアイテム {} には、関連するサービスオファリングがありません"
+msgstr "ポートフォリオアイテム {} には、関連するサービスオファリングがありません"
 
 #: pinakes/main/catalog/services/copy_portfolio_item.py:47
-#, fuzzy
-#| msgid "{} is not orderable, and cannot be copied"
 msgid "{} is not order able, and cannot be copied"
 msgstr "{} をオーダーすることはできません。またコピーすることはできません"
 
-#: pinakes/main/catalog/services/finish_order.py:32
-msgid "Order {} has failed"
-msgstr "Order {} が失敗しました"
+#: pinakes/main/catalog/services/finish_order.py:31
+#, python-format
+msgid "Order %(order_id)s has failed"
+msgstr "オーダー %(order_id)s が失敗しました"
 
-#: pinakes/main/catalog/services/finish_order.py:37
-msgid "Order {} is completed"
-msgstr "オーダー {} が完了しました"
+#: pinakes/main/catalog/services/finish_order.py:36
+#, python-format
+msgid "Order %(order_id)s is completed"
+msgstr "オーダー %(order_id)s が完了しました"
 
-#: pinakes/main/catalog/services/finish_order.py:54
-msgid "This order item has failed due to the entire order {} before it ran"
-msgstr ""
-"このオーダーアイテムは、実行する前にオーダー全体 {} が原因で失敗しました"
+#: pinakes/main/catalog/services/finish_order.py:44
+msgid "Order Canceled"
+msgstr "オーダーが取り消されました"
 
-#: pinakes/main/catalog/services/finish_order_item.py:35
-msgid "Order Item {} is completed"
-msgstr "オーダーアイテム {} が完了しました"
+#: pinakes/main/catalog/services/finish_order.py:48
+msgid "Order Failed"
+msgstr "オーダーが失敗しました"
 
-#: pinakes/main/catalog/services/handle_approval_events.py:106
-msgid "Approval Request finished with status '{}'"
-msgstr "承認リクエストが '{}' のステータスで終了しました"
+#: pinakes/main/catalog/services/finish_order.py:53
+#, python-format
+msgid ""
+"This order item has failed due to the entire order %(state)s before it ran"
+msgstr "このオーダーアイテムは、実行する前にオーダー全体 %(state)s が原因で失敗しました"
 
-#: pinakes/main/catalog/services/handle_approval_events.py:113
-msgid "Approval Request finished with status '{}' and reason '{}'"
-msgstr "承認リクエストが '{}' のステータスおよび '{}' の理由で終了しました"
+#: pinakes/main/catalog/services/finish_order_item.py:34
+#, python-format
+msgid "Order Item %(id)s is completed"
+msgstr "オーダーアイテム %(id)s が完了しました"
+
+#: pinakes/main/catalog/services/handle_approval_events.py:76
+msgid "Internal Error. Please contact our support team."
+msgstr "内部エラー。サポートチームにご連絡ください。"
+
+#: pinakes/main/catalog/services/handle_approval_events.py:109
+#, python-format
+msgid "Approval Request finished with status %(state)s"
+msgstr "承認リクエストが %(state)s のステータスで終了しました"
+
+#: pinakes/main/catalog/services/handle_approval_events.py:115
+#, python-format
+msgid "Approval Request finished with status %(state)s and reason %(reason)s"
+msgstr "承認リクエストが %(state)s のステータスおよび %(reason)s の理由で終了しました"
+
+#: pinakes/main/catalog/services/provision_order_item.py:30
+#, python-format
+msgid "Order Item %(id)s is provisioned"
+msgstr "オーダーアイテム %(id)s がプロビジョニングされました"
 
 #: pinakes/main/catalog/services/sanitize_parameters.py:42
 msgid "parameter {} is required and must have a value"
 msgstr "パラメーター {} は必須で、値を設定する必要があります"
 
-#: pinakes/main/catalog/services/start_order_item.py:54
-msgid "Submitting Order Item {} for provisioning"
-msgstr "プロビジョニング用のオーダーアイテム {} の送信"
+#: pinakes/main/catalog/services/start_order.py:21
+msgid "Submitting Order for provisioning"
+msgstr "プロビジョニングのためにオーダーを送信中"
 
-#: pinakes/main/catalog/services/submit_approval_request.py:57
+#: pinakes/main/catalog/services/start_order_item.py:53
+#, python-format
+msgid "Submitting Order Item %(item_id)s for provisioning"
+msgstr "プロビジョニングのためにオーダーアイテム %(item_id)s を送信中"
+
+#: pinakes/main/catalog/services/submit_approval_request.py:61
 msgid "Failed to submit request to approval for Order {}, error: {}"
 msgstr "オーダー {} の承認リクエストの送信に失敗しました。エラー: {}"
 
@@ -295,17 +413,16 @@ msgstr "オーダー {} の承認リクエストの送信に失敗しました�
 msgid ""
 "The underlying survey on product {} in the portfolio {} has been changed and "
 "is no longer valid, please contact an administrator to fix it."
-msgstr ""
-"ポートフォリオ {} の製品 {} のベースとなる Survey が変更され、有効ではなくな"
-"りました。管理者に連絡して修正してください。"
+msgstr "ポートフォリオ {} の製品 {} のベースとなる Survey が変更され、有効ではなくなりました。管理者に連絡して修正してください。"
 
-#: pinakes/main/catalog/views.py:520
+#: pinakes/main/catalog/views.py:521
 msgid "Order {} does not have related order items"
 msgstr "オーダー {} には関連するオーダーアイテムがありません"
 
-#: pinakes/main/catalog/views.py:528
-msgid "Computed tags for order {}: {}"
-msgstr "オーダー {} の計算済みタグ: {}"
+#: pinakes/main/catalog/views.py:531
+#, python-format
+msgid "Computed tags for order %(order_id)d: %(tag_resources)s"
+msgstr "オーダー %(order_id) の計算済みタグ: %(tag_resources)s"
 
 #: pinakes/main/inventory/exceptions.py:8
 msgid "Refresh already registered"
@@ -314,55 +431,60 @@ msgstr "更新はすでに登録されています"
 #: pinakes/main/inventory/serializers.py:50
 #, python-format
 msgid "%(name)s is unavailable, refresh skipped"
-msgstr ""
+msgstr "%(name)s は利用できません。更新をスキップしました"
 
 #: pinakes/main/inventory/serializers.py:55
 #, python-format
 msgid "Refresh failed: %(error)s"
-msgstr ""
+msgstr "更新に失敗しました: %(error)s"
 
 #: pinakes/main/inventory/serializers.py:59
 msgid "adds"
-msgstr ""
+msgstr "追加"
 
 #: pinakes/main/inventory/serializers.py:60
 msgid "deletes"
-msgstr ""
+msgstr "削除"
 
 #: pinakes/main/inventory/serializers.py:61
 msgid "updates"
-msgstr ""
+msgstr "更新"
 
-#: pinakes/main/inventory/serializers.py:79
+#: pinakes/main/inventory/serializers.py:83
 #, python-format
 msgid "Service Inventories: %(stats)s;\n"
-msgstr ""
+msgstr "サービスインベントリー: %(stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:84
+#: pinakes/main/inventory/serializers.py:88
 #, python-format
 msgid "Job Templates & Workflows: %(soi_stats)s;\n"
-msgstr ""
-
-#: pinakes/main/inventory/serializers.py:89
-#, python-format
-msgid "Workflow Template Nodes: %(son_stats)s;\n"
-msgstr ""
+msgstr "ジョブテンプレートおよびワークフロー: %(soi_stats)s;\n"
 
 #: pinakes/main/inventory/serializers.py:93
-msgid "Nothing to update"
-msgstr ""
+#, python-format
+msgid "Workflow Template Nodes: %(son_stats)s;\n"
+msgstr "ワークフローテンプレートノード: %(son_stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:116
+#: pinakes/main/inventory/serializers.py:97
+#, python-format
+msgid "Service Plan: %(sp_stats)s;\n"
+msgstr "サービスプラン: %(sp_stats)s;\n"
+
+#: pinakes/main/inventory/serializers.py:102
+msgid "Nothing to update"
+msgstr "更新するものはありません"
+
+#: pinakes/main/inventory/serializers.py:125
 #, python-format
 msgid ""
 "Source cannot be changed to url %(new_url)s uuid %(new_install_uuid)s, "
 "currently bound to url %(url)s with uuid %(install_uuid)s"
-msgstr ""
+msgstr "ソースを URL %(new_url)s UUID %(new_install_uuid)s に変更することはできません。現在、UUID %(install_uuid)s で URL %(url)s にバインドされています"
 
-#: pinakes/main/inventory/serializers.py:122
+#: pinakes/main/inventory/serializers.py:131
 #, python-format
 msgid "Error: %(error)s"
-msgstr ""
+msgstr "エラー: %(error)s"
 
 #: pinakes/main/inventory/services/collect_inventory_tags.py:38
 msgid "ServiceOffering object {} not found"
@@ -374,12 +496,12 @@ msgstr "サービスオファリング [{}] の取得に失敗しました"
 
 #: pinakes/main/inventory/task_utils/check_source_availability.py:55
 msgid "Check availability completed"
-msgstr ""
+msgstr "アベイラビリティーの確認が完了しました"
 
-#: pinakes/main/inventory/task_utils/launch_job.py:69
+#: pinakes/main/inventory/task_utils/launch_job.py:68
 #, python-format
 msgid "Job %(id)s has %(status)s status"
-msgstr ""
+msgstr "ジョブ %(id)s は %(status)s のステータスです"
 
 #: pinakes/main/inventory/views.py:89
 msgid "Refresh job {} is already {}, please try again later"
@@ -387,16 +509,12 @@ msgstr "ジョブ {} の更新はすでに {} です。後でやり直してく�
 
 #: pinakes/main/models.py:65
 msgid "Done"
-msgstr ""
+msgstr "完了"
 
 #: pinakes/main/models.py:66
 msgid "InProgress"
-msgstr ""
-
-#: pinakes/main/models.py:67
-msgid "Failed"
-msgstr ""
+msgstr "進行中"
 
 #: pinakes/main/models.py:68
 msgid "Unknown"
-msgstr ""
+msgstr "不明"
