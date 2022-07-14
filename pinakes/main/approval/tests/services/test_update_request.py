@@ -1,6 +1,7 @@
 """module to test updating request"""
 
 import pytest
+
 from pinakes.main.approval.models import Request
 from pinakes.main.approval.tests.factories import (
     NotificationSettingFactory,
@@ -413,15 +414,28 @@ def test_update_parallel(mocker):
 def test_duplicated_group(mocker):
     """when the same group is used by different workflows"""
     mocker.patch.object(SendEvent, "process")
+    mocker.patch(
+        "pinakes.main.approval.validations.runtime_validate_group",
+        return_value=True,
+    )
+    email_service = mocker.patch.object(
+        EmailNotification, "__init__", return_value=None
+    )
+    mocker.patch.object(EmailNotification, "process")
+
     root = RequestFactory(state=Request.State.NOTIFIED, number_of_children=2)
+    template1 = TemplateFactory(process_method=NotificationSettingFactory())
     child1 = RequestFactory(
         parent=root,
         state=Request.State.NOTIFIED,
         group_ref="ref1",
-        workflow=WorkflowFactory(),
+        workflow=WorkflowFactory(template=template1),
     )
+    template2 = TemplateFactory(process_method=NotificationSettingFactory())
     child2 = RequestFactory(
-        parent=root, group_ref="ref1", workflow=WorkflowFactory()
+        parent=root,
+        group_ref="ref1",
+        workflow=WorkflowFactory(template=template2),
     )
     UpdateRequest(
         child1,
@@ -437,3 +451,4 @@ def test_duplicated_group(mocker):
     assert child2.state == Request.State.COMPLETED
     assert child2.decision == Request.Decision.APPROVED
     assert child2.reason == AUTO_APPROVED_REASON
+    email_service.assert_not_called()

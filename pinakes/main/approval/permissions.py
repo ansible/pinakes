@@ -58,6 +58,7 @@ class WorkflowPermission(BaseKeycloakPermission):
         "destroy": KeycloakPolicy("delete", KeycloakPolicy.Type.WILDCARD),
         "link": KeycloakPolicy("link", KeycloakPolicy.Type.WILDCARD),
         "unlink": KeycloakPolicy("unlink", KeycloakPolicy.Type.WILDCARD),
+        "reposition": KeycloakPolicy("unlink", KeycloakPolicy.Type.WILDCARD),
     }
 
     def perform_check_permission(

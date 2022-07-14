@@ -1,4 +1,4 @@
-""" Factory for catalog objects """
+"""Factory for catalog objects"""
 import factory
 from django.contrib.auth import get_user_model
 

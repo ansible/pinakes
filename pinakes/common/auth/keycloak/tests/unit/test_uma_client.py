@@ -286,7 +286,7 @@ def test_get_permission_by_name_multiple_results(
 ):
     api_client.request_json.return_value = [{}, {}]
 
-    with pytest.raises(exceptions.MultipleResourcesFound):
+    with pytest.raises(exceptions.MultipleResultsFound):
         uma_client.get_permission_by_name("permission01")
 
 

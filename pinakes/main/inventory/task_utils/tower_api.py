@@ -1,4 +1,4 @@
-""" Tower API module interacts using the REST API to
+"""Tower API module interacts using the REST API to
     1. Get a single object
     2. Get multiple objects with pagination info
     3. POST a Job Template/Workflow

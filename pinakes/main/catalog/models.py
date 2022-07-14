@@ -1,7 +1,7 @@
-""" This modules stores the definition of the Catalog model."""
+"""This modules stores the definition of the Catalog model."""
 import logging
 
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.utils import timezone
 from django.db import models
 from django.db.models.functions import Length
@@ -29,9 +29,7 @@ class Portfolio(AbstractKeycloakResource, ImageableModel, UserOwnedModel):
     KEYCLOAK_TYPE = "catalog:portfolio"
     KEYCLOAK_ACTIONS = ["read", "update", "delete", "order"]
 
-    name = models.CharField(
-        max_length=255, unique=True, help_text="Portfolio name"
-    )
+    name = models.CharField(max_length=255, help_text="Portfolio name")
     description = models.TextField(
         blank=True, default="", help_text="Describe the portfolio in details"
     )
@@ -189,10 +187,10 @@ class ProgressMessage(KeycloakMixin, BaseModel):
     class Level(models.TextChoices):
         """Available levels for ProgressMessage"""
 
-        INFO = "Info"
-        ERROR = "Error"
-        WARNING = "Warning"
-        DEBUG = "Debug"
+        INFO = gettext_noop("Info")
+        ERROR = gettext_noop("Error")
+        WARNING = gettext_noop("Warning")
+        DEBUG = gettext_noop("Debug")
 
     level = models.CharField(
         max_length=10,
@@ -218,6 +216,11 @@ class ProgressMessage(KeycloakMixin, BaseModel):
         help_text="ID of the order or order item",
     )
 
+    message_params = models.JSONField(
+        null=True,
+        help_text="Stores message parameters used by localization",
+    )
+
     class Meta:
         indexes = [
             models.Index(
@@ -232,72 +235,80 @@ class ProgressMessage(KeycloakMixin, BaseModel):
 class MessageableMixin:
     """MessageableModel"""
 
-    def update_message(self, level, message):
+    def update_message(self, level, message, params=None):
         ProgressMessage.objects.create(
             level=level,
             messageable_type=self.__class__.__name__,
             messageable_id=self.id,
             message=message,
+            message_params=params,
             tenant=self.tenant,
         )
 
-    def mark_approval_pending(self, message=None):
+    def mark_approval_pending(self, message=None, params=None):
         if self.state == self.__class__.State.PENDING:
             return
 
         self._mark_item(
             message=message,
+            params=params,
             completed_at=timezone.now(),
             state=self.__class__.State.PENDING,
         )
 
-    def mark_ordered(self, message=None, **kwargs):
+    def mark_ordered(self, message=None, params=None, **kwargs):
         if self.state == self.__class__.State.ORDERED:
             return
 
         self._mark_item(
             message=message,
+            params=params,
             order_request_sent_at=timezone.now(),
             state=self.__class__.State.ORDERED,
             **kwargs,
         )
 
-    def mark_failed(self, message=None, **kwargs):
+    def mark_failed(self, message=None, params=None, **kwargs):
         if self.state == self.__class__.State.FAILED:
             return
 
         self._mark_item(
             message=message,
+            params=params,
             level=ProgressMessage.Level.ERROR,
             completed_at=timezone.now(),
             state=self.__class__.State.FAILED,
             **kwargs,
         )
 
-    def mark_completed(self, message=None, **kwargs):
+    def mark_completed(self, message=None, params=None, **kwargs):
         if self.state == self.__class__.State.COMPLETED:
             return
 
         self._mark_item(
             message=message,
+            params=params,
             completed_at=timezone.now(),
             state=self.__class__.State.COMPLETED,
             **kwargs,
         )
 
-    def mark_canceled(self, message=None):
+    def mark_canceled(self, message=None, params=None):
         if self.state == self.__class__.State.CANCELED:
             return
 
         self._mark_item(
             message=message,
+            params=params,
             completed_at=timezone.now(),
             state=self.__class__.State.CANCELED,
         )
 
-    def _mark_item(self, message, level=ProgressMessage.Level.INFO, **options):
+    def _mark_item(
+        self, message, level=ProgressMessage.Level.INFO, params=None, **options
+    ):
         if message is not None:
-            self.update_message(level, message)
+            self.update_message(level, message, params)
 
         self.__class__.objects.filter(id=self.id).update(**options)
         self.refresh_from_db()
@@ -318,14 +329,14 @@ class Order(UserOwnedModel, MessageableMixin, KeycloakMixin):
     class State(models.TextChoices):
         """Available states for Order"""
 
-        PENDING = "Approval Pending"
-        APPROVED = "Approved"
-        CANCELED = "Canceled"
-        COMPLETED = "Completed"
-        CREATED = "Created"
-        DENIED = "Denied"
-        FAILED = "Failed"
-        ORDERED = "Ordered"
+        PENDING = gettext_noop("Approval Pending")
+        APPROVED = gettext_noop("Approved")
+        CANCELED = gettext_noop("Canceled")
+        COMPLETED = gettext_noop("Completed")
+        CREATED = gettext_noop("Created")
+        DENIED = gettext_noop("Denied")
+        FAILED = gettext_noop("Failed")
+        ORDERED = gettext_noop("Ordered")
 
     state = models.CharField(
         max_length=20,
@@ -405,14 +416,14 @@ class OrderItem(UserOwnedModel, MessageableMixin):
     class State(models.TextChoices):
         """Available states for Order Item"""
 
-        PENDING = "Approval Pending"
-        APPROVED = "Approved"
-        CANCELED = "Canceled"
-        COMPLETED = "Completed"
-        CREATED = "Created"
-        DENIED = "Denied"
-        FAILED = "Failed"
-        ORDERED = "Ordered"
+        PENDING = gettext_noop("Approval Pending")
+        APPROVED = gettext_noop("Approved")
+        CANCELED = gettext_noop("Canceled")
+        COMPLETED = gettext_noop("Completed")
+        CREATED = gettext_noop("Created")
+        DENIED = gettext_noop("Denied")
+        FAILED = gettext_noop("Failed")
+        ORDERED = gettext_noop("Ordered")
 
     FINISHED_STATES = [
         State.COMPLETED,
@@ -423,7 +434,8 @@ class OrderItem(UserOwnedModel, MessageableMixin):
 
     objects = OrderItemManager()
     name = models.CharField(
-        max_length=64, help_text="Name of the portfolio item or order process"
+        max_length=PortfolioItem.MAX_PORTFOLIO_ITEM_LENGTH,
+        help_text="Name of the portfolio item or order process",
     )
     state = models.CharField(
         max_length=20,
@@ -533,11 +545,16 @@ class ApprovalRequestManager(models.Manager):
         )
 
         approval_request_ref = kwargs.pop("approval_request_ref", None)
-        message = _(
-            "Created Approval Request ref: {}. Catalog approval request id: {}"
-        ).format(approval_request_ref, approval_request.id)
+        message = gettext_noop(
+            "Created Approval Request ref: %(approval_request_ref)s. \
+Catalog approval request id: %(approval_request_id)s"
+        )
+        params = {
+            "approval_request_ref": approval_request_ref,
+            "approval_request_id": str(approval_request.id),
+        }
         approval_request.order.update_message(
-            ProgressMessage.Level.INFO, message
+            ProgressMessage.Level.INFO, message, params
         )
 
         return approval_request
@@ -549,11 +566,11 @@ class ApprovalRequest(BaseModel):
     class State(models.TextChoices):
         """Available states for approval request"""
 
-        UNDECIDED = "undecided"
-        APPROVED = "approved"
-        CANCELED = "canceled"
-        DENIED = "denied"
-        FAILED = "failed"
+        UNDECIDED = gettext_noop("undecided")
+        APPROVED = gettext_noop("approved")
+        CANCELED = gettext_noop("canceled")
+        DENIED = gettext_noop("denied")
+        FAILED = gettext_noop("failed")
 
     objects = ApprovalRequestManager()
     approval_request_ref = models.CharField(
@@ -595,8 +612,10 @@ class ApprovalRequest(BaseModel):
         return str(self.id)
 
 
-class ServicePlan(BaseModel):
+class ServicePlan(KeycloakMixin, BaseModel):
     """Service Plan Model"""
+
+    KEYCLOAK_TYPE = "catalog:service_plan"
 
     name = models.CharField(
         max_length=255,

@@ -1,4 +1,4 @@
-""" Create an approval request """
+"""Create an approval request"""
 import logging
 import django_rq
 from pinakes.main.approval.models import (
@@ -17,13 +17,16 @@ logger = logging.getLogger("approval")
 class CreateRequest:
     """Create an approval request"""
 
-    def __init__(self, data, context={}):
+    def __init__(self, data, context=None):
         self.data = data
+        if context is None:
+            context = {}
         self.context = context
         self.request = None
         self.job = None
 
     def process(self):
+        logger.info("Creating request from data %s", self.data)
         tag_resources = self.data.pop("tag_resources", [])
         workflows = FindWorkflows(tag_resources).process().workflows
         for workflow in workflows:

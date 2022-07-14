@@ -1,4 +1,4 @@
-""" Tests for metrics collection """
+"""Tests for metrics collection"""
 import csv
 from datetime import timedelta
 import os
@@ -19,6 +19,7 @@ from pinakes.main.approval.tests.factories import (
     RequestFactory,
     WorkflowFactory,
 )
+from pinakes.main.catalog.models import Order
 from pinakes.main.catalog.tests.factories import (
     ApprovalRequestFactory,
     OrderFactory,
@@ -83,7 +84,7 @@ def sqlite_copy_expert(request):
         csv_handle.writerow(headers)
         csv_handle.writerows(results)
 
-    setattr(SQLiteCursorWrapper, "copy_expert", write_stdout)
+    SQLiteCursorWrapper.copy_expert = write_stdout
     request.addfinalizer(lambda: shutil.rmtree(path))
     request.addfinalizer(lambda: delattr(SQLiteCursorWrapper, "copy_expert"))
     return path
@@ -101,11 +102,12 @@ def test_source_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
                 "name",
+                "info",
                 "created_at",
                 "updated_at",
                 "refresh_state",
@@ -133,7 +135,7 @@ def test_service_offering_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -167,7 +169,7 @@ def test_service_offering_node_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -197,7 +199,7 @@ def test_service_instance_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -228,7 +230,7 @@ def test_service_inventories_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -257,7 +259,7 @@ def test_portfolio_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -286,7 +288,7 @@ def test_portfolio_item_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -319,7 +321,7 @@ def test_order_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -348,7 +350,7 @@ def test_order_item_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -385,7 +387,7 @@ def test_approval_request_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -414,7 +416,7 @@ def test_service_plan_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -444,7 +446,7 @@ def test_template_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -470,7 +472,7 @@ def test_workflow_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -499,7 +501,7 @@ def test_request_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -536,7 +538,7 @@ def test_action_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -571,7 +573,7 @@ def test_tag_link_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -603,7 +605,7 @@ def test_group_table_collector(sqlite_copy_expert):
             reader = csv.reader(f)
 
             header = next(reader)
-            lines = [line for line in reader]
+            lines = list(reader)
 
             assert header == [
                 "id",
@@ -637,10 +639,10 @@ def test_product_count_collector(sqlite_copy_expert):
         "portfolio_id",
         "service_offering_ref",
         "service_offering_source_ref",
-        "order items",
+        "order_items",
     ]
-    assert len(results[portfolio_item.id]["order items"]) == 2
-    assert [*results[portfolio_item.id]["order items"][0].keys()] == [
+    assert len(results[portfolio_item.id]["order_items"]) == 2
+    assert [*results[portfolio_item.id]["order_items"][0].keys()] == [
         "id",
         "name",
         "state",
@@ -716,3 +718,50 @@ def test_tag_count_by_service_inventory_collector(sqlite_copy_expert):
         results[service_inventory.id]["tag_resources"]["tags"][0]["name"]
         == "/abc"
     )
+
+
+@pytest.mark.django_db
+def test_order_data_by_product_collector(sqlite_copy_expert):
+    time_start = now() - timedelta(hours=9)
+
+    product_1 = PortfolioItemFactory()
+    product_2 = PortfolioItemFactory()
+    completed_order = OrderFactory(state=Order.State.COMPLETED)
+    failed_order = OrderFactory(state=Order.State.FAILED)
+    OrderItemFactory(order=completed_order, portfolio_item=product_1)
+    OrderItemFactory(order=failed_order, portfolio_item=product_2)
+
+    results = collectors.orders_data_by_product(
+        time_start, until=now() + timedelta(seconds=1)
+    )
+
+    assert len(results) == 2
+    assert [*results.keys()] == [product_1.id, product_2.id]
+    assert len(results[product_1.id]["completed_orders"]) == 1
+    assert len(results[product_2.id]["failed_orders"]) == 1
+
+
+@pytest.mark.django_db
+def test_approval_request_time_spent_by_groups(sqlite_copy_expert):
+    time_start = now() - timedelta(hours=2)
+
+    group_1 = GroupFactory()
+    group_2 = GroupFactory()
+    RequestFactory(group_name=group_1.name, group_ref=group_1.id)
+    RequestFactory(
+        group_name=group_1.name,
+        group_ref=group_1.id,
+        notified_at=(now() - timedelta(hours=1)),
+    )
+    RequestFactory(
+        group_name=group_2.name,
+        group_ref=group_2.id,
+        finished_at=(now() + timedelta(hours=2)),
+    )
+
+    results = collectors.approval_request_time_spent_by_groups(
+        time_start, until=now() + timedelta(seconds=1)
+    )
+
+    assert len(results) == 2
+    assert [*results.keys()] == [group_1.name, group_2.name]

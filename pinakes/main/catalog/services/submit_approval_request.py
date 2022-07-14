@@ -1,5 +1,6 @@
-""" Create a request to Approval """
+"""Create a request to Approval"""
 import logging
+import traceback
 
 from django.utils.translation import gettext_lazy as _
 
@@ -18,10 +19,12 @@ logger = logging.getLogger("catalog")
 class SubmitApprovalRequest:
     """Submit a new approval request"""
 
-    def __init__(self, tag_resources, order, context={}):
+    def __init__(self, tag_resources, order, context=None):
         self.tag_resources = tag_resources
         self.order = order
         self.order_item = order.product
+        if context is None:
+            context = {}
         self.context = context
 
     def process(self):
@@ -52,6 +55,7 @@ class SubmitApprovalRequest:
                 self.order.id,
                 error,
             )
+            logger.error(traceback.format_exc())
             raise BadParamsException(
                 _(
                     "Failed to submit request to approval for Order {},"

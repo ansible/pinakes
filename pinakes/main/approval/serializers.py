@@ -2,6 +2,7 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
+from pinakes.common.fields import MetadataField, UserCapabilitiesField
 from pinakes.main.approval.models import (
     NotificationSetting,
     NotificationType,
@@ -10,13 +11,12 @@ from pinakes.main.approval.models import (
     Request,
     Action,
 )
-from pinakes.main.approval.services.create_request import (
-    CreateRequest,
-)
+from pinakes.main.approval.permissions import WorkflowPermission
 from pinakes.main.approval.services.create_action import (
     CreateAction,
 )
 from pinakes.main.approval import validations
+from pinakes.main.validators import UniqueWithinTenantValidator
 
 
 class NotificationTypeSerializer(serializers.ModelSerializer):
@@ -51,6 +51,12 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NotificationSetting
+        validators = [
+            UniqueWithinTenantValidator(
+                queryset=NotificationSetting.objects.all(),
+                fields=("name", "tenant"),
+            )
+        ]
         fields = ("id", "name", "notification_type", "settings")
 
 
@@ -59,6 +65,11 @@ class TemplateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Template
+        validators = [
+            UniqueWithinTenantValidator(
+                queryset=Template.objects.all(), fields=("title", "tenant")
+            )
+        ]
         fields = (
             "id",
             "title",
@@ -112,12 +123,57 @@ class WorkflowSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
-        read_only_fields = ("created_at", "updated_at", "template")
+        read_only_fields = ("created_at", "updated_at")
 
     def validate_group_refs(self, value):
         serializer = GroupRefSerializer(many=True, data=value)
         serializer.is_valid(raise_exception=True)
         return validations.validate_approver_groups(value)
+
+
+PLACEMENT_CHOICES = (
+    ("top", "top"),
+    ("bottom", "bottom"),
+)
+
+
+class RepositionSerializer(serializers.Serializer):
+    """
+    The desired increment relative to its current position,
+    or placement to top or bottom of the list.
+    """
+
+    increment = serializers.IntegerField(
+        required=False,
+        write_only=True,
+        help_text=(
+            "Move the record up (negative) or down (positive) in the list. "
+            "Upper workflows will be executed before lower ones"
+            "Do not set it if placement is used"
+        ),
+    )
+    placement = serializers.ChoiceField(
+        required=False,
+        choices=PLACEMENT_CHOICES,
+        help_text=(
+            "Place the record to the top or bottom of the list. The top "
+            "workflow will be executed first. Do not set it if increment "
+            "is used"
+        ),
+    )
+
+    def validate(self, data):
+        has_increment = "increment" in data
+        has_placement = "placement" in data
+        if has_increment and has_placement:
+            raise serializers.ValidationError(
+                {"increment and placement": "cannot both present in the body"}
+            )
+        if has_increment or has_placement:
+            return data
+        raise serializers.ValidationError(
+            {"increment or placement": "either one is needed in the body"}
+        )
 
 
 class TagResourceSerializer(serializers.Serializer):
@@ -168,6 +224,43 @@ class ActionSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = validated_data.pop("request")
         return CreateAction(request, validated_data).process().action
+
+
+class RequestCapabilitiesField(UserCapabilitiesField):
+    """Customized user capabilities for requests"""
+
+    def to_representation(self, value):
+        permissions = super().to_representation(value)
+        return {**permissions, **self._valid_actions(permissions, value)}
+
+    def _valid_actions(self, permissions, request: Request):
+        if not permissions.get("retrieve"):
+            return {}
+
+        valid_actions = {}
+
+        admin = self._is_admin()
+        owner = self._is_owner(request)
+        if admin or owner:
+            valid_actions["cancel"] = request.can_cancel()
+        if admin or not owner:
+            valid_actions["memo"] = True
+            valid_actions["approve"] = request.can_decide()
+            valid_actions["deny"] = valid_actions["approve"]
+        return valid_actions
+
+    def _is_admin(self):
+        """
+        We currently cannot determine roles. Sine only admin can see workflows,
+        we use workflow permission to assess
+        """
+        return WorkflowPermission().has_permission(
+            self.context["request"], self.context["view"]
+        )
+
+    def _is_owner(self, request: Request):
+        view = self.context["view"]
+        return request.user == view.request.user
 
 
 class RequestFields:
@@ -254,6 +347,10 @@ class RequestSerializer(serializers.ModelSerializer):
     extra_data = serializers.SerializerMethodField(
         "get_extra_data", read_only=True, allow_null=True
     )
+    metadata = MetadataField(
+        user_capabilities_field=RequestCapabilitiesField(),
+        help_text="JSON Metadata about the request",
+    )
 
     class Meta:
         model = Request
@@ -262,6 +359,7 @@ class RequestSerializer(serializers.ModelSerializer):
             "number_of_children",
             "number_of_finished_children",
             "extra_data",
+            "metadata",
         )
         read_only_fields = (
             "__all__",
@@ -284,31 +382,6 @@ class RequestSerializer(serializers.ModelSerializer):
             )
             return serializer.data
         return None
-
-
-class RequestInSerializer(serializers.Serializer):
-    """Input parameters for approval request object"""
-
-    name = serializers.CharField(
-        required=True, help_text="Name of the the request to be created"
-    )
-    description = serializers.CharField(
-        required=False, help_text="Describe the request in more details"
-    )
-    content = serializers.JSONField(
-        required=True, help_text="Content of the request in JSON format"
-    )
-    tag_resources = serializers.ListField(
-        child=TagResourceSerializer(many=False),
-        required=False,
-        help_text=(
-            "An array of resource tags that determine the workflows for the"
-            " request"
-        ),
-    )
-
-    def create(self, validated_data):
-        return CreateRequest(validated_data).process().request
 
 
 class ResourceObjectSerializer(serializers.Serializer):

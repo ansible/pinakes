@@ -1,4 +1,4 @@
-""" Test validation methods """
+"""Test validation methods"""
 import pytest
 from pinakes.main.approval import validations
 from pinakes.main.common.tests.factories import (

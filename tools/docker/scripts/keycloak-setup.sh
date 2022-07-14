@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 KEYCLOAK_SETUP_VERSION=1.0.28
+KEYCLOAK_SEED_FILE=${KEYCLOAK_SEED_FILE:-tools/keycloak_setup/dev.yml}
+EXTRA_OPTS=""
+DEBUG_MODE=$(echo "$PINAKES_DEBUG" | tr '[:upper:]' '[:lower:]')
+
+if [[ $DEBUG_MODE == "true" ]]; then
+    EXTRA_OPTS="-vvv"
+fi
 
 echo running > /startup/status
 
@@ -17,7 +24,5 @@ ansible-galaxy collection build tools/keycloak_setup/collection
 echo -e "\e[34m >>> Installing keycloak setup collections \e[97m"
 ansible-galaxy collection install community.general pinakes-keycloak_setup-"$KEYCLOAK_SETUP_VERSION".tar.gz
 echo -e "\e[34m >>> Configuring Keycloak \e[97m"
-ansible-playbook tools/keycloak_setup/dev.yml -vvv
-
-ansible-playbook -vvv tools/keycloak_setup/dev.yml
+ansible-playbook ${KEYCLOAK_SEED_FILE} ${EXTRA_OPTS}
 echo finished > /startup/status

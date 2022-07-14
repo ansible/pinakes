@@ -1,4 +1,4 @@
-""" Module to test ServiceOffering end points """
+"""Module to test ServiceOffering end points"""
 import json
 import pytest
 

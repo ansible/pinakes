@@ -1,4 +1,4 @@
-""" ServiceInventoryImport module imports the Inventory
+"""ServiceInventoryImport module imports the Inventory
     object from Ansible Tower. It handles adds, updates
     and deletes.
 """

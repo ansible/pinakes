@@ -1,4 +1,4 @@
-""" Start ordering an item """
+"""Start ordering an item"""
 
 import pytest
 from unittest import mock
@@ -39,7 +39,7 @@ def test_place_order_item(mocker):
 
     assert (
         str(ProgressMessage.objects.first())
-        == "Submitting Order Item 1 for provisioning"
+        == "Submitting Order Item %(item_id)s for provisioning"
     )
 
 

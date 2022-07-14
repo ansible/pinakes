@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-24 22:44-0400\n"
+"POT-Creation-Date: 2022-05-26 15:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -200,7 +200,7 @@ msgstr "缺少故障原因"
 msgid "Only child level request can be flagged error"
 msgstr "只有子级别请求可以被标记为错误"
 
-#: pinakes/main/approval/services/email_notification.py:59
+#: pinakes/main/approval/services/email_notification.py:91
 msgid "Failed to email group {}"
 msgstr "为组 {} 发送电子邮件失败"
 
@@ -230,57 +230,168 @@ msgstr "无效的问卷调查"
 
 #: pinakes/main/catalog/exceptions.py:18
 msgid "Uncancelable Order"
-msgstr ""
+msgstr "无法取消的订单"
 
-#: pinakes/main/catalog/models.py:534
-msgid "Created Approval Request ref: {}. Catalog approval request id: {}"
-msgstr "创建的批准请求 ref: {}。目录批准请求 id: {}"
+#: pinakes/main/catalog/models.py:192
+msgid "Info"
+msgstr "信息"
+
+#: pinakes/main/catalog/models.py:193
+msgid "Error"
+msgstr "错误"
+
+#: pinakes/main/catalog/models.py:194
+msgid "Warning"
+msgstr "警告"
+
+#: pinakes/main/catalog/models.py:195
+msgid "Debug"
+msgstr "调试"
+
+#: pinakes/main/catalog/models.py:335 pinakes/main/catalog/models.py:422
+msgid "Approval Pending"
+msgstr "等待批准"
+
+#: pinakes/main/catalog/models.py:336 pinakes/main/catalog/models.py:423
+msgid "Approved"
+msgstr "批准"
+
+#: pinakes/main/catalog/models.py:337 pinakes/main/catalog/models.py:424
+msgid "Canceled"
+msgstr "取消"
+
+#: pinakes/main/catalog/models.py:338 pinakes/main/catalog/models.py:425
+msgid "Completed"
+msgstr "完成"
+
+#: pinakes/main/catalog/models.py:339 pinakes/main/catalog/models.py:426
+msgid "Created"
+msgstr "创建"
+
+#: pinakes/main/catalog/models.py:340 pinakes/main/catalog/models.py:427
+msgid "Denied"
+msgstr "否决"
+
+#: pinakes/main/catalog/models.py:341 pinakes/main/catalog/models.py:428
+#: pinakes/main/models.py:67
+msgid "Failed"
+msgstr "失败"
+
+#: pinakes/main/catalog/models.py:342 pinakes/main/catalog/models.py:429
+msgid "Ordered"
+msgstr "订购"
+
+#: pinakes/main/catalog/models.py:551
+#, python-format
+msgid ""
+"Created Approval Request ref: %(approval_request_ref)s. Catalog approval "
+"request id: %(approval_request_id)s"
+msgstr ""
+"创建的批准请求 ref: %(approval_request_ref)s。目录批准请求 id: "
+"%(approval_request_id)s"
+
+#: pinakes/main/catalog/models.py:571
+msgid "undecided"
+msgstr "未定"
+
+#: pinakes/main/catalog/models.py:572
+msgid "approved"
+msgstr "批准"
+
+#: pinakes/main/catalog/models.py:573
+msgid "canceled"
+msgstr "取消"
+
+#: pinakes/main/catalog/models.py:574
+msgid "denied"
+msgstr "否决"
+
+#: pinakes/main/catalog/models.py:575
+msgid "failed"
+msgstr "失败"
+
+#: pinakes/main/catalog/serializers.py:358
+msgid "Order"
+msgstr "订单"
+
+#: pinakes/main/catalog/serializers.py:359
+msgid "OrderItem"
+msgstr "订单项"
 
 #: pinakes/main/catalog/services/cancel_order.py:61
-msgid "Order {} is not cancelable in its current state: {}"
+msgid "Order {} is not cancel able in its current state: {}"
 msgstr ""
 
 #: pinakes/main/catalog/services/collect_tag_resources.py:62
 msgid "Portfolio item {} does not have related service offering"
 msgstr "portfolio 项 {} 没有相关的服务"
 
-#: pinakes/main/catalog/services/copy_portfolio_item.py:49
-msgid "{} is not orderable, and cannot be copied"
+#: pinakes/main/catalog/services/copy_portfolio_item.py:47
+msgid "{} is not order able, and cannot be copied"
 msgstr "{} 是不可订购的，无法复制"
 
-#: pinakes/main/catalog/services/finish_order.py:32
-msgid "Order {} has failed"
-msgstr "订购 {} 失败"
+#: pinakes/main/catalog/services/finish_order.py:31
+#, python-format
+msgid "Order %(order_id)s has failed"
+msgstr "订购 %(order_id)s 失败"
 
-#: pinakes/main/catalog/services/finish_order.py:37
-msgid "Order {} is completed"
-msgstr "订购 {} 完成"
+#: pinakes/main/catalog/services/finish_order.py:36
+#, python-format
+msgid "Order %(order_id)s is completed"
+msgstr "订购 %(order_id)s 完成"
 
-#: pinakes/main/catalog/services/finish_order.py:54
-msgid "This order item has failed due to the entire order {} before it ran"
-msgstr "因为整个订购 {} 的原因，这个订购在运行前失败"
+#: pinakes/main/catalog/services/finish_order.py:44
+msgid "Order Canceled"
+msgstr "取消"
 
-#: pinakes/main/catalog/services/finish_order_item.py:35
-msgid "Order Item {} is completed"
-msgstr "订购项 {} 已完成"
+#: pinakes/main/catalog/services/finish_order.py:48
+msgid "Order Failed"
+msgstr "订购"
 
-#: pinakes/main/catalog/services/handle_approval_events.py:106
-msgid "Approval Request finished with status '{}'"
-msgstr "批准请求完成状态为 '{}'"
+#: pinakes/main/catalog/services/finish_order.py:53
+#, python-format
+msgid ""
+"This order item has failed due to the entire order %(state)s before it ran"
+msgstr "因为整个订购%(state)s的原因，这个订购在运行前失败"
 
-#: pinakes/main/catalog/services/handle_approval_events.py:113
-msgid "Approval Request finished with status '{}' and reason '{}'"
-msgstr "批准请求完成状态为 '{}'，原因为 '{}'"
+#: pinakes/main/catalog/services/finish_order_item.py:34
+#, python-format
+msgid "Order Item %(id)s is completed"
+msgstr "订购项 %(id)s 已完成"
+
+#: pinakes/main/catalog/services/handle_approval_events.py:76
+msgid "Internal Error. Please contact our support team."
+msgstr "内部错误，请联系客服支持"
+
+#: pinakes/main/catalog/services/handle_approval_events.py:109
+#, python-format
+msgid "Approval Request finished with status %(state)s"
+msgstr "批准请求完成状态为%(state)s"
+
+#: pinakes/main/catalog/services/handle_approval_events.py:115
+#, python-format
+msgid "Approval Request finished with status %(state)s and reason %(reason)s"
+msgstr "批准请求完成状态为%(state)s, 原因是%(reason)s"
+
+#: pinakes/main/catalog/services/provision_order_item.py:30
+#, python-format
+msgid "Order Item %(id)s is provisioned"
+msgstr "订购项 %(id)s 已提供"
 
 #: pinakes/main/catalog/services/sanitize_parameters.py:42
 msgid "parameter {} is required and must have a value"
 msgstr "参数 {} 是必需的，必须有一个值"
 
-#: pinakes/main/catalog/services/start_order_item.py:54
-msgid "Submitting Order Item {} for provisioning"
-msgstr "提交用于置备的订购项 {}"
+#: pinakes/main/catalog/services/start_order.py:21
+msgid "Submitting Order for provisioning"
+msgstr "提交用于置备的订购项"
 
-#: pinakes/main/catalog/services/submit_approval_request.py:57
+#: pinakes/main/catalog/services/start_order_item.py:53
+#, python-format
+msgid "Submitting Order Item %(item_id)s for provisioning"
+msgstr "提交用于置备的订购项 %(item_id)s"
+
+#: pinakes/main/catalog/services/submit_approval_request.py:59
 msgid "Failed to submit request to approval for Order {}, error: {}"
 msgstr "提交请求以批准订购 {} 失败，错误：{}"
 
@@ -288,15 +399,18 @@ msgstr "提交请求以批准订购 {} 失败，错误：{}"
 msgid ""
 "The underlying survey on product {} in the portfolio {} has been changed and "
 "is no longer valid, please contact an administrator to fix it."
-msgstr "产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修复。"
+msgstr ""
+"产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修"
+"复。"
 
-#: pinakes/main/catalog/views.py:499
+#: pinakes/main/catalog/views.py:521
 msgid "Order {} does not have related order items"
 msgstr "订购 {} 没有相关的订购项"
 
-#: pinakes/main/catalog/views.py:507
-msgid "Computed tags for order {}: {}"
-msgstr "订单 {} 的计算标签：{}"
+#: pinakes/main/catalog/views.py:531
+#, python-format
+msgid "Computed tags for order %(order_id)d: %(tag_resources)s"
+msgstr "订单%(order_id)d的计算标签：%(tag_resources)s"
 
 #: pinakes/main/inventory/exceptions.py:8
 msgid "Refresh already registered"
@@ -309,7 +423,7 @@ msgstr "%(name)s无法使用，暂停更新"
 
 #: pinakes/main/inventory/serializers.py:55
 #, python-format
-msgid "Refresh faild: %(error)s"
+msgid "Refresh failed: %(error)s"
 msgstr "更新错误: %(error)s"
 
 #: pinakes/main/inventory/serializers.py:59
@@ -324,26 +438,33 @@ msgstr "删除"
 msgid "updates"
 msgstr "更新"
 
-#: pinakes/main/inventory/serializers.py:78
+#: pinakes/main/inventory/serializers.py:79
 #, python-format
 msgid "Service Inventories: %(stats)s;\n"
 msgstr "服务清单：%(stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:83
+#: pinakes/main/inventory/serializers.py:84
 #, python-format
 msgid "Job Templates & Workflows: %(soi_stats)s;\n"
 msgstr "工作模版 & 流程：%(soi_stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:88
+#: pinakes/main/inventory/serializers.py:89
 #, python-format
 msgid "Workflow Template Nodes: %(son_stats)s;\n"
 msgstr "流程模版节点：%(son_stats)s;\n"
 
-#: pinakes/main/inventory/serializers.py:92
+#: pinakes/main/inventory/serializers.py:93
 msgid "Nothing to update"
 msgstr "没有变化，不需要更新"
 
-#: pinakes/main/inventory/serializers.py:101
+#: pinakes/main/inventory/serializers.py:116
+#, python-format
+msgid ""
+"Source cannot be changed to url %(new_url)s uuid %(new_install_uuid)s, "
+"currently bound to url %(url)s with uuid %(install_uuid)s"
+msgstr ""
+
+#: pinakes/main/inventory/serializers.py:122
 #, python-format
 msgid "Error: %(error)s"
 msgstr "错误: %(error)s"
@@ -356,14 +477,14 @@ msgstr "ServiceOffering 对象 {} 未找到"
 msgid "Failed to get service offering [{}]"
 msgstr "获取服务产品失败 [{}]"
 
-#: pinakes/main/inventory/task_utils/check_source_availability.py:50
+#: pinakes/main/inventory/task_utils/check_source_availability.py:55
 msgid "Check availability completed"
 msgstr "可使用性检查完毕"
 
 #: pinakes/main/inventory/task_utils/launch_job.py:69
 #, python-format
 msgid "Job %(id)s has %(status)s status"
-msgstr ""
+msgstr "工作%(id)s的状态是%(status)s"
 
 #: pinakes/main/inventory/views.py:89
 msgid "Refresh job {} is already {}, please try again later"
@@ -376,10 +497,6 @@ msgstr "完成"
 #: pinakes/main/models.py:66
 msgid "InProgress"
 msgstr "进行中"
-
-#: pinakes/main/models.py:67
-msgid "Failed"
-msgstr "失败"
 
 #: pinakes/main/models.py:68
 msgid "Unknown"

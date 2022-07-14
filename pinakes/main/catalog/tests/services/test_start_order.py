@@ -1,4 +1,4 @@
-""" Test starting an order """
+"""Test starting an order"""
 
 import pytest
 
@@ -33,6 +33,6 @@ def test_start_to_place_order():
     svc = StartOrder(order)
     svc.process()
 
-    assert (
-        str(ProgressMessage.objects.last()) == f"Order {order.id} is completed"
+    assert "Order %(order_id)s is completed" == str(
+        ProgressMessage.objects.last()
     )

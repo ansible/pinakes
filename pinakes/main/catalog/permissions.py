@@ -10,12 +10,14 @@ from pinakes.common.auth.keycloak_django.permissions import (
     check_wildcard_permission,
     check_object_permission,
     get_permitted_resources,
+    KeycloakPoliciesMap,
 )
 from pinakes.main.catalog.models import (
     Portfolio,
     PortfolioItem,
     Order,
     ProgressMessage,
+    ServicePlan,
 )
 
 
@@ -96,7 +98,7 @@ class PortfolioItemPermission(BaseKeycloakPermission):
         "untag": KeycloakPolicy("update", KeycloakPolicy.Type.OBJECT),
         # Custom actions
         "icon": KeycloakPolicy("update", KeycloakPolicy.Type.OBJECT),
-        "copy": KeycloakPolicy("update", KeycloakPolicy.Type.OBJECT),
+        "copy": KeycloakPolicy("read", KeycloakPolicy.Type.OBJECT),
         "next_name": KeycloakPolicy("read", KeycloakPolicy.Type.OBJECT),
     }
 
@@ -254,4 +256,46 @@ class ProgressMessagePermission(BaseKeycloakPermission):
             ProgressMessage.keycloak_type(),
             permission,
             request,
+        )
+
+
+class ServicePlanPermission(BaseKeycloakPermission):
+
+    portfolio_item_access_policies = {
+        "list": KeycloakPolicy("read", KeycloakPolicy.Type.WILDCARD),
+    }
+    root_access_policies = {
+        "retrieve": KeycloakPolicy("read", KeycloakPolicy.Type.WILDCARD),
+        "partial_update": KeycloakPolicy(
+            "update", KeycloakPolicy.Type.WILDCARD
+        ),
+        "reset": KeycloakPolicy("update", KeycloakPolicy.Type.WILDCARD),
+    }
+
+    def get_access_policies(
+        self, request: Request, view: Any
+    ) -> KeycloakPoliciesMap:
+        if "portfolio_item_id" in view.kwargs:
+            return self.portfolio_item_access_policies
+        else:
+            return self.root_access_policies
+
+    def perform_check_permission(
+        self, permission: str, request: Request, view: Any
+    ) -> bool:
+        portfolio_item_id = view.kwargs.get("portfolio_item_id")
+        if portfolio_item_id is not None:
+            portfolio_item = get_object_or_404(
+                PortfolioItem, pk=portfolio_item_id
+            )
+        else:
+            service_plan = get_object_or_404(ServicePlan, pk=view.kwargs["pk"])
+            portfolio_item = service_plan.portfolio_item
+
+        if PortfolioItemPermission().perform_check_object_permission(
+            permission, request, view, portfolio_item
+        ):
+            return True
+        return check_wildcard_permission(
+            ServicePlan.keycloak_type(), permission, request
         )

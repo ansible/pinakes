@@ -1,4 +1,4 @@
-""" Convert a Tower Survey Spec to
+"""Convert a Tower Survey Spec to
     Data Driven Forms (DDF) format
 """
 

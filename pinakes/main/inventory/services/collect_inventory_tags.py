@@ -1,4 +1,4 @@
-""" Collect Inventory Tags for a given service offering """
+"""Collect Inventory Tags for a given service offering"""
 from django.utils.translation import gettext_lazy as _
 from pinakes.main.inventory.models import (
     ServiceOffering,

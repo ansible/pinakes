@@ -1,4 +1,4 @@
-""" pytest fixtures """
+"""pytest fixtures"""
 import contextlib
 import os
 import urllib.parse
@@ -45,7 +45,7 @@ DUMMY_ACCESS_TOKEN = {
 def normal_user():
     user, _ = User.objects.get_or_create(
         username="normal",
-        defaults=dict(is_superuser=False, password="normal"),
+        defaults={"is_superuser": False, "password": "normal"},
     )
     return user
 
@@ -54,12 +54,12 @@ def normal_user():
 def admin():
     user, _ = User.objects.get_or_create(
         username="admin",
-        defaults=dict(
-            is_superuser=True,
-            password="admin",
-            first_name="Ansible",
-            last_name="Catalog",
-        ),
+        defaults={
+            "is_superuser": True,
+            "password": "admin",
+            "first_name": "Ansible",
+            "last_name": "Catalog",
+        },
     )
     return user
 

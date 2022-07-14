@@ -1,4 +1,4 @@
-""" ServiceOfferingImporter module imports job Templates and
+"""ServiceOfferingImporter module imports job Templates and
     Workflow Job templates from the tower
 """
 import logging

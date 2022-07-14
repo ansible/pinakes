@@ -4,6 +4,7 @@ from django.db.models.functions import Length
 from django.contrib.auth import get_user_model
 from django.core.signing import Signer
 
+from pinakes.common.models.fields import EncryptedJsonField
 from pinakes.main.models import BaseModel, ImageableModel
 from pinakes.common.auth.keycloak_django.models import KeycloakMixin
 from pinakes.common.auth.keycloak_django import AbstractKeycloakResource
@@ -17,6 +18,7 @@ class NotificationType(ImageableModel, models.Model):
 
     n_type = models.CharField(
         max_length=128,
+        unique=True,
         help_text="Name of the notification type",
     )
     setting_schema = models.JSONField(
@@ -30,10 +32,6 @@ class NotificationType(ImageableModel, models.Model):
             models.CheckConstraint(
                 name="%(app_label)s_%(class)s_n_type_empty",
                 check=models.Q(n_type__length__gt=0),
-            ),
-            models.UniqueConstraint(
-                name="%(app_label)s_%(class)s_n_type_unique",
-                fields=("n_type",),
             ),
         ]
 
@@ -71,8 +69,7 @@ class NotificationSetting(BaseModel):
         editable=True,
         help_text="Name of the notification method",
     )
-    settings = SettingField(
-        blank=True,
+    settings = EncryptedJsonField(
         null=True,
         help_text="Parameters for configuring the notification method",
     )
@@ -148,6 +145,7 @@ class Workflow(KeycloakMixin, BaseModel):
     """Workflow model"""
 
     KEYCLOAK_TYPE = "approval:workflow"
+    INTERNAL_INTERVAL = 1024  # an integer must be greater than 1
 
     name = models.CharField(max_length=255, help_text="Name of the workflow")
     description = models.TextField(
@@ -162,9 +160,7 @@ class Workflow(KeycloakMixin, BaseModel):
             " have approval permission"
         ),
     )
-    internal_sequence = models.DecimalField(
-        max_digits=16, decimal_places=6, db_index=True
-    )
+    internal_sequence = models.BigIntegerField(db_index=True)
     template = models.ForeignKey(
         Template,
         on_delete=models.CASCADE,
@@ -172,6 +168,7 @@ class Workflow(KeycloakMixin, BaseModel):
     )
 
     class Meta:
+        ordering = ["internal_sequence"]
         constraints = [
             models.CheckConstraint(
                 name="%(app_label)s_%(class)s_name_empty",
@@ -187,8 +184,116 @@ class Workflow(KeycloakMixin, BaseModel):
             ),
         ]
 
+    def move_internal_sequence(self, delta):
+        """
+        Move current record up or down relative to other records.
+        delta is an integer indictating how many other records should this
+        record be moved over upward (negative) or downward (positive).
+
+        Internal_sequence is a column used to sort the workflows by users.
+        The user only needs to be able to adjust the sequence of the workflow
+        but does not care the actual value of the internal_sequence. When a new
+        workflow is created it is placed to the end of the list with an
+        internal_sequence number much greater than the value from previous tail
+        of the list. When workflow_a is moved to between workflow_b and
+        workflow_c, its internal_sequence is simply adjusted to the average
+        number of b and c unless the average becomes a decimal, in which case
+        all the internal_sequence numbers will get rebalanced with a big
+        interval again.
+        """
+        if delta == 0:
+            return
+
+        if delta > 0:
+            self.internal_sequence = self._internal_sequence_plus(delta)
+        else:
+            self.internal_sequence = self._internal_sequence_minus(-delta)
+
+    def _internal_sequence_plus(self, delta):
+        query = Workflow.objects.filter(
+            internal_sequence__gt=self.internal_sequence
+        )
+        sequence_range = self._internal_sequence_range(query, delta)
+
+        if len(sequence_range) == 0:
+            return self._internal_sequence_extend_from_last()
+
+        if len(sequence_range) == 1:
+            return sequence_range[0] + Workflow.INTERNAL_INTERVAL
+
+        if sequence_range[1] - sequence_range[0] < 2:
+            self._rebalance_internal_sequences()
+            return self._internal_sequence_plus(delta)
+
+        return (sequence_range[0] + sequence_range[1]) // 2
+
+    def _internal_sequence_minus(self, delta):
+        query = Workflow.objects.filter(
+            internal_sequence__lt=self.internal_sequence
+        ).order_by("-internal_sequence")
+        sequence_range = self._internal_sequence_range(query, delta)
+        if len(sequence_range) == 0:
+            return self._internal_sequence_before_first()
+
+        if len(sequence_range) == 1:
+            return self._half_first_internal_sequence(sequence_range[0])
+
+        if sequence_range[0] - sequence_range[1] < 2:
+            self._rebalance_internal_sequences()
+            return self._internal_sequence_minus(delta)
+
+        return (sequence_range[0] + sequence_range[1]) // 2
+
+    def _internal_sequence_range(self, query, delta):
+        return query.values_list("internal_sequence", flat=True)[
+            (delta - 1) : (delta + 1)
+        ]
+
+    def _internal_sequence_extend_from_last(self):
+        last_sequence = (
+            Workflow.objects.filter(tenant=self.tenant)
+            .values_list("internal_sequence", flat=True)
+            .last()
+        )
+        return last_sequence + Workflow.INTERNAL_INTERVAL
+
+    def _internal_sequence_before_first(self):
+        first_sequence = (
+            Workflow.objects.filter(tenant=self.tenant)
+            .values_list("internal_sequence", flat=True)
+            .first()
+        )
+        return self._half_first_internal_sequence(first_sequence)
+
+    def _half_first_internal_sequence(self, first_sequence):
+        if first_sequence < 2:
+            self._rebalance_internal_sequences()
+            return Workflow.INTERNAL_INTERVAL // 2
+        return first_sequence // 2
+
+    def _rebalance_internal_sequences(self):
+        workflows = Workflow.objects.filter(tenant=self.tenant)
+        new_sequence = 0
+        for workflow in workflows:
+            new_sequence = new_sequence + Workflow.INTERNAL_INTERVAL
+            workflow.internal_sequence = new_sequence
+
+        Workflow.objects.bulk_update(workflows, ["internal_sequence"])
+        self.refresh_from_db()
+
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if self.internal_sequence is None:
+            max_obj = Workflow.objects.filter(tenant=self.tenant).last()
+            if max_obj is None:
+                self.internal_sequence = Workflow.INTERNAL_INTERVAL
+            else:
+                self.internal_sequence = (
+                    max_obj.internal_sequence + Workflow.INTERNAL_INTERVAL
+                )
+        super().save(*args, **kwargs)
 
 
 class RequestContext(models.Model):
@@ -380,6 +485,18 @@ class Request(AbstractKeycloakResource, BaseModel):
             self.State.CANCELED,
             self.State.FAILED,
         )
+
+    def can_cancel(self) -> bool:
+        """Is the request in a state that can be canceled"""
+        return self.is_root() and self.state in (
+            self.State.PENDING,
+            self.State.STARTED,
+            self.State.NOTIFIED,
+        )
+
+    def can_decide(self) -> bool:
+        """Is the request in a state that can be approved or denied"""
+        return self.is_leaf() and self.state == self.State.NOTIFIED
 
     def __str__(self):
         return self.name

@@ -147,7 +147,7 @@ def test_api_client_exception_not_found(session):
     session.request.return_value = _mock_response_with_exception(
         status_code=requests.codes.not_found, json_data={}
     )
-    with pytest.raises(exceptions.ResourceNotFound) as excinfo:
+    with pytest.raises(exceptions.NotFound) as excinfo:
         client.request_json("GET", "https://example-6.com")
     assert str(excinfo.value) == "API Error (status: 404)"
 
@@ -157,7 +157,7 @@ def test_api_client_exception_conflict(session):
     session.request.return_value = _mock_response_with_exception(
         status_code=requests.codes.conflict, json_data={}
     )
-    with pytest.raises(exceptions.ResourceExists) as excinfo:
+    with pytest.raises(exceptions.Conflict) as excinfo:
         client.request_json("GET", "https://example-7.com")
     assert str(excinfo.value) == "API Error (status: 409)"
 
@@ -168,7 +168,7 @@ def test_api_client_exception_with_error(session):
         status_code=requests.codes.bad_request,
         json_data={"error": "invalid request"},
     )
-    with pytest.raises(exceptions.ApiException) as excinfo:
+    with pytest.raises(exceptions.HttpError) as excinfo:
         client.request_json("GET", "https://example-8.com")
     assert str(excinfo.value) == "invalid request (status: 400)"
 
@@ -182,6 +182,6 @@ def test_api_client_exception_with_error_description(session):
             "error_description": "unknown error",
         },
     )
-    with pytest.raises(exceptions.ApiException) as excinfo:
+    with pytest.raises(exceptions.HttpError) as excinfo:
         client.request_json("GET", "https://example-9.com")
     assert str(excinfo.value) == "invalid request: unknown error (status: 400)"

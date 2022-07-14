@@ -19,7 +19,7 @@ logger = logging.getLogger("approval")
 def validate_approver_groups(group_refs, raise_error=True):
     """Validate group permissions before they are assigned to a workflow"""
 
-    uuids = map(lambda ref: ref["uuid"], group_refs)
+    uuids = [ref["uuid"] for ref in group_refs]
     if raise_error and len(set(uuids)) < len(group_refs):
         raise DuplicatedUuidException()
 

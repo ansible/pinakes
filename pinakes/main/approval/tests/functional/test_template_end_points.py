@@ -1,4 +1,4 @@
-""" Module for testing Approval Templates """
+"""Module for testing Approval Templates"""
 import json
 import pytest
 from pinakes.main.approval.tests.factories import (
@@ -99,16 +99,14 @@ def test_template_post(api_request, mocker):
     has_permission = mocker.spy(TemplatePermission, "has_permission")
     notification1 = NotificationSettingFactory()
     notification2 = NotificationSettingFactory()
-    response = api_request(
-        "post",
-        "approval:template-list",
-        data={
-            "title": "abcdef",
-            "description": "abc",
-            "process_method": notification1.id,
-            "signal_method": notification2.id,
-        },
-    )
+    data = {
+        "title": "abcdef",
+        "description": "abc",
+        "process_method": notification1.id,
+        "signal_method": notification2.id,
+    }
+
+    response = api_request("post", "approval:template-list", data=data)
 
     assert response.status_code == 201
     content = response.data
@@ -117,3 +115,7 @@ def test_template_post(api_request, mocker):
     assert content["process_method"] == notification1.id
     assert content["signal_method"] == notification2.id
     has_permission.assert_called_once()
+
+    response = api_request("post", "approval:template-list", data=data)
+    # uniqueness
+    assert response.status_code == 400

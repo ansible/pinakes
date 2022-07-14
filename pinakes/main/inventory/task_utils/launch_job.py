@@ -1,4 +1,4 @@
-""" Task to Launch a Job in Tower and wait for it to end"""
+"""Task to Launch a Job in Tower and wait for it to end"""
 import time
 import logging
 from django.utils.translation import gettext_lazy as _
@@ -50,8 +50,7 @@ class LaunchJob:
 
         while obj["status"] not in self.JOB_COMPLETION_STATUSES:
             time.sleep(self.REFRESH_INTERVAL)
-            for obj in self.tower.get(obj["url"], attrs):
-                pass
+            obj = next(self.tower.get(obj["url"], attrs))
 
         self.output = obj
 

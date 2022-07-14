@@ -1,9 +1,12 @@
-""" Serializers for Catalog Model."""
+"""Serializers for Catalog Model."""
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 from pinakes.common.fields import MetadataField
 from pinakes.main.models import Tenant, Image
+from pinakes.main.validators import UniqueWithinTenantValidator
 from pinakes.main.common.models import Group
 from pinakes.main.catalog.models import (
     ApprovalRequest,
@@ -41,6 +44,11 @@ class PortfolioSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Portfolio
+        validators = [
+            UniqueWithinTenantValidator(
+                queryset=Portfolio.objects.all(), fields=("name", "tenant")
+            )
+        ]
         fields = (
             "id",
             "name",
@@ -181,10 +189,48 @@ class OrderItemExtraSerializer(serializers.Serializer):
     portfolio_item = PortfolioItemSerializerBase(many=False)
 
 
+class UniqueWithinOrderValidator(UniqueWithinTenantValidator):
+    """Uniqueness validator on joint columns including order"""
+
+    def __call__(self, attrs, serializer):
+        order_attr = False
+        if "order" not in attrs:
+            if "order_id" in serializer.context["view"].kwargs:
+                attrs["order"] = Order.objects.get(
+                    id=serializer.context["view"].kwargs["order_id"]
+                )
+                order_attr = True
+
+        order_field = False
+        if "order" not in serializer.fields:
+            serializer.fields["order"] = serializers.PrimaryKeyRelatedField(
+                queryset=Order.objects.all()
+            )
+            order_field = True
+
+        name_attr = False
+        if "name" not in attrs:
+            if "portfolio_item" in attrs:
+                attrs["name"] = attrs["portfolio_item"].name
+                name_attr = True
+
+        super().__call__(attrs, serializer)
+
+        if order_attr:
+            del attrs["order"]
+
+        if order_field:
+            del serializer.fields["order"]
+
+        if name_attr:
+            del attrs["name"]
+
+
 class OrderItemSerializerBase(serializers.ModelSerializer):
     """OrderItem which keeps track of an execution of Portfolio Item"""
 
     owner = serializers.ReadOnlyField()
+    state = serializers.SerializerMethodField()
     extra_data = serializers.SerializerMethodField(
         "get_extra_data", read_only=True, allow_null=True
     )
@@ -195,6 +241,12 @@ class OrderItemSerializerBase(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
+        validators = [
+            UniqueWithinOrderValidator(
+                queryset=OrderItem.objects.all(),
+                fields=("name", "order", "portfolio_item", "tenant"),
+            )
+        ]
         fields = (
             *ORDER_ITEM_FIELDS,
             "artifacts",
@@ -206,6 +258,9 @@ class OrderItemSerializerBase(serializers.ModelSerializer):
             "completed_at": {"allow_null": True},
             "order_request_sent_at": {"allow_null": True},
         }
+
+    def get_state(self, obj):
+        return _(obj.state)
 
     @extend_schema_field(OrderItemExtraSerializer(many=False))
     def get_extra_data(self, order_item):
@@ -259,6 +314,7 @@ class OrderSerializer(serializers.ModelSerializer):
     and after processes (To be added)"""
 
     owner = serializers.ReadOnlyField()
+    state = serializers.SerializerMethodField()
     extra_data = serializers.SerializerMethodField(
         "get_extra_data", allow_null=True, read_only=True
     )
@@ -283,6 +339,9 @@ class OrderSerializer(serializers.ModelSerializer):
             "completed_at": {"allow_null": True},
             "order_request_sent_at": {"allow_null": True},
         }
+
+    def get_state(self, obj):
+        return _(obj.state)
 
     def create(self, validated_data):
         user = self.context["request"].user
@@ -316,6 +375,9 @@ class ApprovalRequestSerializer(serializers.ModelSerializer):
     """ApprovalRequest which keeps track of the approval
     progress of an order"""
 
+    state = serializers.SerializerMethodField()
+    reason = serializers.SerializerMethodField()
+
     class Meta:
         model = ApprovalRequest
         fields = (
@@ -326,11 +388,27 @@ class ApprovalRequestSerializer(serializers.ModelSerializer):
             "request_completed_at",
             "state",
         )
+        extra_kwargs = {
+            "request_completed_at": {"allow_null": True},
+        }
+
+    def get_state(self, obj):
+        return _(obj.state)
+
+    def get_reason(self, obj):
+        return _(obj.reason)
 
 
 class ProgressMessageSerializer(serializers.ModelSerializer):
     """ProgressMessage which wraps a message describing
     the progress of an order or order item"""
+
+    level = serializers.SerializerMethodField()
+    message = serializers.SerializerMethodField()
+    messageable_type = serializers.SerializerMethodField()
+
+    gettext_noop("Order")
+    gettext_noop("OrderItem")
 
     class Meta:
         model = ProgressMessage
@@ -340,6 +418,19 @@ class ProgressMessageSerializer(serializers.ModelSerializer):
             "message",
             "messageable_type",
             "messageable_id",
+        )
+
+    def get_level(self, obj):
+        return _(obj.level)
+
+    def get_messageable_type(self, obj):
+        return _(obj.messageable_type)
+
+    def get_message(self, obj):
+        return (
+            _(obj.message) % obj.message_params
+            if bool(obj.message_params)
+            else _(obj.message)
         )
 
 

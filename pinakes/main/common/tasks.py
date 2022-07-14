@@ -70,12 +70,12 @@ def sync_external_groups():
         for parent_id, group in iter_groups(all_groups):
             obj, created = Group.objects.update_or_create(
                 id=group.id,
-                defaults=dict(
-                    name=group.name,
-                    path=group.path,
-                    last_sync_time=sync_time,
-                    parent_id=parent_id,
-                ),
+                defaults={
+                    "name": group.name,
+                    "path": group.path,
+                    "last_sync_time": sync_time,
+                    "parent_id": parent_id,
+                },
             )
 
             if created:
@@ -107,7 +107,7 @@ def clear_sessions():
 
 
 def _manage_roles(obj, group_roles):
-    existing_role_names = set(role.name for role in obj.roles.all())
+    existing_role_names = {role.name for role in obj.roles.all()}
     new_role_names = group_roles - existing_role_names
 
     roles = []

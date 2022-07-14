@@ -1,6 +1,7 @@
-""" Approval Request State Transition """
+"""Approval Request State Transition"""
 
 import logging
+from django.utils.translation import gettext_lazy as _
 
 from pinakes.main.catalog.services.start_order_item import (
     StartOrderItem,
@@ -17,7 +18,7 @@ class StartOrder:
 
     def process(self):
         logger.info("Submitting Order for provisioning...")
-        self.order.mark_ordered("Submitting Order for provisioning")
+        self.order.mark_ordered(_("Submitting Order for provisioning"))
 
         StartOrderItem(self.order).process()
         return self

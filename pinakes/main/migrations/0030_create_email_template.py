@@ -1,21 +1,21 @@
-from django.db import migrations, transaction
-from pinakes.main.models import Tenant
+from django.db import migrations
 
 
 def create_template(apps, schema_editor):
+    Tenant = apps.get_model("main", "Tenant")
     Template = apps.get_model("main", "Template")
     db_alias = schema_editor.connection.alias
 
-    with transaction.atomic():
-        tenant = Tenant.current()
-        Template.objects.using(db_alias).create(
-            title="Built-in Email Notification",
-            description=(
-                "Notify approvers by HTML emails with ebedded links for"
-                " actions"
-            ),
-            tenant_id=tenant.id,
-        )
+    tenant, _ = Tenant.objects.using(db_alias).get_or_create(
+        external_tenant="default"
+    )
+    Template.objects.using(db_alias).create(
+        title="Built-in Email Notification",
+        description=(
+            "Notify approvers by HTML emails with ebedded links for actions"
+        ),
+        tenant_id=tenant.id,
+    )
 
 
 class Migration(migrations.Migration):

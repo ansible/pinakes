@@ -1,4 +1,4 @@
-""" Send an event when a request changes it state """
+"""Send an event when a request changes it state"""
 import logging
 
 from pinakes.main.catalog.services.handle_approval_events import (
