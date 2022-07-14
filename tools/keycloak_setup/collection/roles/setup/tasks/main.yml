@@ -72,3 +72,5 @@
     catalog_client: "{{ keycloak_clients['json'][0]  }}"
 - include_tasks: keycloak_seed.yml
   when: seed_keycloak
+- include_tasks: create_cli_client.yml
+  when: create_cli_client

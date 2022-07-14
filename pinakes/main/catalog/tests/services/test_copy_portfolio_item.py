@@ -1,18 +1,11 @@
 """Test copy portfolio item service"""
 import pytest
 
-from pinakes.main.catalog.models import (
-    ServicePlan,
-    PortfolioItem,
-)
-from pinakes.main.catalog.services.copy_portfolio_item import (
-    CopyPortfolioItem,
-)
+from pinakes.main.catalog.models import ServicePlan, PortfolioItem
+from pinakes.main.catalog.services.copy_portfolio_item import CopyPortfolioItem
 from pinakes.main.catalog.tests.factories import (
     PortfolioFactory,
     PortfolioItemFactory,
-)
-from pinakes.main.catalog.tests.factories import (
     ServicePlanFactory,
 )
 from pinakes.main.inventory.tests.factories import (
@@ -51,12 +44,10 @@ SCHEMA = {
 def test_is_orderable_with_null_service_offering():
     portfolio = PortfolioFactory()
     portfolio_item = PortfolioItemFactory(portfolio=portfolio)
-    options = {
-        "portfolio_item_name": "my test",
-        "portfolio_id": portfolio.id,
-    }
 
-    svc = CopyPortfolioItem(portfolio_item, options)
+    svc = CopyPortfolioItem(
+        portfolio_item, portfolio, portfolio_item_name="my test"
+    )
     orderable = svc._is_orderable()
 
     assert orderable is False
@@ -70,11 +61,7 @@ def test_is_orderable_with_empty_service_plans():
         service_offering_ref=str(service_offering.id),
         portfolio=portfolio,
     )
-    options = {
-        "portfolio_item_name": "my test",
-    }
-
-    svc = CopyPortfolioItem(portfolio_item, options)
+    svc = CopyPortfolioItem(portfolio_item, portfolio_item_name="my test")
     orderable = svc._is_orderable()
 
     assert orderable is True
@@ -93,11 +80,7 @@ def test_is_orderable_with_service_plans():
     )
     ServicePlanFactory(base_schema={}, portfolio_item=portfolio_item)
 
-    options = {
-        "portfolio_item_name": "my test",
-    }
-
-    svc = CopyPortfolioItem(portfolio_item, options)
+    svc = CopyPortfolioItem(portfolio_item, portfolio_item_name="my test")
     orderable = svc._is_orderable()
 
     assert orderable is True
@@ -117,14 +100,12 @@ def test_copy_portfolio_items_to_the_same_portfolio():
     )
     ServicePlanFactory(portfolio_item=portfolio_item)
 
-    options = {
-        "portfolio_item_name": portfolio_item.name,
-    }
-
     assert PortfolioItem.objects.count() == 1
     assert ServicePlan.objects.count() == 1
 
-    svc = CopyPortfolioItem(portfolio_item, options)
+    svc = CopyPortfolioItem(
+        portfolio_item, portfolio_item_name=portfolio_item.name
+    )
     svc.process()
 
     assert PortfolioItem.objects.count() == 2
@@ -151,14 +132,10 @@ def test_copy_portfolio_items_to_different_portfolios():
         service_offering_ref=str(service_offering.id),
     )
 
-    options = {
-        "portfolio_id": portfolio_2.id,
-    }
-
     assert PortfolioItem.objects.count() == 1
     assert PortfolioItem.objects.filter(portfolio=portfolio_2).count() == 0
 
-    svc = CopyPortfolioItem(portfolio_item, options)
+    svc = CopyPortfolioItem(portfolio_item, portfolio_2)
     svc.process()
 
     assert PortfolioItem.objects.count() == 2
@@ -175,10 +152,10 @@ def test_copy_portfolio_items_to_raise_exception():
     portfolio_item = PortfolioItemFactory(portfolio=portfolio)
 
     with pytest.raises(RuntimeError) as excinfo:
-        svc = CopyPortfolioItem(portfolio_item, {})
+        svc = CopyPortfolioItem(portfolio_item)
         svc.process()
 
     assert (
-        f"{portfolio_item.name} is not orderable, and cannot be copied"
+        f"{portfolio_item.name} is not order able, and cannot be copied"
         in str(excinfo.value)
     )

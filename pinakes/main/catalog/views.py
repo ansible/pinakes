@@ -1,9 +1,10 @@
-""" Default views for Catalog."""
+"""Default views for Catalog."""
 
 import logging
 
 import django_rq
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets
@@ -384,17 +385,24 @@ class PortfolioItemViewSet(
     @action(methods=["post"], detail=True)
     def copy(self, request, pk):
         """Copy the specified pk portfolio item."""
-        portfolio_item = self.get_object()
-        options = {
-            "portfolio_item_id": portfolio_item.id,
-            "portfolio_id": request.data.get(
-                "portfolio_id", portfolio_item.portfolio.id
-            ),
-            "portfolio_item_name": request.data.get(
-                "portfolio_item_name", portfolio_item.name
-            ),
-        }
-        svc = CopyPortfolioItem(portfolio_item, options).process()
+        portfolio_item_src = self.get_object()
+
+        # TODO: Move to serializer
+        portfolio_id_dest = request.data.get("portfolio_id", None)
+        if portfolio_id_dest:
+            portfolio_dest = get_object_or_404(Portfolio, id=portfolio_id_dest)
+        else:
+            portfolio_dest = portfolio_item_src.portfolio
+        self.get_keycloak_permission().perform_check_object_permission(
+            "update", request, self, portfolio_dest
+        )
+        portfolio_item_name = request.data.get(
+            "portfolio_item_name", portfolio_item_src.name
+        )
+
+        svc = CopyPortfolioItem(
+            portfolio_item_src, portfolio_dest, portfolio_item_name
+        ).process()
         serializer = self.get_serializer(svc.new_portfolio_item)
 
         return Response(serializer.data)
@@ -518,10 +526,12 @@ class OrderViewSet(
         ValidateOrderItem(order.product).process()
 
         tag_resources = CollectTagResources(order).process().tag_resources
-        message = _("Computed tags for order {}: {}").format(
-            order.id, tag_resources
+
+        message = gettext_noop(
+            "Computed tags for order %(order_id)d: %(tag_resources)s"
         )
-        order.update_message(ProgressMessage.Level.INFO, message)
+        params = {"order_id": order.id, "tag_resources": tag_resources}
+        order.update_message(ProgressMessage.Level.INFO, message, params)
 
         logger.info("Creating approval request for order id %d", order.id)
         if request and request.META:
@@ -750,7 +760,10 @@ class OrderItemProgressMessageViewSet(_BaseProgressMessageViewSet):
     ),
 )
 class ServicePlanViewSet(
-    NestedViewSetMixin, QuerySetMixin, viewsets.ModelViewSet
+    NestedViewSetMixin,
+    KeycloakPermissionMixin,
+    QuerySetMixin,
+    viewsets.ModelViewSet,
 ):
     """API endpoint for listing and creating service plans"""
 
@@ -759,6 +772,7 @@ class ServicePlanViewSet(
     serializer_class = ServicePlanSerializer
     http_method_names = ["get", "patch", "post", "head"]
     permission_classes = (IsAuthenticated,)
+    keycloak_permission = permissions.ServicePlanPermission
     filter_backends = []  # no filtering is needed
     parent_field_names = ("portfolio_item",)
 

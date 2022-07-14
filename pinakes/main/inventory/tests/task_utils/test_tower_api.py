@@ -1,4 +1,4 @@
-""" Module to test GET/POST to Tower """
+"""Module to test GET/POST to Tower"""
 import pytest
 import responses
 import requests

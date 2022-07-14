@@ -1,4 +1,4 @@
-""" Collection of tag resources. """
+"""Collection of tag resources."""
 import logging
 from django.utils.translation import gettext_lazy as _
 

@@ -1,4 +1,4 @@
-""" Test module for starting an OrderItem """
+"""Test module for starting an OrderItem"""
 from unittest.mock import Mock
 from unittest.mock import patch
 import pytest

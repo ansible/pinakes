@@ -1,4 +1,4 @@
-""" Test module for ServiceInventoryImport  """
+"""Test module for ServiceInventoryImport"""
 from unittest.mock import Mock
 import pytest
 from django.core.exceptions import ObjectDoesNotExist

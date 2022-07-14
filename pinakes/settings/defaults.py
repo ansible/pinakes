@@ -31,9 +31,12 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("PINAKES_DEBUG", default=False)
-TEMPLATE_DEBUG = DEBUG
-SQL_DEBUG = DEBUG
+DEBUG_SQL = env.bool("PINAKES_DEBUG_SQL", default=False)
+
 SECRET_KEY = env.str("PINAKES_SECRET_KEY")
+DB_ENCRYPTION_KEYS = env.str("PINAKES_DB_ENCRYPTION_KEYS", default="").split(
+    ":"
+)
 
 ALLOWED_HOSTS = env.list(
     "PINAKES_ALLOWED_HOSTS",
@@ -45,6 +48,9 @@ CATALOG_API_PATH_PREFIX = env.str(
     default="/api/pinakes",
 )
 
+HTTPS_ENABLED = env.bool("PINAKES_HTTPS_ENABLED", default=False)
+HTTP_SCHEME = "https" if HTTPS_ENABLED else "http"
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -54,7 +60,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "rest_framework",
     "django_filters",
-    "rest_framework.authtoken",
     "taggit",
     "django_rq",
     "drf_spectacular",
@@ -127,7 +132,9 @@ REST_FRAMEWORK = {
     ),
     "PAGE_SIZE": 25,
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
+        "pinakes.common.auth.keycloak_django.authentication.KeycloakSessionAuthentication",  # noqa
+        "pinakes.common.auth.keycloak_django.authentication.KeycloakBearerOfflineAuthentication",  # noqa
+        # "pinakes.common.auth.keycloak_django.authentication.KeycloakBearerOnlineAuthentication",  # noqa
     ),
     "DEFAULT_FILTER_BACKENDS": (
         "django_filters.rest_framework.DjangoFilterBackend",
@@ -169,7 +176,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTHENTICATION_BACKENDS = [
     "pinakes.common.auth.keycloak_oidc.KeycloakOpenIdConnect",
-    "django.contrib.auth.backends.ModelBackend",
 ]
 
 # Internationalization
@@ -276,7 +282,8 @@ LOGGING = {
         },
         "django.db.backends": {
             "handlers": ["console"],
-            "level": LOG_LEVEL,
+            "level": "DEBUG" if DEBUG_SQL else "INFO",
+            "propagate": False,
         },
         "pinakes": {
             "handlers": ["console"],
@@ -415,9 +422,7 @@ SOCIAL_AUTH_KEYCLOAK_OIDC_API_URL = f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}"
 SOCIAL_AUTH_KEYCLOAK_OIDC_SECRET = KEYCLOAK_CLIENT_SECRET
 
 SOCIAL_AUTH_KEYCLOAK_OIDC_VERIFY_SSL = KEYCLOAK_VERIFY_SSL
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = env.bool(
-    "PINAKES_HTTPS_ENABLED", default=False
-)
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = HTTPS_ENABLED
 # CORS
 # Comma separated values list of :"SCHEME+HOST+[PORT]", e.g.
 # PINAKES_UI_ALLOWED_ORIGINS = \

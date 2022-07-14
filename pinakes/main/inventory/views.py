@@ -180,6 +180,7 @@ class ServiceInventoryViewSet(
     permission_classes = (IsAuthenticated,)
     ordering = ("-id",)
     filterset_fields = (
+        "name",
         "description",
         "source_ref",
         "source_created_at",
@@ -187,7 +188,10 @@ class ServiceInventoryViewSet(
         "created_at",
         "updated_at",
     )
-    search_fields = ("description",)
+    search_fields = (
+        "name",
+        "description",
+    )
     parent_field_names = ("source",)
 
     # For tagging purpose, enable POST action here

@@ -1,4 +1,4 @@
-""" Factory for catalog objects """
+"""Factory for catalog objects"""
 from django.db.models.fields.files import ImageFieldFile, FileField
 import factory
 

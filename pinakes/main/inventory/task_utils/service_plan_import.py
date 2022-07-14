@@ -1,4 +1,4 @@
-""" ServicePlanImport module imports the SurveySpec
+"""ServicePlanImport module imports the SurveySpec
     from Ansible Tower. It converts the Spec to DDF
     format and saves it in the DB
 """

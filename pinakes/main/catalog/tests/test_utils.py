@@ -1,4 +1,4 @@
-""" Test comparison of the two schemas """
+"""Test comparison of the two schemas"""
 
 from pinakes.main.catalog.utils import (
     compare_schemas,

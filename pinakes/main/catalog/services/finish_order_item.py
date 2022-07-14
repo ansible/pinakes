@@ -1,7 +1,7 @@
-""" Module to Finish Processing an OrderItem """
+"""Module to Finish Processing an OrderItem"""
 import logging
 
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from pinakes.main.catalog.models import OrderItem
 
 logger = logging.getLogger("catalog")
@@ -31,8 +31,12 @@ class FinishOrderItem:
 
         """Finish processing the order_item"""
         if self.error_msg is None:
+            message = gettext_noop("Order Item %(id)s is completed")
+            params = {"id": str(self.order_item.id)}
+
             self.order_item.mark_completed(
-                _("Order Item {} is completed").format(self.order_item.id),
+                message=message,
+                params=params,
                 artifacts=self.artifacts,
                 external_url=self.external_url or "",
                 service_instance_ref=self.service_instance_ref,

@@ -1,4 +1,4 @@
-""" Module to test ServicePlan end points """
+"""Module to test ServicePlan end points"""
 import json
 import pytest
 from pinakes.main.inventory.tests.factories import (

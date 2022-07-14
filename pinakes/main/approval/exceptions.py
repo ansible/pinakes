@@ -31,3 +31,13 @@ class NoAppoverRoleException(exceptions.APIException):
 class GroupNotExistException(exceptions.APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _("Group does not exist")
+
+
+class WorkflowIsLinkedException(exceptions.APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _("There are resource objects linked to the workflow")
+
+
+class WorkflowInUseException(exceptions.APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _("Workflow is in use")

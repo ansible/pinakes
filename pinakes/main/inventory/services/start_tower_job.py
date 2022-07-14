@@ -1,4 +1,4 @@
-""" Module to start a Tower Job using Django_rq """
+"""Module to start a Tower Job using Django_rq"""
 import django_rq
 from pinakes.main.inventory.models import (
     ServiceOffering,

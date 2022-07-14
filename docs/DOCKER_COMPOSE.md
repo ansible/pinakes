@@ -128,3 +128,12 @@ PINAKES_KEYCLOAK_REALM_FRONTEND_URL=https://[your-external-ip-address]:9443/auth
 ## Overriding UI
 
 You can override the UI's build providing your custom `catalog-ui.tar.gz` file inside `tools/docker/frontend/overrides` folder.
+
+## Overriding credentials
+
+You can override the set of users and groups defined by default in `tools/keycloak_setup/dev.yml` adding your custom file defining the environement variable `KEYCLOAK_SEED_FILE`. Notice that the path must to be a relative path to the root project. For example:
+
+```
+# .env content
+KEYCLOAK_SEED_FILE=tools/keycloak_setup/custom-users.yml
+```

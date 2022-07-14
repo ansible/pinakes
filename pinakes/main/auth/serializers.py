@@ -1,7 +1,7 @@
 """Serializer for auth object"""
 from rest_framework import serializers
 
-import jwt
+from jose import jwt
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -21,9 +21,9 @@ class CurrentUserSerializer(serializers.ModelSerializer):
     def get_roles(self, _obj):
         """Get the current users roles from the request"""
         request = self.context.get("request")
-        extra_data = request.keycloak_user.extra_data
         jot = jwt.decode(
-            extra_data["access_token"],
+            request.auth,
+            "",
             options={"verify_signature": False, "verify_aud": False},
         )
         roles = (

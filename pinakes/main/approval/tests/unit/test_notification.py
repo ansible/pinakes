@@ -1,8 +1,9 @@
 """Test NotificationType and NotificationSetting"""
 
 import pytest
+from cryptography.fernet import MultiFernet
 from django.db import IntegrityError
-from django.core.signing import Signer
+
 from pinakes.main.approval.tests.factories import (
     NotificationSettingFactory,
     NotificationTypeFactory,
@@ -67,6 +68,6 @@ def test_empty_notification_setting():
 @pytest.mark.django_db
 def test_notification_setting_encryption(mocker):
     """NotificationSetting settings must be encrypted"""
-    spy = mocker.spy(Signer, "sign_object")
+    spy = mocker.spy(MultiFernet, "encrypt")
     NotificationSettingFactory(settings={"param": "val"})
     assert spy.call_count == 1

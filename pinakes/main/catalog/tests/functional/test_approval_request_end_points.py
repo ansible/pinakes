@@ -1,4 +1,4 @@
-""" Test order end points """
+"""Test order end points"""
 import pytest
 
 from pinakes.main.catalog.tests.factories import (

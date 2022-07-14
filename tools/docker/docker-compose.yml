@@ -66,5 +66,11 @@ services:
       retries: 3
       start_period: 5s
 
+  mailcatcher:
+    image: 'docker.io/sj26/mailcatcher'
+    ports:
+      - 1025:1025
+      - 1080:1080
+
 volumes:
   pg_data: {}

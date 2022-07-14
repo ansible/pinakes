@@ -14,6 +14,7 @@ x-environment:
   - PINAKES_ALLOWED_HOSTS=*
   - PINAKES_DEBUG=False
   - PINAKES_SECRET_KEY=django-insecure-k8^atj4p3jj^zkb3=o(rhaysjzy_mr&#h(yl+ytj#f%@+er4&5
+  - PINAKES_DB_ENCRYPTION_KEYS=VEVTVFRFU1RURVNUVEVTVFRFU1RURVNUVEVTVFRFU1Q=
   - PINAKES_KEYCLOAK_USER=admin
   - PINAKES_KEYCLOAK_PASSWORD=admin
   - PINAKES_KEYCLOAK_REALM=pinakes
@@ -27,6 +28,10 @@ x-environment:
   - PINAKES_POSTGRES_USER=admin
   - PINAKES_POSTGRES_PASSWORD=admin
   - PINAKES_POSTGRES_SSL_MODE=disable
+  - KEYCLOAK_SEED_FILE=tools/keycloak_setup/qa.yml
+  - PINAKES_INSIGHTS_TRACKING_STATE=${PINAKES_INSIGHTS_TRACKING_STATE:-False}
+  - PINAKES_INSIGHTS_USERNAME=${PINAKES_INSIGHTS_USERNAME:-""}
+  - PINAKES_INSIGHTS_PASSWORD=${PINAKES_INSIGHTS_PASSWORD:-""}
 
 services:
   frontend:
@@ -142,6 +147,12 @@ services:
 
   redis:
     image: "docker.io/redis:alpine"
+
+  mailcatcher:
+    image: 'docker.io/sj26/mailcatcher'
+    ports:
+      - 1025:1025
+      - 1080:1080
 
 volumes:
   pg_data: {}

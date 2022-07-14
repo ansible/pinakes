@@ -1,8 +1,8 @@
-""" Handle approval events """
+"""Handle approval events"""
 import logging
 
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from pinakes.main.catalog.models import (
     ApprovalRequest,
@@ -72,7 +72,9 @@ class HandleApprovalEvents:
             except Exception as error:
                 order = self.approval_request.order
                 order.mark_failed(
-                    "Internal Error. Please contact our support team."
+                    gettext_noop(
+                        "Internal Error. Please contact our support team."
+                    )
                 )
                 raise error
         except Exception as error:
@@ -88,6 +90,8 @@ class HandleApprovalEvents:
     def _update_approval_request(self):
         if self.event == self.EVENT_REQUEST_FINISHED:
             state = self.payload["decision"]
+            if state == "error":
+                state = ApprovalRequest.State.FAILED
         elif self.event == self.EVENT_REQUEST_CANCELED:
             state = ApprovalRequest.State.CANCELED
 
@@ -101,21 +105,24 @@ class HandleApprovalEvents:
         state = self.approval_request.state
 
         if approval_reason is None:
-            self.approval_request.order.update_message(
-                ProgressMessage.Level.INFO,
-                _("Approval Request finished with status '{}'").format(state),
+            message = gettext_noop(
+                "Approval Request finished with status %(state)s"
             )
+            params = {"state": state}
             logger.info("Approval Request finished with status %s", state)
         else:
-            self.approval_request.order.update_message(
-                ProgressMessage.Level.INFO,
-                _(
-                    "Approval Request finished with status '{}' and reason"
-                    " '{}'"
-                ).format(state, approval_reason),
+            message = gettext_noop(
+                "Approval Request finished with status %(state)s \
+and reason %(reason)s"
             )
+            params = {"state": state, "reason": approval_reason}
+
             logger.info(
                 "Approval Request finished with status %s and reason %s",
                 state,
                 approval_reason,
             )
+
+        self.approval_request.order.update_message(
+            ProgressMessage.Level.INFO, message=message, params=params
+        )

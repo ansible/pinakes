@@ -1,4 +1,4 @@
-""" Test on OrderItem """
+"""Test on OrderItem"""
 import pytest
 from django.db import IntegrityError
 

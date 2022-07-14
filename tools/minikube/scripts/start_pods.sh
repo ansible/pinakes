@@ -1,47 +1,63 @@
 #!/bin/bash
 # For development purpose only
 # Set the environment variable for accessing your Automation Controller
-# export PINAKES_CONTROLLER_URL=<<your controller url>>
-# export PINAKES_CONTROLLER_TOKEN=<<your controller token>>
-# export PINAKES_CONTROLLER_VERIFY_SSL=True|False
 
 set -o nounset
 set -o errexit
 
+OVERRIDE_ENV_FILE="minikube_env_vars"
 PINAKES_CONTROLLER_URL=${PINAKES_CONTROLLER_URL:-}
 PINAKES_CONTROLLER_TOKEN=${PINAKES_CONTROLLER_TOKEN:-}
 PINAKES_CONTROLLER_VERIFY_SSL=${PINAKES_CONTROLLER_VERIFY_SSL:-}
 
-if [[ -z "${PINAKES_CONTROLLER_URL}" ]]; then
-  echo "Error: Environment variable PINAKES_CONTROLLER_URL is not set."
-  exit 1
-fi
+one_time_transiiton() {
+    # This is one time migration to using the env var file
+    # if the file doesn't exist we create a file from the old
+    # required env vars.
+    if [[ ! -f "$OVERRIDE_ENV_FILE" ]]
+    then
+      cp ./tools/minikube/env_vars.sample "$OVERRIDE_ENV_FILE"
+      if [[ -z "${PINAKES_CONTROLLER_URL}" ]]
+      then
+        echo "Error: Environment variable PINAKES_CONTROLLER_URL is not set."
+        exit 1
+      fi
 
-if [[ -z "${PINAKES_CONTROLLER_TOKEN}" ]]; then
-  echo "Error: Environment variable PINAKES_CONTROLLER_TOKEN is not set."
-  exit 1
-fi
+      if [[ -z "${PINAKES_CONTROLLER_TOKEN}" ]]
+      then
+        echo "Error: Environment variable PINAKES_CONTROLLER_TOKEN is not set."
+        exit 1
+      fi
 
-if [[ -z "${PINAKES_CONTROLLER_VERIFY_SSL}" ]]; then
-  echo "Error: Environment variable PINAKES_CONTROLLER_VERIFY_SSL is not set."
-  exit 1
-fi
+      if [[ -z "${PINAKES_CONTROLLER_VERIFY_SSL}" ]]
+      then
+        echo "Error: Environment variable PINAKES_CONTROLLER_VERIFY_SSL is not set."
+        exit 1
+      fi
 
-# Set the environment variable for accessing insights service
-# export PINAKES_INSIGHTS_AUTH_METHOD=certificate|credential
-# export PINAKES_INSIGHTS_TRACKING_STATE=True|False
-# export PINAKES_INSIGHTS_URL=<<your insights url>>
+      # To handle compatibility issues between sed on Mac and linux don't use the -i
+      tmpfile=$(mktemp /tmp/pinakes_env_var.XXXXXX)
+      sed -e '/PINAKES_CONTROLLER_URL/d' -e '/PINAKES_CONTROLLER_TOKEN/d' -e '/PINAKES_CONTROLLER_VERIFY_SSL/d' "$OVERRIDE_ENV_FILE" > "$tmpfile"
+      mv "$tmpfile" "$OVERRIDE_ENV_FILE"
+      chmod 0644 "$OVERRIDE_ENV_FILE"
+      echo "PINAKES_CONTROLLER_URL="${PINAKES_CONTROLLER_URL}"" >> "$OVERRIDE_ENV_FILE"
+      echo "PINAKES_CONTROLLER_TOKEN="${PINAKES_CONTROLLER_TOKEN}"" >> "$OVERRIDE_ENV_FILE"
+      echo "PINAKES_CONTROLLER_VERIFY_SSL="${PINAKES_CONTROLLER_VERIFY_SSL}"" >> "$OVERRIDE_ENV_FILE"
+    fi
+}
 
-# Check if metrics collection is turned on
-PINAKES_INSIGHTS_TRACKING_STATE=${PINAKES_INSIGHTS_TRACKING_STATE:-False}
-PINAKES_INSIGHTS_AUTH_METHOD=${PINAKES_INSIGHTS_AUTH_METHOD:-certificate}
-if [[ "${PINAKES_INSIGHTS_AUTH_METHOD}" == "certificate" ]]; then
-  PINAKES_INSIGHTS_URL=${PINAKES_INSIGHTS_URL:-https://cert.cloud.redhat.com/api/ingress/v1/upload}
-else
-  PINAKES_INSIGHTS_URL=${PINAKES_INSIGHTS_URL:-https://cloud.redhat.com/api/ingress/v1/upload}
+#One time setup from previous approach
+one_time_transiiton
+
+
+if [[ ! -f "$OVERRIDE_ENV_FILE" ]]
+then
+	echo "Missing file: $OVERRIDE_ENV_FILE"
+	echo "This file contains all the configurable environment variables for the app"
+	echo "A sample file has been provided in ./tools/minikube/env_vars.sample"
+	echo "Please copy this file as $OVERRIDE_ENV_FILE and change the values"
+	exit 1
 fi
-PINAKES_INSIGHTS_USERNAME=${PINAKES_INSIGHTS_USERNAME:-unknown}
-PINAKES_INSIGHTS_PASSWORD=${PINAKES_INSIGHTS_PASSWORD:-unknown}
 
 if ! kubectl get namespace catalog &>/dev/null; then
 	kubectl create namespace catalog
@@ -65,14 +81,6 @@ if ! kubectl get configmap --namespace=catalog postgresql &>/dev/null; then
      kubectl create configmap postgresql --from-file=./tools/postgresql -n catalog
 fi
 
-if kubectl get configmap --namespace=catalog ansible-controller-env &>/dev/null; then
-	kubectl delete --namespace=catalog configmap ansible-controller-env
-fi
-
-if kubectl get configmap --namespace=catalog ansible-insights-env &>/dev/null; then
-	kubectl delete --namespace=catalog configmap ansible-insights-env
-fi
-
 # Override Keycloak image files
 tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
 cp ./tools/keycloak_setup/login_theme/* "$tmp_dir"
@@ -86,21 +94,14 @@ fi
 
 rm -rf $tmp_dir
 
-kubectl create configmap \
-    --namespace=catalog \
-    ansible-controller-env \
-    --from-literal=PINAKES_CONTROLLER_URL="$PINAKES_CONTROLLER_URL" \
-    --from-literal=PINAKES_CONTROLLER_TOKEN="$PINAKES_CONTROLLER_TOKEN" \
-    --from-literal=PINAKES_CONTROLLER_VERIFY_SSL="$PINAKES_CONTROLLER_VERIFY_SSL"
+if ! kubectl get configmap --namespace=catalog pinakes-env-overrides &>/dev/null; then
+     kubectl create configmap \
+	--namespace=catalog \
+	pinakes-env-overrides \
+	--from-env-file="$OVERRIDE_ENV_FILE"
+fi
 
-kubectl create configmap \
-    --namespace=catalog \
-    ansible-insights-env \
-    --from-literal=PINAKES_INSIGHTS_AUTH_METHOD="$PINAKES_INSIGHTS_AUTH_METHOD" \
-    --from-literal=PINAKES_INSIGHTS_TRACKING_STATE="$PINAKES_INSIGHTS_TRACKING_STATE" \
-    --from-literal=PINAKES_INSIGHTS_URL="$PINAKES_INSIGHTS_URL" \
-    --from-literal=PINAKES_INSIGHTS_USERNAME="$PINAKES_INSIGHTS_USERNAME" \
-    --from-literal=PINAKES_INSIGHTS_PASSWORD="$PINAKES_INSIGHTS_PASSWORD"
+
 
 # Build the image if the user hasn't built it yet
 if ! minikube image ls | grep pinakes:latest; then

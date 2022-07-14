@@ -1,6 +1,6 @@
-""" Start processing the next order item """
+"""Start processing the next order item"""
 import logging
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from pinakes.main.catalog.models import OrderItem, ProgressMessage, ServicePlan
 from pinakes.main.catalog.services.compute_runtime_parameters import (
@@ -49,10 +49,12 @@ class StartOrderItem:
         try:
             logger.info("Submitting Order Item %d for provisioning", item.id)
 
-            item.update_message(
-                ProgressMessage.Level.INFO,
-                _("Submitting Order Item {} for provisioning".format(item.id)),
+            message = gettext_noop(
+                "Submitting Order Item %(item_id)s for provisioning"
             )
+            params = {"item_id": str(item.id)}
+
+            item.update_message(ProgressMessage.Level.INFO, message, params)
 
             ValidateOrderItem(item).process()
 

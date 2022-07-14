@@ -11,6 +11,7 @@ from django.core.mail.backends.smtp import EmailBackend
 from pinakes.common.auth.keycloak_django.clients import get_admin_client
 from pinakes.main.approval.services.create_action import CreateAction
 from pinakes.main.approval.models import Action, Request
+from django.conf import settings
 
 
 logger = logging.getLogger("approval")
@@ -107,7 +108,7 @@ class EmailNotification:
     def _plain_body(self):
         return (
             "There is a Pinakes order requires your approval. "
-            f"Please visit {self._web_url()}/{self._approval_link()}."
+            f"Please visit {self._approval_link()}."
         )
 
     def _html_body(self, approver):
@@ -131,9 +132,13 @@ class EmailNotification:
         return string.Template(email_template).safe_substitute(**params)
 
     def _web_url(self):
-        return self.request.request_context.context.get(
+        scheme = settings.HTTP_SCHEME
+        host = self.request.request_context.context.get(
             "http_host", "localhost"
         )
+        return f"{scheme}://{host}"
 
     def _approval_link(self):
-        return f"ui/catalog/approval/request?request={self.request.id}"
+        base_url = self._web_url()
+        request_id = self.request.id
+        return f"{base_url}/ui/catalog/approval/request?request={request_id}"

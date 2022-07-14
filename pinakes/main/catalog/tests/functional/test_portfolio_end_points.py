@@ -1,4 +1,4 @@
-""" Test portfolio end points """
+"""Test portfolio end points"""
 import json
 import os
 import glob
@@ -191,6 +191,10 @@ def test_portfolio_post(api_request):
     response = api_request("post", "catalog:portfolio-list", data=data)
 
     assert response.status_code == 201
+
+    response = api_request("post", "catalog:portfolio-list", data=data)
+    # uniqueness
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db

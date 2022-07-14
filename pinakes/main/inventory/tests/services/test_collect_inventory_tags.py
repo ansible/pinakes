@@ -1,4 +1,4 @@
-""" Module to test Collection of inventory tags """
+"""Module to test Collection of inventory tags"""
 import pytest
 from pinakes.main.inventory.tests.factories import (
     ServiceInventoryFactory,

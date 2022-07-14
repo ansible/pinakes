@@ -1,0 +1,122 @@
+---
+- hosts: localhost
+  vars:
+    verify_keycloak_ssl: false
+    create_cli_client: true
+    seed_keycloak: true
+    seed_groups:
+      - name: catalog-admins
+        clientRoles:
+          - catalog-admin
+
+      - name: approval-admins
+        clientRoles:
+          - approval-admin
+
+      - name: users-approvers
+        clientRoles:
+          - catalog-user
+          - approval-approver
+
+      - name: admins-approvers
+        clientRoles:
+          - catalog-admin
+          - approval-approver
+
+      - name: users-approvers_admins
+        clientRoles:
+          - approval-admin
+          - catalog-user
+
+      - name: Information Technology - Sample
+        clientRoles:
+          - catalog-admin
+          - approval-admin
+
+      - name: Marketing - Sample
+        clientRoles:
+          - catalog-user
+
+      - name: Finance - Sample
+        clientRoles:
+          - approval-approver
+
+    seed_users:
+      - username: catalog-admin
+        firstName: Betty
+        lastName: ""
+        email: Betty@example.com
+        enabled: true
+        credentials:
+          - type: "password"
+            value: "password"
+        groups:
+          - catalog-admins
+
+      - username: approval-admin
+        firstName: dino
+        lastName: ""
+        email: dino@example.com
+        enabled: true
+        credentials:
+          - type: "password"
+            value: "password"
+        groups:
+          - approval-admins
+
+      - username: user-approver
+        firstName: bamm-bamm
+        lastName: ""
+        email: bamm@example.com
+        enabled: true
+        credentials:
+          - type: "password"
+            value: "password"
+        groups:
+          - users-approvers
+
+      - username: admin-approver
+        firstName: peebles
+        lastName: ""
+        email: peebles@example.com
+        enabled: true
+        credentials:
+          - type: "password"
+            value: "password"
+        groups:
+          - admins-approvers
+
+      - username: fred.sample
+        firstName: Fred
+        lastName: Sample
+        email: fred@example.com
+        enabled: true
+        credentials:
+          - type: "password"
+            value: "fred"
+        groups:
+          - Information Technology - Sample
+
+      - username: barney.sample
+        firstName: Barney
+        lastName: Sample
+        email: barney@example.com
+        enabled: true
+        credentials:
+          - type: "password"
+            value: "barney"
+        groups:
+          - Marketing - Sample
+
+      - username: wilma.sample
+        firstName: Wilma
+        lastName: Sample
+        email: wilma@example.com
+        enabled: true
+        credentials:
+          - type: "password"
+            value: "wilma"
+        groups:
+          - Finance - Sample
+  roles:
+    - pinakes.keycloak_setup.setup

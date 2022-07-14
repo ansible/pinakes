@@ -16,6 +16,8 @@ jobs:
     env:
       DJANGO_SETTINGS_MODULE: pinakes.settings.development
       PINAKES_SECRET_KEY: test
+      # Base64 encoded b'TEST' * 8
+      PINAKES_DB_ENCRYPTION_KEYS: VEVTVFRFU1RURVNUVEVTVFRFU1RURVNUVEVTVFRFU1Q=
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -32,8 +34,7 @@ jobs:
     - name: Update pip and install linters
       run: |
         python -m pip install --upgrade pip
-        # TODO(cutwater): Replace with `pip install -r lint-dependencies.txt`
-        python -m pip install flake8 black
+        python -m pip install -r lint-requirements.txt
 
     - name: Lint with black
       run: |

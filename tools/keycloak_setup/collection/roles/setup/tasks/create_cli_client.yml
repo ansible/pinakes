@@ -1,0 +1,22 @@
+---
+- community.general.keycloak_client:
+    state: present
+    realm: "{{ realm_name }}"
+    name: "{{ client_name }}-cli"
+    client_id: "{{ client_name }}-cli"
+    protocol: openid-connect
+    enabled: true
+    description: "CLI client for Pinakes"
+    validate_certs: "{{ verify_keycloak_ssl }}"
+    admin_url: "{{ admin_url }}"
+    auth_client_id: "{{ auth_client_id }}"
+    auth_keycloak_url: "{{ auth_keycloak_url }}"
+    auth_password: "{{ auth_password }}"
+    auth_realm: "{{ auth_realm }}"
+    auth_username: "{{ auth_username }}"
+    direct_access_grants_enabled: true
+    public_client: true
+    redirect_uris: "{{ redirect_uris }}"
+    root_url: "{{ root_url }}"
+    standard_flow_enabled: true
+    web_origins: "{{ web_origins }}"

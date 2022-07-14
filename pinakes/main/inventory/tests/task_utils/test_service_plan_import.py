@@ -1,4 +1,4 @@
-""" Module to test import of ServicePlan (tower SurveySpec). """
+"""Module to test import of ServicePlan (tower SurveySpec)."""
 
 import json
 import hashlib

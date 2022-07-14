@@ -1,4 +1,4 @@
-""" This module stores the data model for Catalog Inventory
+"""This module stores the data model for Catalog Inventory
     The inventory is basically a collection of objects from the
     Automation Controller (Ansible Tower). The objects that we collect
     are

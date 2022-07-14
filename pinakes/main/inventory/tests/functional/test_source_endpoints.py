@@ -1,4 +1,4 @@
-""" Module to test Source end points """
+"""Module to test Source end points"""
 from unittest.mock import Mock
 import json
 import pytest
@@ -8,6 +8,7 @@ from pinakes.main.inventory.tests.factories import (
     ServiceInventoryFactory,
     ServiceOfferingFactory,
 )
+from pinakes.main.models import Source
 
 
 @pytest.mark.django_db
@@ -27,12 +28,78 @@ def test_source_list(api_request):
 def test_source_retrieve(api_request):
     """Test to retrieve Source endpoint"""
 
-    source = SourceFactory()
+    last_refresh_stats = {
+        "service_inventory": {"adds": 1, "updates": 1, "deletes": 0},
+        "service_offering": {"adds": 2, "delates": 0},
+        "service_offering_node": {"adds": 3},
+        "service_plan": {"adds": 2, "updates": 0},
+    }
+    source = SourceFactory(
+        availability_status="available", last_refresh_stats=last_refresh_stats
+    )
     response = api_request("get", "inventory:source-detail", source.id)
 
     assert response.status_code == 200
     content = json.loads(response.content)
     assert content["id"] == source.id
+
+
+@pytest.mark.django_db
+def test_source_nothing_to_update(api_request):
+    """Test to retrieve Source endpoint with no updates"""
+
+    last_refresh_stats = {
+        "service_inventory": {"adds": 0, "updates": 0, "deletes": 0},
+        "service_offering": {"adds": 0, "delates": 0},
+        "service_offering_node": {"adds": 0},
+        "service_plan": {"adds": 0, "updates": 0},
+    }
+    source = SourceFactory(
+        availability_status="available", last_refresh_stats=last_refresh_stats
+    )
+    response = api_request("get", "inventory:source-detail", source.id)
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["id"] == source.id
+    assert content["last_refresh_message"] == "Nothing to update"
+
+
+@pytest.mark.django_db
+def test_source_failed_state(api_request):
+    """Test to retrieve Source endpoint in a failed state"""
+    source = SourceFactory(
+        availability_status="available", refresh_state=Source.State.FAILED
+    )
+    response = api_request("get", "inventory:source-detail", source.id)
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+    assert content["id"] == source.id
+    assert "Refresh failed" in content["last_refresh_message"]
+
+
+@pytest.mark.django_db
+def test_source_retrieve_with_error(api_request):
+    """Test to retrieve Source endpoint"""
+
+    source = SourceFactory(
+        error_code=Source.ErrorCode.SOURCE_CANNOT_BE_CHANGED,
+        error_dict={"new_url": "abc", "new_install_uuid": "123"},
+        info={"url": "xyz", "install_uuid": "456"},
+        availability_status="unavailable",
+    )
+    response = api_request("get", "inventory:source-detail", source.id)
+
+    assert response.status_code == 200
+    content = json.loads(response.content)
+
+    assert content["id"] == source.id
+    assert (
+        content["availability_message"]
+        == "Source cannot be changed to url abc uuid 123, \
+currently bound to url xyz with uuid 456"
+    )
 
 
 @pytest.mark.django_db
