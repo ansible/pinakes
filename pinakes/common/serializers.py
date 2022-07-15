@@ -1,4 +1,4 @@
-""" Serializers for Tags """
+"""Serializers for Tags"""
 from rest_framework import serializers
 
 

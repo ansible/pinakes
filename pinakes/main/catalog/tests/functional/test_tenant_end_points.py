@@ -1,4 +1,4 @@
-""" Module to test Tenant end points """
+"""Module to test Tenant end points"""
 import json
 import pytest
 from pinakes.main.tests.factories import TenantFactory

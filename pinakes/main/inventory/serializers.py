@@ -1,4 +1,4 @@
-""" Serializers for Inventory Model."""
+"""Serializers for Inventory Model."""
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext_noop
 from rest_framework import serializers
@@ -52,7 +52,7 @@ class SourceSerializer(serializers.ModelSerializer):
             }
 
         if obj.refresh_state == Source.State.FAILED:
-            return _("Refresh faild: %(error)s") % {
+            return _("Refresh failed: %(error)s") % {
                 "error": obj.last_refresh_message
             }
 
@@ -62,6 +62,7 @@ class SourceSerializer(serializers.ModelSerializer):
         sii_stats = obj.last_refresh_stats.get("service_inventory", {})
         soi_stats = obj.last_refresh_stats.get("service_offering", {})
         son_stats = obj.last_refresh_stats.get("service_offering_node", {})
+        sp_stats = obj.last_refresh_stats.get("service_plan", {})
 
         filtered_sii_stats = {
             _(key): value for key, value in sii_stats.items() if value > 0
@@ -73,6 +74,10 @@ class SourceSerializer(serializers.ModelSerializer):
             _(key): value for key, value in son_stats.items() if value > 0
         }
 
+        filtered_sp_stats = {
+            _(key): value for key, value in sp_stats.items() if value > 0
+        }
+        obj.last_refresh_message = ""
         if bool(filtered_sii_stats):
             obj.last_refresh_message = _(
                 "Service Inventories: %(stats)s;\n"
@@ -88,6 +93,11 @@ class SourceSerializer(serializers.ModelSerializer):
                 "Workflow Template Nodes: %(son_stats)s;\n"
             ) % {"son_stats": filtered_son_stats}
 
+        if bool(filtered_sp_stats):
+            obj.last_refresh_message += _("Service Plan: %(sp_stats)s;\n") % {
+                "sp_stats": filtered_sp_stats
+            }
+
         if not obj.last_refresh_message:
             obj.last_refresh_message = _("Nothing to update")
 
@@ -98,9 +108,27 @@ class SourceSerializer(serializers.ModelSerializer):
 
     def get_availability_message(self, obj):
         if obj.availability_status == "unavailable":
-            return _("Error: %(error)s") % {"error": obj.availability_message}
+            return self._create_localized_availability_message(obj)
 
         return _(obj.availability_message)
+
+    def _create_localized_availability_message(self, obj):
+        if obj.error_code == obj.__class__.ErrorCode.SOURCE_CANNOT_BE_CHANGED:
+            params = {
+                "new_url": obj.error_dict["new_url"],
+                "new_install_uuid": obj.error_dict["new_install_uuid"],
+                "url": obj.info["url"],
+                "install_uuid": obj.info["install_uuid"],
+            }
+            return (
+                _(
+                    "Source cannot be changed to url %(new_url)s uuid \
+%(new_install_uuid)s, currently bound to \
+url %(url)s with uuid %(install_uuid)s"
+                )
+                % params
+            )
+        return _("Error: %(error)s") % {"error": obj.availability_message}
 
 
 class ServiceInventorySerializer(serializers.ModelSerializer):

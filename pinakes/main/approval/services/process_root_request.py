@@ -1,4 +1,4 @@
-""" Process a root request """
+"""Process a root request"""
 import logging
 import django_rq
 
@@ -71,7 +71,7 @@ class ProcessRootRequest:
         sub_groups = self.request.subrequests.order_by("id").values(
             "group_name"
         )
-        all_names = ",".join(map(lambda x: x["group_name"], sub_groups))
+        all_names = ",".join(x["group_name"] for x in sub_groups)
         self.request.group_name = all_names
         self.request.save()
 
@@ -84,7 +84,7 @@ class ProcessRootRequest:
         if self.request.is_parent():
             first_child = self.request.subrequests.order_by("id").first()
             first_leaves = Request.objects.filter(
-                workflow=first_child.workflow
+                workflow=first_child.workflow, parent=self.request
             )
 
         if len(first_leaves) == 1:

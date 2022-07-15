@@ -1,4 +1,4 @@
-""" Tasks for metrics collection """
+"""Tasks for metrics collection"""
 import logging
 import django_rq
 from rq import Queue

@@ -1,4 +1,4 @@
-""" A Service object to compare the Catalog service plan
+"""A Service object to compare the Catalog service plan
     with the Inventory service plan and if they are different
     Copy over the changes if the admin has not modified the schema
     if the admin has modified the schema then flag the service plan

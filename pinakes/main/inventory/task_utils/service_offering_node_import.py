@@ -1,4 +1,4 @@
-""" Import Workflow Job template nodes from Tower """
+"""Import Workflow Job template nodes from Tower"""
 
 import dateutil.parser
 from pinakes.main.inventory.models import (

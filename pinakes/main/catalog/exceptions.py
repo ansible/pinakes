@@ -1,4 +1,4 @@
-"""Application specific exception classes""" ""
+"""Application specific exception classes"""
 from rest_framework import exceptions, status
 from django.utils.translation import gettext_lazy as _
 

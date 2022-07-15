@@ -1,6 +1,12 @@
 title = "Pinakes Gitleaks Config"
 
 [allowlist]
-  description = "Allowlist"
-  regexes = ['''SOMESECRETVALUE''', '''settings\.KEYCLOAK_CLIENT_SECRET''']
-  paths = ['''tools.*\.key''']
+description = "Allowlist"
+regexes = [
+    '''SOMESECRETVALUE''',
+    '''settings\.KEYCLOAK_CLIENT_SECRET''',
+    '''VEVTVFRFU1RURVNUVEVTVFRFU1RURVNUVEVTVFRFU1Q=''',
+]
+paths = [
+    '''tools.*\.key'''
+]

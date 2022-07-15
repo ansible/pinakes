@@ -1,4 +1,4 @@
-""" Module to test ServiceInventory end points """
+"""Module to test ServiceInventory end points"""
 import json
 import pytest
 

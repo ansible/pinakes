@@ -54,7 +54,6 @@ coverage.xml
 cover/
 
 # Translations
-*.mo
 *.pot
 
 # Django stuff:
@@ -148,6 +147,7 @@ cython_debug/
 pinakes/settings/local_*.py
 tools/vagrant/data/env_vars
 tools/vagrant/.vagrant
+minikube_env_vars
 
 # IDE's
 .vscode

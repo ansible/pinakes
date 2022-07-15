@@ -1,4 +1,5 @@
-""" Start provisioning a Single order item """
+"""Start provisioning a Single order item"""
+from django.utils.translation import gettext_noop
 
 from pinakes.main.inventory.services.start_tower_job import (
     StartTowerJob,
@@ -26,8 +27,11 @@ class ProvisionOrderItem:
         ).process()
         job = svc.job
 
+        message = gettext_noop("Order Item %(id)s is provisioned")
+        params = {"id": str(self.order_item.id)}
         self.order_item.mark_ordered(
-            f"Order Item {self.order_item.id} is provisioned",
+            message=message,
+            params=params,
             inventory_task_ref=job.id,
         )
 

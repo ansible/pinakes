@@ -1,4 +1,4 @@
-""" Module for testing Notification settings """
+"""Module for testing Notification settings"""
 import pytest
 from pinakes.main.approval.models import NotificationType
 from pinakes.main.approval.permissions import TemplatePermission
@@ -137,14 +137,15 @@ def test_notification_setting_post(api_request, mocker):
     """Create a notification"""
     has_permission = mocker.spy(TemplatePermission, "has_permission")
     notification_type = NotificationType.objects.first()
+    data = {
+        "name": "abcdef",
+        "notification_type": notification_type.id,
+        "settings": {"key": "val"},
+    }
     response = api_request(
         "post",
         "approval:notificationsetting-list",
-        data={
-            "name": "abcdef",
-            "notification_type": notification_type.id,
-            "settings": {"key": "val"},
-        },
+        data=data,
     )
 
     assert response.status_code == 201
@@ -153,3 +154,11 @@ def test_notification_setting_post(api_request, mocker):
     assert content["notification_type"] == notification_type.id
     assert content["settings"]["key"] == "val"
     has_permission.assert_called_once()
+
+    response = api_request(
+        "post",
+        "approval:notificationsetting-list",
+        data=data,
+    )
+    # uniqueness
+    assert response.status_code == 400

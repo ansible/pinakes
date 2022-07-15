@@ -1,4 +1,4 @@
-""" Factory for the Inventory objects """
+"""Factory for the Inventory objects"""
 import factory
 from django.utils import timezone
 from pinakes.main.models import Source

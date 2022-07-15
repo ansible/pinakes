@@ -1,7 +1,9 @@
-""" Module to test processing root requests """
+"""Module to test processing root requests"""
 from unittest.mock import Mock, call
 import pytest
 from pinakes.main.approval.tests.factories import (
+    NotificationSettingFactory,
+    TemplateFactory,
     WorkflowFactory,
     RequestFactory,
 )
@@ -11,6 +13,9 @@ from pinakes.main.approval.services.process_root_request import (
 from pinakes.main.approval.tasks import start_request_task
 from pinakes.main.catalog.services.handle_approval_events import (
     HandleApprovalEvents,
+)
+from pinakes.main.approval.services.email_notification import (
+    EmailNotification,
 )
 
 
@@ -47,12 +52,16 @@ def test_process_request_one_workflow_one_group(mocker):
         "pinakes.main.approval.validations.runtime_validate_group",
         return_value=True,
     )
+    mocker.patch.object(EmailNotification, "process")
 
-    workflow = WorkflowFactory(group_refs=({"name": "n1", "uuid": "u1"},))
+    template = TemplateFactory(process_method=NotificationSettingFactory())
+    workflow = WorkflowFactory(
+        template=template, group_refs=({"name": "n1", "uuid": "u1"},)
+    )
     service = _prepare_service(mocker, [workflow.id])
     request = service.process().request
     _assert_request(
-        request, state="notified", group_name="n1", workflow=workflow
+        request, state="started", group_name="n1", workflow=workflow
     )
     assert add_permissions.call_count == 1
     assert validations.call_count == 1
@@ -93,10 +102,7 @@ def test_process_request_workflows_groups(mocker):
         "pinakes.main.common.tasks.add_group_permissions",
         return_value=None,
     )
-    mocker.patch(
-        "pinakes.main.approval.validations.runtime_validate_group",
-        return_value=True,
-    )
+
     workflow1 = WorkflowFactory(group_refs=({"name": "n1", "uuid": "u1"},))
     workflow2 = WorkflowFactory()
     service = _prepare_service(mocker, [workflow1.id, workflow2.id])

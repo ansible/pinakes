@@ -58,9 +58,7 @@ class CopyPortfolio:
         )
         for item in portfolio_items:
             try:
-                CopyPortfolioItem(
-                    item, {"portfolio_id": self.new_portfolio.id}
-                ).process()
+                CopyPortfolioItem(item, self.new_portfolio).process()
             except Exception as error:
                 logger.error(
                     "Failed to copy portfolio item %d: %s", item.id, str(error)

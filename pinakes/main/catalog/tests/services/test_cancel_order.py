@@ -1,4 +1,4 @@
-""" Test on CancelOrder service """
+"""Test on CancelOrder service"""
 import pytest
 
 from pinakes.main.approval.models import Action, Request
@@ -57,5 +57,5 @@ def test_cancel_order_with_uncancelable_states():
             svc.process()
 
         assert str(excinfo.value) == (
-            "Order {} is not cancelable in its current state: {}"
+            "Order {} is not cancel able in its current state: {}"
         ).format(order.id, order.state)

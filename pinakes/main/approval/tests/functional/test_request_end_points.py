@@ -1,4 +1,4 @@
-""" Module to test approval requests and actions """
+"""Module to test approval requests and actions"""
 import json
 import pytest
 from pinakes.main.tests.factories import default_tenant
@@ -90,8 +90,7 @@ def test_request_action_list(api_request, mocker):
 
 
 @pytest.mark.django_db
-def test_create_request(api_request, mocker):
-    mocker.patch("django_rq.enqueue")
+def test_create_request_not_support(api_request):
     default_tenant()
     response = api_request(
         "post",
@@ -109,50 +108,7 @@ def test_create_request(api_request, mocker):
             ],
         },
     )
-    assert response.status_code == 201
-    content = json.loads(response.content)
-    assert content["state"] == "pending"
-
-
-@pytest.mark.django_db
-def test_create_request_user_error(api_request):
-    default_tenant()
-    response = api_request(
-        "post",
-        "approval:request-list",
-        data={
-            "name": "abcdef",
-            "description": "abc",
-            "content": {"item1": "val1"},
-            "tag_resources": [
-                {
-                    "app_name": "catalog",
-                    "obj_type": "portfolio",
-                    "tags": ["tag1", "tag2"],
-                }
-            ],
-        },
-    )
-    assert response.status_code == 400
-
-
-@pytest.mark.django_db
-def test_create_request_internal_error(api_request, mocker):
-    mocker.patch("django_rq.enqueue", side_effect=Exception("whoops"))
-    default_tenant()
-    response = api_request(
-        "post",
-        "approval:request-list",
-        data={
-            "name": "abcdef",
-            "description": "abc",
-            "content": {"item1": "val1"},
-        },
-    )
-
-    assert response.status_code == 500
-    content = json.loads(response.content)
-    assert content["detail"] == "Internal Error"
+    assert response.status_code == 405
 
 
 @pytest.mark.django_db

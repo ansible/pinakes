@@ -1,4 +1,4 @@
-""" pytest fixtures """
+"""pytest fixtures"""
 import contextlib
 import os
 import urllib.parse
@@ -45,7 +45,7 @@ DUMMY_ACCESS_TOKEN = {
 def normal_user():
     user, _ = User.objects.get_or_create(
         username="normal",
-        defaults=dict(is_superuser=False, password="normal"),
+        defaults={"is_superuser": False, "password": "normal"},
     )
     return user
 
@@ -54,12 +54,12 @@ def normal_user():
 def admin():
     user, _ = User.objects.get_or_create(
         username="admin",
-        defaults=dict(
-            is_superuser=True,
-            password="admin",
-            first_name="Ansible",
-            last_name="Catalog",
-        ),
+        defaults={
+            "is_superuser": True,
+            "password": "admin",
+            "first_name": "Ansible",
+            "last_name": "Catalog",
+        },
     )
     return user
 
@@ -83,16 +83,8 @@ def api_request(admin):
         )
         request.session = mock.Mock()
         if user and authenticated:
-            force_authenticate(request, user=user)
-
-        access_token = jwt.encode(DUMMY_ACCESS_TOKEN, "", algorithm="none")
-        keycloak_mock = mock.Mock()
-        keycloak_mock.extra_data = {
-            "id": "1",
-            "access_token": access_token,
-            "refresh_token": access_token,
-        }
-        request.keycloak_user = keycloak_mock
+            access_token = jwt.encode(DUMMY_ACCESS_TOKEN, "", algorithm="none")
+            force_authenticate(request, user=user, token=access_token)
 
         if rbac_enabled:
             authz_client_mock = contextlib.nullcontext()

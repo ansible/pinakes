@@ -1,20 +1,14 @@
 """Copy portfolio item service"""
 import copy
 import logging
+from typing import Optional
+
 from django.utils.translation import gettext_lazy as _
 from django.db import transaction
 
-from pinakes.main.catalog.models import (
-    ServicePlan,
-    Portfolio,
-    PortfolioItem,
-)
-from pinakes.main.catalog.services import (
-    name,
-)
-from pinakes.main.catalog.services.copy_image import (
-    CopyImage,
-)
+from pinakes.main.catalog.models import ServicePlan, PortfolioItem, Portfolio
+from pinakes.main.catalog.services import name
+from pinakes.main.catalog.services.copy_image import CopyImage
 from pinakes.main.inventory.services.get_service_offering import (
     GetServiceOffering,
 )
@@ -25,15 +19,19 @@ logger = logging.getLogger("catalog")
 class CopyPortfolioItem:
     """Copy portfolio item service"""
 
-    def __init__(self, portfolio_item, options):
+    def __init__(
+        self,
+        portfolio_item: PortfolioItem,
+        portfolio: Optional[Portfolio] = None,
+        portfolio_item_name: Optional[str] = None,
+    ):
         self.portfolio_item = portfolio_item
-        self.name = options.get("portfolio_item_name", portfolio_item.name)
-
-        portfolio_id = options.get("portfolio_id", None)
-        if portfolio_id:
-            self.portfolio = Portfolio.objects.get(id=portfolio_id)
-        else:
-            self.portfolio = self.portfolio_item.portfolio
+        if portfolio is None:
+            portfolio = self.portfolio_item.portfolio
+        self.portfolio = portfolio
+        if portfolio_item_name is None:
+            portfolio_item_name = self.portfolio_item.name
+        self.name = portfolio_item_name
 
         self.new_portfolio_item = None
 
@@ -46,7 +44,7 @@ class CopyPortfolioItem:
     def make_copy(self):
         if not self._is_orderable():
             raise RuntimeError(
-                _("{} is not orderable, and cannot be copied").format(
+                _("{} is not order able, and cannot be copied").format(
                     self.portfolio_item.name
                 )
             )

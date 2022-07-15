@@ -1,5 +1,4 @@
 """Collection of factory classes for approval models"""
-from decimal import Decimal
 import factory
 
 from pinakes.main.approval.models import (
@@ -55,7 +54,6 @@ class WorkflowFactory(factory.django.DjangoModelFactory):
     template = factory.SubFactory(TemplateFactory)
     name = factory.Sequence(lambda n: f"workflow{n}")
     description = factory.Sequence(lambda n: f"workflow{n}_description")
-    internal_sequence = factory.Sequence(lambda n: Decimal(n))
 
 
 class RequestFactory(factory.django.DjangoModelFactory):

@@ -1,4 +1,4 @@
-""" Test module for finishing an OrderItem """
+"""Test module for finishing an OrderItem"""
 import pytest
 from pinakes.main.catalog.tests.factories import (
     OrderItemFactory,

@@ -1,7 +1,5 @@
-""" Default views for Approval."""
+"""Default views for Approval."""
 import logging
-
-from decimal import Decimal
 from rest_framework.decorators import action
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -26,7 +24,6 @@ from pinakes.main.models import Tenant
 from pinakes.main.approval.models import (
     NotificationType,
     NotificationSetting,
-    Template,
     Workflow,
     Request,
 )
@@ -35,8 +32,8 @@ from pinakes.main.approval.serializers import (
     NotificationTypeSerializer,
     TemplateSerializer,
     WorkflowSerializer,
+    RepositionSerializer,
     RequestSerializer,
-    RequestInSerializer,
     ActionSerializer,
     ResourceObjectSerializer,
 )
@@ -229,14 +226,7 @@ class WorkflowFilterBackend(BaseFilterBackend):
         ],
     ),
     create=extend_schema(
-        tags=(
-            "workflows",
-            "templates",
-        ),
-        description=(
-            "Create a workflow from a template identified by its id, available"
-            " to admin only"
-        ),
+        description="Create a workflow, available to admin only",
     ),
     partial_update=extend_schema(
         description=(
@@ -284,6 +274,11 @@ class WorkflowViewSet(
         serializer = self.get_serializer(workflow)
         return Response(serializer.data)
 
+    def destroy(self, request, *args, **kwargs):
+        workflow = self.get_object()
+        validations.validate_workflow_deletable(workflow)
+        return super().destroy(request, *args, **kwargs)
+
     @extend_schema(
         request=ResourceObjectSerializer,
         responses={204: None},
@@ -321,23 +316,37 @@ class WorkflowViewSet(
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def perform_create(self, serializer):
-        max_obj = (
-            Workflow.objects.filter(tenant=Tenant.current())
-            .order_by("-internal_sequence")
-            .first()
-        )
-        if max_obj is None:
-            next_seq = Decimal(1)
-        else:
-            next_seq = Decimal(
-                max_obj.internal_sequence.to_integral_value() + 1
+    @extend_schema(
+        request=RepositionSerializer,
+        responses={204: None},
+    )
+    @action(methods=["post"], detail=True)
+    def reposition(self, request, pk):
+        """
+        Adjust the position of a workflow related to others by an offset number
+        """
+        serializer = RepositionSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {"errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
             )
-        serializer.save(
-            template=Template(id=self.kwargs["template_id"]),
-            internal_sequence=next_seq,
-            tenant=Tenant.current(),
-        )
+
+        if "placement" in serializer.validated_data:
+            offset = Workflow.objects.count()
+            if serializer.validated_data["placement"] == "top":
+                offset = -offset
+        else:
+            offset = serializer.validated_data["increment"]
+
+        workflow = get_object_or_404(Workflow, pk=pk)
+        workflow.move_internal_sequence(offset)
+        workflow.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def perform_create(self, serializer):
+        serializer.save(tenant=Tenant.current())
 
 
 @extend_schema_view(
@@ -389,7 +398,7 @@ class RequestViewSet(
     """API endpoint for listing and creating requests"""
 
     serializer_class = RequestSerializer
-    http_method_names = ["get", "post"]
+    http_method_names = ["get"]
     ordering = ("-id",)
     filterset_fields = ("name", "description", "state", "decision", "reason")
     search_fields = ("name", "description", "state", "decision", "reason")
@@ -397,28 +406,6 @@ class RequestViewSet(
 
     permission_classes = (IsAuthenticated,)
     keycloak_permission = permissions.RequestPermission
-
-    @extend_schema(
-        description=(
-            "Create an approval request using given parameters, available to"
-            " everyone"
-        ),
-        request=RequestInSerializer,
-        responses={201: RequestSerializer},
-    )
-    def create(self, request, *args, **kwargs):
-        serializer = RequestInSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(
-                {"errors": serializer.errors},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        output_serializer = RequestSerializer(
-            serializer.save(tenant=Tenant.current(), user=self.request.user),
-            context=self.get_serializer_context(),
-        )
-        return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 
     @extend_schema(
         description="Get the content of a request",

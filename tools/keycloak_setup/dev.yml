@@ -2,6 +2,7 @@
 - hosts: localhost
   vars:
     verify_keycloak_ssl: false
+    create_cli_client: true
     seed_keycloak: true
     seed_groups:
       - name: Information Technology - Sample

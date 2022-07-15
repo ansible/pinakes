@@ -1,17 +1,19 @@
-""" Test service_plan end points """
+"""Test service_plan end points"""
 import json
+from unittest import mock
+
 import pytest
 
+from pinakes.main.catalog.permissions import ServicePlanPermission
 from pinakes.main.catalog.tests.factories import (
     PortfolioItemFactory,
     ServicePlanFactory,
 )
 from pinakes.main.inventory.tests.factories import (
     ServiceOfferingFactory,
-)
-from pinakes.main.inventory.tests.factories import (
     InventoryServicePlanFactory,
 )
+
 
 TEST_SCHEMA = {
     "schemaType": "default",
@@ -42,8 +44,11 @@ TEST_SHA256 = "abc123"
 
 
 @pytest.mark.django_db
-def test_list_portfolio_item_service_plans(api_request):
+def test_list_portfolio_item_service_plans(api_request, mocker):
     """List ServicePlan by PortfolioItem id"""
+    perform_check_permission = mocker.spy(
+        ServicePlanPermission, "perform_check_permission"
+    )
     portfolio_item = PortfolioItemFactory()
     ServicePlanFactory(
         portfolio_item=portfolio_item,
@@ -66,10 +71,17 @@ def test_list_portfolio_item_service_plans(api_request):
     assert content[0]["schema"] == TEST_SCHEMA
     assert content[0]["extra_data"] is not None
 
+    perform_check_permission.assert_called_once_with(
+        mock.ANY, "read", mock.ANY, mock.ANY
+    )
+
 
 @pytest.mark.django_db
-def test_service_plan_retrieve(api_request):
+def test_service_plan_retrieve(api_request, mocker):
     """Retrieve a service plan by id"""
+    perform_check_permission = mocker.spy(
+        ServicePlanPermission, "perform_check_permission"
+    )
     portfolio_item = PortfolioItemFactory()
     service_plan = ServicePlanFactory(
         portfolio_item=portfolio_item,
@@ -88,10 +100,17 @@ def test_service_plan_retrieve(api_request):
     assert content["portfolio_item"] == portfolio_item.id
     assert content["extra_data"]["base_schema"] == TEST_SCHEMA
 
+    perform_check_permission.assert_called_once_with(
+        mock.ANY, "read", mock.ANY, mock.ANY
+    )
+
 
 @pytest.mark.django_db
-def test_service_plan_patch(api_request):
+def test_service_plan_patch(api_request, mocker):
     """Update the modified schema for a service plan by id"""
+    perform_check_permission = mocker.spy(
+        ServicePlanPermission, "perform_check_permission"
+    )
     base_schema = {"schemaType": "base"}
     service_offering = ServiceOfferingFactory(survey_enabled=True)
     InventoryServicePlanFactory(
@@ -127,21 +146,29 @@ def test_service_plan_patch(api_request):
 
     service_plan.refresh_from_db()
     assert service_plan.modified_schema == TEST_SCHEMA
+    perform_check_permission.assert_called_once_with(
+        mock.ANY, "update", mock.ANY, mock.ANY
+    )
 
 
 @pytest.mark.django_db
-def test_service_plan_reset_post_another_base(api_request):
+def test_service_plan_reset_post_another_base(api_request, mocker):
     """Reset the service plan by id"""
-    _test_service_plan_reset(api_request, {"schemaType": "base"}, "xyz123")
+    _test_service_plan_reset(
+        api_request, mocker, {"schemaType": "base"}, "xyz123"
+    )
 
 
 @pytest.mark.django_db
-def test_service_plan_reset_post_same_base(api_request):
+def test_service_plan_reset_post_same_base(api_request, mocker):
     """Reset the service plan by id"""
-    _test_service_plan_reset(api_request, TEST_SCHEMA, TEST_SHA256)
+    _test_service_plan_reset(api_request, mocker, TEST_SCHEMA, TEST_SHA256)
 
 
-def _test_service_plan_reset(api_request, remote_schema, remote_sha):
+def _test_service_plan_reset(api_request, mocker, remote_schema, remote_sha):
+    perform_check_permission = mocker.spy(
+        ServicePlanPermission, "perform_check_permission"
+    )
     service_offering = ServiceOfferingFactory(survey_enabled=True)
     remote_service_plan = InventoryServicePlanFactory(
         service_offering=service_offering,
@@ -185,4 +212,7 @@ def _test_service_plan_reset(api_request, remote_schema, remote_sha):
     assert catalog_service_plan.outdated_changes == ""
     assert (
         catalog_service_plan.base_sha256 == remote_service_plan.schema_sha256
+    )
+    perform_check_permission.assert_called_once_with(
+        mock.ANY, "update", mock.ANY, mock.ANY
     )

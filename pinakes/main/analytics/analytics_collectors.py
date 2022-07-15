@@ -4,6 +4,7 @@ import platform
 import distro
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 from insights_analytics_collector import CsvFileSplitter, register
 
@@ -13,6 +14,7 @@ from pinakes.main.approval.models import Request
 from pinakes.main.catalog import models
 from pinakes.main.common.models import Group
 from pinakes.main.inventory.models import ServiceInventory
+from pinakes.main.models import Source
 
 
 @register(
@@ -25,6 +27,9 @@ def config(since, **kwargs):
     # TODO:
     # license_info = get_license()
     license_info = {}
+
+    # Single controller so far
+    source = Source.objects.first()
     install_type = "traditional"
     if os.environ.get("container") == "oci":
         install_type = "openshift"
@@ -37,17 +42,16 @@ def config(since, **kwargs):
             "release": platform.release(),
             "type": install_type,
         },
-        # 'install_uuid': settings.INSTALL_UUID,
+        "install_uuid": source.info["install_uuid"],
+        "tower_url_base": source.info["url"],
+        "tower_version": source.info["version"],
         # 'instance_uuid': settings.SYSTEM_UUID,
-        # 'tower_url_base': settings.TOWER_URL_BASE,
-        # 'tower_version': get_awx_version(),
-        "tower_version": "1.0.0",
         "license_type": license_info.get("license_type", "UNLICENSED"),
         "free_instances": license_info.get("free_instances", 0),
         "total_licensed_instances": license_info.get("instance_count", 0),
         "license_expiry": license_info.get("time_remaining", 0),
+        "authentication_backends": settings.AUTHENTICATION_BACKENDS,
         # 'pendo_tracking': settings.PENDO_TRACKING_STATE,
-        # 'authentication_backends': settings.AUTHENTICATION_BACKENDS,
         # 'logging_aggregators': settings.LOG_AGGREGATOR_LOGGERS,
         # 'external_logger_enabled': settings.LOG_AGGREGATOR_ENABLED,
     }
@@ -62,6 +66,7 @@ def config(since, **kwargs):
 def sources_table(since, full_path, until, **kwargs):
     source_query = """COPY (SELECT main_source.id,
        main_source.name,
+       main_source.info,
        main_source.created_at,
        main_source.updated_at,
        main_source.refresh_state,
@@ -564,7 +569,7 @@ def product_counts(since, **kwargs):
                 "service_offering_source_ref": product[
                     "service_offering_source_ref"
                 ],
-                "order items": order_item_list,
+                "order_items": order_item_list,
             }
 
     return counts
@@ -712,12 +717,12 @@ def orders_data_by_product(since, **kwargs):
                 "state": order.state,
                 "tenant_id": order.tenant_id,
                 "user_id": order.user_id,
-                "created_at": order.created_at.isoformat(),
-                "updated_at": order.updated_at.isoformat(),
-                "order_sent_at": order.order_request_sent_at.isoformat()
-                if order.order_request_sent_at
-                else "",
-                "completed_at": order.completed_at.isoformat(),
+                "created_at": _timestamp_string(order.created_at),
+                "updated_at": _timestamp_string(order.updated_at),
+                "order_sent_at": _timestamp_string(
+                    order.order_request_sent_at
+                ),
+                "completed_at": _timestamp_string(order.completed_at),
             }
             for order in order_list
             if order.state == models.Order.State.COMPLETED
@@ -728,12 +733,12 @@ def orders_data_by_product(since, **kwargs):
                 "state": order.state,
                 "tenant_id": order.tenant_id,
                 "user_id": order.user_id,
-                "created_at": order.created_at.isoformat(),
-                "updated_at": order.updated_at.isoformat(),
-                "order_sent_at": order.order_request_sent_at.isoformat()
-                if order.order_request_sent_at
-                else "",
-                "completed_at": order.completed_at.isoformat(),
+                "created_at": _timestamp_string(order.created_at),
+                "updated_at": _timestamp_string(order.updated_at),
+                "order_sent_at": _timestamp_string(
+                    order.order_request_sent_at
+                ),
+                "completed_at": _timestamp_string(order.completed_at),
             }
             for order in order_list
             if order.state == models.Order.State.FAILED
@@ -744,12 +749,12 @@ def orders_data_by_product(since, **kwargs):
                 "state": order.state,
                 "tenant_id": order.tenant_id,
                 "user_id": order.user_id,
-                "created_at": order.created_at.isoformat(),
-                "updated_at": order.updated_at.isoformat(),
-                "order_sent_at": order.order_request_sent_at.isoformat()
-                if order.order_request_sent_at
-                else "",
-                "completed_at": order.completed_at.isoformat(),
+                "created_at": _timestamp_string(order.created_at),
+                "updated_at": _timestamp_string(order.updated_at),
+                "order_sent_at": _timestamp_string(
+                    order.order_request_sent_at
+                ),
+                "completed_at": _timestamp_string(order.completed_at),
             }
             for order in order_list
             if order.state == models.Order.State.PENDING
@@ -761,8 +766,9 @@ def orders_data_by_product(since, **kwargs):
             counts[product["id"]] = {
                 "id": product["id"],
                 "name": product["name"],
-                "average_time_spent_in_tower": sum_time_spent_in_tower
-                / num_orders,
+                "average_time_spent_in_tower": 0
+                if num_orders == 0
+                else sum_time_spent_in_tower / num_orders,
                 "completed_orders": completed,
                 "failed_orders": failed,
                 "stuck_orders": stuck,
@@ -801,14 +807,14 @@ def approval_request_time_spent_by_groups(since, **kwargs):
             time_spent_intervals = {}
 
             for request in request_list:
+                started_at = request["notified_at"] or request["created_at"]
+
                 if request["finished_at"]:
                     time_spent_intervals[request["id"]] = (
-                        request["finished_at"] - request["notified_at"]
+                        request["finished_at"] - started_at
                     )
                 else:  # request is waiting for processing
-                    time_spent_intervals[request["id"]] = (
-                        now() - request["notified_at"]
-                    )
+                    time_spent_intervals[request["id"]] = now() - started_at
                 request["time_spent_in_approval"] = time_spent_intervals[
                     request["id"]
                 ].total_seconds()
@@ -832,14 +838,14 @@ def approval_request_time_spent_by_groups(since, **kwargs):
                         "time_spent_in_approval": request[
                             "time_spent_in_approval"
                         ],
-                        "created_at": request["created_at"].isoformat(),
-                        "updated_at": request["updated_at"].isoformat(),
-                        "notified_at": request["notified_at"].isoformat()
-                        if request["notified_at"]
-                        else "",
-                        "finished_at": request["finished_at"].isoformat()
-                        if request["finished_at"]
-                        else "",
+                        "created_at": _timestamp_string(request["created_at"]),
+                        "updated_at": _timestamp_string(request["updated_at"]),
+                        "notified_at": _timestamp_string(
+                            request["notified_at"]
+                        ),
+                        "finished_at": _timestamp_string(
+                            request["finished_at"]
+                        ),
                     }
                     for request in request_list
                 ],
@@ -862,3 +868,7 @@ def _simple_csv(
 
 def _get_file_path(path, table):
     return os.path.join(path, table + "_table.csv")
+
+
+def _timestamp_string(timestamp):
+    return timestamp.isoformat() if timestamp else ""
