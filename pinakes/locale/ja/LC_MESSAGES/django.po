@@ -7,13 +7,47 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-10 14:54-0400\n"
+"POT-Creation-Date: 2022-07-05 07:14-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:76
+msgid "Invalid authorization header. No credentials provided."
+msgstr "無効な認証ヘッダーです。認証情報が提供されていません。"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:80
+msgid ""
+"Invalid authorization header. Credentials string should not contain spaces."
+msgstr "無効な認証ヘッダーです。認証情報の文字列にスペースは使用できません。"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:107
+msgid "No valid JWK found."
+msgstr "有効な JWK が見つかりません。"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:119
+msgid "Signature has expired."
+msgstr "署名の有効期限が切れました。"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:121
+msgid "Invalid claims."
+msgstr "無効な要求です。"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:123
+msgid "Invalid signature."
+msgstr "無効な署名です。"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:163
+msgid "Token expired"
+msgstr "トークンの有効期限が切れました"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:168
+#: pinakes/common/auth/keycloak_django/authentication.py:172
+msgid "Invalid audience"
+msgstr "無効なオーディエンス"
 
 #: pinakes/common/exception_handler.py:27
 msgid "Internal Error"
@@ -163,6 +197,14 @@ msgstr "グループに承認者ロールがありません"
 msgid "Group does not exist"
 msgstr "グループは存在しません"
 
+#: pinakes/main/approval/exceptions.py:38
+msgid "There are resource objects linked to the workflow"
+msgstr "ワークフローにリンクされているリソースオブジェクトがあります"
+
+#: pinakes/main/approval/exceptions.py:43
+msgid "Workflow is in use"
+msgstr "ワークフローは使用中です"
+
 #: pinakes/main/approval/services/create_action.py:49
 msgid "The memo message cannot be blank"
 msgstr "メモのメッセージを空白にすることはできません"
@@ -224,17 +266,21 @@ msgstr "グループ {} にメールを送信できませんでした"
 msgid "Auto-approved"
 msgstr "自動承認済み"
 
-#: pinakes/main/approval/validations.py:56
+#: pinakes/main/approval/validations.py:58
 msgid "Group id {} does not exist"
 msgstr "グループ id {} は存在しません"
 
-#: pinakes/main/approval/validations.py:64
+#: pinakes/main/approval/validations.py:66
 msgid "Group {} does not have approver role"
 msgstr "グループ {} には approver ロールがありません"
 
-#: pinakes/main/approval/views.py:188
+#: pinakes/main/approval/views.py:186
 msgid "Insufficient resource object params: {}"
 msgstr "不十分なリソースオブジェクトパラメーター: {}"
+
+#: pinakes/main/auth/views.py:58
+msgid "Logout is not supported with Bearer auth."
+msgstr "ログアウト は Bearer 認証ではサポート対象外です。"
 
 #: pinakes/main/catalog/exceptions.py:8
 msgid "Bad query parameters"
@@ -324,11 +370,11 @@ msgstr "拒否"
 msgid "failed"
 msgstr "失敗"
 
-#: pinakes/main/catalog/serializers.py:407
+#: pinakes/main/catalog/serializers.py:410
 msgid "Order"
 msgstr "オーダー"
 
-#: pinakes/main/catalog/serializers.py:408
+#: pinakes/main/catalog/serializers.py:411
 msgid "OrderItem"
 msgstr "オーダーアイテム"
 
@@ -412,8 +458,8 @@ msgstr "オーダー {} の承認リクエストの送信に失敗しました�
 #: pinakes/main/catalog/services/validate_order_item.py:45
 msgid ""
 "The underlying survey on product {} in the portfolio {} has been changed and "
-"is no longer valid, please contact an administrator to fix it."
-msgstr "ポートフォリオ {} の製品 {} のベースとなる Survey が変更され、有効ではなくなりました。管理者に連絡して修正してください。"
+"is no longer valid, please contact an administrator to reset it."
+msgstr "ポートフォリオ {} の製品 {} のベースとなる Survey が変更され、有効ではなくなりました。管理者に連絡してリセットしてください。"
 
 #: pinakes/main/catalog/views.py:521
 msgid "Order {} does not have related order items"
@@ -518,3 +564,4 @@ msgstr "進行中"
 #: pinakes/main/models.py:68
 msgid "Unknown"
 msgstr "不明"
+

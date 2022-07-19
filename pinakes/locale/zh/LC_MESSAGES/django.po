@@ -7,13 +7,47 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-10 14:54-0400\n"
+"POT-Creation-Date: 2022-07-05 07:14-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:76
+msgid "Invalid authorization header. No credentials provided."
+msgstr "无效的授权标头。没有提供凭证。"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:80
+msgid ""
+"Invalid authorization header. Credentials string should not contain spaces."
+msgstr "无效的授权标头。凭证字符串不应包含空格。"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:107
+msgid "No valid JWK found."
+msgstr "没有找到有效的 JWK。"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:119
+msgid "Signature has expired."
+msgstr "签名已过期。"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:121
+msgid "Invalid claims."
+msgstr "无效的声明。"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:123
+msgid "Invalid signature."
+msgstr "无效的签名。"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:163
+msgid "Token expired"
+msgstr "令牌已过期"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:168
+#: pinakes/common/auth/keycloak_django/authentication.py:172
+msgid "Invalid audience"
+msgstr "无效的受众"
 
 #: pinakes/common/exception_handler.py:27
 msgid "Internal Error"
@@ -163,6 +197,14 @@ msgstr "组没有批准者角色"
 msgid "Group does not exist"
 msgstr "组不存在"
 
+#: pinakes/main/approval/exceptions.py:38
+msgid "There are resource objects linked to the workflow"
+msgstr "有链接到工作流的资源对象"
+
+#: pinakes/main/approval/exceptions.py:43
+msgid "Workflow is in use"
+msgstr "工作流正在使用"
+
 #: pinakes/main/approval/services/create_action.py:49
 msgid "The memo message cannot be blank"
 msgstr "memo 信息不能为空"
@@ -224,17 +266,21 @@ msgstr "为组 {} 发送电子邮件失败"
 msgid "Auto-approved"
 msgstr "自动批准"
 
-#: pinakes/main/approval/validations.py:56
+#: pinakes/main/approval/validations.py:58
 msgid "Group id {} does not exist"
 msgstr "组 id {} 不存在"
 
-#: pinakes/main/approval/validations.py:64
+#: pinakes/main/approval/validations.py:66
 msgid "Group {} does not have approver role"
 msgstr "group {} 没有批准角色"
 
-#: pinakes/main/approval/views.py:188
+#: pinakes/main/approval/views.py:186
 msgid "Insufficient resource object params: {}"
 msgstr "不足的资源对象参数：{}"
+
+#: pinakes/main/auth/views.py:58
+msgid "Logout is not supported with Bearer auth."
+msgstr "Bearer auth 不支持 logout。"
 
 #: pinakes/main/catalog/exceptions.py:8
 msgid "Bad query parameters"
@@ -324,11 +370,11 @@ msgstr "拒绝"
 msgid "failed"
 msgstr "失败"
 
-#: pinakes/main/catalog/serializers.py:407
+#: pinakes/main/catalog/serializers.py:410
 msgid "Order"
 msgstr "订购"
 
-#: pinakes/main/catalog/serializers.py:408
+#: pinakes/main/catalog/serializers.py:411
 msgid "OrderItem"
 msgstr "OrderItem"
 
@@ -412,8 +458,8 @@ msgstr "提交请求以批准订购 {} 失败，错误：{}"
 #: pinakes/main/catalog/services/validate_order_item.py:45
 msgid ""
 "The underlying survey on product {} in the portfolio {} has been changed and "
-"is no longer valid, please contact an administrator to fix it."
-msgstr "产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员进行修复。"
+"is no longer valid, please contact an administrator to reset it."
+msgstr "产品组合 {} 中的产品 {} 的底层调查已更改，不再有效，请联系您的管理员对其进行重置。"
 
 #: pinakes/main/catalog/views.py:521
 msgid "Order {} does not have related order items"
@@ -518,3 +564,4 @@ msgstr "InProgress"
 #: pinakes/main/models.py:68
 msgid "Unknown"
 msgstr "未知"
+

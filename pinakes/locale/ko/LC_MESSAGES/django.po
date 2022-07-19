@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-10 14:54-0400\n"
+"POT-Creation-Date: 2022-07-05 07:14-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,13 +15,47 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: pinakes/common/auth/keycloak_django/authentication.py:76
+msgid "Invalid authorization header. No credentials provided."
+msgstr "잘못된 인증 헤더입니다. 인증 정보가 제공되지 않았습니다."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:80
+msgid ""
+"Invalid authorization header. Credentials string should not contain spaces."
+msgstr "잘못된 인증 헤더입니다. 인증 정보 문자열에 공백이 포함되어 있지 않아야 합니다."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:107
+msgid "No valid JWK found."
+msgstr "유효한 JWK를 찾을 수 없습니다."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:119
+msgid "Signature has expired."
+msgstr "서명이 만료되었습니다."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:121
+msgid "Invalid claims."
+msgstr "잘못된 클레임입니다."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:123
+msgid "Invalid signature."
+msgstr "잘못된 서명입니다."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:163
+msgid "Token expired"
+msgstr "토큰이 만료됨"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:168
+#: pinakes/common/auth/keycloak_django/authentication.py:172
+msgid "Invalid audience"
+msgstr "잘못된 대상"
+
 #: pinakes/common/exception_handler.py:27
 msgid "Internal Error"
 msgstr "내부 오류"
 
 #: pinakes/common/exception_handler.py:31
 msgid "{}. Report to the support team if it is not an user error."
-msgstr "{}. 사용자가 오류가 아닌 경우 지원 팀에 보고합니다."
+msgstr "{}. 사용자 오류가 아닌 경우 지원 팀에 보고합니다."
 
 #: pinakes/common/exception_handler.py:37
 msgid "Unauthorized"
@@ -29,15 +63,15 @@ msgstr "인증되지 않음"
 
 #: pinakes/common/image_mixin.py:43
 msgid "{} object has no attribute 'icon'."
-msgstr "{} 오브젝트에는 '아이콘' 속성이 없습니다."
+msgstr "{} 오브젝트에는 'icon' 속성이 없습니다."
 
 #: pinakes/common/image_mixin.py:69
 msgid "Icon attribute has been set on {} object (id: {})."
-msgstr "아이콘 속성이 {} 오브젝트 (id: {})에 설정되었습니다."
+msgstr "icon 속성이 {} 오브젝트(id: {})에 설정되었습니다."
 
 #: pinakes/common/image_mixin.py:95 pinakes/common/image_mixin.py:123
 msgid "Icon attribute has not been set on {} object (id: {})."
-msgstr "아이콘 속성이 {} 오브젝트 (id: {})에 설정되지 않았습니다."
+msgstr "icon 속성이 {} 오브젝트(id: {})에 설정되지 않았습니다."
 
 #: pinakes/common/models/fields.py:14
 msgid "An encrypted JSON object"
@@ -45,11 +79,11 @@ msgstr "암호화된 JSON 오브젝트"
 
 #: pinakes/main/analytics/analytics_collectors.py:23
 msgid "General platform configuration."
-msgstr "일반적인 플랫폼 구성."
+msgstr "일반 플랫폼 구성."
 
 #: pinakes/main/analytics/analytics_collectors.py:64
 msgid "Data on sources"
-msgstr "소스의 데이터"
+msgstr "출처에 대한 데이터"
 
 #: pinakes/main/analytics/analytics_collectors.py:89
 msgid "Data on service_offerings"
@@ -73,15 +107,15 @@ msgstr "포트폴리오의 데이터"
 
 #: pinakes/main/analytics/analytics_collectors.py:236
 msgid "Data on portfolio_items"
-msgstr "portfolio_items에 대한 데이터"
+msgstr "portfolio_items의 데이터"
 
 #: pinakes/main/analytics/analytics_collectors.py:267
 msgid "Data on orders"
-msgstr "주문에 관한 데이터"
+msgstr "주문 관련 데이터"
 
 #: pinakes/main/analytics/analytics_collectors.py:294
 msgid "Data on order_items"
-msgstr "order_items에 대한 데이터"
+msgstr "order_items의 데이터"
 
 #: pinakes/main/analytics/analytics_collectors.py:328
 msgid "Data on approval_requests"
@@ -93,11 +127,11 @@ msgstr "service_plans에 대한 데이터"
 
 #: pinakes/main/analytics/analytics_collectors.py:383
 msgid "Data on templates"
-msgstr "템플릿의 데이터"
+msgstr "템플릿 관련 데이터"
 
 #: pinakes/main/analytics/analytics_collectors.py:407
 msgid "Data on workflows"
-msgstr "워크플로우의 데이터"
+msgstr "워크플로우 관련 데이터"
 
 #: pinakes/main/analytics/analytics_collectors.py:434
 msgid "Data on requests"
@@ -137,7 +171,7 @@ msgstr "제품별 주문 데이터"
 
 #: pinakes/main/analytics/analytics_collectors.py:783
 msgid "Approval request time spent by group"
-msgstr "그룹이 소모한 승인 요청 시간"
+msgstr "그룹이 소비한 승인 요청 시간"
 
 #: pinakes/main/approval/exceptions.py:8
 msgid "Insufficient query parameters"
@@ -153,88 +187,100 @@ msgstr "필드를 비워 둘 수 없습니다."
 
 #: pinakes/main/approval/exceptions.py:23
 msgid "Duplicated UUID for approver groups"
-msgstr "승인자 그룹의 UUID가 중복되었습니다."
+msgstr "승인자 그룹의 중복된 UUID"
 
 #: pinakes/main/approval/exceptions.py:28
 msgid "Group has no approver role"
-msgstr "그룹에는 승인자 역할이 없습니다."
+msgstr "그룹에는 승인자 역할이 없음"
 
 #: pinakes/main/approval/exceptions.py:33
 msgid "Group does not exist"
-msgstr "그룹이 존재하지 않습니다."
+msgstr "그룹이 존재하지 않음"
+
+#: pinakes/main/approval/exceptions.py:38
+msgid "There are resource objects linked to the workflow"
+msgstr "워크플로에 연결된 리소스 오브젝트가 있음"
+
+#: pinakes/main/approval/exceptions.py:43
+msgid "Workflow is in use"
+msgstr "워크플로우 사용 중"
 
 #: pinakes/main/approval/services/create_action.py:49
 msgid "The memo message cannot be blank"
-msgstr "메모 메시지는 비워 둘 수 없습니다."
+msgstr "메모 메시지를 비워 둘 수 없음"
 
 #: pinakes/main/approval/services/create_action.py:56
 msgid "Current request is not pending state"
-msgstr "현재 요청이 보류 중 상태가 아닙니다."
+msgstr "현재 요청이 보류 중 상태가 아님"
 
 #: pinakes/main/approval/services/create_action.py:64
 msgid "Current request is not started state"
-msgstr "현재 요청이 시작되지 않았습니다."
+msgstr "현재 요청이 시작된 상태가 아님"
 
 #: pinakes/main/approval/services/create_action.py:72
 msgid "Current request is not in pending state"
-msgstr "현재 요청이 보류 중 상태가 아닙니다."
+msgstr "현재 요청이 보류 중 상태가 아님"
 
 #: pinakes/main/approval/services/create_action.py:80
 #: pinakes/main/approval/services/create_action.py:97
 msgid "Current request is not in notified state"
-msgstr "현재 요청이 통지된 상태가 아닙니다."
+msgstr "현재 요청이 통지된 상태가 아님"
 
 #: pinakes/main/approval/services/create_action.py:85
 msgid "Only child level request can be approved"
-msgstr "하위 수준 요청만 승인할 수 있습니다."
+msgstr "하위 수준 요청만 승인할 수 있음"
 
 #: pinakes/main/approval/services/create_action.py:102
 msgid "Only child level request can be denied"
-msgstr "하위 수준 요청만 거부할 수 있습니다."
+msgstr "하위 수준 요청만 거부할 수 있음"
 
 #: pinakes/main/approval/services/create_action.py:107
 msgid "A reason has to be provided if a request is being denied"
-msgstr "요청이 거부되는 경우 이유를 제공해야 합니다."
+msgstr "요청을 거부하려면 이유를 설명해야 함"
 
 #: pinakes/main/approval/services/create_action.py:119
 msgid "Only root level request can be canceled"
-msgstr "루트 수준 요청만 취소할 수 있습니다."
+msgstr "루트 수준 요청만 취소할 수 있음"
 
 #: pinakes/main/approval/services/create_action.py:124
 msgid "The request has already finished"
-msgstr "요청이 이미 종료되었습니다"
+msgstr "요청이 이미 완료됨"
 
 #: pinakes/main/approval/services/create_action.py:136
 msgid "Current request has already finished"
-msgstr "현재 요청이 이미 종료되었습니다."
+msgstr "현재 요청이 이미 완료됨"
 
 #: pinakes/main/approval/services/create_action.py:140
 msgid "Failure reason is missing"
-msgstr "실패 이유가 누락됨"
+msgstr "실패 이유가 누락되어 있음"
 
 #: pinakes/main/approval/services/create_action.py:144
 msgid "Only child level request can be flagged error"
-msgstr "하위 수준 요청만 오류 플래그를 지정할 수 있습니다."
+msgstr "하위 수준 요청만 오류 플래그를 지정할 수 있음"
 
 #: pinakes/main/approval/services/email_notification.py:91
 msgid "Failed to email group {}"
-msgstr "그룹 {}에 이메일을 보내지 못했습니다."
+msgstr "그룹 {}에 이메일을 보내지 못함"
 
 #: pinakes/main/approval/services/update_request.py:19
 msgid "Auto-approved"
 msgstr "자동 승인됨"
 
-#: pinakes/main/approval/validations.py:56
+#: pinakes/main/approval/validations.py:58
 msgid "Group id {} does not exist"
-msgstr "그룹 id {}이/가 존재하지 않습니다."
+msgstr "그룹 id {}이/가 존재하지 않음"
 
-#: pinakes/main/approval/validations.py:64
+#: pinakes/main/approval/validations.py:66
 msgid "Group {} does not have approver role"
-msgstr "그룹 {}에는 승인자 역할이 없습니다."
+msgstr "그룹 {}에는 승인자 역할이 없음"
 
-#: pinakes/main/approval/views.py:188
+#: pinakes/main/approval/views.py:186
 msgid "Insufficient resource object params: {}"
 msgstr "리소스 오브젝트 매개변수가 충분하지 않음: {}"
+
+#: pinakes/main/auth/views.py:58
+msgid "Logout is not supported with Bearer auth."
+msgstr "Bearer auth에서는 로그 아웃이 지원되지 않습니다."
 
 #: pinakes/main/catalog/exceptions.py:8
 msgid "Bad query parameters"
@@ -282,7 +328,7 @@ msgstr "완료됨"
 
 #: pinakes/main/catalog/models.py:336 pinakes/main/catalog/models.py:423
 msgid "Created"
-msgstr "작성됨"
+msgstr "생성됨"
 
 #: pinakes/main/catalog/models.py:337 pinakes/main/catalog/models.py:424
 msgid "Denied"
@@ -302,7 +348,7 @@ msgstr "주문됨"
 msgid ""
 "Created Approval Request ref: %(approval_request_ref)s. Catalog approval "
 "request id: %(approval_request_id)s"
-msgstr "승인 요청에 대한 참조가 생성됨: %(approval_request_ref)s 카탈로그 승인 요청 ID: %(approval_request_id)s"
+msgstr "승인 요청 참조가 생성됨: %(approval_request_ref)s 카탈로그 승인 요청 ID: %(approval_request_id)s"
 
 #: pinakes/main/catalog/models.py:569
 msgid "undecided"
@@ -324,11 +370,11 @@ msgstr "거부됨"
 msgid "failed"
 msgstr "실패"
 
-#: pinakes/main/catalog/serializers.py:407
+#: pinakes/main/catalog/serializers.py:410
 msgid "Order"
 msgstr "주문"
 
-#: pinakes/main/catalog/serializers.py:408
+#: pinakes/main/catalog/serializers.py:411
 msgid "OrderItem"
 msgstr "주문 항목"
 
@@ -342,45 +388,45 @@ msgstr "포트폴리오 항목 {}에는 관련 서비스가 제공되지 않습�
 
 #: pinakes/main/catalog/services/copy_portfolio_item.py:47
 msgid "{} is not order able, and cannot be copied"
-msgstr "{}은 주문이 불가능하며 복사할 수 없습니다."
+msgstr "{}은/는 주문할 수 없으며 복사할 수 없습니다."
 
 #: pinakes/main/catalog/services/finish_order.py:31
 #, python-format
 msgid "Order %(order_id)s has failed"
-msgstr "%(order_id)s 주문에 실패했습니다"
+msgstr "%(order_id)s 주문에 실패"
 
 #: pinakes/main/catalog/services/finish_order.py:36
 #, python-format
 msgid "Order %(order_id)s is completed"
-msgstr "주문 %(order_id)s 이/가 완료됨"
+msgstr "%(order_id)s 주문이 완료됨"
 
 #: pinakes/main/catalog/services/finish_order.py:44
 msgid "Order Canceled"
-msgstr "주문이 취소되었습니다"
+msgstr "주문이 취소됨"
 
 #: pinakes/main/catalog/services/finish_order.py:48
 msgid "Order Failed"
-msgstr "주문에 실패했습니다"
+msgstr "주문 실패"
 
 #: pinakes/main/catalog/services/finish_order.py:53
 #, python-format
 msgid ""
 "This order item has failed due to the entire order %(state)s before it ran"
-msgstr "이 주문 항목은 실행되기 전에 전체 주문 %(state)s(으)로 인해 실패했습니다."
+msgstr "이 주문 항목은 실행하기 전에 전체 주문 %(state)s(으)로 인해 실패했습니다."
 
 #: pinakes/main/catalog/services/finish_order_item.py:34
 #, python-format
 msgid "Order Item %(id)s is completed"
-msgstr "주문 항목 %(id)s이/가 완료되었습니다"
+msgstr "주문 항목 %(id)s 이/가 완료됨"
 
 #: pinakes/main/catalog/services/handle_approval_events.py:76
 msgid "Internal Error. Please contact our support team."
-msgstr "내부 오류입니다. 지원 팀에 문의하십시오."
+msgstr "내부 오류. 지원 팀에 문의하십시오."
 
 #: pinakes/main/catalog/services/handle_approval_events.py:109
 #, python-format
 msgid "Approval Request finished with status %(state)s"
-msgstr "승인 요청이 %(state)s 상태로 종료되었습니다."
+msgstr "승인 요청이 %(state)s 상태로 종료되었습니다"
 
 #: pinakes/main/catalog/services/handle_approval_events.py:115
 #, python-format
@@ -390,30 +436,30 @@ msgstr "승인 요청이 %(state)s 상태 및 %(reason)s 이유로 종료되었�
 #: pinakes/main/catalog/services/provision_order_item.py:30
 #, python-format
 msgid "Order Item %(id)s is provisioned"
-msgstr "주문 항목 %(id)s이/가 프로비저닝되었습니다"
+msgstr "주문 항목 %(id)s 이 프로비저닝됨"
 
 #: pinakes/main/catalog/services/sanitize_parameters.py:42
 msgid "parameter {} is required and must have a value"
-msgstr "매개변수 {}이/는 필수이며 값을 설정해야 합니다."
+msgstr "매개변수 {}이/는 필수이며 값을 설정해야 합니다"
 
 #: pinakes/main/catalog/services/start_order.py:21
 msgid "Submitting Order for provisioning"
-msgstr "프로비저닝을 위해 주문 제출 중"
+msgstr "프로비저닝을 위한 주문 제출 중"
 
 #: pinakes/main/catalog/services/start_order_item.py:53
 #, python-format
 msgid "Submitting Order Item %(item_id)s for provisioning"
-msgstr "프로비저닝을 위해 주문 항목 %(item_id)s 전송 중"
+msgstr "프로비저닝을 위해 주문 항목 %(item_id)s 제출 중"
 
 #: pinakes/main/catalog/services/submit_approval_request.py:61
 msgid "Failed to submit request to approval for Order {}, error: {}"
-msgstr "주문 {}의 승인에 대한 요청을 제출하지 못했습니다. 오류: {}"
+msgstr "주문 {}의 승인 요청을 제출하지 못했습니다. 오류: {}"
 
 #: pinakes/main/catalog/services/validate_order_item.py:45
 msgid ""
 "The underlying survey on product {} in the portfolio {} has been changed and "
-"is no longer valid, please contact an administrator to fix it."
-msgstr "포트폴리오 {}의 제품 {}에 대한 기본 설문 조사가 변경되었으며 더 이상 유효하지 않습니다. 관리자에게 문의하여 수정하십시오."
+"is no longer valid, please contact an administrator to reset it."
+msgstr "포트폴리오 {}의 제품 {}에 대한 기본 설문 조사가 변경되어 더 이상 유효하지 않습니다. 관리자에게 문의하여 재설정하십시오."
 
 #: pinakes/main/catalog/views.py:521
 msgid "Order {} does not have related order items"
@@ -422,21 +468,21 @@ msgstr "주문 {}에는 관련 주문 항목이 없습니다."
 #: pinakes/main/catalog/views.py:531
 #, python-format
 msgid "Computed tags for order %(order_id)d: %(tag_resources)s"
-msgstr "주문 %(order_id)의 계산된 태그: %(tag_resources)s"
+msgstr "%(order_id)d 주문의 계산된 태그: %(tag_resources)s"
 
 #: pinakes/main/inventory/exceptions.py:8
 msgid "Refresh already registered"
-msgstr "새로 고침이 이미 등록되었습니다"
+msgstr "업데이트가 이미 등록됨"
 
 #: pinakes/main/inventory/serializers.py:50
 #, python-format
 msgid "%(name)s is unavailable, refresh skipped"
-msgstr "%(name)s을/를 사용할 수 없음, 새로 고침을 건너뛰기함"
+msgstr "%(name)s 사용할 수 없음, 업데이트를 생략함"
 
 #: pinakes/main/inventory/serializers.py:55
 #, python-format
 msgid "Refresh failed: %(error)s"
-msgstr "새로 고침이 실패했습니다. %(error)s"
+msgstr "업데이트 실패: %(error)s"
 
 #: pinakes/main/inventory/serializers.py:59
 msgid "adds"
@@ -472,14 +518,14 @@ msgstr "서비스 계획: %(sp_stats)s;\n"
 
 #: pinakes/main/inventory/serializers.py:102
 msgid "Nothing to update"
-msgstr "업데이트할 수 없음"
+msgstr "업데이트할 항목이 없음"
 
 #: pinakes/main/inventory/serializers.py:125
 #, python-format
 msgid ""
 "Source cannot be changed to url %(new_url)s uuid %(new_install_uuid)s, "
 "currently bound to url %(url)s with uuid %(install_uuid)s"
-msgstr "소스는 URL %(new_url)s uuid %(new_install_uuid)s로 변경할 수 없으며 현재 uuid %(install_uuid)s와 함께 URL %(url)s에 바인딩되었습니다"
+msgstr "소스를 URL %(new_url)s uuid %(new_install_uuid)s로 변경할 수 없으며 현재 uuid %(install_uuid)s와 함께 URL %(url)s에 바인딩되어 있습니다."
 
 #: pinakes/main/inventory/serializers.py:131
 #, python-format
@@ -488,11 +534,11 @@ msgstr "오류: %(error)s"
 
 #: pinakes/main/inventory/services/collect_inventory_tags.py:38
 msgid "ServiceOffering object {} not found"
-msgstr "서비스 오퍼링에 대해 오브젝트 {}을/를 찾을 수 없음"
+msgstr "서비스 오퍼링 오브젝트 {}을/를 찾을 수 없음"
 
 #: pinakes/main/inventory/services/get_service_offering.py:34
 msgid "Failed to get service offering [{}]"
-msgstr "서비스 오퍼링 [{}]을/를 가져오지 못했습니다."
+msgstr "[{}] 서비스 오퍼링을 가져하지 못했습니다."
 
 #: pinakes/main/inventory/task_utils/check_source_availability.py:55
 msgid "Check availability completed"
@@ -505,7 +551,7 @@ msgstr "작업 %(id)s은/는 %(status)s 상태입니다"
 
 #: pinakes/main/inventory/views.py:89
 msgid "Refresh job {} is already {}, please try again later"
-msgstr "작업 {}의 새로 고침이 이미 {}입니다. 나중에 다시 시도하십시오."
+msgstr "작업 {}의 업데이트가 이미 {}입니다. 나중에 다시 시도하십시오."
 
 #: pinakes/main/models.py:65
 msgid "Done"
@@ -518,3 +564,4 @@ msgstr "진행 중"
 #: pinakes/main/models.py:68
 msgid "Unknown"
 msgstr "알 수 없음"
+
