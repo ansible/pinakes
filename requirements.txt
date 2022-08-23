@@ -7,7 +7,7 @@ djangorestframework
 drf-extensions
 drf-spectacular
 gunicorn
-insights_analytics_collector
+insights-analytics-collector==0.2.0
 Pillow
 psycopg2
 python-dateutil
