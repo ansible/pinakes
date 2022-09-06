@@ -76,7 +76,7 @@ are not set"
 
         job = get_current_job()
         if job:
-            job.meta["last_gathered_entries"] = last_gathered_entries["keys"]
+            job.meta["last_gathered_entries"] = last_gathered_entries
             job.save_meta()
 
     def _save_last_gather(self):
