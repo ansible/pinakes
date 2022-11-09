@@ -22,7 +22,7 @@ echo -e "\e[34m >>> Building keycloak setup collections \e[97m"
 rm -rf pinakes-keycloak_setup-"$KEYCLOAK_SETUP_VERSION".tar.gz
 ansible-galaxy collection build tools/keycloak_setup/collection
 echo -e "\e[34m >>> Installing keycloak setup collections \e[97m"
-ansible-galaxy collection install community.general pinakes-keycloak_setup-"$KEYCLOAK_SETUP_VERSION".tar.gz
+ansible-galaxy collection install community.general:==5.5.0 pinakes-keycloak_setup-"$KEYCLOAK_SETUP_VERSION".tar.gz
 echo -e "\e[34m >>> Configuring Keycloak \e[97m"
 ansible-playbook ${KEYCLOAK_SEED_FILE} ${EXTRA_OPTS}
 echo finished > /startup/status
