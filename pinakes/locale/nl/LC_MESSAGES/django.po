@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-10 14:54-0400\n"
+"POT-Creation-Date: 2022-10-28 11:10-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,17 +15,51 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: pinakes/common/auth/keycloak_django/authentication.py:76
+msgid "Invalid authorization header. No credentials provided."
+msgstr "Ongeldige tokenheader. Geen referenties verschaft."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:80
+msgid ""
+"Invalid authorization header. Credentials string should not contain spaces."
+msgstr "Ongeldige autorisatie header. Credentials string mag geen spaties bevatten."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:107
+msgid "No valid JWK found."
+msgstr "Geen geldige JWK gevonden."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:119
+msgid "Signature has expired."
+msgstr "Licentie is verlopen."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:121
+msgid "Invalid claims."
+msgstr "Ongeldige claims."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:123
+msgid "Invalid signature."
+msgstr "Ongeldige handtekening."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:163
+msgid "Token expired"
+msgstr "Token vervallen"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:168
+#: pinakes/common/auth/keycloak_django/authentication.py:172
+msgid "Invalid audience"
+msgstr "Ongeldig publiek"
+
 #: pinakes/common/exception_handler.py:27
 msgid "Internal Error"
-msgstr "Interne Fout"
+msgstr "Interne fout"
 
 #: pinakes/common/exception_handler.py:31
 msgid "{}. Report to the support team if it is not an user error."
-msgstr "{}. Meld het aan het ondersteuningsteam als het geen gebruikersfout is."
+msgstr "{}. Rapporteer aan het ondersteuningsteam als het geen gebruikersfout is."
 
 #: pinakes/common/exception_handler.py:37
 msgid "Unauthorized"
-msgstr "Ongeoorloofd"
+msgstr "Onbevoegde"
 
 #: pinakes/common/image_mixin.py:43
 msgid "{} object has no attribute 'icon'."
@@ -41,7 +75,7 @@ msgstr "Pictogram-attribuut is niet ingesteld op {} object (id: {})."
 
 #: pinakes/common/models/fields.py:14
 msgid "An encrypted JSON object"
-msgstr "Een gecodeerd JSON object"
+msgstr "Een versleuteld JSON object"
 
 #: pinakes/main/analytics/analytics_collectors.py:23
 msgid "General platform configuration."
@@ -53,7 +87,7 @@ msgstr "Gegevens over bronnen"
 
 #: pinakes/main/analytics/analytics_collectors.py:89
 msgid "Data on service_offerings"
-msgstr "Gegevens over dienst_aanbiedingen"
+msgstr "Gegevens over dienstenaanbiedingen"
 
 #: pinakes/main/analytics/analytics_collectors.py:119
 msgid "Data on service_offering_nodes"
@@ -85,7 +119,7 @@ msgstr "Gegevens over order_items"
 
 #: pinakes/main/analytics/analytics_collectors.py:328
 msgid "Data on approval_requests"
-msgstr "Gegevens over goedkeuring_aanvragen"
+msgstr "Gegevens over goedkeuringsaanvragen"
 
 #: pinakes/main/analytics/analytics_collectors.py:355
 msgid "Data on service_plans"
@@ -117,7 +151,7 @@ msgstr "Gegevens over groepen"
 
 #: pinakes/main/analytics/analytics_collectors.py:544
 msgid "Counts of orders by products"
-msgstr "Tellingen van bestellingen per product"
+msgstr "Aantal bestellingen per product"
 
 #: pinakes/main/analytics/analytics_collectors.py:581
 msgid "Counts of tags by portfolios"
@@ -129,7 +163,7 @@ msgstr "Tellingen van tags per product"
 
 #: pinakes/main/analytics/analytics_collectors.py:649
 msgid "Counts of tags by service_intentories"
-msgstr "Tellingen van tags per service_intentories"
+msgstr "Tellingen van tags door service_intentories"
 
 #: pinakes/main/analytics/analytics_collectors.py:683
 msgid "Order data by product"
@@ -137,7 +171,7 @@ msgstr "Bestelgegevens per product"
 
 #: pinakes/main/analytics/analytics_collectors.py:783
 msgid "Approval request time spent by group"
-msgstr "Tijd besteed aan goedkeuringsverzoeken per groep"
+msgstr "Tijd besteed aan goedkeuringsaanvraag per groep"
 
 #: pinakes/main/approval/exceptions.py:8
 msgid "Insufficient query parameters"
@@ -162,6 +196,14 @@ msgstr "Groep heeft geen goedkeurdersrol"
 #: pinakes/main/approval/exceptions.py:33
 msgid "Group does not exist"
 msgstr "Groep bestaat niet"
+
+#: pinakes/main/approval/exceptions.py:38
+msgid "There are resource objects linked to the workflow"
+msgstr "Er zijn resource-objecten gekoppeld aan de workflow"
+
+#: pinakes/main/approval/exceptions.py:43
+msgid "Workflow is in use"
+msgstr "Workflow is in gebruik"
 
 #: pinakes/main/approval/services/create_action.py:49
 msgid "The memo message cannot be blank"
@@ -216,7 +258,7 @@ msgstr "Reden voor mislukking ontbreekt"
 msgid "Only child level request can be flagged error"
 msgstr "Alleen verzoeken op onderliggend niveau kunnen als fout gemarkeerd worden"
 
-#: pinakes/main/approval/services/email_notification.py:91
+#: pinakes/main/approval/services/email_notification.py:92
 msgid "Failed to email group {}"
 msgstr "Groep {} e-mailen mislukt"
 
@@ -224,17 +266,21 @@ msgstr "Groep {} e-mailen mislukt"
 msgid "Auto-approved"
 msgstr "Automatisch goedgekeurd"
 
-#: pinakes/main/approval/validations.py:56
+#: pinakes/main/approval/validations.py:58
 msgid "Group id {} does not exist"
 msgstr "Groeps-ID {} bestaat niet"
 
-#: pinakes/main/approval/validations.py:64
+#: pinakes/main/approval/validations.py:66
 msgid "Group {} does not have approver role"
 msgstr "Groep {} heeft geen goedkeurdersrol"
 
-#: pinakes/main/approval/views.py:188
+#: pinakes/main/approval/views.py:186
 msgid "Insufficient resource object params: {}"
 msgstr "Onvoldoende resource-object params: {}"
+
+#: pinakes/main/auth/views.py:58
+msgid "Logout is not supported with Bearer auth."
+msgstr "Afmelden wordt niet ondersteund met Bearer auth."
 
 #: pinakes/main/catalog/exceptions.py:8
 msgid "Bad query parameters"
@@ -246,7 +292,7 @@ msgstr "Ongeldige enquête"
 
 #: pinakes/main/catalog/exceptions.py:18
 msgid "Uncancelable Order"
-msgstr "Niet-annuleerbare bestelling"
+msgstr "Niet-opzegbare bestelling"
 
 #: pinakes/main/catalog/models.py:190
 msgid "Info"
@@ -266,7 +312,7 @@ msgstr "Foutopsporing"
 
 #: pinakes/main/catalog/models.py:332 pinakes/main/catalog/models.py:419
 msgid "Approval Pending"
-msgstr "Goedkeuring in afwachting"
+msgstr "Goedkeuring hangende"
 
 #: pinakes/main/catalog/models.py:333 pinakes/main/catalog/models.py:420
 msgid "Approved"
@@ -324,17 +370,17 @@ msgstr "geweigerd"
 msgid "failed"
 msgstr "mislukt"
 
-#: pinakes/main/catalog/serializers.py:407
+#: pinakes/main/catalog/serializers.py:410
 msgid "Order"
 msgstr "Bestellen"
 
-#: pinakes/main/catalog/serializers.py:408
+#: pinakes/main/catalog/serializers.py:411
 msgid "OrderItem"
 msgstr "OrderItem"
 
 #: pinakes/main/catalog/services/cancel_order.py:61
 msgid "Order {} is not cancel able in its current state: {}"
-msgstr "Bestelling {} is niet annuleerbaar in zijn huidige staat: {}"
+msgstr "Order {} is niet annuleerbaar in zijn huidige status: {}"
 
 #: pinakes/main/catalog/services/collect_tag_resources.py:62
 msgid "Portfolio item {} does not have related service offering"
@@ -375,7 +421,7 @@ msgstr "Bestelitem {} is voltooid"
 
 #: pinakes/main/catalog/services/handle_approval_events.py:76
 msgid "Internal Error. Please contact our support team."
-msgstr "Interne Fout. Neem contact op met ons ondersteuningsteam."
+msgstr "Interne fout. Neem contact op met ons ondersteuningsteam."
 
 #: pinakes/main/catalog/services/handle_approval_events.py:109
 #, python-format
@@ -390,7 +436,7 @@ msgstr "Goedkeuringsverzoek beëindigd met status '{}' en reden '{}'"
 #: pinakes/main/catalog/services/provision_order_item.py:30
 #, python-format
 msgid "Order Item %(id)s is provisioned"
-msgstr "Bestelitem %(id)s is voorzien"
+msgstr "Orderpunt %(id)s is voorzien"
 
 #: pinakes/main/catalog/services/sanitize_parameters.py:42
 msgid "parameter {} is required and must have a value"
@@ -412,7 +458,7 @@ msgstr "Indienen van verzoek tot goedkeuring voor bestelling {} mislukt, fout: {
 #: pinakes/main/catalog/services/validate_order_item.py:45
 msgid ""
 "The underlying survey on product {} in the portfolio {} has been changed and "
-"is no longer valid, please contact an administrator to fix it."
+"is no longer valid, please contact an administrator to reset it."
 msgstr "De onderliggende enquête voor product {} in de portefeuille {} is gewijzigd en is niet langer geldig, neem contact op met een beheerder om het te herstellen."
 
 #: pinakes/main/catalog/views.py:521
@@ -431,12 +477,12 @@ msgstr "Vernieuwen reeds geregistreerd"
 #: pinakes/main/inventory/serializers.py:50
 #, python-format
 msgid "%(name)s is unavailable, refresh skipped"
-msgstr "%(name)s is niet beschikbaar, verversen overgeslagen"
+msgstr "%(name)s is niet beschikbaar, refresh overgeslagen"
 
 #: pinakes/main/inventory/serializers.py:55
 #, python-format
 msgid "Refresh failed: %(error)s"
-msgstr "Vernieuwen mislukt: %(error)s"
+msgstr "Vernieuwen is mislukt: %(error)s"
 
 #: pinakes/main/inventory/serializers.py:59
 msgid "adds"
@@ -453,7 +499,7 @@ msgstr "updates"
 #: pinakes/main/inventory/serializers.py:83
 #, python-format
 msgid "Service Inventories: %(stats)s;\n"
-msgstr "Dienstvoorraden: %(stats)s;\n"
+msgstr "Diensteninventarissen: %(stats)s;\n"
 
 #: pinakes/main/inventory/serializers.py:88
 #, python-format
@@ -468,7 +514,7 @@ msgstr "Workflowsjabloon\n"
 #: pinakes/main/inventory/serializers.py:97
 #, python-format
 msgid "Service Plan: %(sp_stats)s;\n"
-msgstr "Service Plan: %(sp_stats)s;\n"
+msgstr "Dienstenplan: %(sp_stats)s;\n"
 
 #: pinakes/main/inventory/serializers.py:102
 msgid "Nothing to update"
@@ -496,7 +542,7 @@ msgstr "Dienstaanbod ophalen mislukt [{}]"
 
 #: pinakes/main/inventory/task_utils/check_source_availability.py:55
 msgid "Check availability completed"
-msgstr "Controleer beschikbaarheid voltooid"
+msgstr "Beschikbaarheid gecontroleerd"
 
 #: pinakes/main/inventory/task_utils/launch_job.py:68
 #, python-format
@@ -518,3 +564,4 @@ msgstr "InProgress"
 #: pinakes/main/models.py:68
 msgid "Unknown"
 msgstr "Onbekend"
+

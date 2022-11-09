@@ -7,13 +7,47 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-10 14:54-0400\n"
+"POT-Creation-Date: 2022-10-28 11:10-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:76
+msgid "Invalid authorization header. No credentials provided."
+msgstr "Cabecera token inválida. Credenciales no indicados."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:80
+msgid ""
+"Invalid authorization header. Credentials string should not contain spaces."
+msgstr "Cabecera de autorización no válida. La cadena de credenciales no debe contener espacios."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:107
+msgid "No valid JWK found."
+msgstr "No se ha encontrado ningún JWK válido."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:119
+msgid "Signature has expired."
+msgstr "La licencia ha expirado."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:121
+msgid "Invalid claims."
+msgstr "Reclamaciones inválidas."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:123
+msgid "Invalid signature."
+msgstr "Firma inválida."
+
+#: pinakes/common/auth/keycloak_django/authentication.py:163
+msgid "Token expired"
+msgstr "Ficha caducada"
+
+#: pinakes/common/auth/keycloak_django/authentication.py:168
+#: pinakes/common/auth/keycloak_django/authentication.py:172
+msgid "Invalid audience"
+msgstr "Público inválido"
 
 #: pinakes/common/exception_handler.py:27
 msgid "Internal Error"
@@ -89,7 +123,7 @@ msgstr "Datos sobre approval_requests"
 
 #: pinakes/main/analytics/analytics_collectors.py:355
 msgid "Data on service_plans"
-msgstr "Data on service_plans"
+msgstr "Datos sobre los planes de servicio"
 
 #: pinakes/main/analytics/analytics_collectors.py:383
 msgid "Data on templates"
@@ -163,6 +197,14 @@ msgstr "El grupo no tiene rol de aprobador"
 msgid "Group does not exist"
 msgstr "El grupo no existe"
 
+#: pinakes/main/approval/exceptions.py:38
+msgid "There are resource objects linked to the workflow"
+msgstr "Hay objetos de recursos vinculados al flujo de trabajo"
+
+#: pinakes/main/approval/exceptions.py:43
+msgid "Workflow is in use"
+msgstr "El flujo de trabajo está en uso"
+
 #: pinakes/main/approval/services/create_action.py:49
 msgid "The memo message cannot be blank"
 msgstr "El mensaje del memorándum no puede estar en blanco"
@@ -216,7 +258,7 @@ msgstr "Falta el motivo de la falla"
 msgid "Only child level request can be flagged error"
 msgstr "Solo puede marcar con error la solicitud de nivel secundario"
 
-#: pinakes/main/approval/services/email_notification.py:91
+#: pinakes/main/approval/services/email_notification.py:92
 msgid "Failed to email group {}"
 msgstr "Error al enviar correo electrónico al grupo {}"
 
@@ -224,17 +266,21 @@ msgstr "Error al enviar correo electrónico al grupo {}"
 msgid "Auto-approved"
 msgstr "Aprobado automáticamente"
 
-#: pinakes/main/approval/validations.py:56
+#: pinakes/main/approval/validations.py:58
 msgid "Group id {} does not exist"
 msgstr "El Id. de grupo {} no existe"
 
-#: pinakes/main/approval/validations.py:64
+#: pinakes/main/approval/validations.py:66
 msgid "Group {} does not have approver role"
 msgstr "El grupo {} no tiene rol de aprobador"
 
-#: pinakes/main/approval/views.py:188
+#: pinakes/main/approval/views.py:186
 msgid "Insufficient resource object params: {}"
 msgstr "Parámetros de objeto de recurso insuficientes: {}"
+
+#: pinakes/main/auth/views.py:58
+msgid "Logout is not supported with Bearer auth."
+msgstr "El cierre de sesión no es compatible con la autenticación del portador."
 
 #: pinakes/main/catalog/exceptions.py:8
 msgid "Bad query parameters"
@@ -324,11 +370,11 @@ msgstr "denegado"
 msgid "failed"
 msgstr "falló"
 
-#: pinakes/main/catalog/serializers.py:407
+#: pinakes/main/catalog/serializers.py:410
 msgid "Order"
 msgstr "Pedir"
 
-#: pinakes/main/catalog/serializers.py:408
+#: pinakes/main/catalog/serializers.py:411
 msgid "OrderItem"
 msgstr "OrderItem"
 
@@ -375,7 +421,7 @@ msgstr "El elemento de pedido {} está completado"
 
 #: pinakes/main/catalog/services/handle_approval_events.py:76
 msgid "Internal Error. Please contact our support team."
-msgstr "Error interno. Por favor, póngase en contacto con nuestro equipo de soporte."
+msgstr "Error interno. Póngase en contacto con nuestro equipo de asistencia."
 
 #: pinakes/main/catalog/services/handle_approval_events.py:109
 #, python-format
@@ -412,7 +458,7 @@ msgstr "No se pudo enviar la solicitud de aprobación para el pedido {}, error: 
 #: pinakes/main/catalog/services/validate_order_item.py:45
 msgid ""
 "The underlying survey on product {} in the portfolio {} has been changed and "
-"is no longer valid, please contact an administrator to fix it."
+"is no longer valid, please contact an administrator to reset it."
 msgstr "La encuesta subyacente para el producto {} en la cartera {} ha cambiado y ya no es válida. Comuníquese con un administrador para corregirla."
 
 #: pinakes/main/catalog/views.py:521
@@ -484,7 +530,7 @@ msgstr "La fuente no puede cambiarse a la url %(new_url)s uuid %(new_install_uui
 #: pinakes/main/inventory/serializers.py:131
 #, python-format
 msgid "Error: %(error)s"
-msgstr "Error %(error)s - "
+msgstr "Error: %(error)s"
 
 #: pinakes/main/inventory/services/collect_inventory_tags.py:38
 msgid "ServiceOffering object {} not found"
@@ -513,8 +559,9 @@ msgstr "Finalizado"
 
 #: pinakes/main/models.py:66
 msgid "InProgress"
-msgstr "InProgress"
+msgstr "En progreso"
 
 #: pinakes/main/models.py:68
 msgid "Unknown"
 msgstr "Desconocido"
+
