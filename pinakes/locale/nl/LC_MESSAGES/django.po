@@ -348,7 +348,7 @@ msgstr "Besteld"
 msgid ""
 "Created Approval Request ref: %(approval_request_ref)s. Catalog approval "
 "request id: %(approval_request_id)s"
-msgstr "Gecreëerd goedkeuringsverzoek ref: {}. Goedkeuringsverzoek catalogus-ID: {}"
+msgstr "Gecreëerd goedkeuringsverzoek ref: %(approval_request_ref)s. Goedkeuringsverzoek catalogus-ID: %(approval_request_id)s"
 
 #: pinakes/main/catalog/models.py:569
 msgid "undecided"
@@ -393,12 +393,12 @@ msgstr "{} is niet te bestellen, en kan niet worden gekopieerd"
 #: pinakes/main/catalog/services/finish_order.py:31
 #, python-format
 msgid "Order %(order_id)s has failed"
-msgstr "Bestelling {} is mislukt"
+msgstr "Bestelling %(order_id)s is mislukt"
 
 #: pinakes/main/catalog/services/finish_order.py:36
 #, python-format
 msgid "Order %(order_id)s is completed"
-msgstr "Bestelling {} is voltooid"
+msgstr "Bestelling %(order_id)s is voltooid"
 
 #: pinakes/main/catalog/services/finish_order.py:44
 msgid "Order Canceled"
@@ -412,12 +412,12 @@ msgstr "Bestelling mislukt"
 #, python-format
 msgid ""
 "This order item has failed due to the entire order %(state)s before it ran"
-msgstr "Dit bestelitem is mislukt omdat de hele bestelling {} voordat deze actief werd"
+msgstr "Dit bestelitem is mislukt omdat de hele bestelling %(state)s voordat deze actief werd"
 
 #: pinakes/main/catalog/services/finish_order_item.py:34
 #, python-format
 msgid "Order Item %(id)s is completed"
-msgstr "Bestelitem {} is voltooid"
+msgstr "Bestelitem %(id)s is voltooid"
 
 #: pinakes/main/catalog/services/handle_approval_events.py:76
 msgid "Internal Error. Please contact our support team."
@@ -426,12 +426,12 @@ msgstr "Interne fout. Neem contact op met ons ondersteuningsteam."
 #: pinakes/main/catalog/services/handle_approval_events.py:109
 #, python-format
 msgid "Approval Request finished with status %(state)s"
-msgstr "Verzoek om goedkeuring beëindigd met status '{}'"
+msgstr "Verzoek om goedkeuring beëindigd met status '%(state)s'"
 
 #: pinakes/main/catalog/services/handle_approval_events.py:115
 #, python-format
 msgid "Approval Request finished with status %(state)s and reason %(reason)s"
-msgstr "Goedkeuringsverzoek beëindigd met status '{}' en reden '{}'"
+msgstr "Goedkeuringsverzoek beëindigd met status '%(state)s' en reden '%(reason)s'"
 
 #: pinakes/main/catalog/services/provision_order_item.py:30
 #, python-format
@@ -444,12 +444,12 @@ msgstr "parameter {} is vereist en moet een waarde hebben"
 
 #: pinakes/main/catalog/services/start_order.py:21
 msgid "Submitting Order for provisioning"
-msgstr "Indienen bestelitem {} voor bevoorrading"
+msgstr "Bestelling indienen voor voorziening"
 
 #: pinakes/main/catalog/services/start_order_item.py:53
 #, python-format
 msgid "Submitting Order Item %(item_id)s for provisioning"
-msgstr "Indienen bestelitem {} voor bevoorrading"
+msgstr "Indienen bestelitem %(item_id)s voor bevoorrading"
 
 #: pinakes/main/catalog/services/submit_approval_request.py:61
 msgid "Failed to submit request to approval for Order {}, error: {}"
@@ -468,7 +468,7 @@ msgstr "Bestelling {} heeft geen gerelateerde bestelitems"
 #: pinakes/main/catalog/views.py:531
 #, python-format
 msgid "Computed tags for order %(order_id)d: %(tag_resources)s"
-msgstr "Berekende tags voor volgorde {}: {}"
+msgstr "Berekende tags voor volgorde %(order_id)d: %(tag_resources)s"
 
 #: pinakes/main/inventory/exceptions.py:8
 msgid "Refresh already registered"
@@ -504,12 +504,12 @@ msgstr "Diensteninventarissen: %(stats)s;\n"
 #: pinakes/main/inventory/serializers.py:88
 #, python-format
 msgid "Job Templates & Workflows: %(soi_stats)s;\n"
-msgstr "Workflowtaaksjablonen\n"
+msgstr "Workflowtaaksjablonen: %(soi_stats)s;\n"
 
 #: pinakes/main/inventory/serializers.py:93
 #, python-format
 msgid "Workflow Template Nodes: %(son_stats)s;\n"
-msgstr "Workflowsjabloon\n"
+msgstr "Workflowsjabloon: %(son_stats)s;\n"
 
 #: pinakes/main/inventory/serializers.py:97
 #, python-format

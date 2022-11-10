@@ -468,7 +468,7 @@ msgstr "订购 {} 没有相关的订购项"
 #: pinakes/main/catalog/views.py:531
 #, python-format
 msgid "Computed tags for order %(order_id)d: %(tag_resources)s"
-msgstr "为订购 %(order_id)计算的标签：%(tag_resources)s"
+msgstr "为订购 %(order_id)d 计算的标签：%(tag_resources)s"
 
 #: pinakes/main/inventory/exceptions.py:8
 msgid "Refresh already registered"

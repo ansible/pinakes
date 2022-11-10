@@ -348,7 +348,7 @@ msgstr "Ordenado"
 msgid ""
 "Created Approval Request ref: %(approval_request_ref)s. Catalog approval "
 "request id: %(approval_request_id)s"
-msgstr "Se creó la referencia de solicitud de aprobación: {}. Id. de solicitud de aprobación de catálogo: {}"
+msgstr "Se creó la referencia de solicitud de aprobación: %(approval_request_ref)s. Id. de solicitud de aprobación de catálogo: %(approval_request_id)s"
 
 #: pinakes/main/catalog/models.py:569
 msgid "undecided"
@@ -393,12 +393,12 @@ msgstr "{} no se puede pedir y no se puede copiar"
 #: pinakes/main/catalog/services/finish_order.py:31
 #, python-format
 msgid "Order %(order_id)s has failed"
-msgstr "Error en el pedido {}"
+msgstr "Error en el pedido %(order_id)s"
 
 #: pinakes/main/catalog/services/finish_order.py:36
 #, python-format
 msgid "Order %(order_id)s is completed"
-msgstr "El pedido {} está completado"
+msgstr "El pedido %(order_id)s está completado"
 
 #: pinakes/main/catalog/services/finish_order.py:44
 msgid "Order Canceled"
@@ -412,12 +412,12 @@ msgstr "Pedido fallido"
 #, python-format
 msgid ""
 "This order item has failed due to the entire order %(state)s before it ran"
-msgstr "Este elemento de pedido falló porque se ejecutó el pedido entero {} anterior"
+msgstr "Este elemento de pedido falló porque se ejecutó el pedido entero %(state)s anterior"
 
 #: pinakes/main/catalog/services/finish_order_item.py:34
 #, python-format
 msgid "Order Item %(id)s is completed"
-msgstr "El elemento de pedido {} está completado"
+msgstr "El elemento de pedido %(id)s está completado"
 
 #: pinakes/main/catalog/services/handle_approval_events.py:76
 msgid "Internal Error. Please contact our support team."
@@ -426,12 +426,12 @@ msgstr "Error interno. Póngase en contacto con nuestro equipo de asistencia."
 #: pinakes/main/catalog/services/handle_approval_events.py:109
 #, python-format
 msgid "Approval Request finished with status %(state)s"
-msgstr "La solicitud de aprobación finalizó con el estado '{}'"
+msgstr "La solicitud de aprobación finalizó con el estado '%(state)s'"
 
 #: pinakes/main/catalog/services/handle_approval_events.py:115
 #, python-format
 msgid "Approval Request finished with status %(state)s and reason %(reason)s"
-msgstr "La solicitud de aprobación finalizó con el estado '{}' y el motivo '{}'"
+msgstr "La solicitud de aprobación finalizó con el estado '%(state)s' y el motivo '%(reason)s'"
 
 #: pinakes/main/catalog/services/provision_order_item.py:30
 #, python-format
@@ -444,12 +444,12 @@ msgstr "se requiere el parámetro {} y debe tener un valor"
 
 #: pinakes/main/catalog/services/start_order.py:21
 msgid "Submitting Order for provisioning"
-msgstr "Enviando elemento de pedido {} para aprovisionamiento"
+msgstr "Envío de pedido para aprovisionamiento"
 
 #: pinakes/main/catalog/services/start_order_item.py:53
 #, python-format
 msgid "Submitting Order Item %(item_id)s for provisioning"
-msgstr "Enviando elemento de pedido {} para aprovisionamiento"
+msgstr "Enviando elemento de pedido %(item_id)s para aprovisionamiento"
 
 #: pinakes/main/catalog/services/submit_approval_request.py:61
 msgid "Failed to submit request to approval for Order {}, error: {}"
@@ -468,7 +468,7 @@ msgstr "El pedido {} no tiene elementos de pedido relacionados"
 #: pinakes/main/catalog/views.py:531
 #, python-format
 msgid "Computed tags for order %(order_id)d: %(tag_resources)s"
-msgstr "Etiquetas calculadas para el pedido {}: {}"
+msgstr "Etiquetas calculadas para el pedido %(order_id)d: %(tag_resources)s"
 
 #: pinakes/main/inventory/exceptions.py:8
 msgid "Refresh already registered"
@@ -504,12 +504,12 @@ msgstr "Inventarios de servicios: %(stats)s;\n"
 #: pinakes/main/inventory/serializers.py:88
 #, python-format
 msgid "Job Templates & Workflows: %(soi_stats)s;\n"
-msgstr "Plantillas de trabajos de flujo de trabajo\n"
+msgstr "Plantillas de trabajos de flujo de trabajo: %(soi_stats)s;\n"
 
 #: pinakes/main/inventory/serializers.py:93
 #, python-format
 msgid "Workflow Template Nodes: %(son_stats)s;\n"
-msgstr "Plantilla de flujo de trabajo\n"
+msgstr "Plantilla de flujo de trabajo: %(son_stats)s;\n"
 
 #: pinakes/main/inventory/serializers.py:97
 #, python-format

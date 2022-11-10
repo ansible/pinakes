@@ -564,4 +564,3 @@ msgstr "진행 중"
 #: pinakes/main/models.py:68
 msgid "Unknown"
 msgstr "알 수 없음"
-

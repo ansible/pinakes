@@ -468,7 +468,7 @@ msgstr "オーダー {} には関連するオーダーアイテムがありま�
 #: pinakes/main/catalog/views.py:531
 #, python-format
 msgid "Computed tags for order %(order_id)d: %(tag_resources)s"
-msgstr "オーダー %(order_id) の計算済みタグ: %(tag_resources)s"
+msgstr "オーダー %(order_id)d の計算済みタグ: %(tag_resources)s"
 
 #: pinakes/main/inventory/exceptions.py:8
 msgid "Refresh already registered"
