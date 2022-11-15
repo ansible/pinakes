@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-05 07:14-0400\n"
+"POT-Creation-Date: 2022-10-04 02:43-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -258,7 +258,7 @@ msgstr "缺少故障原因"
 msgid "Only child level request can be flagged error"
 msgstr "只有子级别请求可以被标记为错误"
 
-#: pinakes/main/approval/services/email_notification.py:91
+#: pinakes/main/approval/services/email_notification.py:92
 msgid "Failed to email group {}"
 msgstr "为组 {} 发送电子邮件失败"
 
